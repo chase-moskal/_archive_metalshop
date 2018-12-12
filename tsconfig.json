@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"rootDir": "source",
+		"outDir": "dist",
+		"target": "es5",
+		"lib": ["es6", "dom"],
+		"module": "umd",
+		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"sourceMap": true,
+		"declaration": true,
+		"jsx": "react",
+		"jsxFactory": "h"
+	}
+}

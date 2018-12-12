@@ -1,0 +1,14 @@
+
+@charset "utf-8";
+@import "../node_modules/relly/source/relly.scss";
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html, body {
+	font-size: 16px;
+	height: 100%;
+}
