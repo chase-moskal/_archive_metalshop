@@ -6,14 +6,18 @@
 			"type": "shell",
 			"command": "npm",
 			"args": ["install"],
-			"problemMatcher": ["$tsc"],
-			"group": "build"
+			"problemMatcher": ["$tsc"]
 		},
 		{
 			"label": "debug build",
 			"type": "shell",
-			"command": "npm install",
-			"problemMatcher": ["$tsc"]
+			"command": "npm",
+			"args": ["run", "build:debug"],
+			"problemMatcher": ["$tsc"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
 		}
 	]
 }
