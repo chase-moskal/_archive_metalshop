@@ -5,6 +5,11 @@
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
 	"main": "dist",
+	"files": [
+		"dist",
+		"source/**/*.pug",
+		"source/**/*.scss"
+	],
 	"keywords": [],
 	"scripts": {
 		"prepare": "npm run build -s && npm test -s",
