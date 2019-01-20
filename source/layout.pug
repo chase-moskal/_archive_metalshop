@@ -4,8 +4,19 @@ html
 	head
 		meta(charset="utf-8")
 		title= pageTitle
-		block headextras
 		script(async defer src="/main.bundle.js")
+		link(rel="stylesheet" href="/style.css")
+		block headextras
 	body
+		.header
+			div
+				h1 authoritarian
+			div.authoritarian-account-button
+				.account-menu
+					.signed-out
+						a Sign-in
+					.signed-in
+						a Account settings
+						a Sign out
 		main
 			block content

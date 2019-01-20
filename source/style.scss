@@ -2,6 +2,8 @@
 @charset "utf-8";
 @import "../node_modules/relly/source/relly.scss";
 
+$stdpadding: 2em;
+
 * {
 	margin: 0;
 	padding: 0;
@@ -11,4 +13,56 @@
 html, body {
 	font-size: 16px;
 	height: 100%;
+	background: #222;
+	color: rgba(255,255,255, 0.7);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	padding: $stdpadding;
+	background: rgba(255,255,255, 0.2);
+
+	& > div {
+		flex: 0 0 auto;
+
+		&:last-child {
+			margin-left: auto;
+		}
+	}
+}
+
+main {
+	padding: $stdpadding;
+}
+
+.authoritarian-account-button {
+	position: relative;
+	width: 2em;
+	height: 2em;
+	background: rgba(255,255,255, 0.2);
+
+	.account-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 10em;
+
+		a {
+			display: block;
+
+			padding: ($stdpadding / 8) ($stdpadding / 4);
+			&:first-child { padding-top: $stdpadding / 4; }
+			&:last-child { padding-bottom: $stdpadding / 4; }
+
+			background: #777;
+			cursor: pointer;
+
+			&:hover { background: #888; }
+		}
+
+		.signed-out {
+			display: none;
+		}
+	}
 }
