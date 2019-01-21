@@ -2,18 +2,28 @@
 import {h} from "preact"
 import * as preact from "preact"
 
-import {AuthStore} from "source/stores/auth-store"
-import {AuthControl} from "source/components/auth-control"
+import {AuthMachine} from "source/stores/auth-machine"
+// import {AuthControl} from "source/components/auth-control"
 
 export function installAuthControl({
+	google,
 	authServerUrl,
 	authControlElement,
-	authStore = new AuthStore()
+	authStore = new AuthMachine()
 }: {
-	authStore?: AuthStore
+	authStore?: AuthMachine
 	authServerUrl: string
 	authControlElement: Element
+	google: {
+		clientId: string
+		scope: string
+	}
 }) {
+
+	// initialize google auth
+	gapi.auth2.init({
+
+	})
 
 	const newAuthControlElement = preact.render(
 		<AuthControl store={authStore}/>,

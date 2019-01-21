@@ -31,6 +31,7 @@
 	},
 	"devDependencies": {
 		"@types/express": "4.16.0",
+		"@types/gapi.auth2": "0.0.48",
 		"array.find": "1.0.7",
 		"axx": "0.2.0",
 		"barrelsby": "1.0.2",
@@ -51,7 +52,6 @@
 		"uglifyify": "5.0.1"
 	},
 	"dependencies": {
-		"@types/googlemaps": "3.30.16",
 		"commotion": "0.0.0-dev.5",
 		"dedent": "0.7.0",
 		"mobx": "5.1.0",
