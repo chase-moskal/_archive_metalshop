@@ -1,37 +1,40 @@
 
-import {observable, action} from "mobx"
-
-// export interface GoogleAuthOptions {
-// 	clientId: string
-// }
+import {observable, action, computed} from "mobx"
 
 export interface AuthMachineOptions {
-	googleAuth: gapi.auth2.GoogleAuth
+	authServerUrl: string
+}
+
+export interface AuthTokens {
+	nToken: string
+	zToken: string
 }
 
 export class AuthMachine {
-	private googleAuth: gapi.auth2.GoogleAuth
+	private readonly authServerUrl: string
+	@observable nToken: string // refresh token (authN)
+	@observable zToken: string // access token (authZ)
 
-	@observable nToken: string
-	@observable zToken: string
-
-	@action setNToken(nToken: string) {
-		this.nToken = nToken
+	@computed get loggedIn() {
+		return !!this.nToken && !!this.zToken
 	}
 
-	@action setZToken(zToken: string) {
+	constructor({authServerUrl}: AuthMachineOptions) {
+		this.authServerUrl = authServerUrl
+	}
+
+	@action setTokens({nToken, zToken}: AuthTokens) {
+		this.nToken = nToken
 		this.zToken = zToken
 	}
 
-	constructor(options: AuthMachineOptions) {
-		this.googleAuth = options.googleAuth
+	@action login() {
+		setTimeout(
+			() => {
+				console.log(`mock interaction with "${this.authServerUrl}"`)
+				this.setTokens({nToken: "a123", zToken: "b234"})
+			},
+			100
+		)
 	}
-
-	async authenticate() {
-		this.googleAuth.signIn({
-			
-		})
-	}
-
-	async authorize() {}
 }
