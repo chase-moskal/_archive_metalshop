@@ -13,14 +13,12 @@ export interface InstallAuthPanelOptions {
 
 export function installAuthPanel({
 	authServerUrl,
-	authMachine,
-	replaceElement
+	replaceElement,
+	authMachine = new AuthMachine({authServerUrl})
 }: InstallAuthPanelOptions) {
 
-	authMachine = authMachine || new AuthMachine({authServerUrl})
-
 	const authPanelElement = preact.render(
-		<AuthPanel authMachine={authMachine}/>,
+		<AuthPanel {...{authMachine}}/>,
 		null,
 		replaceElement
 	)

@@ -36,33 +36,24 @@ main {
 	padding: $stdpadding;
 }
 
-.authoritarian-account-button {
+.authoritarian.auth-panel {
 	position: relative;
-	width: 2em;
-	height: 2em;
-	background: rgba(255,255,255, 0.2);
 
-	.account-menu {
+	.auth-button {
+		display: block;
+		border: none;
+		width: 3em;
+		height: 3em;
+		background: rgba(255,255,255, 0.2);
+	}
+
+	.auth-slate {
 		position: absolute;
 		top: 100%;
 		right: 0;
-		width: 10em;
-
-		a {
-			display: block;
-
-			padding: ($stdpadding / 8) ($stdpadding / 4);
-			&:first-child { padding-top: $stdpadding / 4; }
-			&:last-child { padding-bottom: $stdpadding / 4; }
-
-			background: #777;
-			cursor: pointer;
-
-			&:hover { background: #888; }
-		}
-
-		.signed-out {
-			display: none;
-		}
+		width: 20em;
+		min-height: 10em;
+		background: rgba(255,255,255, 0.95);
+		color: #333;
 	}
 }

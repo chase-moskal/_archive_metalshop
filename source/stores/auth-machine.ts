@@ -1,40 +1,18 @@
 
-import {observable, action, computed} from "mobx"
-
-export interface AuthMachineOptions {
-	authServerUrl: string
-}
-
-export interface AuthTokens {
-	nToken: string
-	zToken: string
-}
+import {AuthStore} from "./auth-store"
+import {AuthMachineOptions} from "./interfaces"
 
 export class AuthMachine {
+	readonly authStore: AuthStore
 	private readonly authServerUrl: string
-	@observable nToken: string // refresh token (authN)
-	@observable zToken: string // access token (authZ)
 
-	@computed get loggedIn() {
-		return !!this.nToken && !!this.zToken
-	}
-
-	constructor({authServerUrl}: AuthMachineOptions) {
+	constructor({authServerUrl, authStore = new AuthStore()}: AuthMachineOptions) {
+		this.authStore = authStore
 		this.authServerUrl = authServerUrl
 	}
 
-	@action setTokens({nToken, zToken}: AuthTokens) {
-		this.nToken = nToken
-		this.zToken = zToken
-	}
-
-	@action login() {
-		setTimeout(
-			() => {
-				console.log(`mock interaction with "${this.authServerUrl}"`)
-				this.setTokens({nToken: "a123", zToken: "b234"})
-			},
-			100
-		)
+	async login() {
+		console.log(`mock interaction with "${this.authServerUrl}"`)
+		this.authStore.setTokens({nToken: "a123", zToken: "b234"})
 	}
 }
