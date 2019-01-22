@@ -13,7 +13,7 @@ export class AuthPanel extends Component<{authMachine: AuthMachine}> {
 		return (
 			<div className="authoritarian auth-panel">
 				<AuthButton {...{authStore}}/>
-				<AuthSlate {...{authStore}}/>
+				<AuthSlate {...{authMachine}}/>
 			</div>
 		)
 	}

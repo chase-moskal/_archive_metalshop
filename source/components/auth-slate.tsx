@@ -1,13 +1,13 @@
 
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
-import {AuthStore} from "source/stores/auth-store"
+import {AuthMachine} from "source/stores/auth-machine"
 
 @observer
-export class AuthSlate extends Component<{authStore: AuthStore}> {
+export class AuthSlate extends Component<{authMachine: AuthMachine}> {
 
 	render() {
-		const {authStore} = this.props
+		const {authStore} = this.props.authMachine
 
 		if (authStore.open) {
 			return authStore.loggedIn
