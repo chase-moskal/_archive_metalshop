@@ -1,11 +1,11 @@
 
-import {installAuthPanel} from "./modules/install-auth-panel"
+import installAuthPanel from "./modules/install-auth-panel"
 
 main().catch(error => console.error(error))
 
 async function main() {
 	installAuthPanel({
-		authServerUrl: "http://localhost:8080",
+		authServerUrl: "http://localhost:8008",
 		replaceElement: document.querySelector(".auth-panel")
 	})
 	console.log("🤖")

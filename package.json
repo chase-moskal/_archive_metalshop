@@ -31,7 +31,7 @@
 		"start": "http-server ./dist"
 	},
 	"devDependencies": {
-		"@types/express": "4.16.0",
+		"@types/express": "4.16.1",
 		"array.find": "1.0.9",
 		"axx": "0.2.0",
 		"barrelsby": "1.0.2",

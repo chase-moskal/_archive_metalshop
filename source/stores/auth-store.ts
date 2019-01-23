@@ -1,14 +1,12 @@
 
 import {observable, action, computed} from "mobx"
 
-import {AuthTokens} from "./interfaces"
-
-export class AuthStore {
+export default class AuthStore {
 	@observable open: boolean = false
-	@observable tokens: AuthTokens
+	@observable zToken: string
 
 	@computed get loggedIn() {
-		return !!this.tokens && !!this.tokens.nToken && !!this.tokens.zToken
+		return !!this.zToken
 	}
 
 	@action toggleOpen(value?: boolean) {
@@ -20,7 +18,7 @@ export class AuthStore {
 		}
 	}
 
-	@action setTokens(tokens: AuthTokens) {
-		this.tokens = tokens
+	@action setZToken(zToken: string) {
+		this.zToken = zToken
 	}
 }

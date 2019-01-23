@@ -1,12 +1,14 @@
 
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
-import {AuthSlate} from "./auth-slate"
-import {AuthButton} from "./auth-button"
-import {AuthMachine} from "source/stores/auth-machine"
+
+import AuthSlate from "./auth-slate"
+import AuthButton from "./auth-button"
+
+import AuthMachine from "../modules/auth-machine"
 
 @observer
-export class AuthPanel extends Component<{authMachine: AuthMachine}> {
+export default class AuthPanel extends Component<{authMachine: AuthMachine}> {
 	render() {
 		const {authMachine} = this.props
 		const {authStore} = authMachine

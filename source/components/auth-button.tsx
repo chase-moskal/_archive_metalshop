@@ -1,10 +1,11 @@
 
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
-import {AuthStore} from "source/stores/auth-store"
+
+import AuthStore from "../stores/auth-store"
 
 @observer
-export class AuthButton extends Component<{authStore: AuthStore}> {
+export default class AuthButton extends Component<{authStore: AuthStore}> {
 
 	render() {
 		return (
