@@ -20,10 +20,20 @@ export default class AuthSlate extends Component<{authMachine: AuthMachine}> {
 		}
 	}
 
+	private handleClickLoginButton = async() => {
+		const {authMachine} = this.props
+		await authMachine.auth()
+	}
+
 	private renderSlateLoggedOut() {
+		const {handleClickLoginButton} = this
 		return (
 			<div className="auth-slate loggedout">
-				(button to sign in)
+				<button
+					className="auth-login-button"
+					onClick={handleClickLoginButton}>
+						Login
+				</button>
 			</div>
 		)
 	}

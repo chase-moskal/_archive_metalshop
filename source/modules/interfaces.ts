@@ -16,20 +16,21 @@ export interface AuthTokens {
 }
 
 export interface TokenStorageOptions {
-	authServerUrl: string
+	authServerOrigin: string
 }
 
 export interface ApiCommunicatorOptions {
-	authServerUrl: string
+	authServerOrigin: string
 }
 
 export interface AuthMachineOptions {
 	authStore: AuthStore
+	authServerOrigin: string
 	tokenStorage: TokenStorage
 	apiCommunicator: ApiCommunicator
 }
 
 export interface InstallAuthPanelOptions {
-	authServerUrl: string
+	authServerOrigin: string
 	replaceElement: HTMLElement | Element
 }

@@ -1,25 +1,40 @@
 
-import ApiCommunicator from "./api-communicator"
 import TokenStorage from "./token-storage"
-import {AuthMachineOptions, ZToken, AuthTokens} from "./interfaces"
+import ApiCommunicator from "./api-communicator"
+import promptLoginRoutine from "./prompt-login-routine"
+import {
+	ZToken,
+	AuthTokens,
+	AuthMachineOptions
+} from "./interfaces"
 
 import AuthStore from "../stores/auth-store"
 
+import consoleCurry from "./console-curry"
+const debug = consoleCurry({
+	consoleFunction: console.debug,
+	tag: "auth-machine"
+})
+
 export default class AuthMachine {
 	readonly authStore: AuthStore
-	private readonly apiCommunicator: ApiCommunicator
+	private readonly authServerOrigin: string
 	private readonly tokenStorage: TokenStorage
+	private readonly apiCommunicator: ApiCommunicator
 
-	constructor({authStore, tokenStorage, apiCommunicator}: AuthMachineOptions) {
-		this.authStore = authStore
-		this.apiCommunicator = apiCommunicator
-		this.tokenStorage = tokenStorage
+	constructor(options: AuthMachineOptions) {
+		this.authStore = options.authStore
+		this.tokenStorage = options.tokenStorage
+		this.apiCommunicator = options.apiCommunicator
+		this.authServerOrigin = options.authServerOrigin
+		debug("constructed with options", options)
 	}
 
 	/**
 	 * Authenticate and authorize the current user
 	 */
 	async auth(): Promise<ZToken> {
+		debug("auth routine initiated")
 		let {nToken, zToken} = await this.tokenStorage.load()
 
 		if (nToken) {
@@ -40,11 +55,14 @@ export default class AuthMachine {
 
 	private async fetchZToken(): Promise<ZToken> {
 		// TODO
+		debug("fetch z token")
 		return "z123"
 	}
 
 	private async promptLoginRoutine(): Promise<AuthTokens> {
 		// TODO
-		return {nToken: "n123", zToken: "z123"}
+		debug("login popup time")
+		const {authServerOrigin} = this
+		return promptLoginRoutine({authServerOrigin})
 	}
 }
