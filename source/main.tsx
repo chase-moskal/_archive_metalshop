@@ -1,17 +1,11 @@
 
-import {h} from "preact"
-import * as preact from "preact"
-
-import {AuthMachine} from "."
-
-import {UserProfile} from "./refactor/interfaces"
 import {consoleCurry} from "./refactor/console-curry"
-import {AuthPanelStore, AuthPanel} from "./refactor/components/auth-panel"
-
+import {renderAuthPanel} from "./refactor/render-auth-panel"
+import {AuthPanelStore} from "./refactor/stores/auth-panel-store"
 import {prepAuthLogout} from "./refactor/auth-machinery/prep-auth-logout"
 import {prepAuthPassiveCheck} from "./refactor/auth-machinery/prep-auth-passive-check"
 import {prepAuthPromptUserLogin} from "./refactor/auth-machinery/prep-auth-prompt-user-login"
-import {prepAuthUpdateAccessToken} from "./refactor/auth-machinery/prep-auth-update-access-token"
+import {prepAuthHandleAccessToken} from "./refactor/auth-machinery/prep-auth-handle-access-token"
 
 const debug = consoleCurry({
 	tag: "main",
@@ -63,33 +57,28 @@ async function main() {
 
 	// define how to handle access token changes
 	// (update the store for the ui)
-	const authUpdateAccessToken = prepAuthUpdateAccessToken({
-		verifyAndReadAccessToken,
-		updateUserProfile: profile => panelStore.setUserProfile(profile),
+	const authHandleAccessToken = prepAuthHandleAccessToken({
+		decodeAccessToken: verifyAndReadAccessToken,
+		handleAccessData: profile => panelStore.setUserProfile(profile),
 	})
 
 	// wire up auth functions
-	const authLogout = prepAuthLogout({tokenApi, authUpdateAccessToken})
-	const authPassiveCheck = prepAuthPassiveCheck({tokenApi, authUpdateAccessToken})
-	const authPromptUserLogin = prepAuthPromptUserLogin({loginApi, authUpdateAccessToken})
+	const authLogout = prepAuthLogout({tokenApi, authHandleAccessToken})
+	const authPassiveCheck = prepAuthPassiveCheck({tokenApi, authHandleAccessToken})
+	const authPromptUserLogin = prepAuthPromptUserLogin({loginApi, authHandleAccessToken})
 
-	// render the ui
-	// attaching it to the mobx store, and calling auth functions when needed
-	preact.render(
-		<AuthPanel {...{
-			panelStore,
-			handleUserLogin: () => {
-				debug(`handleUserLogin`)
-				authPromptUserLogin()
-			},
-			handleUserLogout: () => {
-				debug(`handleUserLogout`)
-				authLogout()
-			}
-		}}/>,
-		null,
-		document.querySelector(".auth-panel")
-	)
+	renderAuthPanel({
+		panelStore,
+		element: document.querySelector(".auth-panel"),
+		handleUserLogin: () => {
+			debug(`handleUserLogin`)
+			authPromptUserLogin()
+		},
+		handleUserLogout: () => {
+			debug(`handleUserLogout`)
+			authLogout()
+		}
+	})
 
 	// perform initial passive auth check
 	await authPassiveCheck()
@@ -101,54 +90,54 @@ async function main() {
 ////// OLD MAIN ///////////////////////////////////
 ///////////////////////////////////////////////////
 
-async function old_main() {
-	const panelStore = new AuthPanelStore()
+// async function old_main() {
+// 	const panelStore = new AuthPanelStore()
 
-	preact.render(
-		<AuthPanel {...{
-			panelStore,
-			handleUserLogin: () => {
-				debug(`handleUserLogin`)
-				authMachine.promptUserLogin()
-			},
-			handleUserLogout: () => {
-				debug(`handleUserLogout`)
-				authMachine.logout()
-			}
-		}}/>,
-		null,
-		document.querySelector(".auth-panel")
-	)
+// 	preact.render(
+// 		<AuthPanel {...{
+// 			panelStore,
+// 			handleUserLogin: () => {
+// 				debug(`handleUserLogin`)
+// 				authMachine.promptUserLogin()
+// 			},
+// 			handleUserLogout: () => {
+// 				debug(`handleUserLogout`)
+// 				authMachine.logout()
+// 			}
+// 		}}/>,
+// 		null,
+// 		document.querySelector(".auth-panel")
+// 	)
 
-	const authMachine = new AuthMachine({
-		tokenApi: {
-			async obtainAccessToken() {
-				debug(`obtainAccessToken`)
-				return "a123"
-			},
-			async clearTokens() {
-				debug(`clearTokens`)
-				return null
-			}
-		},
-		loginApi: {
-			async userLoginRoutine() {
-				debug(`userLoginRoutine`)
-				return "a123"
-			}
-		},
-		verifyAndReadAccessToken: () => {
-			debug(`verifyAndReadAccessToken`)
-			return {
-				name: "Chase Moskal",
-				profilePicture: "chase.jpg"
-			}
-		},
-		updateUserProfile: (userProfile: UserProfile) =>
-			panelStore.setUserProfile(userProfile)
-	})
+// 	const authMachine = new AuthMachine({
+// 		tokenApi: {
+// 			async obtainAccessToken() {
+// 				debug(`obtainAccessToken`)
+// 				return "a123"
+// 			},
+// 			async clearTokens() {
+// 				debug(`clearTokens`)
+// 				return null
+// 			}
+// 		},
+// 		loginApi: {
+// 			async userLoginRoutine() {
+// 				debug(`userLoginRoutine`)
+// 				return "a123"
+// 			}
+// 		},
+// 		verifyAndReadAccessToken: () => {
+// 			debug(`verifyAndReadAccessToken`)
+// 			return {
+// 				name: "Chase Moskal",
+// 				profilePicture: "chase.jpg"
+// 			}
+// 		},
+// 		updateUserProfile: (userProfile: UserProfile) =>
+// 			panelStore.setUserProfile(userProfile)
+// 	})
 
-	authMachine.passiveAuth()
+// 	authMachine.passiveAuth()
 
-	console.log("🤖")
-}
+// 	console.log("🤖")
+// }

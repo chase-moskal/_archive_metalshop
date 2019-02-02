@@ -1,20 +1,20 @@
 
-import {LoginApi} from "../interfaces"
+import {LoginApi} from "./interfaces"
 
-import {AuthUpdateAccessToken} from "./prep-auth-update-access-token"
+import {AuthHandleAccessToken} from "./prep-auth-handle-access-token"
 
 export const prepAuthPromptUserLogin = (context: {
 	loginApi: LoginApi
-	authUpdateAccessToken: AuthUpdateAccessToken
+	authHandleAccessToken: AuthHandleAccessToken
 }) =>
 
 async function authPassiveCheck() {
 	try {
 		const accessToken = await context.loginApi.userLoginRoutine()
-		context.authUpdateAccessToken(accessToken)
+		context.authHandleAccessToken(accessToken)
 	}
 	catch (error) {
-		context.authUpdateAccessToken(undefined)
+		context.authHandleAccessToken(undefined)
 		throw error
 	}
 }

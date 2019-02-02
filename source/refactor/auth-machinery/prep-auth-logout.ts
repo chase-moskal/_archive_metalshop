@@ -1,14 +1,14 @@
 
-import {TokenApi} from "../interfaces"
+import {TokenApi} from "./interfaces"
 
-import {AuthUpdateAccessToken} from "./prep-auth-update-access-token"
+import {AuthHandleAccessToken} from "./prep-auth-handle-access-token"
 
 export const prepAuthLogout = (context: {
 	tokenApi: TokenApi
-	authUpdateAccessToken: AuthUpdateAccessToken
+	authHandleAccessToken: AuthHandleAccessToken
 }) =>
 
 async function authLogout() {
 	await context.tokenApi.clearTokens()
-	context.authUpdateAccessToken(undefined)
+	context.authHandleAccessToken(undefined)
 }

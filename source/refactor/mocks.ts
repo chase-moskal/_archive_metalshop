@@ -1,5 +1,6 @@
 
-import {LoginApi, TokenApi, UserProfile} from "./interfaces"
+import {AccessData} from "./interfaces"
+import {LoginApi, TokenApi} from "./auth-machinery/interfaces"
 
 export interface Mockups<T> {
 	[mock: string]: T
@@ -24,7 +25,7 @@ export const mocks = {
 			async clearTokens() { return null }
 		}
 	},
-	verifyAndReadAccessToken: <Mockups<() => UserProfile>>{
+	verifyAndReadAccessToken: <Mockups<() => AccessData>>{
 		goodUserProfile: () => ({
 			name: "Chase Moskal",
 			profilePicture: "chase.jpg"

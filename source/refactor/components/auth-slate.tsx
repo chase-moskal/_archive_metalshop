@@ -1,22 +1,8 @@
 
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
-import {observable, action} from "mobx"
 
-import {UserProfile} from "../interfaces"
-
-export class AuthSlateStore {
-	@observable loggedIn: boolean
-	@observable userProfile: UserProfile
-
-	@action setLoggedIn(loggedIn: boolean) {
-		this.loggedIn = loggedIn
-	}
-
-	@action setUserProfile(userProfile: UserProfile) {
-		this.userProfile = userProfile
-	}
-}
+import {AuthSlateStore} from "../stores/auth-slate-store"
 
 @observer
 export class AuthSlate extends Component<{
