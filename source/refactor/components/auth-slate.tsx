@@ -1,35 +1,42 @@
 
 import {h, Component} from "preact"
-import {observer} from "mobx-preact"
+import {observable, action} from "mobx"
 
-import {AuthStoreShape} from "../interfaces"
+import {UserProfile} from "../interfaces"
 
-@observer
-export default class AuthSlate extends Component<{
-	authStore: AuthStoreShape
-	userClickLogin: () => void
-	userClickLogout: () => void
+export class AuthSlateStore {
+	@observable loggedIn: boolean
+	@observable userProfile: UserProfile
+
+	@action setLoggedIn(loggedIn: boolean) {
+		this.loggedIn = loggedIn
+	}
+
+	@action setUserProfile(userProfile: UserProfile) {
+		this.userProfile = userProfile
+	}
+}
+
+export class AuthSlate extends Component<{
+	slateStore: AuthSlateStore
+	handleUserLogin: () => void
+	handleUserLogout: () => void
 }> {
 
 	render() {
-		const {authStore} = this.props
-		if (authStore.open) {
-			return authStore.loggedIn
-				? this.renderSlateLoggedIn()
-				: this.renderSlateLoggedOut()
-		}
-		else {
-			return null
-		}
+		const {slateStore} = this.props
+		return slateStore.loggedIn
+			? this.renderSlateLoggedIn()
+			: this.renderSlateLoggedOut()
 	}
 
 	private renderSlateLoggedOut() {
-		const {userClickLogin} = this.props
+		const {handleUserLogin} = this.props
 		return (
 			<div className="auth-slate loggedout">
 				<button
 					className="auth-login-button"
-					onClick={userClickLogin}>
+					onClick={handleUserLogin}>
 						Login
 				</button>
 			</div>
@@ -37,14 +44,15 @@ export default class AuthSlate extends Component<{
 	}
 
 	private renderSlateLoggedIn() {
-		const {userClickLogout} = this.props
+		const {handleUserLogout} = this.props
 		return (
 			<div className="auth-slate loggedin">
 				<button
-					className="auth-login-button"
-					onClick={userClickLogout}>
-						Login
+					className="auth-logout-button"
+					onClick={handleUserLogout}>
+						Logout
 				</button>
+				{this.props.children}
 			</div>
 		)
 	}

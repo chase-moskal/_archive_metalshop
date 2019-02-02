@@ -2,23 +2,24 @@
 import {h} from "preact"
 import * as preact from "preact"
 
+import {AuthPanelStore} from "./components/auth-panel"
+
 import {
 	AccessToken,
-	AuthStoreShape,
 	AuthMachineShape,
-	TokenDragonShape,
-	LoginKangarooShape
+	TokenApi,
+	LoginApi,
+	UserProfile
 } from "./interfaces"
 
 export interface AuthMachineContext {
-	authStore: AuthStoreShape
-	tokenDragon: TokenDragonShape
-	loginKangaroo: LoginKangarooShape
+	panelStore: AuthPanelStore
+	tokenApi: TokenApi
+	loginApi: LoginApi
 }
 
 export class AuthMachine implements AuthMachineShape {
 	private readonly context: AuthMachineContext
-	private accessToken: string
 
 	constructor(context: AuthMachineContext) {
 		this.context = context
@@ -34,38 +35,46 @@ export class AuthMachine implements AuthMachineShape {
 	}
 
 	async passiveAuth(): Promise<void> {
-		const {tokenDragon} = this.context
+		const {tokenApi} = this.context
 		try {
-			const accessToken = await tokenDragon.getAccessToken()
-			this.updateToLoggedIn(accessToken)
+			const accessToken = await tokenApi.obtainAccessToken()
+			this.updateAccessToken(accessToken)
 		}
 		catch (error) {
-			this.updateToLoggedOut()
+			this.updateAccessToken(undefined)
 			throw error
 		}
 	}
 
 	async userPromptLogin(): Promise<void> {
-		const {loginKangaroo} = this.context
+		const {loginApi} = this.context
 		try {
-			const accessToken = await loginKangaroo.waitForAccessToken()
-			this.updateToLoggedIn(accessToken)
+			const accessToken = await loginApi.userLoginRoutine()
+			this.updateAccessToken(accessToken)
 		}
 		catch (error) {
-			this.updateToLoggedOut()
+			this.updateAccessToken(undefined)
 			throw error
 		}
 		return
 	}
 
-	private updateToLoggedIn(accessToken: AccessToken) {
-		const {authStore} = this.context
-		// TODO verify and read access token
-		authStore.setLoggedIn({name: "chase moskal", profilePicture: "pic.jpg"})
+	private updateAccessToken(accessToken: AccessToken | undefined) {
+		const {panelStore} = this.context
+		if (accessToken) {
+			const userProfile = this.verifyAndReadAccessToken(accessToken)
+			panelStore.setUserProfile(userProfile)
+		}
+		else {
+			panelStore.setUserProfile(undefined)
+		}
 	}
 
-	private updateToLoggedOut() {
-		const {authStore} = this.context
-		authStore.setLoggedOut()
+	private verifyAndReadAccessToken(accessToken: AccessToken): UserProfile {
+		// TODO
+		return {
+			name: "Chase Moskal",
+			profilePicture: "chase.jpg"
+		}
 	}
 }

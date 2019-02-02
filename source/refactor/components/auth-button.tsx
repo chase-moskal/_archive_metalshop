@@ -2,20 +2,18 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import {AuthStoreShape} from "../interfaces"
-
 @observer
-export default class AuthButton extends Component<{authStore: AuthStoreShape}> {
+export class AuthButton extends Component<{
+	handleClick: () => void
+}> {
 
 	render() {
 		return (
 			<button
 				className="auth-button"
 				tabIndex={0}
-				onClick={this.handleClick}>
+				onClick={this.props.handleClick}>
 			</button>
 		)
 	}
-
-	private readonly handleClick = () => this.props.authStore.toggleOpen()
 }
