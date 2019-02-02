@@ -1,13 +1,13 @@
 
 import {consoleCurry} from "../console-curry"
-import {DecodeAccessToken} from "../interfaces"
 import {AuthPanelStore} from "../stores/auth-panel-store"
-import {TokenApi, LoginApi} from "../auth-machinery/interfaces"
 import {prepAuthLogout} from "../auth-machinery/prep-auth-logout"
 import {prepAuthPassiveCheck} from "../auth-machinery/prep-auth-passive-check"
 import {prepAuthPromptUserLogin} from "../auth-machinery/prep-auth-prompt-user-login"
 import {prepAuthHandleAccessToken} from "../auth-machinery/prep-auth-handle-access-token"
+
 import {renderAuthPanel} from "./render-auth-panel"
+import {InstallAuthMachineryOptions} from "./interfaces"
 
 const debug = consoleCurry({
 	tag: "install-auth-machinery",
@@ -19,12 +19,7 @@ export async function installAuthMachinery({
 	loginApi,
 	decodeAccessToken,
 	panelStore = new AuthPanelStore()
-}: {
-	tokenApi: TokenApi
-	loginApi: LoginApi
-	decodeAccessToken: DecodeAccessToken
-	panelStore?: AuthPanelStore
-}) {
+}: InstallAuthMachineryOptions) {
 
 	// create auth token handler to decode token and provide it to the ui
 	const authHandleAccessToken = prepAuthHandleAccessToken({

@@ -3,7 +3,7 @@ import {h} from "preact"
 import * as preact from "preact"
 
 import {AuthPanel} from "../components/auth-panel"
-import {AuthPanelProps} from "../components/interfaces"
+import {RenderAuthPanelOptions} from "./interfaces"
 
 export function renderAuthPanel({
 	element,
@@ -21,8 +21,4 @@ export function renderAuthPanel({
 	)
 
 	preact.render(tsx, null, element)
-}
-
-export interface RenderAuthPanelOptions extends AuthPanelProps {
-	element: Element
 }

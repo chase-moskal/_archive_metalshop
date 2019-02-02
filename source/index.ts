@@ -7,4 +7,5 @@ export * from "./auth-machinery/prep-auth-logout";
 export * from "./auth-machinery/prep-auth-passive-check";
 export * from "./auth-machinery/prep-auth-prompt-user-login";
 export * from "./top-level/install-auth-machinery";
+export * from "./top-level/interfaces";
 export * from "./top-level/render-auth-panel";
