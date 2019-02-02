@@ -7,6 +7,12 @@ import {AuthButton} from "./auth-button"
 import {AuthSlate, AuthSlateStore} from "./auth-slate"
 
 import {UserProfile} from "../interfaces"
+import {consoleCurry} from "../console-curry"
+
+const info = consoleCurry({
+	tag: "auth-panel",
+	consoleFunction: console.info
+})
 
 export class AuthPanelStore {
 	@observable open: boolean = false
@@ -23,6 +29,13 @@ export class AuthPanelStore {
 		// replicating changes into the slate store
 		autorun(() => slateStore.setLoggedIn(this.loggedIn))
 		autorun(() => slateStore.setUserProfile(this.userProfile))
+
+		// log whenever user logs in or out
+		autorun(() => {
+			const {userProfile} = slateStore
+			if (userProfile) info(`logged in as "${userProfile.name}"`)
+			else info(`logged out`)
+		})
 	}
 
 	@action toggleOpen(value?: boolean): boolean {
@@ -51,9 +64,13 @@ export class AuthPanel extends Component<{
 		return (
 			<div className="authoritarian auth-panel">
 				<AuthButton handleClick={this.handleButtonClick}/>
-				<AuthSlate {...{slateStore, handleUserLogin, handleUserLogout}}>
-					{this.props.children}
-				</AuthSlate>
+				{panelStore.open
+					? (
+						<AuthSlate {...{slateStore, handleUserLogin, handleUserLogout}}>
+							{this.props.children}
+						</AuthSlate>
+					)
+					: null}
 			</div>
 		)
 	}

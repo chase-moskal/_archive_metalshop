@@ -1,41 +1,32 @@
 
-import {h} from "preact"
-import * as preact from "preact"
-
 import {AuthPanelStore} from "./components/auth-panel"
 
 import {
-	AccessToken,
-	AuthMachineShape,
 	TokenApi,
 	LoginApi,
-	UserProfile
+	AccessToken,
+	UserProfile,
+	AuthMachineShape
 } from "./interfaces"
 
 export interface AuthMachineContext {
 	panelStore: AuthPanelStore
 	tokenApi: TokenApi
 	loginApi: LoginApi
+	verifyAndReadAccessToken: (accessToken: AccessToken) => UserProfile
 }
 
 export class AuthMachine implements AuthMachineShape {
 	private readonly context: AuthMachineContext
+	get panelStore() { return this.context.panelStore }
 
 	constructor(context: AuthMachineContext) {
 		this.context = context
 	}
 
-	renderPanel(element: Element): Element {
-		const newElement = preact.render(
-			<div/>,
-			null,
-			element
-		)
-		return newElement
-	}
-
 	async passiveAuth(): Promise<void> {
 		const {tokenApi} = this.context
+
 		try {
 			const accessToken = await tokenApi.obtainAccessToken()
 			this.updateAccessToken(accessToken)
@@ -48,6 +39,7 @@ export class AuthMachine implements AuthMachineShape {
 
 	async userPromptLogin(): Promise<void> {
 		const {loginApi} = this.context
+
 		try {
 			const accessToken = await loginApi.userLoginRoutine()
 			this.updateAccessToken(accessToken)
@@ -56,25 +48,26 @@ export class AuthMachine implements AuthMachineShape {
 			this.updateAccessToken(undefined)
 			throw error
 		}
+
 		return
 	}
 
+	async logout(): Promise<void> {
+		const {tokenApi} = this.context
+
+		await tokenApi.clearTokens()
+		this.updateAccessToken(undefined)
+	}
+
 	private updateAccessToken(accessToken: AccessToken | undefined) {
-		const {panelStore} = this.context
+		const {panelStore, verifyAndReadAccessToken} = this.context
+
 		if (accessToken) {
-			const userProfile = this.verifyAndReadAccessToken(accessToken)
+			const userProfile = verifyAndReadAccessToken(accessToken)
 			panelStore.setUserProfile(userProfile)
 		}
 		else {
 			panelStore.setUserProfile(undefined)
-		}
-	}
-
-	private verifyAndReadAccessToken(accessToken: AccessToken): UserProfile {
-		// TODO
-		return {
-			name: "Chase Moskal",
-			profilePicture: "chase.jpg"
 		}
 	}
 }

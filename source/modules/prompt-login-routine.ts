@@ -3,7 +3,7 @@ import * as crosscall from "crosscall"
 
 import {AuthTokens} from "./interfaces"
 
-import consoleCurry from "./console-curry"
+import {consoleCurry} from "./console-curry"
 const debug = consoleCurry({
 	consoleFunction: console.debug,
 	tag: "prompt-login-routine"

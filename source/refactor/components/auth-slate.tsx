@@ -1,5 +1,6 @@
 
 import {h, Component} from "preact"
+import {observer} from "mobx-preact"
 import {observable, action} from "mobx"
 
 import {UserProfile} from "../interfaces"
@@ -17,6 +18,7 @@ export class AuthSlateStore {
 	}
 }
 
+@observer
 export class AuthSlate extends Component<{
 	slateStore: AuthSlateStore
 	handleUserLogin: () => void

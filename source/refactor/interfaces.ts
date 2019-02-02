@@ -1,4 +1,5 @@
 import { AuthSlateStore } from "./components/auth-slate";
+import { AuthPanelStore } from "./components/auth-panel";
 
 /////////// AUTH-SERVER ////////////
 ///////////////////////////////////
@@ -14,6 +15,8 @@ export interface TokenApi {
 	obtainAccessToken(): Promise<AccessToken>
 		// checks local storage and/or calls authorize
 		// saves and returns the access token
+	clearTokens(): Promise<void>
+		// clear all local tokens as a part of a logout routine
 }
 
 // login crosscall popup api
@@ -28,8 +31,8 @@ export interface LoginApi {
 ////////////////////////////////////////////
 
 export interface AuthMachineShape {
-	renderPanel(element: Element): void
-		// render the ui components into the dom
+	panelStore: AuthPanelStore
+		// provide access to mobx store to render a ui
 	passiveAuth(): Promise<void>
 		// crosscalls tokenApi.obtainAccessToken()
 		// stores access token in authstore

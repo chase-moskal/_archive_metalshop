@@ -1,7 +1,7 @@
 
 import {TokenStorageOptions, AuthTokens} from "./interfaces"
 
-import consoleCurry from "./console-curry"
+import {consoleCurry} from "./console-curry"
 const debug = consoleCurry({
 	consoleFunction: console.debug,
 	tag: "token-storage"

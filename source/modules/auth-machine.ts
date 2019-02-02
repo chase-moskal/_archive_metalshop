@@ -10,7 +10,7 @@ import {
 
 import AuthStore from "../stores/auth-store"
 
-import consoleCurry from "./console-curry"
+import {consoleCurry} from "./console-curry"
 const debug = consoleCurry({
 	consoleFunction: console.debug,
 	tag: "auth-machine"
