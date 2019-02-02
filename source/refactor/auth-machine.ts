@@ -1,32 +1,21 @@
 
-import {AuthPanelStore} from "./components/auth-panel"
-
 import {
-	TokenApi,
-	LoginApi,
 	AccessToken,
-	UserProfile,
-	AuthMachineShape
+	AuthMachineShape,
+	AuthMachineContext
 } from "./interfaces"
-
-export interface AuthMachineContext {
-	panelStore: AuthPanelStore
-	tokenApi: TokenApi
-	loginApi: LoginApi
-	verifyAndReadAccessToken: (accessToken: AccessToken) => UserProfile
-}
 
 export class AuthMachine implements AuthMachineShape {
 	private readonly context: AuthMachineContext
-	get panelStore() { return this.context.panelStore }
-
 	constructor(context: AuthMachineContext) {
 		this.context = context
 	}
 
+	/**
+	 * Passively check the token api, to get an access token
+	 */
 	async passiveAuth(): Promise<void> {
 		const {tokenApi} = this.context
-
 		try {
 			const accessToken = await tokenApi.obtainAccessToken()
 			this.updateAccessToken(accessToken)
@@ -37,9 +26,11 @@ export class AuthMachine implements AuthMachineShape {
 		}
 	}
 
-	async userPromptLogin(): Promise<void> {
+	/**
+	 * Prompt the user with a login routine, to get an access token
+	 */
+	async promptUserLogin(): Promise<void> {
 		const {loginApi} = this.context
-
 		try {
 			const accessToken = await loginApi.userLoginRoutine()
 			this.updateAccessToken(accessToken)
@@ -48,26 +39,27 @@ export class AuthMachine implements AuthMachineShape {
 			this.updateAccessToken(undefined)
 			throw error
 		}
-
 		return
 	}
 
+	/**
+	 * Log the user out
+	 */
 	async logout(): Promise<void> {
 		const {tokenApi} = this.context
-
 		await tokenApi.clearTokens()
 		this.updateAccessToken(undefined)
 	}
 
+	// decode user profile from the token and set on the panel store
 	private updateAccessToken(accessToken: AccessToken | undefined) {
-		const {panelStore, verifyAndReadAccessToken} = this.context
-
+		const {verifyAndReadAccessToken, updateUserProfile} = this.context
 		if (accessToken) {
 			const userProfile = verifyAndReadAccessToken(accessToken)
-			panelStore.setUserProfile(userProfile)
+			updateUserProfile(userProfile)
 		}
 		else {
-			panelStore.setUserProfile(undefined)
+			updateUserProfile(undefined)
 		}
 	}
 }

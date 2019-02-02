@@ -1,5 +1,6 @@
 import { AuthSlateStore } from "./components/auth-slate";
 import { AuthPanelStore } from "./components/auth-panel";
+import promptLoginRoutine from "source/modules/prompt-login-routine";
 
 /////////// AUTH-SERVER ////////////
 ///////////////////////////////////
@@ -31,35 +32,32 @@ export interface LoginApi {
 ////////////////////////////////////////////
 
 export interface AuthMachineShape {
-	panelStore: AuthPanelStore
-		// provide access to mobx store to render a ui
-	passiveAuth(): Promise<void>
-		// crosscalls tokenApi.obtainAccessToken()
-		// stores access token in authstore
-	userPromptLogin(): Promise<void>
-		// crosscalls loginApi.userLoginRoutine()
-		// stores access token in authstore
+	passiveAuth(): Promise<void> // tokenApi.obtainAccessToken()
+	logout(): Promise<void> // tokenApi.clearTokens()
+	promptUserLogin(): Promise<void> // loginApi.userLoginRoutine()
 }
 
 ////////////////////////////
 
 export type AccessToken = string
 export type RefreshToken = string
+
 export interface AuthTokens {
 	accessToken: AccessToken
 	refreshToken: RefreshToken
 }
 
-// export interface AuthPanelStoreShape {
-// 	open: boolean
-// 	loggedIn: boolean
-// 	userProfile: UserProfile
-// 	toggleOpen(value?: boolean): boolean
-// 	setLoggedIn(userProfile: UserProfile): void
-// 	setLoggedOut(): void
-// }
-
 export interface UserProfile {
 	name: string
 	profilePicture: string
+}
+
+export type UpdateUserProfile = (userProfile: UserProfile) => void
+export type VerifyAndReadAccessToken = (accessToken: AccessToken) => UserProfile
+
+export interface AuthMachineContext {
+	tokenApi: TokenApi
+	loginApi: LoginApi
+	updateUserProfile: UpdateUserProfile
+	verifyAndReadAccessToken: VerifyAndReadAccessToken
 }
