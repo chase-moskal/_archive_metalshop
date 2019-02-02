@@ -4,13 +4,13 @@ import {AccessData} from "../interfaces"
 
 export class AuthSlateStore {
 	@observable loggedIn: boolean
-	@observable userProfile: AccessData
+	@observable accessData: AccessData
 
 	@action setLoggedIn(loggedIn: boolean) {
 		this.loggedIn = loggedIn
 	}
 
 	@action setUserProfile(userProfile: AccessData) {
-		this.userProfile = userProfile
+		this.accessData = userProfile
 	}
 }

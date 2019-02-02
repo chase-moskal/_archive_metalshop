@@ -2,8 +2,8 @@
 import {h} from "preact"
 import * as preact from "preact"
 
-import {AuthPanelProps} from "./components/interfaces"
-import {AuthPanel} from "./components/auth-panel"
+import {AuthPanel} from "../components/auth-panel"
+import {AuthPanelProps} from "../components/interfaces"
 
 export function renderAuthPanel({
 	element,

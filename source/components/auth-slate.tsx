@@ -2,36 +2,29 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import AuthMachine from "../modules/auth-machine"
+import {AuthSlateStore} from "../stores/auth-slate-store"
 
 @observer
-export default class AuthSlate extends Component<{authMachine: AuthMachine}> {
+export class AuthSlate extends Component<{
+	slateStore: AuthSlateStore
+	handleUserLogin: () => void
+	handleUserLogout: () => void
+}> {
 
 	render() {
-		const {authStore} = this.props.authMachine
-
-		if (authStore.open) {
-			return authStore.loggedIn
-				? this.renderSlateLoggedIn()
-				: this.renderSlateLoggedOut()
-		}
-		else {
-			return null
-		}
-	}
-
-	private handleClickLoginButton = async() => {
-		const {authMachine} = this.props
-		await authMachine.auth()
+		const {slateStore} = this.props
+		return slateStore.loggedIn
+			? this.renderSlateLoggedIn()
+			: this.renderSlateLoggedOut()
 	}
 
 	private renderSlateLoggedOut() {
-		const {handleClickLoginButton} = this
+		const {handleUserLogin} = this.props
 		return (
 			<div className="auth-slate loggedout">
 				<button
 					className="auth-login-button"
-					onClick={handleClickLoginButton}>
+					onClick={handleUserLogin}>
 						Login
 				</button>
 			</div>
@@ -39,9 +32,15 @@ export default class AuthSlate extends Component<{authMachine: AuthMachine}> {
 	}
 
 	private renderSlateLoggedIn() {
+		const {handleUserLogout} = this.props
 		return (
 			<div className="auth-slate loggedin">
-				(button to sign out)
+				<button
+					className="auth-logout-button"
+					onClick={handleUserLogout}>
+						Logout
+				</button>
+				{this.props.children}
 			</div>
 		)
 	}

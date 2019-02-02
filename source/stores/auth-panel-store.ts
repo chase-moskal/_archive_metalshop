@@ -13,12 +13,12 @@ const info = consoleCurry({
 
 export class AuthPanelStore {
 	@observable open: boolean = false
-	@observable userProfile: AccessData
+	@observable accessData: AccessData
 	@observable slateStore: AuthSlateStore = new AuthSlateStore()
 	@observable buttonStore: AuthButtonStore = new AuthButtonStore()
 
 	@computed get loggedIn(): boolean {
-		return !!this.userProfile
+		return !!this.accessData
 	}
 
 	constructor() {
@@ -26,11 +26,11 @@ export class AuthPanelStore {
 
 		// replicating changes into the slate store
 		autorun(() => slateStore.setLoggedIn(this.loggedIn))
-		autorun(() => slateStore.setUserProfile(this.userProfile))
+		autorun(() => slateStore.setUserProfile(this.accessData))
 
 		// log whenever user logs in or out
 		autorun(() => {
-			const {userProfile} = slateStore
+			const {accessData: userProfile} = slateStore
 			if (userProfile) info(`logged in as "${userProfile.name}"`)
 			else info(`logged out`)
 		})
@@ -44,7 +44,7 @@ export class AuthPanelStore {
 		return this.open
 	}
 
-	@action setUserProfile(userProfile: AccessData): void {
-		this.userProfile = userProfile
+	@action setAccessData(data: AccessData): void {
+		this.accessData = data
 	}
 }

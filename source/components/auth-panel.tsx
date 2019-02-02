@@ -2,21 +2,30 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import AuthSlate from "./auth-slate"
-import AuthButton from "./auth-button"
-
-import AuthMachine from "../modules/auth-machine"
+import {AuthSlate} from "./auth-slate"
+import {AuthButton} from "./auth-button"
+import {AuthPanelProps} from "./interfaces"
 
 @observer
-export default class AuthPanel extends Component<{authMachine: AuthMachine}> {
+export class AuthPanel extends Component<AuthPanelProps> {
+
 	render() {
-		const {authMachine} = this.props
-		const {authStore} = authMachine
+		const {handleButtonClick} = this
+		const {panelStore, handleUserLogin, handleUserLogout} = this.props
+		const {slateStore, buttonStore} = panelStore
 		return (
 			<div className="authoritarian auth-panel">
-				<AuthButton {...{authStore}}/>
-				<AuthSlate {...{authMachine}}/>
+				<AuthButton {...{buttonStore, handleButtonClick}}/>
+				{panelStore.open
+					? (
+						<AuthSlate {...{slateStore, handleUserLogin, handleUserLogout}}>
+							{this.props.children}
+						</AuthSlate>
+					)
+					: null}
 			</div>
 		)
 	}
+
+	private readonly handleButtonClick = () => this.props.panelStore.toggleOpen()
 }
