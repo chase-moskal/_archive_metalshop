@@ -33,7 +33,7 @@ async function main() {
 		},
 
 		decodeAccessToken: () => {
-			debug(`verifyAndReadAccessToken`)
+			debug(`decodeAccessToken`)
 			return {
 				name: "Chase Moskal",
 				profilePicture: "chase.jpg"

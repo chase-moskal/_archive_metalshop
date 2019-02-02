@@ -1,6 +1,6 @@
 
 import {observable, action} from "mobx"
-import {AccessData} from "../interfaces"
+import {AccessData} from "../auth-machinery/interfaces"
 
 export class AuthSlateStore {
 	@observable loggedIn: boolean

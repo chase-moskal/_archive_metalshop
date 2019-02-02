@@ -22,15 +22,15 @@ export async function installAuthMachinery({
 }: InstallAuthMachineryOptions) {
 
 	// create auth token handler to decode token and provide it to the ui
-	const authHandleAccessToken = prepAuthHandleAccessToken({
+	const {authHandleAccessToken} = prepAuthHandleAccessToken({
 		decodeAccessToken,
 		handleAccessData: profile => panelStore.setAccessData(profile),
 	})
 
 	// wire up auth functions
-	const authLogout = prepAuthLogout({tokenApi, authHandleAccessToken})
-	const authPassiveCheck = prepAuthPassiveCheck({tokenApi, authHandleAccessToken})
-	const authPromptUserLogin = prepAuthPromptUserLogin({loginApi, authHandleAccessToken})
+	const {authLogout} = prepAuthLogout({tokenApi, authHandleAccessToken})
+	const {authPassiveCheck} = prepAuthPassiveCheck({tokenApi, authHandleAccessToken})
+	const {authPromptUserLogin} = prepAuthPromptUserLogin({loginApi, authHandleAccessToken})
 
 	// render the auth panel and react using the auth machinery
 	renderAuthPanel({

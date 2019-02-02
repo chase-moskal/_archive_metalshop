@@ -1,5 +1,7 @@
 
-import {RefreshToken, AccessToken, AuthTokens} from "../interfaces"
+//
+// AUTH SERVER
+//
 
 // auth renraku api
 export interface AuthApi {
@@ -23,3 +25,25 @@ export interface LoginApi {
 		// save both tokens
 		// return the access token
 }
+
+//
+// CLIENT
+//
+
+export type AuthHandleAccessToken = (accessToken?: AccessToken) => void
+
+export type AccessToken = string
+export type RefreshToken = string
+
+export interface AuthTokens {
+	accessToken: AccessToken
+	refreshToken: RefreshToken
+}
+
+export interface AccessData {
+	name: string
+	profilePicture: string
+}
+
+export type HandleAccessData = (accessData: AccessData) => void
+export type DecodeAccessToken = (accessToken: AccessToken) => AccessData

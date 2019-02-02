@@ -1,8 +1,8 @@
 
 import {observable, action, autorun, computed} from "mobx"
 
-import {AccessData} from "../interfaces"
 import {consoleCurry} from "../console-curry"
+import {AccessData} from "../auth-machinery/interfaces"
 import {AuthSlateStore} from "../stores/auth-slate-store"
 import {AuthButtonStore} from "../stores/auth-button-store"
 
