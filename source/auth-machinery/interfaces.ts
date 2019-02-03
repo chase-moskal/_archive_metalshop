@@ -47,3 +47,10 @@ export interface AccessData {
 
 export type HandleAccessData = (accessData: AccessData) => void
 export type DecodeAccessToken = (accessToken: AccessToken) => AccessData
+
+export interface PrepAuthMachineryOptions {
+	tokenApi: TokenApi
+	loginApi: LoginApi
+	handleAccessData: HandleAccessData
+	decodeAccessToken: DecodeAccessToken
+}

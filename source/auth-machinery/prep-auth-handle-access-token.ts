@@ -9,16 +9,14 @@ import {
 export const prepAuthHandleAccessToken = (context: {
 	handleAccessData: HandleAccessData
 	decodeAccessToken: DecodeAccessToken
-}): {authHandleAccessToken: AuthHandleAccessToken} => ({
+}): AuthHandleAccessToken =>
 
-	authHandleAccessToken(accessToken?: AccessToken) {
-		if (accessToken) {
-			const userProfile = context.decodeAccessToken(accessToken)
-			context.handleAccessData(userProfile)
-		}
-		else {
-			context.handleAccessData(undefined)
-		}
+function authHandleAccessToken(accessToken?: AccessToken) {
+	if (accessToken) {
+		const userProfile = context.decodeAccessToken(accessToken)
+		context.handleAccessData(userProfile)
 	}
-})
-
+	else {
+		context.handleAccessData(undefined)
+	}
+}

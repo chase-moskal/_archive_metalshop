@@ -1,7 +1,7 @@
 
 import {consoleCurry} from "./console-curry"
 import {AuthPanelStore} from "./stores/auth-panel-store"
-import {installAuthMachinery} from "./top-level/install-auth-machinery"
+import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
 
 const debug = consoleCurry({
 	tag: "main",
@@ -11,7 +11,9 @@ const debug = consoleCurry({
 main().catch(error => console.error(error))
 
 async function main() {
-	await installAuthMachinery({
+	await installAuthoritarianClient({
+		element: document.querySelector(".auth-panel"),
+
 		panelStore: new AuthPanelStore(),
 
 		tokenApi: {
