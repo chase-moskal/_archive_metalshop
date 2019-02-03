@@ -20,8 +20,8 @@ export const mocks = {
 			async clearTokens() { return null }
 		},
 		bad: <TokenApi>{
-			async obtainAccessToken() { return "a123" },
-			async clearTokens() { return null }
+			async obtainAccessToken() { throw new Error(`failed to obtain token`) },
+			async clearTokens() { throw new Error(`failed to clear tokens`) }
 		}
 	},
 	decodeAccessToken: {
