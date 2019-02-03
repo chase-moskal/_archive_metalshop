@@ -3,10 +3,10 @@ import {TokenApi, HandleAccessToken} from "./interfaces"
 
 export const prepLogout = (context: {
 	tokenApi: TokenApi
-	authHandleAccessToken: HandleAccessToken
+	handleAccessToken: HandleAccessToken
 }) =>
 
 async function logout() {
 	await context.tokenApi.clearTokens()
-	context.authHandleAccessToken(undefined)
+	context.handleAccessToken(undefined)
 }

@@ -20,7 +20,7 @@ export class AuthPanelStore {
 
 		// replicating changes into the slate store
 		autorun(() => slateStore.setLoggedIn(this.loggedIn))
-		autorun(() => slateStore.setUserProfile(this.accessData))
+		autorun(() => slateStore.setAccessData(this.accessData))
 	}
 
 	@action toggleOpen(value?: boolean): boolean {

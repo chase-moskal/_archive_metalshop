@@ -13,8 +13,8 @@ export const prepHandleAccessToken = (context: {
 
 function handleAccessToken(accessToken?: AccessToken) {
 	if (accessToken) {
-		const userProfile = context.decodeAccessToken(accessToken)
-		context.handleAccessData(userProfile)
+		const accessData = context.decodeAccessToken(accessToken)
+		context.handleAccessData(accessData)
 	}
 	else {
 		context.handleAccessData(undefined)

@@ -10,7 +10,7 @@ export class AuthSlateStore {
 		this.loggedIn = loggedIn
 	}
 
-	@action setUserProfile(userProfile: AccessData) {
-		this.accessData = userProfile
+	@action setAccessData(accessData: AccessData) {
+		this.accessData = accessData
 	}
 }

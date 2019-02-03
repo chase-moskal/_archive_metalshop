@@ -13,23 +13,14 @@ export function prepAuthMachinery({
 	decodeAccessToken
 }: PrepAuthMachineryOptions) {
 
-	const authHandleAccessToken = prepHandleAccessToken({
+	const handleAccessToken = prepHandleAccessToken({
 		handleAccessData,
 		decodeAccessToken
 	})
 
 	return {
-		logout: prepLogout({
-			tokenApi,
-			authHandleAccessToken
-		}),
-		passiveCheck: prepPassiveCheck({
-			tokenApi,
-			handleAccessToken: authHandleAccessToken
-		}),
-		promptUserLogin: prepPromptUserLogin({
-			loginApi,
-			handleAccessToken: authHandleAccessToken
-		})
+		logout: prepLogout({tokenApi, handleAccessToken}),
+		passiveCheck: prepPassiveCheck({tokenApi, handleAccessToken}),
+		promptUserLogin: prepPromptUserLogin({loginApi, handleAccessToken})
 	}
 }
