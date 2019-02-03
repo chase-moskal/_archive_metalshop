@@ -1,5 +1,5 @@
 
-import {LoginApi, TokenApi, DecodeAccessToken} from "./auth-machinery/interfaces"
+import {LoginApi, TokenApi, DecodeAccessToken} from "./interfaces"
 
 export interface Mockups<T> {
 	[mock: string]: T

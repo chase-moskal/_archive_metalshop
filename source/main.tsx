@@ -1,5 +1,5 @@
 
-import {consoleCurry} from "./console-curry"
+import {consoleCurry} from "./toolbox/console-curry"
 import {AuthPanelStore} from "./stores/auth-panel-store"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
 
