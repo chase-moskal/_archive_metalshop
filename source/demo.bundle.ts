@@ -1,6 +1,7 @@
 
 import {autorun} from "mobx"
 
+import {mocks} from "./auth-machinery/mocks"
 import {consoleCurry} from "./toolbox/console-curry"
 import {AuthPanelStore} from "./stores/auth-panel-store"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
@@ -36,18 +37,24 @@ async function demo() {
 		panelStore,
 		element: document.querySelector(".auth-panel"),
 		tokenApi: {
-			async obtainAccessToken() { debug(`obtainAccessToken`); return "a123" },
-			async clearTokens() { debug(`clearTokens`); return null }
+			async obtainAccessToken(...args) {
+				debug(`obtainAccessToken`)
+				return mocks.tokenApi.good.obtainAccessToken(...args)
+			},
+			async clearTokens(...args) {
+				debug(`clearTokens`)
+				return mocks.tokenApi.good.clearTokens(...args)
+			}
 		},
 		loginApi: {
-			async userLoginRoutine() { debug(`userLoginRoutine`); return "a123" }
-		},
-		decodeAccessToken: () => {
-			debug(`decodeAccessToken`)
-			return {
-				name: "Chase Moskal",
-				profilePicture: "chase.jpg"
+			async userLoginRoutine(...args) {
+				debug(`userLoginRoutine`)
+				return mocks.loginApi.good.userLoginRoutine(...args)
 			}
+		},
+		decodeAccessToken: (...args) => {
+			debug(`decodeAccessToken`)
+			return mocks.decodeAccessToken.good(...args)
 		}
 	})
 
