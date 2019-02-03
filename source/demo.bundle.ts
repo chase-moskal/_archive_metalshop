@@ -5,6 +5,7 @@ import {mocks} from "./auth-machinery/mocks"
 import {consoleCurry} from "./toolbox/console-curry"
 import {AuthPanelStore} from "./stores/auth-panel-store"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
+import { createAuthMachine } from "./top-level/create-auth-machine";
 
 const info = consoleCurry("main", console.info)
 const debug = consoleCurry("main", console.debug)
@@ -16,19 +17,8 @@ demo().catch(error => console.error(error))
  */
 async function demo() {
 
-	// create panel store which holds ui state
-	const panelStore = new AuthPanelStore()
-
-	// console log for whenever login/logout happens on the store
-	autorun(() => panelStore.accessData
-		? info(`logged in as "${panelStore.accessData.name}"`)
-		: info(`logged out`)
-	)
-
-	// install the client machinery and panel ui
-	await installAuthoritarianClient({
-		panelStore,
-		element: document.querySelector(".auth-panel"),
+	// create auth machine with mock functionality
+	const authMachine = createAuthMachine({
 		tokenApi: {
 			async obtainAccessToken(...args) {
 				debug(`obtainAccessToken`)
@@ -49,6 +39,18 @@ async function demo() {
 			debug(`decodeAccessToken`)
 			return mocks.decodeAccessToken(...args)
 		}
+	})
+
+	// console log for whenever login/logout happens on the store
+	autorun(() => authMachine.panelStore.accessData
+		? info(`logged in as "${authMachine.panelStore.accessData.name}"`)
+		: info(`logged out`)
+	)
+
+	// install the client machinery and panel ui
+	await installAuthoritarianClient({
+		element: document.querySelector(".auth-panel"),
+		authMachine
 	})
 
 	// demo script is done

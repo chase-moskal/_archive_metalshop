@@ -1,6 +1,6 @@
 
 import {AuthPanelStore} from "../stores/auth-panel-store"
-import {prepAuthMachinery} from "../auth-machinery/prep-auth-machinery"
+import {createAuthMachine} from "./create-auth-machine"
 
 import {renderAuthPanel} from "./render-auth-panel"
 import {InstallAuthoritarianClientOptions} from "./interfaces"
@@ -12,10 +12,7 @@ import {InstallAuthoritarianClientOptions} from "./interfaces"
  */
 export async function installAuthoritarianClient({
 	element,
-	tokenApi,
-	loginApi,
-	decodeAccessToken,
-	panelStore = new AuthPanelStore()
+	authMachine
 }: InstallAuthoritarianClientOptions) {
 
 	//
@@ -25,15 +22,10 @@ export async function installAuthoritarianClient({
 
 	const {
 		logout,
+		panelStore,
 		passiveCheck,
 		promptUserLogin
-	} = prepAuthMachinery({
-		tokenApi,
-		loginApi,
-		decodeAccessToken,
-		handleAccessData: data => // keep store updated
-			panelStore.setAccessData(data)
-	})
+	} = authMachine
 
 	//
 	// render panel ui component on page
@@ -43,8 +35,8 @@ export async function installAuthoritarianClient({
 	renderAuthPanel({
 		element,
 		panelStore,
-		handleUserLogout: () => logout(), // perform auth actions
-		handleUserLogin: () => promptUserLogin()
+		handleUserLogout: logout, // perform auth actions
+		handleUserLogin: promptUserLogin
 	})
 
 	//

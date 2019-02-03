@@ -1,4 +1,6 @@
 
+import {AuthPanelStore} from "source/stores/auth-panel-store"
+
 /////////////////////////
 ////// AUTH SERVER //////
 /////////////////////////
@@ -60,15 +62,3 @@ export type HandleAccessData = (accessData: AccessData) => void
 
 /** Decode access data out of an access token */
 export type DecodeAccessToken = (accessToken: AccessToken) => AccessData
-
-/** Services which control auth machinery processes */
-export interface PrepAuthMachineryOptions extends AuthMachineryFundamentals {
-	handleAccessData: HandleAccessData
-}
-
-/** Fundamental services for the auth machinery to operate */
-export interface AuthMachineryFundamentals {
-	tokenApi: TokenApi
-	loginApi: LoginApi
-	decodeAccessToken: DecodeAccessToken
-}

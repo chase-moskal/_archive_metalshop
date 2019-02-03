@@ -1,7 +1,5 @@
-export * from "./auth-machinery/auth-machinery.test";
 export * from "./auth-machinery/interfaces";
 export * from "./auth-machinery/mocks";
-export * from "./auth-machinery/prep-auth-machinery";
 export * from "./auth-machinery/prep-handle-access-token";
 export * from "./auth-machinery/prep-logout";
 export * from "./auth-machinery/prep-passive-check";
@@ -14,6 +12,8 @@ export * from "./stores/auth-button-store";
 export * from "./stores/auth-panel-store";
 export * from "./stores/auth-slate-store";
 export * from "./toolbox/console-curry";
+export * from "./top-level/auth-machine.test";
+export * from "./top-level/create-auth-machine";
 export * from "./top-level/install-authoritarian-client";
 export * from "./top-level/interfaces";
 export * from "./top-level/render-auth-panel";
