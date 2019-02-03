@@ -7,6 +7,8 @@ import {InstallAuthoritarianClientOptions} from "./interfaces"
 
 /**
  * Install auth ui and behaviors onto the current page
+ *  - glue together the auth machinery and the ui
+ *  - kickstart the passive auth check routine
  */
 export async function installAuthoritarianClient({
 	element,
@@ -17,7 +19,8 @@ export async function installAuthoritarianClient({
 }: InstallAuthoritarianClientOptions) {
 
 	//
-	// prepare auth functionality
+	// prepare auth machinery functions
+	//  - update the ui with changes (like new access data)
 	//
 
 	const {
@@ -28,19 +31,20 @@ export async function installAuthoritarianClient({
 		tokenApi,
 		loginApi,
 		decodeAccessToken,
-		handleAccessData: data => // keep panel store updated
+		handleAccessData: data => // keep store updated
 			panelStore.setAccessData(data)
 	})
 
 	//
 	// render panel ui component on page
+	//  - user actions trigger auth machinery
 	//
 
 	renderAuthPanel({
 		element,
 		panelStore,
-		handleUserLogin: () => promptUserLogin(),
-		handleUserLogout: () => logout()
+		handleUserLogout: () => logout(), // perform auth actions
+		handleUserLogin: () => promptUserLogin()
 	})
 
 	//
