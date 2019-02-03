@@ -3,7 +3,6 @@ import {autorun} from "mobx"
 
 import {mocks} from "./auth-machinery/mocks"
 import {consoleCurry} from "./toolbox/console-curry"
-import {createAuthMachine} from "./top-level/create-auth-machine"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
 
 const info = consoleCurry("main", console.info)
@@ -16,8 +15,9 @@ demo().catch(error => console.error(error))
  */
 async function demo() {
 
-	// create auth machine with mock functionality
-	const authMachine = createAuthMachine({
+	// install the client machinery and panel ui
+	const auth = installAuthoritarianClient({
+		element: document.querySelector(".auth-panel"),
 		tokenApi: {
 			async obtainAccessToken(...args) {
 				debug(`obtainAccessToken`)
@@ -41,16 +41,13 @@ async function demo() {
 	})
 
 	// console log for whenever login/logout happens on the store
-	autorun(() => authMachine.panelStore.accessData
-		? info(`logged in as "${authMachine.panelStore.accessData.name}"`)
+	autorun(() => auth.panelStore.accessData
+		? info(`logged in as "${auth.panelStore.accessData.name}"`)
 		: info(`logged out`)
 	)
 
-	// install the client machinery and panel ui
-	await installAuthoritarianClient({
-		element: document.querySelector(".auth-panel"),
-		authMachine
-	})
+	// perform the initial passive check
+	await auth.passiveCheck()
 
 	// demo script is done
 	console.log("🤖")

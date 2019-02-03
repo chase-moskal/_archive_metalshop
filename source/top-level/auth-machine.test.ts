@@ -1,10 +1,12 @@
 
 import {mocks} from "../auth-machinery/mocks"
+import {AuthPanelStore} from "../stores/auth-panel-store"
 
 import {CreateAuthMachineOptions} from "./interfaces"
 import {createAuthMachine} from "./create-auth-machine"
 
 const goodMocks: CreateAuthMachineOptions = {
+	panelStore: new AuthPanelStore(),
 	loginApi: mocks.loginApi,
 	tokenApi: mocks.tokenApi,
 	decodeAccessToken: mocks.decodeAccessToken

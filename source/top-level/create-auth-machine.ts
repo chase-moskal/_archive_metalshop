@@ -1,5 +1,4 @@
 
-
 import {prepLogout} from "../auth-machinery/prep-logout"
 import {AuthPanelStore} from "../stores/auth-panel-store"
 import {prepPassiveCheck} from "../auth-machinery/prep-passive-check"
@@ -11,9 +10,9 @@ import {CreateAuthMachineOptions, AuthMachine} from "./interfaces"
 export function createAuthMachine({
 	tokenApi,
 	loginApi,
+	panelStore,
 	decodeAccessToken
 }: CreateAuthMachineOptions): AuthMachine {
-	const panelStore = new AuthPanelStore()
 
 	const handleAccessToken = prepHandleAccessToken({
 		decodeAccessToken,
