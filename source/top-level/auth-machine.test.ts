@@ -24,13 +24,17 @@ const mockMakers = {
 
 describe("auth-machine - user flows", () => {
 	describe("first-time user", () => {
-		it("starts logged out and decides to login", async() => {
+		it("starts logged out, and decides to login, and logout", async() => {
 			const auth = createAuthMachine(mockMakers.noAccessToken())
 			expect(auth.panelStore.loggedIn).toBe(false)
 			await auth.passiveCheck()
 			expect(auth.panelStore.loggedIn).toBe(false)
 			await auth.promptUserLogin()
+			expect(auth.panelStore.accessData).toBeTruthy()
 			expect(auth.panelStore.loggedIn).toBe(true)
+			await auth.logout()
+			expect(auth.panelStore.loggedIn).toBe(false)
+			expect(auth.panelStore.accessData).toBeFalsy()
 		})
 	})
 

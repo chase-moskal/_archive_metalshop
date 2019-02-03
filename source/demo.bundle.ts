@@ -3,9 +3,8 @@ import {autorun} from "mobx"
 
 import {mocks} from "./auth-machinery/mocks"
 import {consoleCurry} from "./toolbox/console-curry"
-import {AuthPanelStore} from "./stores/auth-panel-store"
+import {createAuthMachine} from "./top-level/create-auth-machine"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
-import { createAuthMachine } from "./top-level/create-auth-machine";
 
 const info = consoleCurry("main", console.info)
 const debug = consoleCurry("main", console.debug)
