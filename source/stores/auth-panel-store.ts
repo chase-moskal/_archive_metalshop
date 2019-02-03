@@ -1,15 +1,9 @@
 
 import {observable, action, autorun, computed} from "mobx"
 
-import {consoleCurry} from "../toolbox/console-curry"
 import {AccessData} from "../auth-machinery/interfaces"
 import {AuthSlateStore} from "../stores/auth-slate-store"
 import {AuthButtonStore} from "../stores/auth-button-store"
-
-const info = consoleCurry({
-	tag: "auth-panel-store",
-	consoleFunction: console.info
-})
 
 export class AuthPanelStore {
 	@observable open: boolean = false
@@ -27,13 +21,6 @@ export class AuthPanelStore {
 		// replicating changes into the slate store
 		autorun(() => slateStore.setLoggedIn(this.loggedIn))
 		autorun(() => slateStore.setUserProfile(this.accessData))
-
-		// log whenever user logs in or out
-		autorun(() => {
-			const {accessData: userProfile} = slateStore
-			if (userProfile) info(`logged in as "${userProfile.name}"`)
-			else info(`logged out`)
-		})
 	}
 
 	@action toggleOpen(value?: boolean): boolean {

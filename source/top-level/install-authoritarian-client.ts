@@ -1,15 +1,9 @@
 
-import {consoleCurry} from "../toolbox/console-curry"
 import {AuthPanelStore} from "../stores/auth-panel-store"
 import {prepAuthMachinery} from "../auth-machinery/prep-auth-machinery"
 
 import {renderAuthPanel} from "./render-auth-panel"
 import {InstallAuthoritarianClientOptions} from "./interfaces"
-
-const debug = consoleCurry({
-	tag: "install-authoritarian-client",
-	consoleFunction: console.debug
-})
 
 /**
  * Install auth ui and behaviors onto the current page
@@ -45,14 +39,8 @@ export async function installAuthoritarianClient({
 	renderAuthPanel({
 		element,
 		panelStore,
-		handleUserLogin: () => {
-			debug(`handleUserLogin`)
-			promptUserLogin()
-		},
-		handleUserLogout: () => {
-			debug(`handleUserLogout`)
-			logout()
-		}
+		handleUserLogin: () => promptUserLogin(),
+		handleUserLogout: () => logout()
 	})
 
 	//
