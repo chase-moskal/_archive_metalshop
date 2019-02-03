@@ -2,21 +2,21 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import AuthStore from "../stores/auth-store"
+import {AuthButtonStore} from "../stores/auth-button-store"
 
 @observer
-export default class AuthButton extends Component<{authStore: AuthStore}> {
+export class AuthButton extends Component<{
+	buttonStore: AuthButtonStore
+	handleButtonClick: () => void
+}> {
 
 	render() {
 		return (
 			<button
 				className="auth-button"
 				tabIndex={0}
-				onClick={this.handleClick}
-				>
+				onClick={this.props.handleButtonClick}>
 			</button>
 		)
 	}
-
-	private readonly handleClick = () => this.props.authStore.toggleOpen()
 }

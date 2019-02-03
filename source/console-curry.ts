@@ -1,5 +1,5 @@
 
-export default ({consoleFunction, tag}: {
+export const consoleCurry = ({consoleFunction, tag}: {
 	consoleFunction: typeof console.log
 	tag: string
 }) =>
