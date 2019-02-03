@@ -32,22 +32,22 @@ async function demo() {
 		tokenApi: {
 			async obtainAccessToken(...args) {
 				debug(`obtainAccessToken`)
-				return mocks.tokenApi.good.obtainAccessToken(...args)
+				return mocks.tokenApi.obtainAccessToken(...args)
 			},
 			async clearTokens(...args) {
 				debug(`clearTokens`)
-				return mocks.tokenApi.good.clearTokens(...args)
+				return mocks.tokenApi.clearTokens(...args)
 			}
 		},
 		loginApi: {
 			async userLoginRoutine(...args) {
 				debug(`userLoginRoutine`)
-				return mocks.loginApi.good.userLoginRoutine(...args)
+				return mocks.loginApi.userLoginRoutine(...args)
 			}
 		},
 		decodeAccessToken: (...args) => {
 			debug(`decodeAccessToken`)
-			return mocks.decodeAccessToken.good(...args)
+			return mocks.decodeAccessToken(...args)
 		}
 	})
 
