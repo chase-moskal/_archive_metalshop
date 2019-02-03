@@ -1,10 +1,10 @@
 
 import {PrepAuthMachineryOptions} from "./interfaces"
 
-import {prepAuthLogout} from "./prep-auth-logout"
-import {prepAuthPassiveCheck} from "./prep-auth-passive-check"
-import {prepAuthPromptUserLogin} from "./prep-auth-prompt-user-login"
-import {prepAuthHandleAccessToken} from "./prep-auth-handle-access-token"
+import {prepLogout} from "./prep-logout"
+import {prepPassiveCheck} from "./prep-passive-check"
+import {prepPromptUserLogin} from "./prep-prompt-user-login"
+import {prepHandleAccessToken} from "./prep-handle-access-token"
 
 export function prepAuthMachinery({
 	tokenApi,
@@ -13,23 +13,23 @@ export function prepAuthMachinery({
 	decodeAccessToken
 }: PrepAuthMachineryOptions) {
 
-	const authHandleAccessToken = prepAuthHandleAccessToken({
-		decodeAccessToken,
-		handleAccessData
+	const authHandleAccessToken = prepHandleAccessToken({
+		handleAccessData,
+		decodeAccessToken
 	})
 
 	return {
-		authLogout: prepAuthLogout({
+		logout: prepLogout({
 			tokenApi,
 			authHandleAccessToken
 		}),
-		authPassiveCheck: prepAuthPassiveCheck({
+		passiveCheck: prepPassiveCheck({
 			tokenApi,
-			authHandleAccessToken
+			handleAccessToken: authHandleAccessToken
 		}),
-		authPromptUserLogin: prepAuthPromptUserLogin({
+		promptUserLogin: prepPromptUserLogin({
 			loginApi,
-			authHandleAccessToken
+			handleAccessToken: authHandleAccessToken
 		})
 	}
 }

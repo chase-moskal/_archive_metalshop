@@ -27,9 +27,9 @@ export async function installAuthoritarianClient({
 	//
 
 	const {
-		authLogout,
-		authPassiveCheck,
-		authPromptUserLogin
+		logout,
+		passiveCheck,
+		promptUserLogin
 	} = prepAuthMachinery({
 		tokenApi,
 		loginApi,
@@ -47,11 +47,11 @@ export async function installAuthoritarianClient({
 		panelStore,
 		handleUserLogin: () => {
 			debug(`handleUserLogin`)
-			authPromptUserLogin()
+			promptUserLogin()
 		},
 		handleUserLogout: () => {
 			debug(`handleUserLogout`)
-			authLogout()
+			logout()
 		}
 	})
 
@@ -59,5 +59,5 @@ export async function installAuthoritarianClient({
 	// perform an initial auth check
 	//
 
-	await authPassiveCheck()
+	await passiveCheck()
 }

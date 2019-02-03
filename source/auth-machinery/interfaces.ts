@@ -30,7 +30,7 @@ export interface LoginApi {
 // CLIENT
 //
 
-export type AuthHandleAccessToken = (accessToken?: AccessToken) => void
+export type HandleAccessToken = (accessToken?: AccessToken) => void
 
 export type AccessToken = string
 export type RefreshToken = string

@@ -3,15 +3,15 @@ import {
 	AccessToken,
 	HandleAccessData,
 	DecodeAccessToken,
-	AuthHandleAccessToken
+	HandleAccessToken
 } from "./interfaces"
 
-export const prepAuthHandleAccessToken = (context: {
+export const prepHandleAccessToken = (context: {
 	handleAccessData: HandleAccessData
 	decodeAccessToken: DecodeAccessToken
-}): AuthHandleAccessToken =>
+}): HandleAccessToken =>
 
-function authHandleAccessToken(accessToken?: AccessToken) {
+function handleAccessToken(accessToken?: AccessToken) {
 	if (accessToken) {
 		const userProfile = context.decodeAccessToken(accessToken)
 		context.handleAccessData(userProfile)
