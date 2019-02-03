@@ -6,15 +6,8 @@ import {consoleCurry} from "./toolbox/console-curry"
 import {AuthPanelStore} from "./stores/auth-panel-store"
 import {installAuthoritarianClient} from "./top-level/install-authoritarian-client"
 
-const debug = consoleCurry({
-	tag: "main",
-	consoleFunction: console.debug
-})
-
-const info = consoleCurry({
-	tag: "main",
-	consoleFunction: console.info
-})
+const info = consoleCurry("main", console.info)
+const debug = consoleCurry("main", console.debug)
 
 demo().catch(error => console.error(error))
 

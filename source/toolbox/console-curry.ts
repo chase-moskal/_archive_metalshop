@@ -1,6 +1,6 @@
 
-export const consoleCurry = ({consoleFunction, tag}: {
+export const consoleCurry = (
+	tag: string,
 	consoleFunction: typeof console.log
-	tag: string
-}) =>
+) =>
 	(...args: any[]) => consoleFunction.call(console, `[${tag}]:`, ...args)
