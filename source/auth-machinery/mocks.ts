@@ -6,28 +6,31 @@ export interface Mockups<T> {
 }
 
 export const mocks = {
-	loginApi: <Mockups<LoginApi>>{
-		goodLogin: {
+	loginApi: {
+		good: <LoginApi>{
 			async userLoginRoutine() { return "a123" }
 		},
-		badLogin: {
+		bad: <LoginApi>{
 			async userLoginRoutine() { throw new Error(`login failed`) }
 		}
 	},
-	tokenApi: <Mockups<TokenApi>>{
-		goodTokens: {
+	tokenApi: {
+		good: <TokenApi>{
 			async obtainAccessToken() { return "a123" },
 			async clearTokens() { return null }
 		},
-		badTokens: {
+		bad: <TokenApi>{
 			async obtainAccessToken() { return "a123" },
 			async clearTokens() { return null }
 		}
 	},
-	decodeAccessToken: <Mockups<DecodeAccessToken>>{
-		goodUserProfile: () => ({
+	decodeAccessToken: {
+		good: <DecodeAccessToken>(() => ({
 			name: "Chase Moskal",
 			profilePicture: "chase.jpg"
+		})),
+		bad: <DecodeAccessToken>(() => {
+			throw new Error("access token decoder error")
 		})
 	}
 }
