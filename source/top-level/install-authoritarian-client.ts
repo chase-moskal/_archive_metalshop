@@ -4,7 +4,7 @@ import {AuthPanelStore} from "../stores/auth-panel-store"
 import {prepAuthMachinery} from "../auth-machinery/prep-auth-machinery"
 
 import {renderAuthPanel} from "./render-auth-panel"
-import {InstallAuthMachineryOptions} from "./interfaces"
+import {InstallAuthoritarianClientOptions} from "./interfaces"
 
 const debug = consoleCurry({
 	tag: "install-authoritarian-client",
@@ -20,7 +20,7 @@ export async function installAuthoritarianClient({
 	loginApi,
 	decodeAccessToken,
 	panelStore = new AuthPanelStore()
-}: InstallAuthMachineryOptions) {
+}: InstallAuthoritarianClientOptions) {
 
 	//
 	// prepare auth functionality
