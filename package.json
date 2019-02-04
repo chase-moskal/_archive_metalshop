@@ -59,6 +59,7 @@
 		"uglifyify": "5.0.1"
 	},
 	"dependencies": {
+		"authoritarian": "file:../authoritarian",
 		"commotion": "0.0.0-dev.5",
 		"crosscall": "file:../crosscall/crosscall-0.0.6-dev.0.tgz",
 		"dedent": "0.7.0",

@@ -1,6 +1,7 @@
 
+import {AccessToken} from "authoritarian"
+
 import {
-	AccessToken,
 	HandleAccessData,
 	DecodeAccessToken,
 	HandleAccessToken

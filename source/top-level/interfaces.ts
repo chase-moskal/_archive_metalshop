@@ -1,12 +1,9 @@
 
+import {TokenApi, LoginApi} from "authoritarian"
+
 import {AuthPanelProps} from "../components/interfaces"
 import {AuthPanelStore} from "../stores/auth-panel-store"
-
-import {
-	TokenApi,
-	LoginApi,
-	DecodeAccessToken
-} from "../auth-machinery/interfaces"
+import {DecodeAccessToken} from "../auth-machinery/interfaces"
 
 /** Options to install the whole authoritarian client setup */
 export interface InstallAuthoritarianClientOptions extends AuthMachineFundamentals {

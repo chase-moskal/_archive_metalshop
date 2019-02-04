@@ -1,6 +1,7 @@
 
+import {AccessData} from "authoritarian"
+
 import {observable, action} from "mobx"
-import {AccessData} from "../auth-machinery/interfaces"
 
 export class AuthSlateStore {
 	@observable loggedIn: boolean

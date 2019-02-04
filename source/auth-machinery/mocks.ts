@@ -1,5 +1,7 @@
 
-import {LoginApi, TokenApi, DecodeAccessToken} from "./interfaces"
+import {LoginApi, TokenApi} from "authoritarian"
+
+import {DecodeAccessToken} from "./interfaces"
 
 export interface Mockups<T> {
 	[mock: string]: T
