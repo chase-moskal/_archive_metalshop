@@ -2,25 +2,25 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import {AuthButtonStore} from "../stores/auth-button-store"
+import {AuthLoginStore} from "../stores/create-login-store"
 
 @observer
 export class AuthButton extends Component<{
-	buttonStore: AuthButtonStore
+	loginStore: AuthLoginStore
 	handleButtonClick: () => void
 }> {
 
 	render() {
-		const {buttonStore} = this.props
+		const {loginStore} = this.props
 		return (
 			<button
 				className="auth-button"
 				tabIndex={0}
-				data-logged-in={!!buttonStore.accessData}
+				data-logged-in={!!loginStore.accessData}
 				onClick={this.props.handleButtonClick}
 				style={
-					!!buttonStore.accessData
-						? `background-image: url("${buttonStore.accessData.profilePicture}")`
+					!!loginStore.accessData
+						? `background-image: url("${loginStore.accessData.profilePicture}")`
 						: null
 				}>
 			</button>

@@ -1,5 +1,5 @@
 
-import {autorun} from "mobx"
+import {autorun, configure} from "mobx"
 
 import {mocks} from "./auth-machinery/mocks"
 import {consoleCurry} from "./toolbox/console-curry"
@@ -14,6 +14,7 @@ demo().catch(error => console.error(error))
  * Demonstration of authoritarian-client
  */
 async function demo() {
+	configure({enforceActions: "always"})
 
 	// install the client machinery and panel ui
 	const auth = installAuthoritarianClient({

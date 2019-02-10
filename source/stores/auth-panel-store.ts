@@ -1,37 +1,34 @@
 
 import {AccessData} from "authoritarian"
-import {observable, action, autorun, computed} from "mobx"
+import {observable, action, autorun, computed, runInAction} from "mobx"
 
-import {AuthSlateStore} from "../stores/auth-slate-store"
-import {AuthButtonStore} from "../stores/auth-button-store"
+import {createLoginStore, AuthLoginStore} from "./create-login-store"
 
 export class AuthPanelStore {
-	@observable open: boolean = false
+	@observable open: boolean
 	@observable accessData: AccessData
-	@observable slateStore: AuthSlateStore = new AuthSlateStore()
-	@observable buttonStore: AuthButtonStore = new AuthButtonStore()
+	@observable loginStore: AuthLoginStore
 
 	@computed get loggedIn(): boolean {
 		return !!this.accessData
 	}
 
 	constructor() {
-		const {slateStore, buttonStore} = this
 
-		// replicating changes into the slate store
-		autorun(() => slateStore.setLoggedIn(this.loggedIn))
-		autorun(() => slateStore.setAccessData(this.accessData))
+		// create login store and replicate access data
+		const {loginStore, setAccessData} = createLoginStore()
+		runInAction(() => this.loginStore = loginStore)
+		autorun(() => setAccessData(this.accessData))
 
-		// replicating changes into the button store
-		autorun(() => buttonStore.setAccessData(this.accessData))
+		// start closed
+		this.toggleOpen(false)
 	}
 
 	@action toggleOpen(value?: boolean): boolean {
-		if (value === undefined || value === null)
-			this.open = !this.open
-		else
-			this.open = value
-		return this.open
+		const valueIsProvided = value !== undefined && value !== null
+		const open = valueIsProvided ? value : !this.open
+		this.open = open
+		return open
 	}
 
 	@action setAccessData(data: AccessData): void {

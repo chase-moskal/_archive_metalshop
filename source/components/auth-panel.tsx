@@ -12,13 +12,13 @@ export class AuthPanel extends Component<AuthPanelProps> {
 	render() {
 		const {handleButtonClick} = this
 		const {panelStore, handleUserLogin, handleUserLogout} = this.props
-		const {slateStore, buttonStore} = panelStore
+		const {loginStore} = panelStore
 		return (
 			<div className="authoritarian auth-panel">
-				<AuthButton {...{buttonStore, handleButtonClick}}/>
+				<AuthButton {...{loginStore, handleButtonClick}}/>
 				{panelStore.open
 					? (
-						<AuthSlate {...{slateStore, handleUserLogin, handleUserLogout}}>
+						<AuthSlate {...{loginStore, handleUserLogin, handleUserLogout}}>
 							{this.props.children}
 						</AuthSlate>
 					)

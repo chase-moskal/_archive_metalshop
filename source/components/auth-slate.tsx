@@ -2,24 +2,24 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import {AuthSlateStore} from "../stores/auth-slate-store"
+import {AuthLoginStore} from "../stores/create-login-store"
 
 @observer
 export class AuthSlate extends Component<{
-	slateStore: AuthSlateStore
+	loginStore: AuthLoginStore
 	handleUserLogin: () => void
 	handleUserLogout: () => void
 }> {
 
 	render() {
-		const {slateStore} = this.props
-		return slateStore.loggedIn
+		const {loginStore} = this.props
+		return loginStore.loggedIn
 			? this.renderSlateLoggedIn()
 			: this.renderSlateLoggedOut()
 	}
 
 	private renderSlateLoggedOut() {
-		const {handleUserLogin, slateStore} = this.props
+		const {handleUserLogin, loginStore} = this.props
 		return (
 			<div className="auth-slate loggedout">
 				<button
@@ -32,10 +32,12 @@ export class AuthSlate extends Component<{
 	}
 
 	private renderSlateLoggedIn() {
-		const {handleUserLogout, slateStore} = this.props
+		const {handleUserLogout, loginStore} = this.props
 		return (
 			<div className="auth-slate loggedin">
-				<p className="auth-user-name"><strong>{slateStore.accessData.name}</strong></p>
+				<p className="auth-user-name">
+					<strong>{loginStore.accessData.name}</strong>
+				</p>
 				<button
 					className="auth-logout-button"
 					onClick={handleUserLogout}>
