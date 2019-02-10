@@ -17,6 +17,6 @@ export const mocks = {
 	},
 	decodeAccessToken: <DecodeAccessToken>(() => ({
 		name: "Chase Moskal",
-		profilePicture: "chase.jpg"
+		profilePicture: "https://chasemoskal.com/images/chase.small.jpg"
 	}))
 }

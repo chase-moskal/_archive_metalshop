@@ -16,11 +16,14 @@ export class AuthPanelStore {
 	}
 
 	constructor() {
-		const {slateStore} = this
+		const {slateStore, buttonStore} = this
 
 		// replicating changes into the slate store
 		autorun(() => slateStore.setLoggedIn(this.loggedIn))
 		autorun(() => slateStore.setAccessData(this.accessData))
+
+		// replicating changes into the button store
+		autorun(() => buttonStore.setAccessData(this.accessData))
 	}
 
 	@action toggleOpen(value?: boolean): boolean {

@@ -11,11 +11,18 @@ export class AuthButton extends Component<{
 }> {
 
 	render() {
+		const {buttonStore} = this.props
 		return (
 			<button
 				className="auth-button"
 				tabIndex={0}
-				onClick={this.props.handleButtonClick}>
+				data-logged-in={!!buttonStore.accessData}
+				onClick={this.props.handleButtonClick}
+				style={
+					!!buttonStore.accessData
+						? `background-image: url("${buttonStore.accessData.profilePicture}")`
+						: null
+				}>
 			</button>
 		)
 	}

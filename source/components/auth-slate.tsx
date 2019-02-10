@@ -19,7 +19,7 @@ export class AuthSlate extends Component<{
 	}
 
 	private renderSlateLoggedOut() {
-		const {handleUserLogin} = this.props
+		const {handleUserLogin, slateStore} = this.props
 		return (
 			<div className="auth-slate loggedout">
 				<button
@@ -32,9 +32,10 @@ export class AuthSlate extends Component<{
 	}
 
 	private renderSlateLoggedIn() {
-		const {handleUserLogout} = this.props
+		const {handleUserLogout, slateStore} = this.props
 		return (
 			<div className="auth-slate loggedin">
+				<p className="auth-user-name"><strong>{slateStore.accessData.name}</strong></p>
 				<button
 					className="auth-logout-button"
 					onClick={handleUserLogout}>
