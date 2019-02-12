@@ -22,7 +22,7 @@ async function demo() {
 		tokenApi: {
 			async obtainAccessToken(...args) {
 				debug(`obtainAccessToken`)
-				return mocks.tokenApi.obtainAccessToken(...args)
+				return null // mocks.tokenApi.obtainAccessToken(...args)
 			},
 			async clearTokens(...args) {
 				debug(`clearTokens`)
