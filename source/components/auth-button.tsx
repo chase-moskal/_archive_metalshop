@@ -16,10 +16,10 @@ export class AuthButton extends Component<{
 			<button
 				className="auth-button"
 				tabIndex={0}
-				data-logged-in={!!loginStore.accessData}
+				data-logged-in={loginStore.loggedIn}
 				onClick={this.props.handleButtonClick}
 				style={
-					!!loginStore.accessData
+					loginStore.loggedIn
 						? `background-image: url("${loginStore.accessData.profilePicture}")`
 						: null
 				}>
