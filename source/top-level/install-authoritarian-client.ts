@@ -1,8 +1,8 @@
 
 import {AuthPanelStore} from "../stores/auth-panel-store"
-import {prepAuthMachinery} from "../auth-machinery/prep-auth-machinery"
 
 import {renderAuthPanel} from "./render-auth-panel"
+import {createAuthMachine} from "./create-auth-machine"
 import {InstallAuthoritarianClientOptions} from "./interfaces"
 
 /**
@@ -10,46 +10,46 @@ import {InstallAuthoritarianClientOptions} from "./interfaces"
  *  - glue together the auth machinery and the ui
  *  - kickstart the passive auth check routine
  */
-export async function installAuthoritarianClient({
+export function installAuthoritarianClient({
 	element,
 	tokenApi,
 	loginApi,
-	decodeAccessToken,
-	panelStore = new AuthPanelStore()
+	decodeAccessToken
 }: InstallAuthoritarianClientOptions) {
 
 	//
 	// prepare auth machinery functions
-	//  - update the ui with changes (like new access data)
+	// - update the ui with changes (like new access data)
 	//
-
-	const {
-		logout,
-		passiveCheck,
-		promptUserLogin
-	} = prepAuthMachinery({
+	
+	const panelStore = new AuthPanelStore()
+	const {logout, passiveCheck, promptUserLogin} = createAuthMachine({
 		tokenApi,
 		loginApi,
-		decodeAccessToken,
-		handleAccessData: data => // keep store updated
-			panelStore.setAccessData(data)
+		panelStore,
+		decodeAccessToken
 	})
 
 	//
 	// render panel ui component on page
-	//  - user actions trigger auth machinery
+	// - user actions trigger auth machinery
 	//
 
 	renderAuthPanel({
 		element,
 		panelStore,
-		handleUserLogout: () => logout(), // perform auth actions
-		handleUserLogin: () => promptUserLogin()
+		handleUserLogout: logout,
+		handleUserLogin: promptUserLogin
 	})
 
 	//
-	// perform an initial auth check
+	// return the major functions and the store
 	//
 
-	await passiveCheck()
+	return {
+		logout,
+		panelStore,
+		passiveCheck,
+		promptUserLogin
+	}
 }

@@ -1,5 +1,7 @@
 
-import {TokenApi, HandleAccessToken} from "./interfaces"
+import {TokenApi} from "authoritarian"
+
+import {HandleAccessToken} from "./interfaces"
 
 export const prepLogout = (context: {
 	tokenApi: TokenApi

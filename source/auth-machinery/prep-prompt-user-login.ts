@@ -1,5 +1,7 @@
 
-import {LoginApi, HandleAccessToken} from "./interfaces"
+import {LoginApi} from "authoritarian"
+
+import {HandleAccessToken} from "./interfaces"
 
 export const prepPromptUserLogin = (context: {
 	loginApi: LoginApi
