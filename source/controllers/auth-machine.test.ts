@@ -1,5 +1,5 @@
 
-import {mocks} from "../mocks"
+import {makeMocks} from "../make-mocks"
 // import {AuthPanelStore} from "../stores/auth-panel-store"
 
 // import {CreateAuthMachineOptions} from "../interfaces"
