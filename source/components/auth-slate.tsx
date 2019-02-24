@@ -2,7 +2,7 @@
 import {h, Component} from "preact"
 import {observer} from "mobx-preact"
 
-import {AuthSlateProps} from "./interfaces"
+import {AuthSlateProps} from "../interfaces"
 
 @observer
 export class AuthSlate extends Component<AuthSlateProps> {

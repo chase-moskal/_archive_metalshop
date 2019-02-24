@@ -3,7 +3,7 @@ import {h} from "preact"
 import * as preact from "preact"
 
 import {AuthSlate} from "../components/auth-slate"
-import {RenderAuthSlateOptions} from "./interfaces"
+import {RenderAuthSlateOptions} from "../interfaces"
 
 export function renderAuthSlate({
 	element,

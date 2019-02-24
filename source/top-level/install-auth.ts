@@ -2,7 +2,7 @@
 import {createAuthController} from "../controllers/create-auth-controller"
 
 import {renderAuthSlate} from "./render-auth-slate"
-import {AuthMachineFundamentals} from "./interfaces"
+import {AuthMachineFundamentals} from "../interfaces"
 
 export function installAuth({
 	element,

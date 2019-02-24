@@ -3,7 +3,7 @@ import {AccessToken} from "authoritarian"
 
 import {AuthController} from "../interfaces"
 import {AuthStore} from "../stores/auth-store"
-import {AuthMachineFundamentals} from "../top-level/interfaces"
+import {AuthMachineFundamentals} from "../interfaces"
 
 export function createAuthController({
 	tokenApi,
