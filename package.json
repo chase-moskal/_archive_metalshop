@@ -64,6 +64,7 @@
 		"commotion": "0.0.0-dev.5",
 		"crosscall": "0.0.6-dev.1",
 		"dedent": "0.7.0",
+		"menutown": "0.0.0-dev.7",
 		"mobx": "5.9.0",
 		"mobx-preact": "3.0.0",
 		"preact": "8.4.2",
