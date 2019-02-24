@@ -1,9 +1,9 @@
 
 import {TokenApi, LoginApi} from "authoritarian"
 
-import {AuthPanelProps} from "../components/interfaces"
 import {AuthPanelStore} from "../stores/auth-panel-store"
 import {DecodeAccessToken} from "../auth-machinery/interfaces"
+import {AuthPanelProps, AuthSlateProps} from "../components/interfaces"
 
 /** Options to install the whole authoritarian client setup */
 export interface InstallAuthoritarianClientOptions extends AuthMachineFundamentals {
@@ -33,4 +33,8 @@ export interface AuthMachine {
 	logout: () => Promise<void>
 	passiveCheck: () => Promise<void>
 	promptUserLogin: () => Promise<void>
+}
+
+export interface RenderAuthSlateOptions extends AuthSlateProps {
+	element: Element
 }

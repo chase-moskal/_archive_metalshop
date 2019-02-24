@@ -2,14 +2,14 @@
 import {AccessToken} from "authoritarian"
 
 import {AuthController} from "../interfaces"
-import {AuthStore} from "source/stores/auth-store"
-import {CreateAuthMachineOptions} from "../top-level/interfaces"
+import {AuthStore} from "../stores/auth-store"
+import {AuthMachineFundamentals} from "../top-level/interfaces"
 
 export function createAuthController({
 	tokenApi,
 	loginApi,
 	decodeAccessToken
-}: CreateAuthMachineOptions): AuthController {
+}: AuthMachineFundamentals): AuthController {
 	const {authStore, setAccessData} = AuthStore.create()
 
 	const handleAccessToken = (accessToken?: AccessToken) => {

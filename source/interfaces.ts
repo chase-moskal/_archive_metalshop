@@ -1,14 +1,7 @@
 
-import {AccessData} from "authoritarian"
-
-////////////////////////////
-////////////////////////////
-
 export interface AuthController {
-	passiveCheck
-	promptUserLogin
 	logout
 	authStore
+	passiveCheck
+	promptUserLogin
 }
-
-export type SetAccessData = (accessData: AccessData) => void

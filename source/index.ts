@@ -16,6 +16,7 @@ export * from "./stores/create-login-store";
 export * from "./toolbox/console-curry";
 export * from "./top-level/auth-machine.test";
 export * from "./top-level/create-auth-machine";
+export * from "./top-level/install-auth";
 export * from "./top-level/install-authoritarian-client";
 export * from "./top-level/interfaces";
 export * from "./top-level/render-auth-panel";
