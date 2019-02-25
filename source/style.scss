@@ -58,11 +58,10 @@ main {
 }
 
 .menu-system {
-	@include menu-system(3rem);
+	@include menu-system(3rem, 0.3rem, 1rem);
 
 	.menu-display-list {
 		margin-top: 1.5em;
-		margin-right: 1em;
 	}
 
 	.auth-slate {

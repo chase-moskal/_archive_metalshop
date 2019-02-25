@@ -2,8 +2,8 @@
 import {autorun, configure} from "mobx"
 
 import {makeMocks} from "./make-mocks"
-import {installAuth} from "./top-level/install-auth"
 import {consoleCurry} from "./toolbox/console-curry"
+import {renderAuthMenuSystem} from "./top-level/render-auth-menu-system"
 
 const info = consoleCurry("main", console.info)
 const debug = consoleCurry("main", console.debug)
@@ -18,9 +18,9 @@ demo().catch(error => console.error(error))
 async function demo() {
 	configure({enforceActions: "never"})
 
-	const {authController} = installAuth({
+	const {authController} = renderAuthMenuSystem({
 		element: document.querySelector(".menu-system"),
-		...mocks
+		authFundamentals: mocks
 	})
 
 	const {authStore} = authController

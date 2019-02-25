@@ -13,6 +13,6 @@
 		"jsx": "react",
 		"jsxFactory": "h"
 	},
-	"include": ["source/**/*.ts", "source/top-level/install-auth.tsx"],
+	"include": ["source/**/*.ts", "source/**/*.tsx"],
 	"exclude": ["source/_archive/**/*"]
 }

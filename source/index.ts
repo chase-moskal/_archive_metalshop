@@ -6,4 +6,5 @@ export * from "./controllers/create-auth-controller";
 export * from "./stores/auth-store";
 export * from "./stores/create-login-store";
 export * from "./toolbox/console-curry";
-export * from "./top-level/install-auth";
+export * from "./top-level/create-auth-menu-account";
+export * from "./top-level/render-auth-menu-system";

@@ -15,3 +15,4 @@ Authentication and authorization solution for microservices and the web
 - browser auth ui library
 - button for user login/register/settings
 - modal for user settings management
+- interoperates with the [menutown](https://github.com/chase-moskal/menutown) menu-system
