@@ -19,6 +19,9 @@ export function createAuthMenuAccount({
 				handleUserLogin={promptUserLogin}
 				handleUserLogout={logout}>
 			</AuthSlate>
+		),
+		buttonContent: (
+			<div>auth</div>
 		)
 	}
 

@@ -3,7 +3,7 @@ import {autorun, configure} from "mobx"
 
 import {makeMocks} from "./make-mocks"
 import {consoleCurry} from "./toolbox/console-curry"
-import {renderAuthMenuSystem} from "./top-level/render-auth-menu-system"
+import {renderAuthMenuSystem} from "./routines/render-auth-menu-system"
 
 const info = consoleCurry("main", console.info)
 const debug = consoleCurry("main", console.debug)
