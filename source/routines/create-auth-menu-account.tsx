@@ -4,11 +4,11 @@ import {MenuAccount} from "menutown"
 
 import {AuthController} from "../interfaces"
 import {AuthSlate} from "../components/auth-slate"
+import {AuthAvatar} from "../components/auth-avatar"
 
-export function createAuthMenuAccount({
-	authController
-}: {authController: AuthController}): MenuAccount {
-
+export function createAuthMenuAccount({authController}: {
+	authController: AuthController
+}): MenuAccount {
 	const {authStore, logout, promptUserLogin} = authController
 
 	const menuAccount: MenuAccount = {
@@ -17,11 +17,10 @@ export function createAuthMenuAccount({
 			<AuthSlate
 				authStore={authStore}
 				handleUserLogin={promptUserLogin}
-				handleUserLogout={logout}>
-			</AuthSlate>
+				handleUserLogout={logout}/>
 		),
 		buttonContent: (
-			<div>auth</div>
+			<AuthAvatar authStore={authStore}/>
 		)
 	}
 

@@ -15,9 +15,11 @@ export function renderAuthMenuSystem({element, authFundamentals}: {
 	const authController = createAuthController(authFundamentals)
 	const menuAccount = createAuthMenuAccount({authController})
 	const menuAccountant = new MenuAccountant({accounts: [menuAccount]})
+
 	const ui = (
 		<MenuSystem accountant={menuAccountant}></MenuSystem>
 	)
+
 	const newElement = preact.render(ui, null, element)
 	return {authController, newElement, menuAccountant}
 }

@@ -4,6 +4,7 @@
 
 export * from "./interfaces";
 export * from "./make-mocks";
+export * from "./components/auth-avatar";
 export * from "./components/auth-slate";
 export * from "./controllers/auth-machine.test";
 export * from "./controllers/create-auth-controller";
