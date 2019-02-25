@@ -13,6 +13,6 @@
 		"jsx": "react",
 		"jsxFactory": "h"
 	},
-	"include": ["source/**/*.ts"],
+	"include": ["source/**/*.ts", "source/**/*.tsx"],
 	"exclude": ["source/_archive/**/*"]
 }
