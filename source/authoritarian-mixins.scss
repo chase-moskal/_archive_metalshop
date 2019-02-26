@@ -2,8 +2,8 @@
 @mixin authoritarian-avatar($svgfillcolor: rgba(0,0,0, 0.25), $bgcolor: rgba(255,255,255, 0.5)) {
 	display: block;
 	border: none;
-	width: 3em;
-	height: 3em;
+	width: 100%;
+	height: 100%;
 	background: $bgcolor;
 	background-size: contain;
 	background-repeat: no-repeat;
