@@ -3,7 +3,7 @@
  */
 
 export * from "./interfaces";
-export * from "./make-mocks";
+export * from "./make-auth-mocks";
 export * from "./components/auth-avatar";
 export * from "./components/auth-slate";
 export * from "./controllers/auth-machine.test";

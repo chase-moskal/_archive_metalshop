@@ -1,14 +1,14 @@
 
 import {autorun, configure} from "mobx"
 
-import {makeMocks} from "./make-mocks"
+import {makeAuthMocks} from "./make-auth-mocks"
 import {consoleCurry} from "./toolbox/console-curry"
 import {renderAuthMenuSystem} from "./routines/render-auth-menu-system"
 
 const info = consoleCurry("main", console.info)
 const debug = consoleCurry("main", console.debug)
 
-const mocks = makeMocks({logger: debug})
+const mocks = makeAuthMocks({logger: debug})
 
 demo().catch(error => console.error(error))
 

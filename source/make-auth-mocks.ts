@@ -7,8 +7,8 @@ export interface Mockups<T> {
 	[mock: string]: T
 }
 
-export const makeMocks = ({logger = () => undefined}: {
-	logger: typeof console.log
+export const makeAuthMocks = ({logger = () => undefined}: {
+	logger?: typeof console.log
 }) => ({
 	loginApi: <LoginApi>{
 		async userLoginRoutine() {
