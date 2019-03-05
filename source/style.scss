@@ -10,6 +10,10 @@ $stdpadding: 2em;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+
+	&:focus {
+		outline: 3px solid cyan;
+	}
 }
 
 html, body {
@@ -43,10 +47,17 @@ main {
 }
 
 .menu-system {
-	@include menu-system(3rem, 0.3rem, 1rem);
+	@include menu-system();
 	@include authoritarian-client();
+
+	font-family: sans-serif;
 
 	.menu-display-list {
 		margin-top: 1.5em;
+	}
+
+	.menu-display {
+		.menu-button { opacity: 0.75; }
+		&[data-active] .menu-button { opacity: 1; }
 	}
 }
