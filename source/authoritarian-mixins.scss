@@ -13,7 +13,7 @@
 
 @mixin authoritarian-client(
 	$bgcolor: white,
-	$silhouette: #aaa,
+	$silhouette: rgba(0,0,0, 0.25),
 	$textcolor: rgba(0,0,0, 0.7),
 	$buttoncolor: #57b280,
 	$buttontextcolor: white,
