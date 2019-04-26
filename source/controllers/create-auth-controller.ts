@@ -1,57 +1,24 @@
 
-import {AccessToken} from "authoritarian"
-
-import {AuthController} from "../interfaces"
-import {AuthStore} from "../stores/auth-store"
-import {AuthMachineFundamentals} from "../interfaces"
+import {AuthController, AuthMachineFundamentals} from "../interfaces.js"
 
 export function createAuthController({
 	tokenApi,
 	loginApi,
 	decodeAccessToken
 }: AuthMachineFundamentals): AuthController {
-	const {authStore, setAccessData} = AuthStore.create()
-
-	const handleAccessToken = (accessToken?: AccessToken) => {
-		if (accessToken) {
-			const accessData = decodeAccessToken(accessToken)
-			setAccessData(accessData)
-		}
-		else {
-			setAccessData(undefined)
+	const lol = Symbol()
+	const authStore = {
+		[lol]() {
+			return "auth-store"
 		}
 	}
 
-	async function passiveCheck() {
-		try {
-			const accessToken = await tokenApi.obtainAccessToken()
-			handleAccessToken(accessToken)
-		}
-		catch (error) {
-			handleAccessToken(undefined)
-			throw error
-		}
-	}
-
-	async function logout() {
-		await tokenApi.clearTokens()
-		handleAccessToken(undefined)
-	}
-
-	async function promptUserLogin() {
-		try {
-			const accessToken = await loginApi.userLoginRoutine()
-			handleAccessToken(accessToken)
-		}
-		catch (error) {
-			handleAccessToken(undefined)
-			throw error
-		}
-	}
+	async function logout() {}
+	async function passiveCheck() {}
+	async function promptUserLogin() {}
 
 	return {
 		logout,
-		authStore,
 		passiveCheck,
 		promptUserLogin
 	}

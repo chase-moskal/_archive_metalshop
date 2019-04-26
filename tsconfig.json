@@ -3,16 +3,14 @@
 		"baseUrl": ".",
 		"rootDir": "source",
 		"outDir": "dist",
-		"target": "es5",
+		"target": "es6",
 		"lib": ["es6", "dom"],
-		"module": "umd",
+		"module": "esnext",
 		"moduleResolution": "node",
 		"experimentalDecorators": true,
 		"sourceMap": true,
-		"declaration": true,
-		"jsx": "react",
-		"jsxFactory": "h"
+		"declaration": true
 	},
-	"include": ["source/**/*.ts", "source/**/*.tsx"],
-	"exclude": ["source/_archive/**/*"]
+	"include": ["source/**/*.ts"],
+	"exclude": ["source-archive/**/*"]
 }
