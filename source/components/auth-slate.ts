@@ -3,6 +3,7 @@ import {LitElement, css, html} from "lit-element"
 import {AuthStore} from "../interfaces.js"
 
 export class AuthSlate extends LitElement {
+
 	static get properties() {
 		return {
 			store: {type: Object}
@@ -11,7 +12,11 @@ export class AuthSlate extends LitElement {
 
 	static get styles() {
 		return css`
-			* {}
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
 		`
 	}
 
