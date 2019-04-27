@@ -1,22 +1,29 @@
 
-import "menutown/source/components/menu-system.js"
-import "menutown/source/components/menu-display.js"
+import "menutown/source/register-all.js"
+import "./register-all.js"
 
-import "./components/auth-icon.js"
-import "./components/auth-slate.js"
-
-import {createAuthController} from "./controllers/create-auth-controller.js"
 import {makeAuthMocks} from "./make-auth-mocks.js"
+import {AuthIcon} from "./components/auth-icon.js"
+import {AuthSlate} from "./components/auth-slate.js"
+import {createAuthController} from "./controllers/create-auth-controller.js"
 
 const menu: HTMLElement = document.querySelector("menu-system")
+const authIcon: AuthIcon = document.querySelector("auth-icon")
+const authSlate: AuthSlate = document.querySelector("auth-slate")
 
-menu.hidden = false
-
-window["controller"] = createAuthController({
+const authController = createAuthController({
 	...makeAuthMocks({}),
 	onStoreUpdate: () => {
-		console.log("store update!")
+		authIcon.requestUpdate()
+		authSlate.requestUpdate()
 	}
 })
 
+authIcon.store = authController.store
+authSlate.store = authController.store
+
+authController.passiveCheck()
+
+menu.hidden = false
+window["controller"] = authController
 console.log("🤖")
