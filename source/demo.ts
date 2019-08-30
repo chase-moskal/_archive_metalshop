@@ -1,5 +1,5 @@
 
-import "menutown/source/register-all.js"
+import "menutown/dist/register-all.js"
 import "./register-all.js"
 
 import {makeAuthMocks} from "./make-auth-mocks.js"
