@@ -34,12 +34,12 @@
 		"pug-cli": "1.0.0-alpha6",
 		"rimraf": "3.0.0",
 		"tsify": "4.0.1",
-		"typescript": "3.6.2",
+		"typescript": "3.6.3",
 		"uglify-es": "3.3.9",
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.13",
+		"authoritarian": "0.0.0-dev.14",
 		"commotion": "0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.3",
 		"lit-element": "2.2.1",

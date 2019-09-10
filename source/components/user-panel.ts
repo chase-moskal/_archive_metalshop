@@ -5,11 +5,13 @@ import {
 	User,
 	AuthTokens,
 	AccessToken,
-	decodeToken,
 	RefreshToken,
 	AccountPopupTopic,
 	TokenStorageTopic,
+	// decodeToken,
 } from "authoritarian"
+
+import {mockDecodeToken as decodeToken} from "../mocks.js"
 
 import {
 	UserProfile,
@@ -41,7 +43,7 @@ export class UserPanel extends LitElement {
 
 	async startup() {
 		this.accessToken = await this.tokenStorage.passiveCheck()
-		if (this.loggedIn) await this._handleAuthorization()
+		if (this.accessToken) await this._handleAuthorization()
 	}
 
 	private async _handleAuthorization() {

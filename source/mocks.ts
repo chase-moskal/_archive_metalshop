@@ -1,5 +1,6 @@
 
 import {
+	User,
 	AuthTokens,
 	AccessToken,
 	AccountPopupTopic,
@@ -41,5 +42,14 @@ export class MockPaywallGuardian implements PaywallGuardianTopic {
 	}
 	async revokeUserPremium(options: {accessToken: AccessToken}) {
 		return "a123"
+	}
+}
+
+export function mockDecodeToken({token}: {token: AccessToken}): User {
+	return {
+		userId: 1,
+		claims: {
+			supercool: true
+		}
 	}
 }

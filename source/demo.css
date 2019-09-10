@@ -22,3 +22,7 @@ body > header {
 body > header > * {
 	flex: 0 1 auto;
 }
+
+menu-system[initially-hidden] {
+	display: none;
+}

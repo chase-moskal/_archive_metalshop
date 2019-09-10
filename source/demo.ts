@@ -5,31 +5,24 @@ import "./register-all.js"
 import {UserPanel} from "./components/user-panel.js"
 import {UserButton} from "./components/user-button.js"
 
-const userAccountPanel: UserPanel = document.querySelector("user-panel")
-const userAccountButton: UserButton = document.querySelector("user-button")
+import {
+	MockAccountPopup,
+	MockTokenStorage,
+	MockProfileManager,
+	MockPaywallGuardian,
+} from "./mocks.js"
 
-// import {makeAuthMocks} from "./make-auth-mocks.js"
-// import {AuthIcon} from "./components/auth-icon.js"
-// import {AuthSlate} from "./components/auth-slate.js"
-// import {createAuthController} from "./controllers/create-auth-controller.js"
+const userPanel: UserPanel = document.querySelector("user-panel")
+const userButton: UserButton = document.querySelector("user-button")
 
-// const menu: HTMLElement = document.querySelector("menu-system")
-// const authIcon: AuthIcon = document.querySelector("auth-icon")
-// const authSlate: AuthSlate = document.querySelector("auth-slate")
+async function main() {
+	userPanel.accountPopup = new MockAccountPopup()
+	userPanel.tokenStorage = new MockTokenStorage()
+	userPanel.profileManager = new MockProfileManager()
+	userPanel.paywallGuardian = new MockPaywallGuardian()
+	await userPanel.startup()
+}
 
-// const authController = createAuthController({
-// 	...makeAuthMocks({}),
-// 	onStoreUpdate: () => {
-// 		authIcon.requestUpdate()
-// 		authSlate.requestUpdate()
-// 	}
-// })
-
-// authIcon.store = authController.store
-// authSlate.store = authController.store
-
-// authController.passiveCheck()
-
-// menu.hidden = false
-// window["controller"] = authController
-// console.log("🤖")
+main()
+	.then(() => console.log("🤖"))
+	.catch(error => console.error(error))
