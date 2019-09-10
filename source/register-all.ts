@@ -1,9 +1,9 @@
 
-import {UserAccountPanel} from "./components/user-account-panel.js"
-import {UserAccountButton} from "./components/user-account-button.js"
+import {UserPanel} from "./components/user-panel.js"
+import {UserButton} from "./components/user-button.js"
 
 import {registerComponents} from "./toolbox/register-components.js"
 
-registerComponents({UserAccountPanel, UserAccountButton})
+registerComponents({UserPanel, UserButton})
 
 console.log("🤖")

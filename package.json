@@ -12,7 +12,7 @@
 	"scripts": {
 		"prepare": "run-s clean build importmap test",
 		"clean": "rimraf dist && mkdirp dist",
-		"importmap": "importly < package.json > dist/importmap.json",
+		"importmap": "importly --host=node_modules < package.json > dist/importmap.json",
 		"build": "tsc",
 		"watch": "tsc -w",
 		"test": "exit 0",
