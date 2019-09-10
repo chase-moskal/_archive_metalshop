@@ -12,5 +12,9 @@
 		"declaration": true
 	},
 	"include": ["source/**/*.ts"],
-	"exclude": ["source-archive/**/*"]
+	"exclude": [
+		"node_modules/**/*",
+		"source-archive/**/*",
+		"source-archive2/**/*",
+	]
 }

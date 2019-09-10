@@ -6,9 +6,7 @@
 	"license": "ISC",
 	"main": "dist",
 	"files": [
-		"dist",
-		"source/**/*.pug",
-		"source/**/*.scss"
+		"dist"
 	],
 	"keywords": [],
 	"scripts": {
@@ -41,15 +39,13 @@
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.9",
+		"authoritarian": "0.0.0-dev.13",
 		"commotion": "0.1.0-dev.0",
-		"crosscall": "0.0.6-dev.1",
+		"crosscall": "0.0.6-dev.3",
 		"lit-element": "2.2.1",
 		"lit-html": "1.1.2",
 		"menutown": "0.0.0",
-		"mobx": "5.13.0",
-		"mobx-preact": "3.0.0",
-		"preact": "8.5.2",
+		"renraku": "0.0.0-dev.7",
 		"sassbass": "0.0.1"
 	},
 	"repository": {

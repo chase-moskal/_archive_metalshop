@@ -1,6 +1,9 @@
 
-import {registerComponents} from "./toolbox/register-components.js"
-import {AuthIcon} from "./components/auth-icon.js"
-import {AuthSlate} from "./components/auth-slate.js"
+import {UserAccountPanel} from "./components/user-account-panel.js"
+import {UserAccountButton} from "./components/user-account-button.js"
 
-registerComponents([AuthIcon, AuthSlate])
+import {registerComponents} from "./toolbox/register-components.js"
+
+registerComponents({UserAccountPanel, UserAccountButton})
+
+console.log("🤖")
