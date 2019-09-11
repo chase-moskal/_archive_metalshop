@@ -2,6 +2,11 @@
 import {Topic} from "renraku"
 import {User, AccessToken} from "authoritarian"
 
+export interface AuthContext {
+	user: User
+	accessToken: AccessToken
+}
+
 export interface UserProfile {
 	picture: string
 	realname: string
@@ -19,7 +24,9 @@ export interface ProfileManagerTopic {
 }
 
 export interface UserLoginDetail {
-	user: User
-	profile: UserProfile
-	accessToken: AccessToken
+	authContext: AuthContext
+}
+
+export interface UserSubpanel {
+	authContext: AuthContext
 }

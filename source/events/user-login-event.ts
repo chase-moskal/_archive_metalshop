@@ -1,8 +1,8 @@
 
-import {UserLoginDetail} from "../interfaces.js"
+import {AuthContext} from "../interfaces.js"
 
-export class UserLoginEvent extends CustomEvent<UserLoginDetail> {
-	constructor(detail: UserLoginDetail) {
+export class UserLoginEvent extends CustomEvent<AuthContext> {
+	constructor(detail: AuthContext) {
 		super("user-login-event", {
 			detail,
 			bubbles: true,
