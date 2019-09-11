@@ -13,10 +13,14 @@
 			<h1>authoritarian-client</h1>
 			<menu-system initially-hidden>
 				<menu-display>
+
 					<p slot="button">user-button</p>
-					<user-panel>
-						<profile-subpanel></profile-subpanel>
+
+					<user-panel server="https://auth.mywebsite.com">
+						<profile-subpanel server="https://profiler.mywebsite.com"></profile-subpanel>
+						<paywall-subpanel server="https://paywall.mywebsite.com"></paywall-subpanel>
 					</user-panel>
+
 				</menu-display>
 			</menu-system>
 		</header>
