@@ -7,7 +7,7 @@ import {
 	TokenStorageTopic
 } from "authoritarian"
 
-import {UserProfile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
+import {Profile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
 
 export class MockAccountPopup implements AccountPopupTopic {
 	async login() {
@@ -24,14 +24,14 @@ export class MockTokenStorage implements TokenStorageTopic {
 }
 
 export class MockProfileManager implements ProfileManagerTopic {
-	async getProfile(options: {accessToken: AccessToken}): Promise<UserProfile> {
+	async getProfile(options: {accessToken: AccessToken}): Promise<Profile> {
 		return {
 			nickname: "Chase",
 			realname: "Chase Moskal",
 			picture: "https://picsum.photos/id/375/200/200",
 		}
 	}
-	async setProfile(options: {accessToken: AccessToken, profile: UserProfile}): Promise<void> {
+	async setProfile(options: {accessToken: AccessToken, profile: Profile}): Promise<void> {
 		return undefined
 	}
 }

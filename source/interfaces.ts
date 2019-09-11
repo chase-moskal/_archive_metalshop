@@ -7,7 +7,7 @@ export interface AuthContext {
 	accessToken: AccessToken
 }
 
-export interface UserProfile {
+export interface Profile {
 	picture: string
 	realname: string
 	nickname: string
@@ -19,8 +19,8 @@ export interface PaywallGuardianTopic extends Topic {
 }
 
 export interface ProfileManagerTopic {
-	getProfile(options: {accessToken: AccessToken}): Promise<UserProfile>
-	setProfile(options: {accessToken: AccessToken, profile: UserProfile}): Promise<void>
+	getProfile(options: {accessToken: AccessToken}): Promise<Profile>
+	setProfile(options: {accessToken: AccessToken, profile: Profile}): Promise<void>
 }
 
 export interface UserLoginDetail {

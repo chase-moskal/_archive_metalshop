@@ -13,15 +13,21 @@ import {
 	MockPaywallGuardian,
 } from "./mocks.js"
 
-const userPanel: UserPanel = document.querySelector("user-panel")
-const userButton: UserButton = document.querySelector("user-button")
-const profileSubpanel: ProfileSubpanel = document.querySelector("profile-subpanel")
-
 async function main() {
+	const userPanel: UserPanel = document.querySelector("user-panel")
+	const userButton: UserButton = document.querySelector("user-button")
+	const profileSubpanel: ProfileSubpanel = document.querySelector("profile-subpanel")
+
+	// console-log the events
+	for (const event of ["user-login", "user-logout", "profile-loaded"])
+		window.addEventListener(event, () => console.log(event))
+
+	// attach mocks instead of real implementations
 	userPanel.accountPopup = new MockAccountPopup()
 	userPanel.tokenStorage = new MockTokenStorage()
 	profileSubpanel.profileManager = new MockProfileManager()
-	// userPanel.paywallGuardian = new MockPaywallGuardian()
+
+	// schweet action!
 	await userPanel.startup()
 }
 

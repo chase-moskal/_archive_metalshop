@@ -1,8 +1,8 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
-import {UserProfileLoadedEvent} from "../events/user-profile-loaded-event.js"
+import {ProfileLoadedEvent} from "../events/profile-loaded-event.js"
 import {
-	UserProfile,
+	Profile,
 	AuthContext,
 	UserSubpanel,
 	ProfileManagerTopic,
@@ -11,7 +11,7 @@ import {
 export class ProfileSubpanel extends LitElement implements UserSubpanel {
 	@property({type: Object}) profileManager: ProfileManagerTopic = null
 
-	@property({type: Object}) profile: UserProfile = null
+	@property({type: Object}) profile: Profile = null
 	@property({type: Object}) authContext: AuthContext = null
 
 	updated(changedProperties: PropertyValues) {
@@ -24,7 +24,7 @@ export class ProfileSubpanel extends LitElement implements UserSubpanel {
 		if (this.authContext) {
 			const {accessToken} = this.authContext
 			this.profile = await this.profileManager.getProfile({accessToken})
-			this.dispatchEvent(new UserProfileLoadedEvent(this.profile))
+			this.dispatchEvent(new ProfileLoadedEvent(this.profile))
 		}
 		else {
 			this.profile = null
