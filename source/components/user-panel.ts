@@ -12,17 +12,12 @@ import {
 	// decodeToken,
 } from "authoritarian"
 
-import {
-	AuthContext,
-	UserSubpanel
-} from "../interfaces.js"
+import {AuthContext} from "../interfaces.js"
 
 export class UserPanel extends LitElement {
 	@property({type: Object}) authContext: AuthContext = null
 	@property({type: Object}) accountPopup: AccountPopupTopic = null
 	@property({type: Object}) tokenStorage: TokenStorageTopic = null
-
-	private _subpanels: UserSubpanel[] = []
 
 	async startup() {
 		const accessToken = await this.tokenStorage.passiveCheck()
@@ -39,23 +34,6 @@ export class UserPanel extends LitElement {
 		const authTokens = await this.accountPopup.login()
 		await this.tokenStorage.writeTokens(authTokens)
 		this._decodeAuthContext(authTokens.accessToken)
-	}
-
-	firstUpdated() {
-		const slot: HTMLSlotElement = this.shadowRoot.querySelector("slot")
-		this._subpanels = <any>Array.from(slot.assignedElements())
-	}
-
-	updated(changedProperties: PropertyValues) {
-		if (changedProperties.has("authContext")) {
-			this._updateSubpanels()
-		}
-	}
-
-	private _updateSubpanels() {
-		for (const subpanel of this._subpanels) {
-			subpanel.authContext = this.authContext
-		}
 	}
 
 	private _decodeAuthContext(accessToken: AccessToken) {

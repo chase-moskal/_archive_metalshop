@@ -1,22 +1,28 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
-import {ProfileLoadedEvent} from "../events/profile-loaded-event.js"
+
 import {
 	Profile,
 	AuthContext,
-	UserSubpanel,
 	ProfileManagerTopic,
 } from "../interfaces.js"
 
-export class ProfileSubpanel extends LitElement implements UserSubpanel {
+import {UserLoginEvent} from "../events/user-login-event.js"
+import {UserLogoutEvent} from "../events/user-logout-event.js"
+import {ProfileLoadedEvent} from "../events/profile-loaded-event.js"
+
+export class ProfileSubpanel extends LitElement {
 	@property({type: Object}) profileManager: ProfileManagerTopic = null
 
 	@property({type: Object}) profile: Profile = null
 	@property({type: Object}) authContext: AuthContext = null
 
-	updated(changedProperties: PropertyValues) {
-		if (changedProperties.has("authContext")) {
-			this._loadProfile()
+	private _windowEventListeners = {
+		[UserLoginEvent.eventName]: (event: UserLoginEvent) => {
+			this.authContext = event.detail
+		},
+		[UserLogoutEvent.eventName]: () => {
+			this.authContext = null
 		}
 	}
 
@@ -29,6 +35,26 @@ export class ProfileSubpanel extends LitElement implements UserSubpanel {
 		else {
 			this.profile = null
 		}
+	}
+
+	protected updated(changedProperties: PropertyValues) {
+		if (changedProperties.has("authContext")) {
+			this._loadProfile()
+		}
+	}
+
+	connectedCallback() {
+		for (const [eventName, eventHandler]
+			of Object.entries(this._windowEventListeners))
+				window.addEventListener(eventName, eventHandler)
+		super.connectedCallback()
+	}
+
+	disconnectedCallback() {
+		for (const [eventName, eventHandler]
+			of Object.entries(this._windowEventListeners))
+				window.removeEventListener(eventName, eventHandler)
+		super.disconnectedCallback()
 	}
 
 	static get styles() {

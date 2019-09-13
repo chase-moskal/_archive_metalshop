@@ -26,7 +26,3 @@ export interface ProfileManagerTopic {
 export interface UserLoginDetail {
 	authContext: AuthContext
 }
-
-export interface UserSubpanel {
-	authContext: AuthContext
-}
