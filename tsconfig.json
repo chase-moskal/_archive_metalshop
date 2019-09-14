@@ -15,6 +15,6 @@
 	"exclude": [
 		"node_modules/**/*",
 		"source-archive/**/*",
-		"source-archive2/**/*",
+		"source-archive2/**/*"
 	]
 }

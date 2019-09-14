@@ -1,4 +1,6 @@
 
+import {createAccountPopupCrosscallClient} from "authoritarian/dist/clients.js"
+
 import "menutown/dist/register-all.js"
 import "./register-all.js"
 
@@ -13,6 +15,15 @@ import {
 	MockPaywallGuardian,
 } from "./mocks.js"
 
+async function accountPopupLogin() {
+	const accountPopup = await createAccountPopupCrosscallClient({
+		url: "http://localhost:8000/login",
+		hostOrigin: "http://localhost:8000"
+	})
+	const authTokens = await accountPopup.login()
+	return authTokens
+}
+
 async function main() {
 	const userPanel: UserPanel = document.querySelector("user-panel")
 	const userButton: UserButton = document.querySelector("user-button")
@@ -23,7 +34,7 @@ async function main() {
 		window.addEventListener(event, () => console.log(event))
 
 	// attach mocks instead of real implementations
-	userPanel.accountPopup = new MockAccountPopup()
+	userPanel.accountPopupLogin = accountPopupLogin
 	userPanel.tokenStorage = new MockTokenStorage()
 	profileSubpanel.profileManager = new MockProfileManager()
 

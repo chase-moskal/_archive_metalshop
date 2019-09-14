@@ -1,23 +1,24 @@
 
-import {LitElement, property, html, css, PropertyValues} from "lit-element"
+import {LitElement, property, html, css} from "lit-element"
 
 import {mockDecodeToken as decodeToken} from "../mocks.js"
 import {UserLoginEvent} from "../events/user-login-event.js"
 import {UserLogoutEvent} from "../events/user-logout-event.js"
 
 import {
+	AuthTokens,
 	AccessToken,
 	AccountPopupTopic,
 	TokenStorageTopic,
 	// decodeToken,
-} from "authoritarian"
+} from "authoritarian/dist/interfaces.js"
 
 import {AuthContext} from "../interfaces.js"
 
 export class UserPanel extends LitElement {
 	@property({type: Object}) authContext: AuthContext = null
-	@property({type: Object}) accountPopup: AccountPopupTopic = null
 	@property({type: Object}) tokenStorage: TokenStorageTopic = null
+	@property({type: Function}) accountPopupLogin: () => Promise<AuthTokens> = null
 
 	async startup() {
 		const accessToken = await this.tokenStorage.passiveCheck()
@@ -31,7 +32,7 @@ export class UserPanel extends LitElement {
 	}
 
 	login = async() => {
-		const authTokens = await this.accountPopup.login()
+		const authTokens = await this.accountPopupLogin()
 		await this.tokenStorage.writeTokens(authTokens)
 		this._decodeAuthContext(authTokens.accessToken)
 	}

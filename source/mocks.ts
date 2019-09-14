@@ -4,8 +4,8 @@ import {
 	AuthTokens,
 	AccessToken,
 	AccountPopupTopic,
-	TokenStorageTopic
-} from "authoritarian"
+	TokenStorageTopic,
+} from "authoritarian/dist/interfaces.js"
 
 import {Profile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
 

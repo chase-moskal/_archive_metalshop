@@ -1,6 +1,6 @@
 
-import {Topic} from "renraku"
-import {User, AccessToken} from "authoritarian"
+import {Topic} from "renraku/dist/interfaces.js"
+import {User, AccessToken} from "authoritarian/dist/interfaces.js"
 
 export interface AuthContext {
 	user: User
