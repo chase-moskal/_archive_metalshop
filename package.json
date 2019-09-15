@@ -39,9 +39,9 @@
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "^0.0.0-dev.17",
+		"authoritarian": "0.0.0-dev.19",
 		"commotion": "^0.1.0-dev.0",
-		"crosscall": "0.0.6-dev.7",
+		"crosscall": "0.0.6-dev.8",
 		"lit-element": "^2.2.1",
 		"lit-html": "^1.1.2",
 		"menutown": "^0.0.0",
