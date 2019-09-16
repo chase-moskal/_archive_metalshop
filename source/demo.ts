@@ -1,5 +1,5 @@
 
-import {createAccountPopupCrosscallClient} from "authoritarian/dist/clients.js"
+import {AuthTokens} from "authoritarian/dist/interfaces.js"
 
 import "menutown/dist/register-all.js"
 import "./register-all.js"
@@ -15,13 +15,48 @@ import {
 	MockPaywallGuardian,
 } from "./mocks.js"
 
+const namespace = "authoritarian-login"
+
 async function accountPopupLogin() {
-	const accountPopup = await createAccountPopupCrosscallClient({
-		url: "http://localhost:8000/login",
-		hostOrigin: "http://localhost:8000"
+	const origin = "http://localhost:8000"
+	const popup = window.open(`${origin}/login`, namespace, "", true)
+
+	const promisedAuthTokens = new Promise<AuthTokens>((resolve, reject) => {
+		const listener = (event: MessageEvent) => {
+			try {
+
+				// security: make sure the origins match
+				const originsMatch = event.origin.toLowerCase() === origin.toLowerCase()
+				const correctMessage = typeof event.data === "object"
+					&& "namespace" in event.data
+					&& event.data.namespace === namespace
+				const allowed = originsMatch && correctMessage
+				if (!allowed) return
+
+				// respond to handshake so the server can learn our origin
+				if (event.data.handshake) {
+					popup.postMessage({namespace, handshake: true}, origin)
+				}
+
+				// getting those sweet tokens we've been waiting for
+				else if (event.data.tokens) {
+					const tokens: AuthTokens = event.data.tokens
+					window.removeEventListener("message", listener)
+					resolve(tokens)
+				}
+
+				else {
+					throw new Error("unknown message")
+				}
+			}
+			catch (error) {
+				reject(error)
+			}
+		}
+		window.addEventListener("message", listener)
 	})
-	const authTokens = await accountPopup.login()
-	return authTokens
+
+	return promisedAuthTokens
 }
 
 async function main() {
