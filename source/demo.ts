@@ -9,10 +9,8 @@ import {UserButton} from "./components/user-button.js"
 import {ProfileSubpanel} from "./components/profile-subpanel.js"
 
 import {
-	MockAccountPopup,
 	MockTokenStorage,
 	MockProfileManager,
-	MockPaywallGuardian,
 } from "./mocks.js"
 
 const namespace = "authoritarian-login"

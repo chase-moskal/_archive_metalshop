@@ -7,21 +7,27 @@ import {
 	ProfileManagerTopic,
 } from "../interfaces.js"
 
-import {UserLoginEvent} from "../events/user-login-event.js"
-import {UserLogoutEvent} from "../events/user-logout-event.js"
-import {ProfileLoadedEvent} from "../events/profile-loaded-event.js"
+import {
+	event,
+	Dispatcher,
+	dashifyEventName,
+	UserLoginEvent,
+	UserLogoutEvent,
+	ProfileLoadedEvent,
+} from "../events.js"
 
 export class ProfileSubpanel extends LitElement {
 	@property({type: Object}) profileManager: ProfileManagerTopic = null
-
 	@property({type: Object}) profile: Profile = null
 	@property({type: Object}) authContext: AuthContext = null
 
+	@event(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
+
 	private _windowEventListeners = {
-		[UserLoginEvent.eventName]: (event: UserLoginEvent) => {
+		[dashifyEventName(UserLoginEvent)]: (event: UserLoginEvent) => {
 			this.authContext = event.detail
 		},
-		[UserLogoutEvent.eventName]: () => {
+		[dashifyEventName(UserLogoutEvent)]: () => {
 			this.authContext = null
 		}
 	}
@@ -30,7 +36,7 @@ export class ProfileSubpanel extends LitElement {
 		if (this.authContext) {
 			const {accessToken} = this.authContext
 			this.profile = await this.profileManager.getProfile({accessToken})
-			this.dispatchEvent(new ProfileLoadedEvent(this.profile))
+			this.dispatchProfileLoaded({detail: this.profile})
 		}
 		else {
 			this.profile = null

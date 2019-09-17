@@ -22,7 +22,3 @@ export interface ProfileManagerTopic {
 	getProfile(options: {accessToken: AccessToken}): Promise<Profile>
 	setProfile(options: {accessToken: AccessToken, profile: Profile}): Promise<void>
 }
-
-export interface UserLoginDetail {
-	authContext: AuthContext
-}

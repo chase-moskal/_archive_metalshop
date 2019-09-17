@@ -2,13 +2,16 @@
 import {LitElement, property, html, css} from "lit-element"
 
 import {mockDecodeToken as decodeToken} from "../mocks.js"
-import {UserLoginEvent} from "../events/user-login-event.js"
-import {UserLogoutEvent} from "../events/user-logout-event.js"
+import {
+	event,
+	Dispatcher,
+	UserLoginEvent,
+	UserLogoutEvent
+} from "../events.js"
 
 import {
 	AuthTokens,
 	AccessToken,
-	AccountPopupTopic,
 	TokenStorageTopic,
 	// decodeToken,
 } from "authoritarian/dist/interfaces.js"
@@ -20,6 +23,9 @@ export class UserPanel extends LitElement {
 	@property({type: Object}) tokenStorage: TokenStorageTopic = null
 	@property({type: Function}) accountPopupLogin: () => Promise<AuthTokens> = null
 
+	@event(UserLoginEvent) dispatchUserLogin: Dispatcher<UserLoginEvent>
+	@event(UserLogoutEvent) dispatchUserLogout: Dispatcher<UserLogoutEvent>
+
 	async startup() {
 		const accessToken = await this.tokenStorage.passiveCheck()
 		this._decodeAuthContext(accessToken)
@@ -28,7 +34,7 @@ export class UserPanel extends LitElement {
 	logout = async() => {
 		this.tokenStorage.clearTokens()
 		this.authContext = null
-		this.dispatchEvent(new UserLogoutEvent())
+		this.dispatchUserLogout()
 	}
 
 	login = async() => {
@@ -42,7 +48,7 @@ export class UserPanel extends LitElement {
 			accessToken,
 			user: decodeToken({token: accessToken})
 		}
-		this.dispatchEvent(new UserLoginEvent(authContext))
+		this.dispatchUserLogin({detail: authContext})
 	}
 
 	static get styles() {
