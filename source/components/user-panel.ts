@@ -1,10 +1,9 @@
 
+import {bubblingEvent, Dispatcher} from "event-decorators"
 import {LitElement, property, html, css} from "lit-element"
 
 import {mockDecodeToken as decodeToken} from "../mocks.js"
 import {
-	event,
-	Dispatcher,
 	UserLoginEvent,
 	UserLogoutEvent
 } from "../events.js"
@@ -23,8 +22,8 @@ export class UserPanel extends LitElement {
 	@property({type: Object}) tokenStorage: TokenStorageTopic = null
 	@property({type: Function}) accountPopupLogin: () => Promise<AuthTokens> = null
 
-	@event(UserLoginEvent) dispatchUserLogin: Dispatcher<UserLoginEvent>
-	@event(UserLogoutEvent) dispatchUserLogout: Dispatcher<UserLogoutEvent>
+	@bubblingEvent(UserLoginEvent) dispatchUserLogin: Dispatcher<UserLoginEvent>
+	@bubblingEvent(UserLogoutEvent) dispatchUserLogout: Dispatcher<UserLogoutEvent>
 
 	async startup() {
 		const accessToken = await this.tokenStorage.passiveCheck()

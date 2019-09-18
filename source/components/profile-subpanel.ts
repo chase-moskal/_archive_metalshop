@@ -1,4 +1,5 @@
 
+import {bubblingEvent, Dispatcher, listener} from "event-decorators"
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
 
 import {
@@ -8,9 +9,6 @@ import {
 } from "../interfaces.js"
 
 import {
-	event,
-	Dispatcher,
-	dashifyEventName,
 	UserLoginEvent,
 	UserLogoutEvent,
 	ProfileLoadedEvent,
@@ -21,15 +19,16 @@ export class ProfileSubpanel extends LitElement {
 	@property({type: Object}) profile: Profile = null
 	@property({type: Object}) authContext: AuthContext = null
 
-	@event(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
+	@bubblingEvent(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
 
-	private _windowEventListeners = {
-		[dashifyEventName(UserLoginEvent)]: (event: UserLoginEvent) => {
-			this.authContext = event.detail
-		},
-		[dashifyEventName(UserLogoutEvent)]: () => {
-			this.authContext = null
-		}
+	@listener(UserLoginEvent, {target: window})
+	protected _handleUserLogin = (event: UserLoginEvent) => {
+		this.authContext = event.detail
+	}
+
+	@listener(UserLogoutEvent, {target: window})
+	protected _handleUserLogout = (event: UserLogoutEvent) => {
+		this.authContext = null
 	}
 
 	private async _loadProfile() {
@@ -47,20 +46,6 @@ export class ProfileSubpanel extends LitElement {
 		if (changedProperties.has("authContext")) {
 			this._loadProfile()
 		}
-	}
-
-	connectedCallback() {
-		for (const [eventName, eventHandler]
-			of Object.entries(this._windowEventListeners))
-				window.addEventListener(eventName, eventHandler)
-		super.connectedCallback()
-	}
-
-	disconnectedCallback() {
-		for (const [eventName, eventHandler]
-			of Object.entries(this._windowEventListeners))
-				window.removeEventListener(eventName, eventHandler)
-		super.disconnectedCallback()
 	}
 
 	static get styles() {
