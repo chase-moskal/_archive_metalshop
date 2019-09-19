@@ -13,11 +13,11 @@ import {
 	MockProfileManager,
 } from "./mocks.js"
 
-const namespace = "authoritarian-login"
+const namespace = "authoritarian-account-popup"
 
 async function accountPopupLogin() {
 	const origin = "http://localhost:8000"
-	const popup = window.open(`${origin}/login`, namespace, "", true)
+	const popup = window.open(`${origin}/html/account-popup`, namespace, "", true)
 
 	const promisedAuthTokens = new Promise<AuthTokens>((resolve, reject) => {
 		const listener = (event: MessageEvent) => {
