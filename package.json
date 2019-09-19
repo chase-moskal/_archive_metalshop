@@ -39,14 +39,14 @@
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.19",
+		"authoritarian": "0.0.0-dev.21",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.8",
 		"event-decorators": "0.0.0-dev.0",
 		"lit-element": "^2.2.1",
 		"lit-html": "^1.1.2",
 		"menutown": "^0.0.0",
-		"renraku": "^0.0.0-dev.8",
+		"renraku": "0.0.0-dev.9",
 		"sassbass": "^0.0.1"
 	},
 	"repository": {
