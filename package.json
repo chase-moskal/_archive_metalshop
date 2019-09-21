@@ -46,7 +46,7 @@
 		"lit-element": "^2.2.1",
 		"lit-html": "^1.1.2",
 		"menutown": "^0.0.0",
-		"renraku": "0.0.0-dev.9",
+		"renraku": "0.0.0-dev.10",
 		"sassbass": "^0.0.1"
 	},
 	"repository": {

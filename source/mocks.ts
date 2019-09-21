@@ -26,8 +26,8 @@ export class MockTokenStorage implements TokenStorageTopic {
 export class MockProfileManager implements ProfileManagerTopic {
 	async getProfile(options: {accessToken: AccessToken}): Promise<Profile> {
 		return {
-			nickname: "Chase",
-			realname: "Chase Moskal",
+			nickname: "fake chase",
+			realname: "Fake Chase Moskal",
 			picture: "https://picsum.photos/id/375/200/200",
 		}
 	}
