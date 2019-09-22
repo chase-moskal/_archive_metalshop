@@ -31,7 +31,7 @@ export class ProfileSubpanel extends LitElement {
 	private async _loadProfile() {
 		if (this.authContext) {
 			const {accessToken} = this.authContext
-			this.profile = await this.profiler.getProfile({accessToken})
+			this.profile = await this.profiler.getFullProfile({accessToken})
 			this.dispatchProfileLoaded({detail: this.profile})
 		}
 		else {
@@ -52,9 +52,9 @@ export class ProfileSubpanel extends LitElement {
 	render() {
 		const {profile} = this
 		return profile ? html`
-			<img src=${profile.picture} alt="[your profile picture]"/>
-			<h2>${profile.realname}</h2>
-			<p>Display name: ${profile.nickname}</p>
+			<img src=${profile.public.picture} alt="[your profile picture]"/>
+			<h2>${profile.private.realname}</h2>
+			<p>Display name: ${profile.public.nickname}</p>
 		` : html``
 	}
 }

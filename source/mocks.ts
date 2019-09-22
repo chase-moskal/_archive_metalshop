@@ -27,15 +27,31 @@ export class MockTokenStorage implements TokenStorageTopic {
 }
 
 export class MockProfileManager implements ProfilerTopic {
-	async getProfile(options: {accessToken: AccessToken}): Promise<Profile> {
+	async getPublicProfile({userId}): Promise<Profile> {
 		return {
-			userId: "lol48729i318920u3",
-			nickname: "fake chase",
-			realname: "Fake Chase Moskal",
-			picture: "https://picsum.photos/id/375/200/200",
+			userId,
+			public: {
+				nickname: "fake chase",
+				picture: "https://picsum.photos/id/375/200/200",
+			},
+			private: {
+				realname: "Fake Chase Moskal",
+			}
 		}
 	}
-	async setProfile(options: {accessToken: AccessToken, profile: Profile}): Promise<void> {
+	async getFullProfile(options): Promise<Profile> {
+		return {
+			userId: "lol48729i318920u3",
+			public: {
+				nickname: "fake chase",
+				picture: "https://picsum.photos/id/375/200/200",
+			},
+			private: {
+				realname: "Fake Chase Moskal",
+			}
+		}
+	}
+	async setFullProfile(options): Promise<void> {
 		return undefined
 	}
 }
