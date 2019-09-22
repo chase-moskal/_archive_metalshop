@@ -1,12 +1,9 @@
 
 import {bubblingEvent, Dispatcher, listener} from "event-decorators"
+import {Profile, ProfilerTopic} from "authoritarian/dist/interfaces.js"
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
 
-import {
-	Profile,
-	AuthContext,
-	ProfileManagerTopic,
-} from "../interfaces.js"
+import {AuthContext} from "../interfaces.js"
 
 import {
 	UserLoginEvent,
@@ -15,9 +12,9 @@ import {
 } from "../events.js"
 
 export class ProfileSubpanel extends LitElement {
-	@property({type: Object}) profileManager: ProfileManagerTopic = null
-	@property({type: Object}) profile: Profile = null
-	@property({type: Object}) authContext: AuthContext = null
+	@property({type: Object}) profile: Profile
+	@property({type: Object}) profiler: ProfilerTopic
+	@property({type: Object}) authContext: AuthContext
 
 	@bubblingEvent(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
 
@@ -34,7 +31,7 @@ export class ProfileSubpanel extends LitElement {
 	private async _loadProfile() {
 		if (this.authContext) {
 			const {accessToken} = this.authContext
-			this.profile = await this.profileManager.getProfile({accessToken})
+			this.profile = await this.profiler.getProfile({accessToken})
 			this.dispatchProfileLoaded({detail: this.profile})
 		}
 		else {

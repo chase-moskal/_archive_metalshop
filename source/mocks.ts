@@ -1,13 +1,16 @@
 
 import {
 	User,
+	Profile,
 	AuthTokens,
 	AccessToken,
+	ProfilerTopic,
 	AccountPopupTopic,
 	TokenStorageTopic,
+	PaywallGuardianTopic,
 } from "authoritarian/dist/interfaces.js"
 
-import {Profile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
+// import {Profile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
 
 export class MockAccountPopup implements AccountPopupTopic {
 	async login() {
@@ -23,9 +26,10 @@ export class MockTokenStorage implements TokenStorageTopic {
 	async clearTokens() {}
 }
 
-export class MockProfileManager implements ProfileManagerTopic {
+export class MockProfileManager implements ProfilerTopic {
 	async getProfile(options: {accessToken: AccessToken}): Promise<Profile> {
 		return {
+			userId: "lol48729i318920u3",
 			nickname: "fake chase",
 			realname: "Fake Chase Moskal",
 			picture: "https://picsum.photos/id/375/200/200",

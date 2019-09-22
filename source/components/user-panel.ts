@@ -15,12 +15,13 @@ import {
 	// decodeToken,
 } from "authoritarian/dist/interfaces.js"
 
-import {AuthContext} from "../interfaces.js"
+import {AuthContext, AccountPopupLogin} from "../interfaces.js"
 
 export class UserPanel extends LitElement {
-	@property({type: Object}) authContext: AuthContext = null
-	@property({type: Object}) tokenStorage: TokenStorageTopic = null
-	@property({type: Function}) accountPopupLogin: () => Promise<AuthTokens> = null
+	@property({type: String}) server: string
+	@property({type: Object}) authContext: AuthContext
+	@property({type: Object}) tokenStorage: TokenStorageTopic
+	@property({type: Function}) accountPopupLogin: AccountPopupLogin
 
 	@bubblingEvent(UserLoginEvent) dispatchUserLogin: Dispatcher<UserLoginEvent>
 	@bubblingEvent(UserLogoutEvent) dispatchUserLogout: Dispatcher<UserLogoutEvent>
@@ -37,7 +38,7 @@ export class UserPanel extends LitElement {
 	}
 
 	login = async() => {
-		const authTokens = await this.accountPopupLogin()
+		const authTokens = await this.accountPopupLogin(this.server)
 		await this.tokenStorage.writeTokens(authTokens)
 		this._decodeAuthContext(authTokens.accessToken)
 	}
