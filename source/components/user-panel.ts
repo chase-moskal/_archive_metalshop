@@ -2,18 +2,17 @@
 import {bubblingEvent, Dispatcher} from "event-decorators"
 import {LitElement, property, html, css} from "lit-element"
 
-import {mockDecodeToken as decodeToken} from "../mocks.js"
 import {
 	UserLoginEvent,
 	UserLogoutEvent
 } from "../events.js"
 
 import {
-	AuthTokens,
 	AccessToken,
+	AccessPayload,
 	TokenStorageTopic,
-	// decodeToken,
 } from "authoritarian/dist/interfaces.js"
+import {bdecode} from "authoritarian/dist/bdecode.js"
 
 import {AuthContext, AccountPopupLogin} from "../interfaces.js"
 
@@ -28,7 +27,13 @@ export class UserPanel extends LitElement {
 
 	async startup() {
 		const accessToken = await this.tokenStorage.passiveCheck()
-		this._decodeAuthContext(accessToken)
+		if (accessToken) {
+			console.log("token storage provides access token")
+			this._decodeAuthContext(accessToken)
+		}
+		else {
+			console.log("token storage has no access token")
+		}
 	}
 
 	logout = async() => {
@@ -46,7 +51,7 @@ export class UserPanel extends LitElement {
 	private _decodeAuthContext(accessToken: AccessToken) {
 		const authContext = this.authContext = {
 			accessToken,
-			user: decodeToken({token: accessToken})
+			user: bdecode<AccessPayload>(accessToken).payload.user
 		}
 		this.dispatchUserLogin({detail: authContext})
 	}

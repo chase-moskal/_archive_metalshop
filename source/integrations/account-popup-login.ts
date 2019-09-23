@@ -1,11 +1,11 @@
 
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
 
-const accountPopupNamespace = "authoritarian-account-popup"
+const namespace = "authoritarian-account-popup"
 
 export async function accountPopupLogin(authServerUrl: string) {
 	const {origin: authServerOrigin} = new URL(authServerUrl)
-	const popup = window.open(`${authServerOrigin}/html/account-popup`, accountPopupNamespace, "", true)
+	const popup = window.open(`${authServerOrigin}/html/account-popup`, namespace, "", true)
 
 	const promisedAuthTokens = new Promise<AuthTokens>((resolve, reject) => {
 		const listener = (event: MessageEvent) => {
@@ -15,14 +15,14 @@ export async function accountPopupLogin(authServerUrl: string) {
 				const originsMatch = event.origin.toLowerCase() === authServerOrigin.toLowerCase()
 				const correctMessage = typeof event.data === "object"
 					&& "namespace" in event.data
-					&& event.data.namespace === accountPopupNamespace
+					&& event.data.namespace === namespace
 				const allowed = originsMatch && correctMessage
 				if (!allowed) return
 
 				// respond to handshake so the server can learn our origin
 				if (event.data.handshake) {
 					popup.postMessage({
-						namespace: accountPopupNamespace,
+						namespace,
 						handshake: true
 					}, authServerOrigin)
 				}

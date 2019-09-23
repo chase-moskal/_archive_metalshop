@@ -31,8 +31,18 @@ export class ProfileSubpanel extends LitElement {
 	private async _loadProfile() {
 		if (this.authContext) {
 			const {accessToken} = this.authContext
-			this.profile = await this.profiler.getFullProfile({accessToken})
-			this.dispatchProfileLoaded({detail: this.profile})
+			if (accessToken) {
+				this.profile = await this.profiler.getFullProfile({accessToken})
+				if (this.profile) {
+					this.dispatchProfileLoaded({detail: this.profile})
+				}
+				else {
+					console.warn("failed to load profile")
+				}
+			}
+			else {
+				console.warn("auth context has no access token")
+			}
 		}
 		else {
 			this.profile = null

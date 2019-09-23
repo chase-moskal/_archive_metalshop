@@ -64,12 +64,3 @@ export class MockPaywallGuardian implements PaywallGuardianTopic {
 		return "a123"
 	}
 }
-
-export function mockDecodeToken({token}: {token: AccessToken}): User {
-	return {
-		userId: "1",
-		claims: {
-			supercool: true
-		}
-	}
-}
