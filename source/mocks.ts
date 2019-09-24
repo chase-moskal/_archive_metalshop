@@ -5,18 +5,21 @@ import {
 	AuthTokens,
 	AccessToken,
 	ProfilerTopic,
-	AccountPopupTopic,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
 } from "authoritarian/dist/interfaces.js"
+import {AccountPopupLogin, AuthContext} from "./interfaces.js"
 
-// import {Profile, PaywallGuardianTopic, ProfileManagerTopic} from "./interfaces.js"
-
-export class MockAccountPopup implements AccountPopupTopic {
-	async login() {
-		return {accessToken: "a123", refreshToken: "r123"}
-	}
+export const mockAccountPopupLogin: AccountPopupLogin = async() => {
+	return {accessToken: "a123", refreshToken: "r123"}
 }
+
+export const mockDecodeAccessToken = (accessToken: AccessToken):
+	AuthContext => ({
+		exp: (Date.now() / 1000) + 10,
+		user: {userId: "u123", claims: {premium: true}},
+		accessToken
+	})
 
 export class MockTokenStorage implements TokenStorageTopic {
 	async passiveCheck() {
@@ -26,7 +29,7 @@ export class MockTokenStorage implements TokenStorageTopic {
 	async clearTokens() {}
 }
 
-export class MockProfileManager implements ProfilerTopic {
+export class MockProfiler implements ProfilerTopic {
 	async getPublicProfile({userId}): Promise<Profile> {
 		return {
 			userId,

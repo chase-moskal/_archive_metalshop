@@ -8,5 +8,5 @@ export interface AuthContext {
 }
 
 export type GetAuthContext = () => Promise<AuthContext>
-
 export type AccountPopupLogin = (authServerUrl: string) => Promise<AuthTokens>
+export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext

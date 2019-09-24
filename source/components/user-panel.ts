@@ -3,72 +3,109 @@ import {bubblingEvent, Dispatcher} from "event-decorators"
 import {LitElement, property, html, css} from "lit-element"
 
 import {
-	UserLoginEvent,
-	UserLogoutEvent
-} from "../events.js"
-
-import {
 	AccessToken,
 	AccessPayload,
 	TokenStorageTopic,
 } from "authoritarian/dist/interfaces.js"
 import {bdecode} from "authoritarian/dist/bdecode.js"
+import {createTokenStorageCrosscallClient} from "authoritarian/dist/clients.js"
 
-import {AccountPopupLogin, AuthContext, GetAuthContext} from "../interfaces.js"
+import {
+	UserLoginEvent,
+	UserLogoutEvent
+} from "../events.js"
 
-const expiryGracePeriodSeconds = 60
+import {
+	AuthContext,
+	GetAuthContext,
+	AccountPopupLogin,
+	DecodeAccessToken,
+} from "../interfaces.js"
 
-function decodeAccessToken(accessToken: AccessToken): AuthContext {
-	const data = bdecode<AccessPayload>(accessToken)
-	const {payload, exp} = data
-	const {user} = payload
-	return {exp, user, accessToken}
-}
+const expiryGraceSeconds = 60
 
 export class UserPanel extends LitElement {
-	@property({type: String}) server: string
-	@property({type: Object}) authContext: AuthContext
-	@property({type: Object}) tokenStorage: TokenStorageTopic
-	@property({type: Function}) getAuthContext: GetAuthContext
-	@property({type: Function}) accountPopupLogin: AccountPopupLogin
+	getAuthContext: GetAuthContext
+	private _tokenStorage: TokenStorageTopic
+	private _accountPopupLogin: AccountPopupLogin
+	private _decodeAccessToken: DecodeAccessToken
 
-	@bubblingEvent(UserLoginEvent) dispatchUserLogin: Dispatcher<UserLoginEvent>
-	@bubblingEvent(UserLogoutEvent) dispatchUserLogout: Dispatcher<UserLogoutEvent>
+	@property({type: String})
+		server: string
 
-	async startup() {
-		const accessToken = await this.tokenStorage.passiveCheck()
+	@property({type: Object})
+		private _authContext: AuthContext
+
+	@bubblingEvent(UserLoginEvent)
+		dispatchUserLogin: Dispatcher<UserLoginEvent>
+
+	@bubblingEvent(UserLogoutEvent)
+		dispatchUserLogout: Dispatcher<UserLogoutEvent>
+
+	configure({server, tokenStorage, accountPopupLogin, decodeAccessToken}: {
+		server?: string
+		tokenStorage?: TokenStorageTopic
+		accountPopupLogin?: AccountPopupLogin
+		decodeAccessToken?: DecodeAccessToken
+	} = {}) {
+		this.server = server
+		this._tokenStorage = tokenStorage
+		this._accountPopupLogin = accountPopupLogin
+		this._decodeAccessToken = decodeAccessToken
+	}
+
+	async firstUpdated() {
+		this._decodeAccessToken = this._decodeAccessToken ||
+			(accessToken => {
+				const data = bdecode<AccessPayload>(accessToken)
+				const {payload, exp} = data
+				const {user} = payload
+				return {exp, user, accessToken}
+			})
+		this._tokenStorage = this._tokenStorage || await createTokenStorageCrosscallClient({
+			url: `${this.server}/html/token-storage`
+		})
+
+		const accessToken = await this._tokenStorage.passiveCheck()
+
 		if (accessToken) {
 			console.log("token storage provides access token")
-			this._handleNewAccessToken(accessToken)
+			this._receiveAccessToken(accessToken)
 		}
 		else {
-			console.log("token storage has no access token")
+			console.log("no access token from token storage")
 		}
 	}
 
+	/**
+	 * Perform a login
+	 */
+	login = async() => {
+		const authTokens = await this._accountPopupLogin(this.server)
+		await this._tokenStorage.writeTokens(authTokens)
+		this._receiveAccessToken(authTokens.accessToken)
+	}
+
+	/**
+	 * Perform a logout
+	 */
 	logout = async() => {
-		this.tokenStorage.clearTokens()
-		this.authContext = null
+		this._tokenStorage.clearTokens()
+		this._authContext = null
 		this.dispatchUserLogout()
 	}
 
-	login = async() => {
-		const authTokens = await this.accountPopupLogin(this.server)
-		await this.tokenStorage.writeTokens(authTokens)
-		this._handleNewAccessToken(authTokens.accessToken)
-	}
-
-	private _handleNewAccessToken(accessToken: AccessToken) {
-		this.authContext = decodeAccessToken(accessToken)
+	private _receiveAccessToken(accessToken: AccessToken) {
+		this._authContext = this._decodeAccessToken(accessToken)
 
 		const getAuthContext = async() => {
-			const expWithoutGrace = (this.authContext.exp - expiryGracePeriodSeconds)
-			const expired = expWithoutGrace < (Date.now() / 1000)
+			const gracedExp = (this._authContext.exp - expiryGraceSeconds)
+			const expired = gracedExp < (Date.now() / 1000)
 			if (expired) {
-				const accessToken = await this.tokenStorage.passiveCheck()
-				this.authContext = decodeAccessToken(accessToken)
+				const accessToken = await this._tokenStorage.passiveCheck()
+				this._authContext = this._decodeAccessToken(accessToken)
 			}
-			return this.authContext
+			return this._authContext
 		}
 
 		this.dispatchUserLogin({detail: {getAuthContext}})
@@ -80,11 +117,11 @@ export class UserPanel extends LitElement {
 
 	render() {
 		return html`
-			${!this.authContext
+			${!this._authContext
 				? html`<button class="login" @click=${this.login}>Login</button>`
 				: html``}
 			<slot></slot>
-			${this.authContext
+			${this._authContext
 				? html`<button class="logout" @click=${this.logout}>Logout</button>`
 				: html``}
 		`
