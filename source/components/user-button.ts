@@ -12,7 +12,7 @@ export class UserButton extends LitElement {
 
 	@listener(ProfileLoadedEvent, {target: window})
 	protected _handleProfileLoaded = (event: ProfileLoadedEvent) => {
-		const profile = event.detail
+		const {profile} = event.detail
 		this.picture = html`<img src=${profile.public.picture} alt="[your profile picture]"/>`
 	}
 

@@ -5,7 +5,8 @@ const namespace = "authoritarian-account-popup"
 
 export async function accountPopupLogin(authServerUrl: string) {
 	const {origin: authServerOrigin} = new URL(authServerUrl)
-	const popup = window.open(`${authServerOrigin}/html/account-popup`, namespace, "", true)
+	const popup = window.open(`${authServerOrigin}/html/account-popup`, namespace, popupFeatures(), true)
+	popup.focus()
 
 	const promisedAuthTokens = new Promise<AuthTokens>((resolve, reject) => {
 		const listener = (event: MessageEvent) => {
@@ -31,6 +32,7 @@ export async function accountPopupLogin(authServerUrl: string) {
 				else if (event.data.tokens) {
 					const tokens: AuthTokens = event.data.tokens
 					window.removeEventListener("message", listener)
+					popup.close()
 					resolve(tokens)
 				}
 
@@ -46,4 +48,22 @@ export async function accountPopupLogin(authServerUrl: string) {
 	})
 
 	return promisedAuthTokens
+}
+
+function popupFeatures(width = 260, height = 260) {
+	const {outerWidth, outerHeight, screenY, screenX} = window.top
+	const top = ((outerHeight / 2) + screenY - (height / 2)) / 2
+	const left = (outerWidth / 2) + screenX - (width / 2)
+	return `
+		width=${width},
+		height=${height},
+		top=${top},
+		left=${left},
+		toolbar=no,
+		location=no,
+		status=no,
+		menubar=no,
+		scrollbars=yes,
+		resizable=yes
+	`
 }

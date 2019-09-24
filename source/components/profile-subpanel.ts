@@ -14,45 +14,26 @@ import {
 export class ProfileSubpanel extends LitElement {
 	@property({type: Object}) profile: Profile
 	@property({type: Object}) profiler: ProfilerTopic
-	@property({type: Object}) authContext: AuthContext
 
 	@bubblingEvent(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
 
 	@listener(UserLoginEvent, {target: window})
-	protected _handleUserLogin = (event: UserLoginEvent) => {
-		this.authContext = event.detail
+	protected _handleUserLogin = async(event: UserLoginEvent) => {
+		const authContext = await event.detail.getAuthContext()
+		this.profile = await this._loadProfile(authContext)
 	}
 
 	@listener(UserLogoutEvent, {target: window})
 	protected _handleUserLogout = (event: UserLogoutEvent) => {
-		this.authContext = null
+		this.profile = null
 	}
 
-	private async _loadProfile() {
-		if (this.authContext) {
-			const {accessToken} = this.authContext
-			if (accessToken) {
-				this.profile = await this.profiler.getFullProfile({accessToken})
-				if (this.profile) {
-					this.dispatchProfileLoaded({detail: this.profile})
-				}
-				else {
-					console.warn("failed to load profile")
-				}
-			}
-			else {
-				console.warn("auth context has no access token")
-			}
-		}
-		else {
-			this.profile = null
-		}
-	}
-
-	protected updated(changedProperties: PropertyValues) {
-		if (changedProperties.has("authContext")) {
-			this._loadProfile()
-		}
+	private async _loadProfile(authContext: AuthContext) {
+		const {accessToken} = authContext
+		const profile = await this.profiler.getFullProfile({accessToken})
+		if (!profile) console.warn("failed to load profile")
+		this.dispatchProfileLoaded({detail: {profile}})
+		return profile
 	}
 
 	static get styles() {
