@@ -13,33 +13,36 @@ import {
 	ProfileLoadedEvent,
 } from "../events.js"
 
-export class ProfileSubpanel extends LitElement {
-	@property({type: Object}) profile: Profile
+export class ProfilePanel extends LitElement {
 	private _profiler: ProfilerTopic
 
+	@property({type: String}) server: string
+	@property({type: Object}) private _profile: Profile
 	@bubblingEvent(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
 
-	configure({profiler}: {
+	configure({server, profiler}: {
+		server?: string
 		profiler?: ProfilerTopic
 	} = {}) {
+		this.server = server
 		this._profiler = profiler
 	}
 
 	async firstUpdated() {
 		this._profiler = this._profiler || await createProfilerCacheCrosscallClient({
-			url: "http://localhost:8001/html/profiler-cache"
+			url: `${this.server}/html/profiler-cache`
 		})
 	}
 
 	@listener(UserLoginEvent, {target: window})
 	protected _handleUserLogin = async(event: UserLoginEvent) => {
 		const authContext = await event.detail.getAuthContext()
-		this.profile = await this._loadProfile(authContext)
+		this._profile = await this._loadProfile(authContext)
 	}
 
 	@listener(UserLogoutEvent, {target: window})
 	protected _handleUserLogout = (event: UserLogoutEvent) => {
-		this.profile = null
+		this._profile = null
 	}
 
 	private async _loadProfile(authContext: AuthContext) {
@@ -55,11 +58,11 @@ export class ProfileSubpanel extends LitElement {
 	}
 
 	render() {
-		const {profile} = this
-		return profile ? html`
-			<img src=${profile.public.picture} alt="[your profile picture]"/>
-			<h2>${profile.private.realname}</h2>
-			<p>Display name: ${profile.public.nickname}</p>
+		const {_profile} = this
+		return _profile ? html`
+			<img src=${_profile.public.picture} alt="[your profile picture]"/>
+			<h2>${_profile.private.realname}</h2>
+			<p>Display name: ${_profile.public.nickname}</p>
 		` : html``
 	}
 }

@@ -4,7 +4,7 @@ import "./register-all.js"
 
 import {UserPanel} from "./components/user-panel.js"
 import {UserButton} from "./components/user-button.js"
-import {ProfileSubpanel} from "./components/profile-subpanel.js"
+import {ProfilePanel} from "./components/profile-panel.js"
 
 import {
 	MockProfiler,
@@ -21,13 +21,13 @@ for (const event of ["user-login", "user-logout", "profile-loaded"])
 if (location.search.includes("mock") || location.hash.includes("mock")) {
 	const userPanel: UserPanel = document.querySelector("user-panel")
 	const userButton: UserButton = document.querySelector("user-button")
-	const profileSubpanel: ProfileSubpanel = document.querySelector("profile-subpanel")
+	const profilePanel: ProfilePanel = document.querySelector("profile-panel")
 	userPanel.configure({
 		tokenStorage: new MockTokenStorage(),
 		accountPopupLogin: mockAccountPopupLogin,
 		decodeAccessToken: mockDecodeAccessToken
 	})
-	profileSubpanel.configure({
+	profilePanel.configure({
 		profiler: new MockProfiler()
 	})
 }
