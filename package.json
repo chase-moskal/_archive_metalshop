@@ -39,7 +39,7 @@
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.24",
+		"authoritarian": "0.0.0-dev.26",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.9",
 		"event-decorators": "0.0.0-dev.0",
