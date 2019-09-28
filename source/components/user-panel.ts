@@ -10,6 +10,7 @@ import {
 import {bdecode} from "authoritarian/dist/bdecode.js"
 import {createTokenStorageCrosscallClient} from "authoritarian/dist/clients.js"
 
+import {accountPopupLogin} from "../integrations/account-popup-login.js"
 import {
 	UserLoginEvent,
 	UserLogoutEvent
@@ -42,32 +43,16 @@ export class UserPanel extends LitElement {
 	@bubblingEvent(UserLogoutEvent)
 		dispatchUserLogout: Dispatcher<UserLogoutEvent>
 
-	configure({server, tokenStorage, accountPopupLogin, decodeAccessToken}: {
-		server?: string
-		tokenStorage?: TokenStorageTopic
-		accountPopupLogin?: AccountPopupLogin
-		decodeAccessToken?: DecodeAccessToken
-	} = {}) {
-		this.server = server
+	async start({tokenStorage, accountPopupLogin, decodeAccessToken}: {
+		tokenStorage: TokenStorageTopic
+		accountPopupLogin: AccountPopupLogin
+		decodeAccessToken: DecodeAccessToken
+	}) {
 		this._tokenStorage = tokenStorage
 		this._accountPopupLogin = accountPopupLogin
 		this._decodeAccessToken = decodeAccessToken
-	}
-
-	async firstUpdated() {
-		this._decodeAccessToken = this._decodeAccessToken ||
-			(accessToken => {
-				const data = bdecode<AccessPayload>(accessToken)
-				const {payload, exp} = data
-				const {user} = payload
-				return {exp, user, accessToken}
-			})
-		this._tokenStorage = this._tokenStorage || await createTokenStorageCrosscallClient({
-			url: `${this.server}/html/token-storage`
-		})
 
 		const accessToken = await this._tokenStorage.passiveCheck()
-
 		if (accessToken) {
 			console.log("token storage provides access token")
 			this._receiveAccessToken(accessToken)

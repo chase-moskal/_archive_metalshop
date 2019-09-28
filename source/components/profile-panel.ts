@@ -1,9 +1,7 @@
 
-import {bubblingEvent, Dispatcher, listener} from "event-decorators"
 import {LitElement, property, html, css} from "lit-element"
-
+import {bubblingEvent, Dispatcher, listener} from "event-decorators"
 import {Profile, ProfilerTopic} from "authoritarian/dist/interfaces.js"
-import {createProfilerCacheCrosscallClient} from "authoritarian/dist/clients.js"
 
 import {AuthContext} from "../interfaces.js"
 
@@ -20,18 +18,8 @@ export class ProfilePanel extends LitElement {
 	@property({type: Object}) private _profile: Profile
 	@bubblingEvent(ProfileLoadedEvent) dispatchProfileLoaded: Dispatcher<ProfileLoadedEvent>
 
-	configure({server, profiler}: {
-		server?: string
-		profiler?: ProfilerTopic
-	} = {}) {
-		this.server = server
+	async start({profiler}: {profiler: ProfilerTopic}) {
 		this._profiler = profiler
-	}
-
-	async firstUpdated() {
-		this._profiler = this._profiler || await createProfilerCacheCrosscallClient({
-			url: `${this.server}/html/profiler-cache`
-		})
 	}
 
 	@listener(UserLoginEvent, {target: window})
