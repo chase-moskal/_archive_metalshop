@@ -10,36 +10,74 @@ import {UserPanel} from "./components/user-panel.js"
 import {UserButton} from "./components/user-button.js"
 import {ProfilePanel} from "./components/profile-panel.js"
 
+import {UserModel} from "./models/user-model.js"
+import {selects, select} from "./toolbox/selects.js"
+import {ProfileModel} from "./models/profile-model.js"
+
 export async function authoritarianStart(options: {
-	userPanel?: UserPanel
-	userButton?: UserButton
-	profilePanel?: ProfilePanel
+	config?: Element
+	profilerUrl?: string
+	authServerUrl?: string
+	paywallGuardianUrl?: string
+
+	eventTarget?: EventTarget
+	userPanels?: UserPanel[]
+	userButtons?: UserButton[]
+	profilePanels?: ProfilePanel[]
+
 	profiler?: ProfilerTopic
 	tokenStorage?: TokenStorageTopic
 	accountPopupLogin?: AccountPopupLogin
 	decodeAccessToken?: DecodeAccessToken
 } = {}) {
+	const getConfig = (key: string, element: Element) => element.getAttribute(key)
 	const {
-		userPanel = document.querySelector<UserPanel>("user-panel"),
-		userButton = document.querySelector<UserButton>("user-button"),
-		profilePanel = document.querySelector<ProfilePanel>("profile-panel"),
-		profiler = await createProfilerCacheCrosscallClient({
-			url: `${profilePanel.server}/html/profiler-cache`
-		}),
-		tokenStorage = await createTokenStorageCrosscallClient({
-			url: `${userPanel.server}/html/token-storage`
-		}),
+		config = select("authoritarian-config"),
+		eventTarget = document.body,
+		userPanels = selects<UserPanel>("user-panel"),
+		userButtons = selects<UserButton>("user-button"),
+		profilePanels = selects<ProfilePanel>("profile-panel"),
 		accountPopupLogin = defaultAccountPopupLogin,
 		decodeAccessToken = defaultDecodeAccessToken,
 	} = options
+	if (!config) throw new Error(`<authoritarian-config> element required`)
+	const userModelConfig = select("user-model", config)
+	const profileModelConfig = select("profile-model", config)
+	let promises: Promise<void>[] = []
 
-	if (profilePanel)
-		await profilePanel.start({profiler})
+	if (profileModelConfig) {
+		const {
+			profilerUrl = getConfig("profiler-url", profileModelConfig),
+			profiler = await createProfilerCacheCrosscallClient({
+				url: `${profilerUrl}/html/profiler-cache`
+			})
+		} = options
+		const profileModel = new ProfileModel({
+			profiler,
+			eventTarget,
+		})
+	}
 
-	if (userPanel)
-		await userPanel.start({
+	if (userModelConfig) {
+		const {
+			authServerUrl = getConfig("auth-server-url", userModelConfig),
+			tokenStorage = await createTokenStorageCrosscallClient({
+				url: `${authServerUrl}/html/token-storage`
+			})
+		} = options
+		const userModel = new UserModel({
+			eventTarget,
 			tokenStorage,
+			authServerUrl,
 			accountPopupLogin,
 			decodeAccessToken,
 		})
+		for (const userPanel of userPanels) {
+			userPanel.onLoginClick = userModel.login
+			userPanel.onLogoutClick = userModel.logout
+		}
+		promises.push(userModel.start())
+	}
+
+	await Promise.all(promises)
 }

@@ -1,99 +1,32 @@
 
-import {bubblingEvent, Dispatcher} from "event-decorators"
+import {listener} from "event-decorators"
 import {LitElement, property, html, css} from "lit-element"
 
-import {
-	AccessToken,
-	AccessPayload,
-	TokenStorageTopic,
-} from "authoritarian/dist/interfaces.js"
-import {bdecode} from "authoritarian/dist/bdecode.js"
-import {createTokenStorageCrosscallClient} from "authoritarian/dist/clients.js"
-
-import {accountPopupLogin} from "../integrations/account-popup-login.js"
 import {
 	UserLoginEvent,
 	UserLogoutEvent
 } from "../events.js"
 
-import {
-	AuthContext,
-	GetAuthContext,
-	AccountPopupLogin,
-	DecodeAccessToken,
-} from "../interfaces.js"
-
-const expiryGraceSeconds = 60
 
 export class UserPanel extends LitElement {
-	getAuthContext: GetAuthContext
-	private _tokenStorage: TokenStorageTopic
-	private _accountPopupLogin: AccountPopupLogin
-	private _decodeAccessToken: DecodeAccessToken
 
-	@property({type: String})
-		server: string
+	@property({type: Boolean})
+	private _loggedIn: boolean = false
+	
+	@property({type: Function})
+	onLoginClick: (event: MouseEvent) => void = () => {}
 
-	@property({type: Object})
-		private _authContext: AuthContext
+	@property({type: Function})
+	onLogoutClick: (event: MouseEvent) => void = () => {}
 
-	@bubblingEvent(UserLoginEvent)
-		dispatchUserLogin: Dispatcher<UserLoginEvent>
-
-	@bubblingEvent(UserLogoutEvent)
-		dispatchUserLogout: Dispatcher<UserLogoutEvent>
-
-	async start({tokenStorage, accountPopupLogin, decodeAccessToken}: {
-		tokenStorage: TokenStorageTopic
-		accountPopupLogin: AccountPopupLogin
-		decodeAccessToken: DecodeAccessToken
-	}) {
-		this._tokenStorage = tokenStorage
-		this._accountPopupLogin = accountPopupLogin
-		this._decodeAccessToken = decodeAccessToken
-
-		const accessToken = await this._tokenStorage.passiveCheck()
-		if (accessToken) {
-			console.log("token storage provides access token")
-			this._receiveAccessToken(accessToken)
-		}
-		else {
-			console.log("no access token from token storage")
-		}
+	@listener(UserLoginEvent, {target: window})
+	protected _handleUserLogin = (event: UserLoginEvent) => {
+		this._loggedIn = true
 	}
 
-	/**
-	 * Perform a login
-	 */
-	login = async() => {
-		const authTokens = await this._accountPopupLogin(this.server)
-		await this._tokenStorage.writeTokens(authTokens)
-		this._receiveAccessToken(authTokens.accessToken)
-	}
-
-	/**
-	 * Perform a logout
-	 */
-	logout = async() => {
-		this._tokenStorage.clearTokens()
-		this._authContext = null
-		this.dispatchUserLogout()
-	}
-
-	private _receiveAccessToken(accessToken: AccessToken) {
-		this._authContext = this._decodeAccessToken(accessToken)
-
-		const getAuthContext = async() => {
-			const gracedExp = (this._authContext.exp - expiryGraceSeconds)
-			const expired = gracedExp < (Date.now() / 1000)
-			if (expired) {
-				const accessToken = await this._tokenStorage.passiveCheck()
-				this._authContext = this._decodeAccessToken(accessToken)
-			}
-			return this._authContext
-		}
-
-		this.dispatchUserLogin({detail: {getAuthContext}})
+	@listener(UserLogoutEvent, {target: window})
+	protected _handleLogoutEvent = (event: UserLogoutEvent) => {
+		this._loggedIn = false
 	}
 
 	static get styles() {
@@ -102,12 +35,12 @@ export class UserPanel extends LitElement {
 
 	render() {
 		return html`
-			${!this._authContext
-				? html`<button class="login" @click=${this.login}>Login</button>`
+			${!this._loggedIn
+				? html`<button class="login" @click=${this.onLoginClick}>Login</button>`
 				: html``}
 			<slot></slot>
-			${this._authContext
-				? html`<button class="logout" @click=${this.logout}>Logout</button>`
+			${this._loggedIn
+				? html`<button class="logout" @click=${this.onLogoutClick}>Logout</button>`
 				: html``}
 		`
 	}

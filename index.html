@@ -5,8 +5,15 @@
 		<title>authoritarian-client demo</title>
 		<link rel="stylesheet" href="source/demo.css"/>
 		<script type="importmap-shim" src="dist/importmap.json"></script>
-		<script type="module-shim" src="dist/demo.js"></script>
+		<script type="module-shim" src="dist/main.js"></script>
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.4/dist/es-module-shims.js"></script>
+
+		<!-- authoritarian config -->
+		<authoritarian-config>
+			<user-model auth-server-url="http://localhost:8000"></user-model>
+			<profile-model profiler-url="http://localhost:8001"></profile-model>
+		</authoritarian-config>
+
 	</head>
 	<body>
 		<header>
@@ -14,10 +21,11 @@
 			<menu-system initially-hidden>
 				<menu-display>
 
+					<!-- authoritarian ui components -->
 					<user-button slot="button"></user-button>
-					<user-panel server="http://localhost:8000">
-						<profile-panel server="http://localhost:8001"></profile-panel>
-						<paywall-panel server="http://localhost:8002"></paywall-panel>
+					<user-panel>
+						<profile-panel></profile-panel>
+						<paywall-panel></paywall-panel>
 					</user-panel>
 
 				</menu-display>
