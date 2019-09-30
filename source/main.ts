@@ -2,6 +2,7 @@
 import "menutown/dist/register-all.js"
 import "./register-all.js"
 
+import {select} from "./toolbox/selects.js"
 import {authoritarianStart} from "./authoritarian-start.js"
 import {
 	MockProfiler,
@@ -12,26 +13,18 @@ import {
 
 main()
 
-function modeCheck(m: string): boolean {
-	return location.hash.toLowerCase().includes(m) ||
-		location.search.toLowerCase().includes(m)
-}
-
 async function main() {
-
-	// ascertain "authmock" mode
-	const authmock: boolean = modeCheck("authmock")
-
-	// ascertain "authdebug" mode
-	const authdebug: boolean = modeCheck("authdebug")
+	const config = select("authoritarian-config")
+	const mock = config.hasAttribute("mock")
+	const debug = config.hasAttribute("debug")
 
 	// console-log the events
-	if (authdebug)
+	if (debug)
 		for (const event of ["user-login", "user-logout", "profile-loaded"])
 			window.addEventListener(event, () => console.log(event))
 
 	// use mocks in "?mock" mode
-	if (authmock) {
+	if (mock) {
 		await authoritarianStart({
 			profiler: new MockProfiler(),
 			tokenStorage: new MockTokenStorage(),

@@ -19,15 +19,58 @@ export class ProfilePanel extends LitElement {
 	}
 
 	static get styles() {
-		return css``
+		return css`
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			:host {
+				display: flex;
+				flex-direction: row;
+			}
+			img {
+				flex: 0 0 auto;
+				width: 30%;
+				min-width: 60px;
+				max-width: 140px;
+				object-fit: cover;
+				border: 5px solid rgba(255,255,255, 0.5);
+			}
+			div {
+				flex: 1 1 auto;
+				display: flex;
+				padding: 0.5em;
+				flex-direction: column;
+				justify-content: center;
+			}
+			div > * + * {
+				margin-top: 0.6em;
+			}
+			h2 {
+				font-size: 1.1em;
+			}
+			@media (max-width: 600px) {
+				:host {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+				img {
+					width: 60%;
+					max-width: 240px;
+				}
+			}
+		`
 	}
 
 	render() {
 		const {_profile} = this
 		return _profile ? html`
 			<img src=${_profile.public.picture} alt="[your profile picture]"/>
-			<h2>${_profile.private.realname}</h2>
-			<p>Display name: ${_profile.public.nickname}</p>
+			<div>
+				<h2>${_profile.private.realname}</h2>
+				<p>${_profile.public.nickname}</p>
+			</div>
 		` : html``
 	}
 }

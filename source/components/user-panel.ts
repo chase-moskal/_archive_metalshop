@@ -30,17 +30,46 @@ export class UserPanel extends LitElement {
 	}
 
 	static get styles() {
-		return css``
+		return css`
+			:host {
+				display: block;
+			}
+			div {
+				text-align: left;
+			}
+			button {
+				font-weight: bold;
+				font-size: 1.2em;
+				border: none;
+				padding: 0.2em 1em;
+				background: #00a464;
+				color: white;
+				box-shadow: 1px 2px 1px rgba(0,0,0, 0.15);
+				text-shadow: 0 0 7px rgba(255,255,255, 0.4);
+				cursor: pointer;
+			}
+			button:hover, button:focus {
+				background: rgb(8, 175, 110);
+				text-decoration: underline;
+				text-shadow: 0 0 7px rgba(255,255,255, 0.7);
+			}
+			button:active {
+				background: rgb(21, 185, 121);
+			}
+			* + div {
+				margin-top: 0.5em;
+			}
+		`
 	}
 
 	render() {
 		return html`
 			${!this._loggedIn
-				? html`<button class="login" @click=${this.onLoginClick}>Login</button>`
+				? html`<div><button class="login" @click=${this.onLoginClick}>Login</button></div>`
 				: html``}
 			<slot></slot>
 			${this._loggedIn
-				? html`<button class="logout" @click=${this.onLogoutClick}>Logout</button>`
+				? html`<div><button class="logout" @click=${this.onLogoutClick}>Logout</button></div>`
 				: html``}
 		`
 	}

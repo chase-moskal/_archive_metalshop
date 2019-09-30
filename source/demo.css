@@ -8,22 +8,113 @@
 }
 
 html, body {
-	background: #333;
-	color: #555;
+	font-family: Dosis, sans-serif;
+	background: fixed linear-gradient(to bottom right, #2d8d71, #13624b);
+	color: rgba(255,255,255, 0.8);
+	min-height: 100%;
+}
+
+html {
+	font-size: 21px;
+	padding: 0 5%;
+}
+
+body {
+	max-width: 960px;
+	margin: 0 auto;
 }
 
 body > header {
-	background: rgba(255,255,255, 0.1);
+	background: rgba(255,255,255, 0.2);
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	padding: 1rem;
 }
 
+body > header h1 {
+	font-family: "Big Shoulders Text", sans-serif;
+	color: white;
+	text-shadow: 0 0 10px rgba(255,255,255, 0.5);
+}
+
 body > header > * {
 	flex: 0 1 auto;
 }
 
+main {
+	padding: 1rem;
+	background: rgba(255,255,255, 0.1);
+}
+
+.content > * + * {
+	margin-top: 0.8em;
+}
+
+.content h1 {
+	font-family: "Big Shoulders Text", sans-serif;
+	font-size: 1.2em;
+}
+
+.content h2 {
+	font-family: "Big Shoulders Text", sans-serif;
+	font-size: 1.1em;
+}
+
+.content ol, .content ul {
+	margin-top: 0.2em;
+	padding-left: 1.5em;
+}
+
+a {
+	color: cyan;
+}
+
+a:hover, a:focus {
+	color: #2effff;
+	text-shadow: 0 0 7px rgb(46, 239, 255);
+	text-decoration: underline;
+}
+
+a:active {
+	color: lime;
+}
+
+@media (max-width: 600px) {
+	body > header {
+		flex-direction: column;
+		align-items: center;
+	}
+	body > header > h1 {
+		order: 1;
+	}
+}
+
+/*******************************************************************************
+-- Customizations relevant to menus and auth components
+*******************************************************************************/
+
+/* make the menu system positioning relative to the header */
+body > header {
+	position: relative;
+}
+
+/* menu system will remove [initially-hidden] property when it has loaded */
 menu-system[initially-hidden] {
 	display: none;
+}
+
+/* setting the demo menu panel's aesthetic properties like colors and such */
+menu-display {
+	color: rgb(41, 95, 78);
+	--focus-outline: 2px solid cyan;
+	--menu-panel-width: 720px;
+	--menu-panel-padding: 1rem;
+	--menu-panel-box-shadow: none;
+	--menu-panel-background: rgba(150, 255, 214, 0.8);
+	--menu-panel-border-radius: none;
+}
+
+user-button {
+	fill: white;
 }

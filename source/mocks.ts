@@ -1,6 +1,5 @@
 
 import {
-	User,
 	Profile,
 	AuthTokens,
 	AccessToken,
@@ -29,30 +28,26 @@ export class MockTokenStorage implements TokenStorageTopic {
 	async clearTokens() {}
 }
 
+const fakeProfileData: Profile = {
+	userId: "fake-h31829h381273h",
+	public: {
+		nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+		picture: "https://picsum.photos/id/375/200/200",
+	},
+	private: {
+		realname: "Captain Branstock Dudley-Faddington",
+	}
+}
+
 export class MockProfiler implements ProfilerTopic {
 	async getPublicProfile({userId}): Promise<Profile> {
 		return {
+			...fakeProfileData,
 			userId,
-			public: {
-				nickname: "fake chase",
-				picture: "https://picsum.photos/id/375/200/200",
-			},
-			private: {
-				realname: "Fake Chase Moskal",
-			}
 		}
 	}
 	async getFullProfile(options): Promise<Profile> {
-		return {
-			userId: "lol48729i318920u3",
-			public: {
-				nickname: "fake chase",
-				picture: "https://picsum.photos/id/375/200/200",
-			},
-			private: {
-				realname: "Fake Chase Moskal",
-			}
-		}
+		return fakeProfileData
 	}
 	async setFullProfile(options): Promise<void> {
 		return undefined
