@@ -12,22 +12,4 @@ Authentication and authorization solution for microservices and the web
 
 # Authoritarian Client
 
-- browser auth ui library
-- button for user login/register/settings
-- modal for user settings management
-- interoperates with the [menutown](https://github.com/chase-moskal/menutown) menu-system
-
-## concept
-
-```html
-<menu-system>
-	<menu-display>
-
-		<auth-icon slot="button"></auth-icon>
-		<auth-slate>
-			<p>Your Account</p>
-		</auth-slate>
-
-	</menu-display>
-</menu-system>
-```
+web components for integrating with authoritarian-related microservices
