@@ -13,8 +13,6 @@
 	},
 	"include": ["source/**/*.ts"],
 	"exclude": [
-		"node_modules/**/*",
-		"source-archive/**/*",
-		"source-archive2/**/*"
+		"node_modules/**/*"
 	]
 }
