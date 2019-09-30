@@ -1,0 +1,26 @@
+
+{
+	"imports": {
+		"@adobe/lit-mobx/": "https://cdn.jsdelivr.net/npm/@adobe/lit-mobx@0.0.4/",
+		"@adobe/lit-mobx": "https://cdn.jsdelivr.net/npm/@adobe/lit-mobx@0.0.4/lit-mobx.js",
+		"@stripe/stripe-js/": "https://cdn.jsdelivr.net/npm/@stripe/stripe-js@1.5.0/",
+		"@stripe/stripe-js": "https://cdn.jsdelivr.net/npm/@stripe/stripe-js@1.5.0/dist/stripe.esm.js",
+		"authoritarian/": "https://cdn.jsdelivr.net/npm/authoritarian@0.0.0-dev.53/",
+		"commotion/": "https://cdn.jsdelivr.net/npm/commotion@0.1.0-dev.0/",
+		"commotion": "https://cdn.jsdelivr.net/npm/commotion@0.1.0-dev.0/dist/commotion",
+		"crosscall/": "https://cdn.jsdelivr.net/npm/crosscall@0.0.6-dev.19/",
+		"lit-element/": "https://cdn.jsdelivr.net/npm/lit-element@2.3.1/",
+		"lit-element": "https://cdn.jsdelivr.net/npm/lit-element@2.3.1/lit-element.js",
+		"lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@1.2.1/",
+		"lit-html": "https://cdn.jsdelivr.net/npm/lit-html@1.2.1/lit-html.js",
+		"menutown/": "https://cdn.jsdelivr.net/npm/menutown@0.0.1/",
+		"menutown": "https://cdn.jsdelivr.net/npm/menutown@0.0.1/dist/register-all.js",
+		"mobx/": "https://cdn.jsdelivr.net/npm/mobx@5.15.4/",
+		"mobx": "https://cdn.jsdelivr.net/npm/mobx@5.15.4/lib/mobx.module.js",
+		"mobx-lit-element/": "https://cdn.jsdelivr.net/npm/mobx-lit-element@0.1.2/",
+		"mobx-lit-element": "https://cdn.jsdelivr.net/npm/mobx-lit-element@0.1.2/mobx-lit-element.js",
+		"redcrypto/": "https://cdn.jsdelivr.net/npm/redcrypto@0.0.0-dev.5/",
+		"renraku/": "https://cdn.jsdelivr.net/npm/renraku@0.0.0-dev.30/"
+	}
+}
+

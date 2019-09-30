@@ -1,0 +1,1 @@
+{"version":3,"file":"mixin-initially-hidden.js","sourceRoot":"","sources":["../../source/framework/mixin-initially-hidden.ts"],"names":[],"mappings":"AAIA,MAAM,UAAU,oBAAoB,CAClC,WAAc;IAEf,OAAO,MAAM,SAAU,SAAQ,WAAW;QACzC,YAAY;YACX,IAAI,IAAI,CAAC,YAAY,CAAC,kBAAkB,CAAC;gBACxC,IAAI,CAAC,eAAe,CAAC,kBAAkB,CAAC,CAAA;QAC1C,CAAC;KACD,CAAA;AACF,CAAC"}
