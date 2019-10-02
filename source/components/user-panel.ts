@@ -4,11 +4,14 @@ import {LitElement, property, html, css} from "lit-element"
 
 import {
 	UserLoginEvent,
-	UserLogoutEvent
+	UserLogoutEvent,
+	UserLoadingEvent,
 } from "../events.js"
 
-
 export class UserPanel extends LitElement {
+
+	@property({type: Boolean})
+	private _loading: boolean = true
 
 	@property({type: Boolean})
 	private _loggedIn: boolean = false
@@ -19,14 +22,22 @@ export class UserPanel extends LitElement {
 	@property({type: Function})
 	onLogoutClick: (event: MouseEvent) => void = () => {}
 
+	@listener(UserLoadingEvent, {target: window})
+	protected _handleUserLoading = (event: UserLoadingEvent) => {
+		this._loggedIn = false
+		this._loading = true
+	}
+
 	@listener(UserLoginEvent, {target: window})
 	protected _handleUserLogin = (event: UserLoginEvent) => {
 		this._loggedIn = true
+		this._loading = false
 	}
 
 	@listener(UserLogoutEvent, {target: window})
 	protected _handleLogoutEvent = (event: UserLogoutEvent) => {
 		this._loggedIn = false
+		this._loading = false
 	}
 
 	static get styles() {
@@ -62,15 +73,25 @@ export class UserPanel extends LitElement {
 		`
 	}
 
+	private _renderLoginButtonMaybe() {
+		return !this._loggedIn
+			? html`<div><button class="login" @click=${this.onLoginClick}>Login</button></div>`
+			: html``
+	}
+
+	private _renderLogoutButtonMaybe() {
+		return this._loggedIn
+			? html`<div><button class="logout" @click=${this.onLogoutClick}>Logout</button></div>`
+			: html``
+	}
+
 	render() {
-		return html`
-			${!this._loggedIn
-				? html`<div><button class="login" @click=${this.onLoginClick}>Login</button></div>`
-				: html``}
-			<slot></slot>
-			${this._loggedIn
-				? html`<div><button class="logout" @click=${this.onLogoutClick}>Logout</button></div>`
-				: html``}
-		`
+		return this._loading
+			? html`<div class="loading">loading user</div>`
+			: html`
+				${this._renderLoginButtonMaybe()}
+				<slot></slot>
+				${this._renderLogoutButtonMaybe()}
+			`
 	}
 }

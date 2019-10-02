@@ -20,21 +20,21 @@ async function main() {
 
 	// console-log the events
 	if (debug)
-		for (const event of ["user-login", "user-logout", "profile-loaded"])
-			window.addEventListener(event, () => console.log(event))
+		for (const event of [
+			"user-login",
+			"user-logout",
+			"user-loading",
+			"profile-update",
+		]) window.addEventListener(event, () => console.log(event))
 
 	// use mocks in "?mock" mode
-	if (mock) {
-		await authoritarianStart({
-			profiler: new MockProfiler(),
-			tokenStorage: new MockTokenStorage(),
-			accountPopupLogin: mockAccountPopupLogin,
-			decodeAccessToken: mockDecodeAccessToken,
-		})
-	}
+	if (mock) await authoritarianStart({
+		profiler: new MockProfiler(),
+		tokenStorage: new MockTokenStorage(),
+		accountPopupLogin: mockAccountPopupLogin,
+		decodeAccessToken: mockDecodeAccessToken,
+	})
 
 	// standard start
-	else {
-		await authoritarianStart()
-	}
+	else await authoritarianStart()
 }

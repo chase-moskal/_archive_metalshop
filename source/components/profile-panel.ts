@@ -6,16 +6,24 @@ import {Profile, ProfilerTopic} from "authoritarian/dist/interfaces.js"
 import {AuthContext} from "../interfaces.js"
 
 import {
-	ProfileUpdateEvent,
+	ProfileUpdateEvent, UserLoadingEvent,
 } from "../events.js"
 
 export class ProfilePanel extends LitElement {
+	@property({type: Boolean}) private _loading: boolean = true
 	@property({type: Object}) private _profile: Profile
+
+	@listener(UserLoadingEvent, {target: window})
+	protected _handleUserLoading = async(event: UserLoadingEvent) => {
+		this._profile = null
+		this._loading = true
+	}
 
 	@listener(ProfileUpdateEvent, {target: window})
 	protected _handleProfileUpdate = async(event: ProfileUpdateEvent) => {
 		const {profile} = event.detail
 		this._profile = profile
+		this._loading = false
 	}
 
 	static get styles() {
@@ -65,12 +73,19 @@ export class ProfilePanel extends LitElement {
 
 	render() {
 		const {_profile} = this
-		return _profile ? html`
-			<img src=${_profile.public.picture} alt="[your profile picture]"/>
-			<div>
-				<h2>${_profile.private.realname}</h2>
-				<p>${_profile.public.nickname}</p>
-			</div>
-		` : html``
+		return html`
+			${this._loading
+				? html`<div class="loading">loading profile</div>`
+				: html``}
+			${this._profile
+				? html`
+					<img src=${_profile.public.picture} alt="[your profile picture]"/>
+					<div>
+						<h2>${_profile.private.realname}</h2>
+						<p>${_profile.public.nickname}</p>
+					</div>
+				`
+				: html``}
+		`
 	}
 }

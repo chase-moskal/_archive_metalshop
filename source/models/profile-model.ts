@@ -7,6 +7,7 @@ import {createEventDispatcher} from "../toolbox/create-event-dispatcher.js"
 import {
 	UserLoginEvent,
 	UserLogoutEvent,
+	UserLoadingEvent,
 	ProfileUpdateEvent,
 } from "../events.js"
 

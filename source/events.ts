@@ -8,6 +8,8 @@ export class UserLoginEvent extends CustomEvent<{
 
 export class UserLogoutEvent extends CustomEvent<{}> {}
 
+export class UserLoadingEvent extends CustomEvent<{}> {}
+
 export class ProfileUpdateEvent extends CustomEvent<{
 	profile: Profile
 }> {}
