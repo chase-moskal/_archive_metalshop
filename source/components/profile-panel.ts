@@ -1,9 +1,7 @@
 
+import {listener} from "event-decorators"
+import {Profile} from "authoritarian/dist/interfaces.js"
 import {LitElement, property, html, css} from "lit-element"
-import {bubblingEvent, Dispatcher, listener} from "event-decorators"
-import {Profile, ProfilerTopic} from "authoritarian/dist/interfaces.js"
-
-import {AuthContext} from "../interfaces.js"
 
 import {
 	ProfileUpdateEvent, UserLoadingEvent,
@@ -71,21 +69,25 @@ export class ProfilePanel extends LitElement {
 		`
 	}
 
-	render() {
-		const {_profile} = this
+	private _renderLoading() {
+		return html`<div class="loading">loading profile</div>`
+	}
+
+	private _renderProfile(profile: Profile) {
 		return html`
-			${this._loading
-				? html`<div class="loading">loading profile</div>`
-				: html``}
-			${this._profile
-				? html`
-					<img src=${_profile.public.picture} alt="[your profile picture]"/>
-					<div>
-						<h2>${_profile.private.realname}</h2>
-						<p>${_profile.public.nickname}</p>
-					</div>
-				`
-				: html``}
+			<img src=${profile.public.picture} alt="[your profile picture]"/>
+			<div>
+				<h2>${profile.private.realname}</h2>
+				<p>${profile.public.nickname}</p>
+			</div>
+		`
+	}
+
+	render() {
+		const {_loading, _profile} = this
+		return html`
+			${_loading ? this._renderLoading() : html``}
+			${_profile ? this._renderProfile(_profile) : html``}
 		`
 	}
 }

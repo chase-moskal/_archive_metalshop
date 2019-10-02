@@ -17,6 +17,7 @@ const bubbling: CustomEventInit = {bubbles: true, composed: true}
 const listening: AddEventListenerOptions = {capture: false, once: false, passive: false}
 
 export class ProfileModel {
+	private _cancel: boolean = false
 	private _listeners: (() => void)[] = []
 	private readonly _profiler: ProfilerTopic
 
@@ -35,12 +36,22 @@ export class ProfileModel {
 		)
 
 		this._listeners = [
+			createEventListener<UserLoadingEvent>(
+				UserLoadingEvent, eventTarget, listening,
+				async() => {
+					this._cancel = true
+				}
+			),
 			createEventListener<UserLoginEvent>(
 				UserLoginEvent, eventTarget, listening,
 				async event => {
+					this._cancel = false
 					const authContext = await event.detail.getAuthContext()
 					const profile = await this._loadProfile(authContext)
-					this._dispatchProfileUpdate({detail: {profile}})
+					if (!this._cancel)
+						this._dispatchProfileUpdate({detail: {profile}})
+					else
+						this._dispatchProfileUpdate({detail: {profile: null}})
 				}
 			),
 			createEventListener<UserLogoutEvent>(
