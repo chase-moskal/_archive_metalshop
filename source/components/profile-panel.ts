@@ -1,31 +1,30 @@
 
 import {listener} from "event-decorators"
+import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces.js"
-import {LitElement, property, html, css} from "lit-element"
 
-import {
-	ProfileUpdateEvent, UserLoadingEvent,
-} from "../events.js"
+import {ProfileUpdateEvent, UserLoadingEvent} from "../events.js"
+import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-export class ProfilePanel extends LitElement {
-	@property({type: Boolean}) private _loading: boolean = true
+export class ProfilePanel extends LoadableElement {
+	loadingMessage = "loading profile"
 	@property({type: Object}) private _profile: Profile
 
 	@listener(UserLoadingEvent, {target: window})
 	protected _handleUserLoading = async(event: UserLoadingEvent) => {
 		this._profile = null
-		this._loading = true
+		this.loadableState = LoadableState.Loading
 	}
 
 	@listener(ProfileUpdateEvent, {target: window})
 	protected _handleProfileUpdate = async(event: ProfileUpdateEvent) => {
 		const {profile} = event.detail
 		this._profile = profile
-		this._loading = false
+		this.loadableState = LoadableState.Ready
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			* {
 				margin: 0;
 				padding: 0;
@@ -66,28 +65,17 @@ export class ProfilePanel extends LitElement {
 					max-width: 240px;
 				}
 			}
-		`
+		`]
 	}
 
-	private _renderLoading() {
-		return html`<div class="loading">loading profile</div>`
-	}
-
-	private _renderProfile(profile: Profile) {
-		return html`
+	renderReady() {
+		const {_profile: profile} = this
+		return profile ? html`
 			<img src=${profile.public.picture} alt="[your profile picture]"/>
 			<div>
 				<h2>${profile.private.realname}</h2>
 				<p>${profile.public.nickname}</p>
 			</div>
-		`
-	}
-
-	render() {
-		const {_loading, _profile} = this
-		return html`
-			${_loading ? this._renderLoading() : html``}
-			${_profile ? this._renderProfile(_profile) : html``}
-		`
+		` : html``
 	}
 }
