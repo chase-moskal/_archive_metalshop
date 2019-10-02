@@ -32,8 +32,9 @@ export class LoadableElement extends LitElement {
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			font-size: 0.8em;
 			font-family: monospace;
-			color: #444;
+			color: rgba(50, 50, 50, 0.75);
 		}
 
 		.loadable svg {

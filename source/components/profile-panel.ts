@@ -7,7 +7,7 @@ import {ProfileUpdateEvent, UserLoadingEvent} from "../events.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class ProfilePanel extends LoadableElement {
-	loadingMessage = "loading profile"
+	loadingMessage = "loading profile panel"
 	@property({type: Object}) private _profile: Profile
 
 	@listener(UserLoadingEvent, {target: window})

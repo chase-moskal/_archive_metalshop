@@ -8,10 +8,10 @@ import {
 	UserLoadingEvent,
 } from "../events.js"
 
-export class UserPanel extends LitElement {
+import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-	@property({type: Boolean})
-	private _loading: boolean = true
+export class UserPanel extends LoadableElement {
+	loadingMessage = "loading user panel"
 
 	@property({type: Boolean})
 	private _loggedIn: boolean = false
@@ -25,23 +25,23 @@ export class UserPanel extends LitElement {
 	@listener(UserLoadingEvent, {target: window})
 	protected _handleUserLoading = (event: UserLoadingEvent) => {
 		this._loggedIn = false
-		this._loading = true
+		this.loadableState = LoadableState.Loading
 	}
 
 	@listener(UserLoginEvent, {target: window})
 	protected _handleUserLogin = (event: UserLoginEvent) => {
 		this._loggedIn = true
-		this._loading = false
+		this.loadableState = LoadableState.Ready
 	}
 
 	@listener(UserLogoutEvent, {target: window})
 	protected _handleLogoutEvent = (event: UserLogoutEvent) => {
 		this._loggedIn = false
-		this._loading = false
+		this.loadableState = LoadableState.Ready
 	}
 
 	static get styles() {
-		return css`
+		return [super.styles, css`
 			:host {
 				display: block;
 			}
@@ -70,7 +70,7 @@ export class UserPanel extends LitElement {
 			* + div {
 				margin-top: 0.5em;
 			}
-		`
+		`]
 	}
 
 	private _renderLoginButtonMaybe() {
@@ -85,13 +85,11 @@ export class UserPanel extends LitElement {
 			: html``
 	}
 
-	render() {
-		return this._loading
-			? html`<div class="loading">loading user</div>`
-			: html`
-				${this._renderLoginButtonMaybe()}
-				<slot></slot>
-				${this._renderLogoutButtonMaybe()}
-			`
+	renderReady() {
+		return html`
+			${this._renderLoginButtonMaybe()}
+			<slot></slot>
+			${this._renderLogoutButtonMaybe()}
+		`
 	}
 }
