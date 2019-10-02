@@ -17,6 +17,11 @@ export const mockAccountPopupLogin: AccountPopupLogin = async() => {
 	return {accessToken: "a123", refreshToken: "r123"}
 }
 
+export const mockFailingAccountPopupLogin: AccountPopupLogin = async() => {
+	await nap(1000)
+	throw new Error("mock unknown error in account popup login")
+}
+
 export const mockDecodeAccessToken = (accessToken: AccessToken):
 	AuthContext => ({
 		exp: (Date.now() / 1000) + 10,

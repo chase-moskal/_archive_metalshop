@@ -6,6 +6,7 @@ import {
 	UserLoginEvent,
 	UserLogoutEvent,
 	UserLoadingEvent,
+	UserErrorEvent,
 } from "../events.js"
 
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
@@ -26,6 +27,12 @@ export class UserPanel extends LoadableElement {
 	protected _handleUserLoading = (event: UserLoadingEvent) => {
 		this._loggedIn = false
 		this.loadableState = LoadableState.Loading
+	}
+
+	@listener(UserErrorEvent, {target: window})
+	protected _handleUserError = (event: UserErrorEvent) => {
+		this._loggedIn = false
+		this.loadableState = LoadableState.Error
 	}
 
 	@listener(UserLoginEvent, {target: window})

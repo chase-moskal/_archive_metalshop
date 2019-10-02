@@ -9,6 +9,7 @@ import {createEventDispatcher} from "../toolbox/create-event-dispatcher.js"
 
 import {
 	UserLoginEvent,
+	UserErrorEvent,
 	UserLogoutEvent,
 	UserLoadingEvent,
 } from "../events.js"
@@ -33,6 +34,7 @@ function dispatcher<E extends CustomEvent>(
 
 export class UserModel {
 	private _authServerUrl: string
+	private _dispatchUserError: Dispatcher<UserErrorEvent>
 	private _dispatchUserLogin: Dispatcher<UserLoginEvent>
 	private _dispatchUserLogout: Dispatcher<UserLogoutEvent>
 	private _dispatchUserLoading: Dispatcher<UserLoadingEvent>
@@ -53,6 +55,7 @@ export class UserModel {
 		decodeAccessToken: DecodeAccessToken
 	}) {
 		this._authServerUrl = authServerUrl
+		this._dispatchUserError = dispatcher(UserErrorEvent, eventTarget)
 		this._dispatchUserLogin = dispatcher(UserLoginEvent, eventTarget)
 		this._dispatchUserLogout = dispatcher(UserLogoutEvent, eventTarget)
 		this._dispatchUserLoading = dispatcher(UserLoadingEvent, eventTarget)
@@ -73,6 +76,7 @@ export class UserModel {
 		}
 		catch (error) {
 			error.message = `user-model error in start(): ${error.message}`
+			this._dispatchUserError({detail: {message: error.message}})
 			console.error(error)
 		}
 
@@ -84,34 +88,29 @@ export class UserModel {
 
 	login = async() => {
 		this._dispatchUserLoading()
-		let detail: EventDetails<UserLoginEvent>
-
 		try {
 			const authTokens = await this._accountPopupLogin(this._authServerUrl)
 			await this._tokenStorage.writeTokens(authTokens)
-			detail = this._receiveAccessToken(authTokens.accessToken)
+			const detail = this._receiveAccessToken(authTokens.accessToken)
+			this._dispatchUserLogin({detail})
 		}
 		catch (error) {
-			error.message = `user-model error in login(): ${error.message}`
 			console.error(error)
+			this._dispatchUserError({detail: {message: error.message}})
 		}
-
-		if (detail)
-			this._dispatchUserLogin({detail})
-		else
-			this._dispatchUserLogout()
 	}
 
 	logout = async() => {
 		this._dispatchUserLoading()
 		try {
 			await this._tokenStorage.clearTokens()
+			this._authContext = null
+			this._dispatchUserLogout()
 		}
 		catch (error) {
 			console.error(error)
+			this._dispatchUserError({detail: {message: error.message}})
 		}
-		this._authContext = null
-		this._dispatchUserLogout()
 	}
 
 	private _receiveAccessToken(
