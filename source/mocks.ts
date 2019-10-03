@@ -10,7 +10,7 @@ import {
 import {AccountPopupLogin, AuthContext} from "./interfaces.js"
 
 const nap = (multiplier: number = 1) =>
-	new Promise(resolve => setTimeout(resolve, multiplier * 500))
+	new Promise(resolve => setTimeout(resolve, multiplier * 250))
 
 export const mockAccountPopupLogin: AccountPopupLogin = async() => {
 	await nap()
