@@ -9,7 +9,6 @@ import {
 	MockTokenStorage,
 	mockAccountPopupLogin,
 	mockDecodeAccessToken,
-	mockFailingAccountPopupLogin,
 } from "./mocks.js"
 
 main()
@@ -17,7 +16,6 @@ main()
 async function main() {
 	const config = select("authoritarian-config")
 	const mock = config.hasAttribute("mock")
-	const mockFail = config.getAttribute("mock").toLowerCase() === "fail"
 	const debug = config.hasAttribute("debug")
 
 	// console-log the events
@@ -27,6 +25,7 @@ async function main() {
 			"user-login",
 			"user-logout",
 			"user-loading",
+			"profile-error",
 			"profile-update",
 		]) window.addEventListener(event, () => console.log(event))
 
@@ -34,9 +33,7 @@ async function main() {
 	if (mock) await authoritarianStart({
 		profiler: new MockProfiler(),
 		tokenStorage: new MockTokenStorage(),
-		accountPopupLogin: mockFail
-			? mockFailingAccountPopupLogin
-			: mockAccountPopupLogin,
+		accountPopupLogin: mockAccountPopupLogin,
 		decodeAccessToken: mockDecodeAccessToken,
 	})
 

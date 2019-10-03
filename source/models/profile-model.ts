@@ -1,6 +1,6 @@
 
 import {AuthContext} from "../interfaces.js"
-import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
+import {ProfilerTopic} from "authoritarian/dist/interfaces.js"
 import {createEventListener} from "../toolbox/create-event-listener.js"
 import {createEventDispatcher} from "../toolbox/create-event-dispatcher.js"
 
@@ -8,6 +8,7 @@ import {
 	UserLoginEvent,
 	UserLogoutEvent,
 	UserLoadingEvent,
+	ProfileErrorEvent,
 	ProfileUpdateEvent,
 } from "../events.js"
 
@@ -21,6 +22,7 @@ export class ProfileModel {
 	private _listeners: (() => void)[] = []
 	private readonly _profiler: ProfilerTopic
 
+	private _dispatchProfileError: Dispatcher<ProfileErrorEvent>
 	private _dispatchProfileUpdate: Dispatcher<ProfileUpdateEvent>
 
 	constructor({profiler, eventTarget = document.body}: {
@@ -28,6 +30,12 @@ export class ProfileModel {
 		eventTarget: EventTarget
 	}) {
 		this._profiler = profiler
+
+		this._dispatchProfileError = createEventDispatcher<ProfileErrorEvent>(
+			ProfileErrorEvent,
+			eventTarget,
+			bubbling,
+		)
 
 		this._dispatchProfileUpdate = createEventDispatcher<ProfileUpdateEvent>(
 			ProfileUpdateEvent,
@@ -46,12 +54,17 @@ export class ProfileModel {
 				UserLoginEvent, eventTarget, listening,
 				async event => {
 					this._cancel = false
-					const authContext = await event.detail.getAuthContext()
-					const profile = await this._loadProfile(authContext)
-					if (!this._cancel)
-						this._dispatchProfileUpdate({detail: {profile}})
-					else
-						this._dispatchProfileUpdate({detail: {profile: null}})
+					try {
+						const authContext = await event.detail.getAuthContext()
+						const profile = await this._loadProfile(authContext)
+						if (!this._cancel)
+							this._dispatchProfileUpdate({detail: {profile}})
+						else
+							this._dispatchProfileUpdate({detail: {profile: null}})
+					}
+					catch (error) {
+						this._dispatchProfileError({detail: {error}})
+					}
 				}
 			),
 			createEventListener<UserLogoutEvent>(

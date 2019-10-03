@@ -66,24 +66,21 @@ export class UserModel {
 
 	async start() {
 		this._dispatchUserLoading()
-		let detail: EventDetails<UserLoginEvent>
-
 		try {
 			const accessToken = await this._tokenStorage.passiveCheck()
 			if (accessToken) {
-				detail = this._receiveAccessToken(accessToken)
+				const detail = this._receiveAccessToken(accessToken)
+				this._dispatchUserLogin({detail})
+			}
+			else {
+				this._dispatchUserLogout()
 			}
 		}
 		catch (error) {
 			error.message = `user-model error in start(): ${error.message}`
-			this._dispatchUserError({detail: {message: error.message}})
 			console.error(error)
+			this._dispatchUserError({detail: {error}})
 		}
-
-		if (detail)
-			this._dispatchUserLogin({detail})
-		else
-			this._dispatchUserLogout()
 	}
 
 	login = async() => {
@@ -96,7 +93,7 @@ export class UserModel {
 		}
 		catch (error) {
 			console.error(error)
-			this._dispatchUserError({detail: {message: error.message}})
+			this._dispatchUserError({detail: {error}})
 		}
 	}
 
@@ -109,7 +106,7 @@ export class UserModel {
 		}
 		catch (error) {
 			console.error(error)
-			this._dispatchUserError({detail: {message: error.message}})
+			this._dispatchUserError({detail: {error}})
 		}
 	}
 

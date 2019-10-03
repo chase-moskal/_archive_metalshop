@@ -3,12 +3,18 @@ import {listener} from "event-decorators"
 import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces.js"
 
-import {ProfileUpdateEvent, UserLoadingEvent} from "../events.js"
+import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../events.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class ProfilePanel extends LoadableElement {
 	loadingMessage = "loading profile panel"
 	@property({type: Object}) private _profile: Profile
+
+	@listener(ProfileErrorEvent, {target: window})
+	protected _handleProfileError = async(event: UserLoadingEvent) => {
+		this._profile = null
+		this.loadableState = LoadableState.Error
+	}
 
 	@listener(UserLoadingEvent, {target: window})
 	protected _handleUserLoading = async(event: UserLoadingEvent) => {

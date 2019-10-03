@@ -9,17 +9,12 @@ import {
 } from "authoritarian/dist/interfaces.js"
 import {AccountPopupLogin, AuthContext} from "./interfaces.js"
 
-const nap = (duration: number) =>
-	new Promise(resolve => setTimeout(resolve, duration))
+const nap = (multiplier: number = 1) =>
+	new Promise(resolve => setTimeout(resolve, multiplier * 500))
 
 export const mockAccountPopupLogin: AccountPopupLogin = async() => {
-	await nap(1000)
+	await nap()
 	return {accessToken: "a123", refreshToken: "r123"}
-}
-
-export const mockFailingAccountPopupLogin: AccountPopupLogin = async() => {
-	await nap(1000)
-	throw new Error("mock unknown error in account popup login")
 }
 
 export const mockDecodeAccessToken = (accessToken: AccessToken):
@@ -31,14 +26,14 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 
 export class MockTokenStorage implements TokenStorageTopic {
 	async passiveCheck() {
-		await nap(1000)
+		await nap()
 		return "a123"
 	}
 	async writeTokens(tokens: AuthTokens) {
-		await nap(1000)
+		await nap()
 	}
 	async clearTokens() {
-		await nap(1000)
+		await nap()
 	}
 }
 
@@ -55,29 +50,29 @@ const fakeProfileData: Profile = {
 
 export class MockProfiler implements ProfilerTopic {
 	async getPublicProfile({userId}): Promise<Profile> {
-		await nap(1000)
+		await nap()
 		return {
 			...fakeProfileData,
 			userId,
 		}
 	}
 	async getFullProfile(options): Promise<Profile> {
-		await nap(1000)
+		await nap()
 		return fakeProfileData
 	}
 	async setFullProfile(options): Promise<void> {
-		await nap(1000)
+		await nap()
 		return undefined
 	}
 }
 
 export class MockPaywallGuardian implements PaywallGuardianTopic {
 	async makeUserPremium(options: {accessToken: AccessToken}) {
-		await nap(1000)
+		await nap()
 		return "a123"
 	}
 	async revokeUserPremium(options: {accessToken: AccessToken}) {
-		await nap(1000)
+		await nap()
 		return "a123"
 	}
 }
