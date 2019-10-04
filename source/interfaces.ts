@@ -1,7 +1,19 @@
 
-import {User, AccessToken, AuthTokens} from "authoritarian/dist/interfaces.js"
+import {
+	User, AccessToken, AuthTokens, ProfilerTopic, PaywallGuardianTopic,
+	TokenStorageTopic
+} from "authoritarian/dist/interfaces.js"
 
 import {PaywallMode} from "./models/paywall-model.js"
+
+export interface AuthoritarianOptions {
+	config?: Element
+	profiler?: ProfilerTopic
+	tokenStorage?: TokenStorageTopic
+	accountPopupLogin?: AccountPopupLogin
+	decodeAccessToken?: DecodeAccessToken
+	paywallGuardian?: PaywallGuardianTopic
+}
 
 export interface AuthContext {
 	user: User
