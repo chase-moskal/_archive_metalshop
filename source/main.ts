@@ -4,12 +4,6 @@ import "./register-all.js"
 
 import {select} from "./toolbox/selects.js"
 import {authoritarianStart} from "./authoritarian-start.js"
-import {
-	MockProfiler,
-	MockTokenStorage,
-	mockAccountPopupLogin,
-	mockDecodeAccessToken,
-} from "./mocks.js"
 
 main()
 
@@ -30,12 +24,22 @@ async function main() {
 		]) window.addEventListener(event, () => console.log(event))
 
 	// use mocks in "?mock" mode
-	if (mock) await authoritarianStart({
-		profiler: new MockProfiler(),
-		tokenStorage: new MockTokenStorage(),
-		accountPopupLogin: mockAccountPopupLogin,
-		decodeAccessToken: mockDecodeAccessToken,
-	})
+	if (mock) {
+		const {
+			MockProfiler,
+			MockTokenStorage,
+			MockPaywallGuardian,
+			mockAccountPopupLogin,
+			mockDecodeAccessToken,
+		} = await import("./mocks.js")
+		await authoritarianStart({
+			profiler: new MockProfiler(),
+			tokenStorage: new MockTokenStorage(),
+			accountPopupLogin: mockAccountPopupLogin,
+			paywallGuardian: new MockPaywallGuardian(),
+			// decodeAccessToken: mockDecodeAccessToken,
+		})
+	}
 
 	// standard start
 	else await authoritarianStart()

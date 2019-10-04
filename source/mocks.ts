@@ -6,15 +6,52 @@ import {
 	ProfilerTopic,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
+	AccessPayload,
+	RefreshPayload,
 } from "authoritarian/dist/interfaces.js"
 import {AccountPopupLogin, AuthContext} from "./interfaces.js"
+
+import {signToken} from "authoritarian/dist/crypto.js"
+
+import {privateKey} from "./mock-keys.js"
 
 const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))
 
+async function createMockAccessToken({
+	claims = {cool: true},
+	expiresIn = "20m"
+}: {
+	claims?: Object
+	expiresIn?: string
+} = {}) {
+	return signToken<AccessPayload>({
+		payload: {user: {userId: "u123", claims}},
+		expiresIn,
+		privateKey
+	})
+}
+
+async function createMockRefreshToken({expiresIn = "60d"}: {
+	expiresIn?: string
+} = {}) {
+	return signToken<RefreshPayload>({
+		payload: {userId: "u123"},
+		expiresIn,
+		privateKey
+	})
+}
+
+const mockAccessToken = createMockAccessToken({claims: {premium: false}})
+const mockPremiumAccessToken = createMockAccessToken({claims: {premium: true}})
+const mockRefreshToken = createMockRefreshToken()
+
 export const mockAccountPopupLogin: AccountPopupLogin = async() => {
 	await nap()
-	return {accessToken: "a123", refreshToken: "r123"}
+	return {
+		accessToken: await mockAccessToken,
+		refreshToken: await mockRefreshToken
+	}
 }
 
 export const mockDecodeAccessToken = (accessToken: AccessToken):
@@ -27,9 +64,12 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 export class MockTokenStorage implements TokenStorageTopic {
 	async passiveCheck() {
 		await nap()
-		return "a123"
+		return mockAccessToken
 	}
 	async writeTokens(tokens: AuthTokens) {
+		await nap()
+	}
+	async writeAccessToken(accessToken: AccessToken) {
 		await nap()
 	}
 	async clearTokens() {
@@ -69,10 +109,10 @@ export class MockProfiler implements ProfilerTopic {
 export class MockPaywallGuardian implements PaywallGuardianTopic {
 	async makeUserPremium(options: {accessToken: AccessToken}) {
 		await nap()
-		return "a123"
+		return mockPremiumAccessToken
 	}
 	async revokeUserPremium(options: {accessToken: AccessToken}) {
 		await nap()
-		return "a123"
+		return mockAccessToken
 	}
 }

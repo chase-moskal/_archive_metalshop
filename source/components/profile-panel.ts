@@ -3,8 +3,8 @@ import {listener} from "event-decorators"
 import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces.js"
 
-import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../events.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
+import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../events.js"
 
 export class ProfilePanel extends LoadableElement {
 	loadingMessage = "loading profile panel"
@@ -36,7 +36,7 @@ export class ProfilePanel extends LoadableElement {
 				padding: 0;
 				box-sizing: border-box;
 			}
-			:host {
+			.container {
 				display: flex;
 				flex-direction: row;
 			}
@@ -48,21 +48,21 @@ export class ProfilePanel extends LoadableElement {
 				object-fit: cover;
 				border: 5px solid rgba(255,255,255, 0.5);
 			}
-			div {
+			.container > div {
 				flex: 1 1 auto;
 				display: flex;
 				padding: 0.5em;
 				flex-direction: column;
 				justify-content: center;
 			}
-			div > * + * {
+			.container > div > * + * {
 				margin-top: 0.6em;
 			}
 			h2 {
 				font-size: 1.1em;
 			}
 			@media (max-width: 600px) {
-				:host {
+				.container {
 					flex-direction: column;
 					align-items: flex-start;
 				}
@@ -77,10 +77,12 @@ export class ProfilePanel extends LoadableElement {
 	renderReady() {
 		const {_profile: profile} = this
 		return profile ? html`
-			<img src=${profile.public.picture} alt="[your profile picture]"/>
-			<div>
-				<h2>${profile.private.realname}</h2>
-				<p>${profile.public.nickname}</p>
+			<div class="container">
+				<img src=${profile.public.picture} alt="[your profile picture]"/>
+				<div>
+					<h2>${profile.private.realname}</h2>
+					<p>${profile.public.nickname}</p>
+				</div>
 			</div>
 		` : html``
 	}

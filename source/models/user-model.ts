@@ -110,6 +110,12 @@ export class UserModel {
 		}
 	}
 
+	handleNewAccessToken = (accessToken: AccessToken) => {
+		const detail = this._receiveAccessToken(accessToken)
+		this._tokenStorage.writeAccessToken(accessToken)
+		this._dispatchUserLogin({detail})
+	}
+
 	private _receiveAccessToken(
 		accessToken: AccessToken
 	): EventDetails<UserLoginEvent> {
