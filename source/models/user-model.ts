@@ -23,6 +23,7 @@ import {
 
 const expiryGraceSeconds = 60
 const bubbles: CustomEventInit = {bubbles: true, composed: true}
+
 function dispatcher<E extends CustomEvent>(
 	E: {new(...args:any): E},
 	target: EventTarget
@@ -110,9 +111,9 @@ export class UserModel {
 		}
 	}
 
-	handleNewAccessToken = (accessToken: AccessToken) => {
+	handleNewAccessToken = async(accessToken: AccessToken) => {
 		const detail = this._receiveAccessToken(accessToken)
-		this._tokenStorage.writeAccessToken(accessToken)
+		await this._tokenStorage.writeAccessToken(accessToken)
 		this._dispatchUserLogin({detail})
 	}
 

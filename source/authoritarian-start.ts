@@ -11,6 +11,7 @@ import {accountPopupLogin as defaultAccountPopupLogin} from "./integrations/acco
 import {UserPanel} from "./components/user-panel.js"
 import {UserButton} from "./components/user-button.js"
 import {ProfilePanel} from "./components/profile-panel.js"
+import {PaywallPanel} from "./components/paywall-panel.js"
 
 import {UserModel} from "./models/user-model.js"
 import {ProfileModel} from "./models/profile-model.js"
@@ -34,6 +35,11 @@ export async function authoritarianStart(options: {
 	accountPopupLogin?: AccountPopupLogin
 	decodeAccessToken?: DecodeAccessToken
 } = {}) {
+
+	//
+	// get config, defaults, and mocks
+	//
+
 	const getConfig = (key: string, element: Element) => element.getAttribute(key)
 	const {
 		config = select("authoritarian-config"),
@@ -50,6 +56,10 @@ export async function authoritarianStart(options: {
 	const paywallModelConfig = select("paywall-model", config)
 	let promises: Promise<void>[] = []
 
+	//
+	// profile model
+	//
+
 	if (profileModelConfig) {
 		const {
 			profilerUrl = getConfig("url", profileModelConfig),
@@ -62,6 +72,10 @@ export async function authoritarianStart(options: {
 			eventTarget,
 		})
 	}
+
+	//
+	// user model
+	//
 
 	if (userModelConfig) {
 		const {
@@ -83,24 +97,43 @@ export async function authoritarianStart(options: {
 		}
 		promises.push(userModel.start())
 
+		//
+		// paywall model
+		//
+
 		if (paywallModelConfig) {
 			const {
 				paywallGuardianUrl = getConfig("url", profileModelConfig),
 				paywallGuardian = null
 			} = options
-			const {actions: paywallActions} = createPaywallModel({
+
+			// selecting the ui components
+			const paywallPanels = selects<PaywallPanel>("paywall-panel")
+
+			// creating the paywall model
+			const {appAccess, componentAccess} = createPaywallModel({
 				paywallGuardian,
+				onStateUpdate: () => {
+					for (const panel of paywallPanels)
+						panel.requestUpdate()
+				},
 				handleNewAccessToken: userModel.handleNewAccessToken
 			})
+
+			// give each panel the component access object
+			for (const panel of paywallPanels)
+				panel.access = componentAccess
+
+			// wiring user events to app access actions
 			createEventListener(UserLoginEvent, window, {}, event => {
 				const {getAuthContext} = event.detail
-				paywallActions.notifyUserLogin({getAuthContext})
+				appAccess.actions.notifyUserLogin({getAuthContext})
 			})
 			createEventListener(UserLogoutEvent, window, {}, () => {
-				paywallActions.notifyUserLogout()
+				appAccess.actions.notifyUserLogout()
 			})
 			createEventListener(UserErrorEvent, window, {}, () => {
-				paywallActions.notifyUserLogout()
+				appAccess.actions.notifyUserLogout()
 			})
 		}
 	}

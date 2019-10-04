@@ -1,12 +1,12 @@
 
-import {LitElement} from "lit-element"
 import {AccessToken, PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
 
-import {selects} from "../toolbox/selects.js"
-import {createEventListener} from "../toolbox/create-event-listener.js"
-
-import {PaywallPanel} from "../components/paywall-panel.js"
-import {GetAuthContext} from "../interfaces.js"
+import {
+	PaywallState,
+	GetAuthContext,
+	PaywallAppAccess,
+	PaywallPanelAccess,
+} from "../interfaces.js"
 
 export enum PaywallMode {
 	Loading,
@@ -16,92 +16,77 @@ export enum PaywallMode {
 	Premium,
 }
 
-export interface PaywallState {
-	mode: PaywallMode
-}
-
-export interface PaywallPanelAccess {
-	state: PaywallState
-	actions: {
-		makeUserPremium: () => Promise<void>
-		revokeUserPremium: () => Promise<void>
-	}
-}
-
-export interface PaywallAppAccess {
-	actions: {
-		notifyUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
-		notifyUserLogout: () => Promise<void>
-	}
-}
-
 export function createPaywallModel({
 	paywallGuardian,
-	paywallPanels = selects("paywall-panel"),
-	handleNewAccessToken = () => {}
+	onStateUpdate = () => {},
+	handleNewAccessToken = async() => {}
 }: {
 	paywallGuardian: PaywallGuardianTopic,
-	paywallPanels?: PaywallPanel[],
-	handleNewAccessToken?: (accessToken: AccessToken) => void
+	onStateUpdate?: () => void
+	handleNewAccessToken?: (accessToken: AccessToken) => Promise<void>
 }) {
-	const secrets: {getAuthContext: GetAuthContext} = {
-		getAuthContext: null
-	}
+
+	//
+	// local private state
+	//
+
+	let getAuthContext: GetAuthContext = null
 
 	const state: PaywallState = {
 		mode: PaywallMode.LoggedOut
 	}
 
-	function updateComponents() {
-		for (const panel of paywallPanels)
-			panel.requestUpdate()
-	}
-
-	const action = (func: Function) => async(...args: any) => {
-		await func(...args)
-		updateComponents()
-	}
+	//
+	// component access object
+	// has state and actions that the components may use
+	//
 
 	const componentAccess: PaywallPanelAccess = {
 		get state() {return state},
 		actions: {
-			makeUserPremium: action(async() => {
+			async makeUserPremium() {
 				state.mode = PaywallMode.Loading
-				updateComponents()
-				const {accessToken} = await secrets.getAuthContext()
+				onStateUpdate()
+				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.makeUserPremium({accessToken})
-				handleNewAccessToken(newAccessToken)
-			}),
-			revokeUserPremium: action(async() => {
+				await handleNewAccessToken(newAccessToken)
+				onStateUpdate()
+			},
+			async revokeUserPremium() {
 				state.mode = PaywallMode.Loading
-				updateComponents()
-				const {accessToken} = await secrets.getAuthContext()
+				onStateUpdate()
+				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.revokeUserPremium({accessToken})
-				handleNewAccessToken(newAccessToken)
-			}),
+				await handleNewAccessToken(newAccessToken)
+				onStateUpdate()
+			},
 		}
 	}
 
-	for (const panel of paywallPanels)
-		panel.access = componentAccess
+	//
+	// app access object
+	// state and actions that the app can use
+	//
 
 	const appAccess: PaywallAppAccess = {
 		actions: {
-			notifyUserLogin: action(async({getAuthContext}) => {
+			async notifyUserLogin(options) {
 				state.mode = PaywallMode.Loading
-				secrets.getAuthContext = getAuthContext
-				updateComponents()
+				getAuthContext = options.getAuthContext
+				onStateUpdate()
 				const context = await getAuthContext()
 				const premium = !!context.user.claims.premium
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium
-			}),
-			notifyUserLogout: action(async () => {
+				onStateUpdate()
+			},
+			async notifyUserLogout() {
 				state.mode = PaywallMode.LoggedOut
-			}),
+				onStateUpdate()
+			},
 		}
 	}
 
-	return appAccess
+	return {appAccess, componentAccess}
 }
