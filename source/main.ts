@@ -23,7 +23,7 @@ async function main() {
 			"profile-update",
 		]) window.addEventListener(event, () => console.log(event))
 
-	// use mocks in "?mock" mode
+	// use mocks in mock mode
 	if (mock) {
 		const {
 			MockProfiler,

@@ -36,6 +36,5 @@ export async function setupUser({
 		userPanel.onLoginClick = userModel.login
 		userPanel.onLogoutClick = userModel.logout
 	}
-	await userModel.start()
 	return userModel
 }

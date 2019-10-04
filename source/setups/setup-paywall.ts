@@ -9,12 +9,11 @@ import {createEventListener} from "../toolbox/create-event-listener.js"
 import {UserLoginEvent, UserLogoutEvent, UserErrorEvent} from "../events.js"
 
 export async function setupPaywall({
-	config, paywallGuardian, handleNewAccessToken,
-	paywallPanels = selects<PaywallPanel>("paywall-panel"),
+	config, paywallGuardian, handleNewAccessToken, paywallPanels,
 }: {
 	config: Element
-	paywallPanels?: PaywallPanel[]
-	paywallGuardian?: PaywallGuardianTopic
+	paywallPanels: PaywallPanel[]
+	paywallGuardian: PaywallGuardianTopic
 	handleNewAccessToken: (accessToken: AccessToken) => Promise<void>
 }) {
 	const paywallModelConfig = select("paywall-model", config)
