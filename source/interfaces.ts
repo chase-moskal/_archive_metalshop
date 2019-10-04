@@ -7,7 +7,6 @@ import {
 import {PaywallMode} from "./models/paywall-model.js"
 
 export interface AuthoritarianOptions {
-	config?: Element
 	profiler?: ProfilerTopic
 	tokenStorage?: TokenStorageTopic
 	accountPopupLogin?: AccountPopupLogin
@@ -23,6 +22,7 @@ export interface AuthContext {
 
 export type GetAuthContext = () => Promise<AuthContext>
 export type AccountPopupLogin = (authServerUrl: string) => Promise<AuthTokens>
+export type LoginPopupRoutine = () => Promise<AuthTokens>
 export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 
 export interface PaywallState {

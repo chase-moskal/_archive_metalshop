@@ -1,7 +1,15 @@
 
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
+import {AccountPopupLogin} from "..//interfaces"
 
 const namespace = "authoritarian-account-popup"
+
+export function prepareLoginPopupRoutine(
+	authServerUrl: string,
+	accountPopupLoginFunc: AccountPopupLogin
+) {
+	return async() => accountPopupLoginFunc(authServerUrl)
+}
 
 export async function accountPopupLogin(authServerUrl: string) {
 	const {origin: authServerOrigin} = new URL(authServerUrl)

@@ -1,6 +1,6 @@
 
 import {AuthContext} from "../interfaces.js"
-import {ProfilerTopic} from "authoritarian/dist/interfaces.js"
+import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
 import {createEventListener} from "../toolbox/create-event-listener.js"
 import {createEventDispatcher} from "../toolbox/create-event-dispatcher.js"
 
@@ -14,77 +14,92 @@ import {
 
 import {Dispatcher} from "event-decorators"
 
-const bubbling: CustomEventInit = {bubbles: true, composed: true}
-const listening: AddEventListenerOptions = {capture: false, once: false, passive: false}
+export function createProfileModel({profiler, eventTarget = document.body}: {
+	profiler: ProfilerTopic
+	eventTarget: EventTarget
+}) {
 
-export class ProfileModel {
-	private _cancel: boolean = false
-	private _listeners: (() => void)[] = []
-	private readonly _profiler: ProfilerTopic
+	//
+	// privates
+	//
 
-	private _dispatchProfileError: Dispatcher<ProfileErrorEvent>
-	private _dispatchProfileUpdate: Dispatcher<ProfileUpdateEvent>
+	let cancel: boolean = false
+	const bubbling: CustomEventInit = {bubbles: true, composed: true}
+	const listening: AddEventListenerOptions = {
+		capture: false, once: false, passive: false
+	}
 
-	constructor({profiler, eventTarget = document.body}: {
-		profiler: ProfilerTopic
-		eventTarget: EventTarget
-	}) {
-		this._profiler = profiler
+	async function loadProfile(authContext: AuthContext): Promise<Profile> {
+		const {accessToken} = authContext
+		const profile = await profiler.getFullProfile({accessToken})
+		if (!profile) console.warn("failed to load profile")
+		return profile
+	}
 
-		this._dispatchProfileError = createEventDispatcher<ProfileErrorEvent>(
+	//
+	// event dispatchers,
+	// functions which can dispatch events
+	//
+
+	const dispatchProfileError: Dispatcher<ProfileErrorEvent> =
+		createEventDispatcher<ProfileErrorEvent>(
 			ProfileErrorEvent,
 			eventTarget,
 			bubbling,
 		)
 
-		this._dispatchProfileUpdate = createEventDispatcher<ProfileUpdateEvent>(
+	const dispatchProfileUpdate: Dispatcher<ProfileUpdateEvent> =
+		createEventDispatcher<ProfileUpdateEvent>(
 			ProfileUpdateEvent,
 			eventTarget,
-			bubbling
+			bubbling,
 		)
 
-		this._listeners = [
-			createEventListener<UserLoadingEvent>(
-				UserLoadingEvent, eventTarget, listening,
-				async() => {
-					this._cancel = true
-				}
-			),
-			createEventListener<UserLoginEvent>(
-				UserLoginEvent, eventTarget, listening,
-				async event => {
-					this._cancel = false
-					try {
-						const authContext = await event.detail.getAuthContext()
-						const profile = await this._loadProfile(authContext)
-						if (!this._cancel)
-							this._dispatchProfileUpdate({detail: {profile}})
-						else
-							this._dispatchProfileUpdate({detail: {profile: null}})
-					}
-					catch (error) {
-						this._dispatchProfileError({detail: {error}})
-					}
-				}
-			),
-			createEventListener<UserLogoutEvent>(
-				UserLogoutEvent, eventTarget, listening,
-				async() => {
-					const profile = null
-					this._dispatchProfileUpdate({detail: {profile}})
-				}
-			)
-		]
-	}
+	//
+	// event listeners,
+	// process user events, load profiles, and dispatch profile events
+	//
 
-	destructor() {
-		for (const remove of this._listeners) remove()
-	}
+	const listeners: (() => void)[] = [
+		createEventListener<UserLoadingEvent>(
+			UserLoadingEvent, eventTarget, listening,
+			async() => {
+				cancel = true
+			}
+		),
+		createEventListener<UserLoginEvent>(
+			UserLoginEvent, eventTarget, listening,
+			async event => {
+				cancel = false
+				try {
+					const authContext = await event.detail.getAuthContext()
+					const profile = await loadProfile(authContext)
+					if (!cancel)
+						dispatchProfileUpdate({detail: {profile}})
+					else
+						dispatchProfileUpdate({detail: {profile: null}})
+				}
+				catch (error) {
+					dispatchProfileError({detail: {error}})
+				}
+			}
+		),
+		createEventListener<UserLogoutEvent>(
+			UserLogoutEvent, eventTarget, listening,
+			async() => {
+				const profile = null
+				dispatchProfileUpdate({detail: {profile}})
+			}
+		)
+	]
 
-	private async _loadProfile(authContext: AuthContext) {
-		const {accessToken} = authContext
-		const profile = await this._profiler.getFullProfile({accessToken})
-		if (!profile) console.warn("failed to load profile")
-		return profile
+	//
+	// public
+	//
+
+	return {
+		removeListeners() {
+			for (const remove of listeners) remove()
+		}
 	}
 }

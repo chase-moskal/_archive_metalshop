@@ -1,5 +1,8 @@
 
-import {AccessToken, PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
+import {
+	AccessToken,
+	PaywallGuardianTopic
+} from "authoritarian/dist/interfaces.js"
 
 import {
 	PaywallState,
@@ -19,15 +22,15 @@ export enum PaywallMode {
 export function createPaywallModel({
 	paywallGuardian,
 	onStateUpdate = () => {},
-	handleNewAccessToken = async() => {}
+	loginWithAccessToken = async() => {}
 }: {
 	paywallGuardian: PaywallGuardianTopic,
 	onStateUpdate?: () => void
-	handleNewAccessToken?: (accessToken: AccessToken) => Promise<void>
+	loginWithAccessToken?: (accessToken: AccessToken) => Promise<void>
 }) {
 
 	//
-	// local private state
+	// private
 	//
 
 	let getAuthContext: GetAuthContext = null
@@ -37,56 +40,63 @@ export function createPaywallModel({
 	}
 
 	//
-	// component access object
-	// has state and actions that the components may use
+	// public
 	//
 
-	const componentAccess: PaywallPanelAccess = {
-		get state() {return state},
-		actions: {
-			async makeUserPremium() {
-				state.mode = PaywallMode.Loading
-				onStateUpdate()
-				const {accessToken} = await getAuthContext()
-				const newAccessToken = await paywallGuardian.makeUserPremium({accessToken})
-				await handleNewAccessToken(newAccessToken)
-				onStateUpdate()
-			},
-			async revokeUserPremium() {
-				state.mode = PaywallMode.Loading
-				onStateUpdate()
-				const {accessToken} = await getAuthContext()
-				const newAccessToken = await paywallGuardian.revokeUserPremium({accessToken})
-				await handleNewAccessToken(newAccessToken)
-				onStateUpdate()
-			},
+	return {
+
+		/** panel access object
+			- has state and actions that the components may use */
+		panelAccess: <PaywallPanelAccess>{
+			get state() {return state},
+			actions: {
+
+				async makeUserPremium() {
+					state.mode = PaywallMode.Loading
+					onStateUpdate()
+					const {accessToken} = await getAuthContext()
+					const newAccessToken = await paywallGuardian.makeUserPremium({
+						accessToken
+					})
+					await loginWithAccessToken(newAccessToken)
+					onStateUpdate()
+				},
+
+				async revokeUserPremium() {
+					state.mode = PaywallMode.Loading
+					onStateUpdate()
+					const {accessToken} = await getAuthContext()
+					const newAccessToken = await paywallGuardian.revokeUserPremium({
+						accessToken
+					})
+					await loginWithAccessToken(newAccessToken)
+					onStateUpdate()
+				},
+			}
+		},
+
+		/** app access object
+			- state and actions that the app can use */
+		appAccess: <PaywallAppAccess>{
+			actions: {
+
+				async notifyUserLogin(options) {
+					state.mode = PaywallMode.Loading
+					getAuthContext = options.getAuthContext
+					onStateUpdate()
+					const context = await getAuthContext()
+					const premium = !!context.user.claims.premium
+					state.mode = premium
+						? PaywallMode.Premium
+						: PaywallMode.NotPremium
+					onStateUpdate()
+				},
+
+				async notifyUserLogout() {
+					state.mode = PaywallMode.LoggedOut
+					onStateUpdate()
+				},
+			}
 		}
 	}
-
-	//
-	// app access object
-	// state and actions that the app can use
-	//
-
-	const appAccess: PaywallAppAccess = {
-		actions: {
-			async notifyUserLogin(options) {
-				state.mode = PaywallMode.Loading
-				getAuthContext = options.getAuthContext
-				onStateUpdate()
-				const context = await getAuthContext()
-				const premium = !!context.user.claims.premium
-				state.mode = premium
-					? PaywallMode.Premium
-					: PaywallMode.NotPremium
-				onStateUpdate()
-			},
-			async notifyUserLogout() {
-				state.mode = PaywallMode.LoggedOut
-				onStateUpdate()
-			},
-		}
-	}
-
-	return {appAccess, componentAccess}
 }
