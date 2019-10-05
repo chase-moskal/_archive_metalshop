@@ -7,7 +7,7 @@ import {
 
 import {
 	createEventDispatcher as dispatcher
-} from "../toolbox/create-event-dispatcher.js"
+} from "../toolbox/event-dispatcher.js"
 
 import {
 	UserLoginEvent,
@@ -17,6 +17,7 @@ import {
 } from "../events.js"
 
 import {
+	UserModel,
 	AuthContext,
 	LoginPopupRoutine,
 	DecodeAccessToken,
@@ -32,7 +33,7 @@ export function createUserModel({
 	tokenStorage: TokenStorageTopic
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
-}) {
+}): UserModel {
 
 	//
 	// private

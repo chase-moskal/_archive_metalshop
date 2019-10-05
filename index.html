@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
 		<title>authoritarian-client demo</title>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Big+Shoulders+Text|Dosis&display=swap"/>
 		<link rel="stylesheet" href="source/demo.css"/>
@@ -10,10 +11,11 @@
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.4/dist/es-module-shims.js"></script>
 
 		<!-- authoritarian config -->
-		<authoritarian-config mock debug>
-			<user-model url="http://localhost:8000"></user-model>
-			<profile-model url="http://localhost:8001"></profile-model>
-			<paywall-model url="http://localhost:8002"></paywall-model>
+		<authoritarian-config
+			mock debug
+			auth-server="http://localhost:8000"
+			profiler-service="http://localhost:8001"
+			paywall-guardian="http://localhost:8002">
 		</authoritarian-config>
 
 	</head>

@@ -1,8 +1,8 @@
 
 import {AuthContext} from "../interfaces.js"
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
-import {createEventListener} from "../toolbox/create-event-listener.js"
-import {createEventDispatcher} from "../toolbox/create-event-dispatcher.js"
+import {createEventListener} from "../toolbox/event-listener.js"
+import {createEventDispatcher} from "../toolbox/event-dispatcher.js"
 
 import {
 	UserLoginEvent,

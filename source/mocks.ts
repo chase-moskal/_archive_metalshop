@@ -3,17 +3,16 @@ import {
 	Profile,
 	AuthTokens,
 	AccessToken,
+	AccessPayload,
 	ProfilerTopic,
+	RefreshPayload,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
-	AccessPayload,
-	RefreshPayload,
 } from "authoritarian/dist/interfaces.js"
-import {AccountPopupLogin, AuthContext} from "./interfaces.js"
-
 import {signToken} from "authoritarian/dist/crypto.js"
 
 import {privateKey} from "./mock-keys.js"
+import {AuthContext, LoginPopupRoutine} from "./interfaces.js"
 
 const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))
@@ -42,11 +41,11 @@ async function createMockRefreshToken({expiresIn = "60d"}: {
 	})
 }
 
+const mockRefreshToken = createMockRefreshToken()
 const mockAccessToken = createMockAccessToken({claims: {premium: false}})
 const mockPremiumAccessToken = createMockAccessToken({claims: {premium: true}})
-const mockRefreshToken = createMockRefreshToken()
 
-export const mockAccountPopupLogin: AccountPopupLogin = async() => {
+export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
 	await nap()
 	return {
 		accessToken: await mockAccessToken,

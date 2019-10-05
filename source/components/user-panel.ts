@@ -1,6 +1,8 @@
 
 import {listener} from "event-decorators"
-import {LitElement, property, html, css} from "lit-element"
+import {property, html, css} from "lit-element"
+
+import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 import {
 	UserLoginEvent,
@@ -8,8 +10,6 @@ import {
 	UserLoadingEvent,
 	UserErrorEvent,
 } from "../events.js"
-
-import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class UserPanel extends LoadableElement {
 	loadingMessage = "loading user panel"
