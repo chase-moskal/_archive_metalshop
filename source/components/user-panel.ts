@@ -53,7 +53,7 @@ export class UserPanel extends LoadableElement {
 				display: block;
 			}
 			div {
-				text-align: left;
+				text-align: center;
 			}
 			button {
 				font-weight: bold;
@@ -75,28 +75,32 @@ export class UserPanel extends LoadableElement {
 				background: rgb(21, 185, 121);
 			}
 			* + div {
-				margin-top: 0.5em;
+				margin-top: var(--user-panel-margins, 0.5em);
+			}
+			::slotted(*) {
+				display: block;
+				margin-top: var(--user-panel-margins, 0.5em) !important;
+			}
+			::slotted(*:first-child) {
+				margin-top: unset !important;
 			}
 		`]
 	}
 
-	private _renderLoginButtonMaybe() {
-		return !this._loggedIn
-			? html`<div><button class="login" @click=${this.onLoginClick}>Login</button></div>`
-			: html``
-	}
-
-	private _renderLogoutButtonMaybe() {
-		return this._loggedIn
-			? html`<div><button class="logout" @click=${this.onLogoutClick}>Logout</button></div>`
-			: html``
-	}
-
 	renderReady() {
-		return html`
-			${this._renderLoginButtonMaybe()}
-			<slot></slot>
-			${this._renderLogoutButtonMaybe()}
+		return this._loggedIn ? html`
+				<slot></slot>
+				<div>
+					<button class="logout" @click=${this.onLogoutClick}>
+						Logout
+					</button>
+				</div>
+		` : html`
+			<div>
+				<button class="login" @click=${this.onLoginClick}>
+					Login
+				</button>
+			</div>
 		`
 	}
 }

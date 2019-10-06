@@ -27,30 +27,86 @@ export class PaywallPanel extends LoadableElement {
 		}
 	}
 
-	static get styles() {
-		return [super.styles, css`
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
-			}
-		`]
-	}
+	static get styles() {return [super.styles, css`
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		:host {
+			display: block;
+			padding: 1em 0;
+		}
+
+		header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+
+		header svg {
+			width: 2em;
+			height: 2em;
+			margin-right: 0.5em;
+			fill: yellow;
+		}
+
+		section {
+			padding: 0.5em 1em;
+		}
+
+		footer {
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-end;
+			align-items: center;
+		}
+
+		footer > * {
+			padding: 0 0.5em;
+		}
+
+		footer > button {
+			font-size: 1em;
+		}
+
+		footer > span {
+			font-size: 0.8em;
+			opacity: 0.8;
+		}
+	`]}
 
 	private _renderNotPremium() {
 		const {actions} = this.access
 		return html`
-			<p>Become a premium user!</p>
-			<button @click=${actions.makeUserPremium}>Subscribe</button>
+			<header>
+				<h3>Become a premium supporter!</h3>
+			</header>
+			<section>
+				<p>It comes with cool features!</p>
+			</section>
+			<footer>
+				<button @click=${actions.makeUserPremium}>Subscribe</button>
+				<span class="price">$5<small>/month</small></span>
+			</footer>
 		`
 	}
 
 	private _renderPremium() {
 		const {actions} = this.access
 		return html`
-			<div class="icon">${icons.star}</div>
-			<p>You are Premium!</p>
-			<button @click=${actions.revokeUserPremium}>Unsubscribe</button>
+			<header>
+				<div class="icon">${icons.star}</div>
+				<h3>You are a premium supporter!</h3>
+			</header>
+			<section>
+				<p>You have the cool features!</p>
+			</section>
+			<footer>
+				<button @click=${actions.revokeUserPremium}>Unsubscribe</button>
+				<span class="remaining">You have X days remaining</span>
+			</footer>
 		`
 	}
 
