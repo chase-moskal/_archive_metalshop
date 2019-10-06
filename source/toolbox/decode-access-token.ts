@@ -1,5 +1,5 @@
 
-import {DecodeAccessToken} from "../interfaces.js"
+import {DecodeAccessToken} from "../system/interfaces.js"
 import {bdecode} from "authoritarian/dist/bdecode.js"
 import {AccessPayload} from "authoritarian/dist/interfaces.js"
 

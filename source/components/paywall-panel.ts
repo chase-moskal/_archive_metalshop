@@ -2,7 +2,7 @@
 import {property, html, css, svg} from "lit-element"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-import {PaywallPanelAccess} from "../interfaces.js"
+import {PaywallPanelAccess} from "../system/interfaces.js"
 import {PaywallMode} from "../models/paywall-model.js"
 
 const icons = {

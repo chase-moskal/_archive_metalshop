@@ -14,14 +14,14 @@ import {
 	UserErrorEvent,
 	UserLogoutEvent,
 	UserLoadingEvent,
-} from "../events.js"
+} from "../system/events.js"
 
 import {
 	UserModel,
 	AuthContext,
 	LoginPopupRoutine,
 	DecodeAccessToken,
-} from "../interfaces.js"
+} from "../system/interfaces.js"
 
 const expiryGraceSeconds = 60
 const bubbles: CustomEventInit = {bubbles: true, composed: true}

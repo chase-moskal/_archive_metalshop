@@ -9,7 +9,7 @@ import {
 	UserLogoutEvent,
 	UserLoadingEvent,
 	UserErrorEvent,
-} from "../events.js"
+} from "../system/events.js"
 
 export class UserPanel extends LoadableElement {
 	loadingMessage = "loading user panel"

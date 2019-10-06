@@ -1,6 +1,6 @@
 
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
-import {AccountPopupLogin} from "..//interfaces"
+import {AccountPopupLogin} from "../system/interfaces"
 
 const namespace = "authoritarian-account-popup"
 

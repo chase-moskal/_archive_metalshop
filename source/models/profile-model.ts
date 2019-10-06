@@ -1,5 +1,5 @@
 
-import {AuthContext} from "../interfaces.js"
+import {AuthContext} from "../system/interfaces.js"
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
 import {createEventListener} from "../toolbox/event-listener.js"
 import {createEventDispatcher} from "../toolbox/event-dispatcher.js"
@@ -10,7 +10,7 @@ import {
 	UserLoadingEvent,
 	ProfileErrorEvent,
 	ProfileUpdateEvent,
-} from "../events.js"
+} from "../system/events.js"
 
 import {Dispatcher} from "event-decorators"
 

@@ -4,7 +4,7 @@ import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces.js"
 
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
-import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../events.js"
+import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../system/events.js"
 
 export class ProfilePanel extends LoadableElement {
 	loadingMessage = "loading profile panel"

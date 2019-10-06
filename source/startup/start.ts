@@ -6,9 +6,9 @@ import {createPaywallModel} from "../models/paywall-model.js"
 import {exist} from "../toolbox/exist.js"
 import {createEventListener} from "../toolbox/event-listener.js"
 
-import {AuthoritarianStartupError} from "../errors.js"
-import {AuthoritarianOptions, UserModel} from "../interfaces.js"
-import {UserLoginEvent, UserLogoutEvent, UserErrorEvent} from "../events.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
+import {AuthoritarianOptions, UserModel} from "../system/interfaces.js"
+import {UserLoginEvent, UserLogoutEvent, UserErrorEvent} from "../system/events.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 

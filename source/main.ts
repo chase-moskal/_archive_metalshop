@@ -1,6 +1,6 @@
 
 import "menutown/dist/register-all.js"
-import "./register-all.js"
+import "./system/register-all.js"
 
 import {start} from "./startup/start.js"
 import {select} from "./toolbox/selects.js"

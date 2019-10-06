@@ -11,7 +11,7 @@ import {
 import {decodeAccessToken} from "../toolbox/decode-access-token.js"
 
 import {selects} from "../toolbox/selects.js"
-import {AuthoritarianOptions, AuthoritarianConfig} from "../interfaces.js"
+import {AuthoritarianOptions, AuthoritarianConfig} from "../system/interfaces.js"
 
 export async function initializeOptions(config: AuthoritarianConfig): Promise<AuthoritarianOptions> {
 	let progress: Partial<AuthoritarianOptions> = {}
@@ -33,7 +33,7 @@ export async function initializeOptions(config: AuthoritarianConfig): Promise<Au
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
 			// mockDecodeAccessToken,
-		} = await import("../mocks.js")
+		} = await import("../system/mocks.js")
 		progress = {
 			...progress,
 			profiler: new MockProfiler(),

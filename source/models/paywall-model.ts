@@ -9,7 +9,7 @@ import {
 	GetAuthContext,
 	PaywallAppAccess,
 	PaywallPanelAccess,
-} from "../interfaces.js"
+} from "../system/interfaces.js"
 
 export enum PaywallMode {
 	Loading,

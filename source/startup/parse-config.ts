@@ -1,5 +1,5 @@
 
-import {AuthoritarianConfig} from "../interfaces.js"
+import {AuthoritarianConfig} from "../system/interfaces.js"
 
 export function parseConfigElement(element: HTMLElement): AuthoritarianConfig {
 	if (!element) throw new Error(`authoritarian: config element missing`)

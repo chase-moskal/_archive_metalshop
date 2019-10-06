@@ -7,11 +7,11 @@ import {
 	TokenStorageTopic,
 	PaywallGuardianTopic,
 } from "authoritarian/dist/interfaces.js"
-import {PaywallMode} from "./models/paywall-model.js"
-import {UserPanel} from "./components/user-panel.js"
-import {UserButton} from "./components/user-button.js"
-import {ProfilePanel} from "./components/profile-panel.js"
-import {PaywallPanel} from "./components/paywall-panel.js"
+import {PaywallMode} from "../models/paywall-model.js"
+import {UserPanel} from "../components/user-panel.js"
+import {UserButton} from "../components/user-button.js"
+import {ProfilePanel} from "../components/profile-panel.js"
+import {PaywallPanel} from "../components/paywall-panel.js"
 
 export interface AuthoritarianConfig {
 	mock: boolean
