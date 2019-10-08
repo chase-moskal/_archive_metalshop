@@ -1,31 +1,35 @@
 
-import {createPubSub} from "../toolbox/pub-sub.js"
+import {pubsub} from "../toolbox/pubsub.js"
+import {makeReader} from "../toolbox/make-reader.js"
+import {
+	Reader,
+	AvatarState,
+	AvatarScribe,
+	AvatarActions,
+	AvatarListener,
+} from "../system/interfaces.js"
 
-export interface AvatarState {
-	url: string
-	premium: boolean
-}
+export function createAvatarModel(): {
+	reader: Reader<AvatarState, AvatarScribe>
+	actions: AvatarActions
+} {
 
-export function createAvatarModel() {
 	const state: AvatarState = {
 		url: "",
 		premium: false,
 	}
 
-	const {publish, subscribe, unsubscribe} = createPubSub<() => void>()
+	const {publish, subscribe, unsubscribe} = pubsub<AvatarListener>()
 
 	return {
-
-		/** access state and subscribe to changes */
-		stateAccess: {
-			get state() {return Object.freeze({...state})},
+		reader: makeReader<AvatarState, AvatarScribe>({
+			state,
 			subscribe,
 			unsubscribe,
-		},
+		}),
 
-		/** alter state */
-		writeAccess: {
-			setAvatarUrl(url: string) {
+		actions: {
+			setPictureUrl(url: string) {
 				state.url = url
 				publish()
 			},

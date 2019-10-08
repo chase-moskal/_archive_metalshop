@@ -1,60 +1,40 @@
 
-import {EventDetails} from "event-decorators"
 import {
 	AccessToken,
 	TokenStorageTopic,
 } from "authoritarian/dist/interfaces.js"
 
 import {
-	createEventDispatcher as dispatcher
-} from "../toolbox/event-dispatcher.js"
-
-import {
-	UserLoginEvent,
-	UserErrorEvent,
-	UserLogoutEvent,
-	UserLoadingEvent,
-} from "../system/events.js"
-
-import {
 	UserModel,
+	UserEvents,
+	LoginDetail,
 	AuthContext,
 	LoginPopupRoutine,
 	DecodeAccessToken,
 } from "../system/interfaces.js"
 
+import {pubsub, pubsubs} from "../toolbox/pubsub.js"
+
 const expiryGraceSeconds = 60
-const bubbles: CustomEventInit = {bubbles: true, composed: true}
 
 export function createUserModel({
-	eventTarget, tokenStorage, loginPopupRoutine, decodeAccessToken
+	tokenStorage,
+	loginPopupRoutine,
+	decodeAccessToken,
 }: {
-	eventTarget: EventTarget
 	tokenStorage: TokenStorageTopic
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
 }): UserModel {
 
-	//
-	// private
-	//
-
 	let authContext: AuthContext
-
-	// event dispatcher functions
-	const dispatchUserError = dispatcher(UserErrorEvent, eventTarget, bubbles)
-	const dispatchUserLogin = dispatcher(UserLoginEvent, eventTarget, bubbles)
-	const dispatchUserLogout = dispatcher(UserLogoutEvent, eventTarget, bubbles)
-	const dispatchUserLoading = dispatcher(UserLoadingEvent, eventTarget, bubbles)
 
 	/** Receive and decode an access token for login
 	 * - return an async getter which seamlessly refreshes expired tokens
 	 * - we pass around a getter instead of an auth context, because auth
 	 *   context can expire, and so consumers are expected to use this getter
 	 *   for each new interacton */
-	function processAccessToken(accessToken: AccessToken):
-		EventDetails<UserLoginEvent> {
-
+	function processAccessToken(accessToken: AccessToken): LoginDetail {
 		authContext = decodeAccessToken(accessToken)
 
 		return {
@@ -70,68 +50,72 @@ export function createUserModel({
 		}
 	}
 
-	//
-	// public
-	//
+	const {pub, sub} = pubsubs<UserEvents>({
+		userLogout: pubsub<() => void>(),
+		userLoading: pubsub<() => void>(),
+		userError: pubsub<(error: Error) => void>(),
+		userLogin: pubsub<(auth: LoginDetail) => void>(),
+	})
 
 	return {
+		events: sub,
+		actions: {
 
-		/** Initial passive check, to see if we're already logged in */
-		async start() {
-			dispatchUserLoading()
-			try {
-				const accessToken = await tokenStorage.passiveCheck()
+			/** Initial passive check, to see if we're already logged in */
+			async start() {
+				pub.userLoading()
+				try {
+					const accessToken = await tokenStorage.passiveCheck()
 
-				if (accessToken) {
-					const detail = processAccessToken(accessToken)
-					dispatchUserLogin({detail})
+					if (accessToken) {
+						pub.userLogin(processAccessToken(accessToken))
+					}
+					else {
+						pub.userLogout()
+					}
 				}
-				else {
-					dispatchUserLogout()
+				catch (error) {
+					error.message = `user-model error in start(): ${error.message}`
+					console.error(error)
+					pub.userError(error)
 				}
-			}
-			catch (error) {
-				error.message = `user-model error in start(): ${error.message}`
-				console.error(error)
-				dispatchUserError({detail: {error}})
-			}
-		},
+			},
 
-		/** Trigger a user login routine */
-		async login() {
-			dispatchUserLoading()
-			try {
-				const authTokens = await loginPopupRoutine()
-				await tokenStorage.writeTokens(authTokens)
-				const detail = processAccessToken(authTokens.accessToken)
-				dispatchUserLogin({detail})
-			}
-			catch (error) {
-				console.error(error)
-				dispatchUserError({detail: {error}})
-			}
-		},
+			/** Trigger a user login routine */
+			async login() {
+				pub.userLoading()
+				try {
+					const authTokens = await loginPopupRoutine()
+					await tokenStorage.writeTokens(authTokens)
+					pub.userLogin(processAccessToken(authTokens.accessToken))
+				}
+				catch (error) {
+					console.error(error)
+					pub.userError(error)
+				}
+			},
 
-		/** Trigger a user logout routine */
-		async logout() {
-			dispatchUserLoading()
-			try {
-				await tokenStorage.clearTokens()
-				authContext = null
-				dispatchUserLogout()
-			}
-			catch (error) {
-				console.error(error)
-				dispatchUserError({detail: {error}})
-			}
-		},
+			/** Trigger a user logout routine */
+			async logout() {
+				pub.userLoading()
+				try {
+					await tokenStorage.clearTokens()
+					authContext = null
+					pub.userLogout()
+				}
+				catch (error) {
+					console.error(error)
+					pub.userError(error)
+				}
+			},
 
-		/** Process a new token as a login
-		 * - some services might return new tokens from the auth server for you */
-		async loginWithAccessToken(accessToken: AccessToken) {
-			const detail = processAccessToken(accessToken)
-			await tokenStorage.writeAccessToken(accessToken)
-			dispatchUserLogin({detail})
-		},
+			/** Process a new token as a login
+			 * - some services might return new tokens from the auth server for you */
+			async loginWithAccessToken(accessToken: AccessToken) {
+				const detail = processAccessToken(accessToken)
+				await tokenStorage.writeAccessToken(accessToken)
+				pub.userLogin(detail)
+			}
+		}
 	}
 }

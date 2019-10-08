@@ -4,11 +4,25 @@ import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces.js"
 
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
-import {ProfileUpdateEvent, UserLoadingEvent, ProfileErrorEvent} from "../system/events.js"
+import {
+	UserLoadingEvent,
+	ProfileErrorEvent,
+	ProfileUpdateEvent,
+} from "../system/events.js"
+import {AvatarReader} from "../system/interfaces.js"
 
 export class ProfilePanel extends LoadableElement {
 	loadingMessage = "loading profile panel"
+	@property({type: Object}) avatarReader: AvatarReader
 	@property({type: Object}) private _profile: Profile
+
+	private _handleAvatarUpdate = () => this.requestUpdate()
+	connectedCallback() {
+		this.avatarReader.subscribe(this._handleAvatarUpdate)
+	}
+	disconnectedCallback() {
+		this.avatarReader.unsubscribe(this._handleAvatarUpdate)
+	}
 
 	@listener(ProfileErrorEvent, {target: window})
 	protected _handleProfileError = async(event: UserLoadingEvent) => {
@@ -76,9 +90,14 @@ export class ProfilePanel extends LoadableElement {
 
 	renderReady() {
 		const {_profile: profile} = this
+		const avatarState = this.avatarReader.state
 		return profile ? html`
 			<div class="container">
 				<img src=${profile.public.picture} alt="[your profile picture]"/>
+				<avatar-display
+					.url=${avatarState.url}
+					.premium=${avatarState.premium}>
+				</avatar-display>
 				<div>
 					<h2>${profile.private.realname}</h2>
 					<p>${profile.public.nickname}</p>

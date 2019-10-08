@@ -1,6 +1,8 @@
 
-import {AuthContext} from "../system/interfaces.js"
+import {Dispatcher} from "event-decorators"
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
+
+import {AuthContext} from "../system/interfaces.js"
 import {createEventListener} from "../toolbox/event-listener.js"
 import {createEventDispatcher} from "../toolbox/event-dispatcher.js"
 
@@ -11,8 +13,6 @@ import {
 	ProfileErrorEvent,
 	ProfileUpdateEvent,
 } from "../system/events.js"
-
-import {Dispatcher} from "event-decorators"
 
 export function createProfileModel({profiler, eventTarget = document.body}: {
 	profiler: ProfilerTopic
