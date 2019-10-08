@@ -1,6 +1,7 @@
 
 import {
 	User,
+	Profile,
 	AuthTokens,
 	AccessToken,
 	ProfilerTopic,
@@ -80,21 +81,46 @@ export interface PaywallEvents extends Pubsubs {
 	loginWithAccessToken: Pubsub<LoginWithAccessToken>
 }
 
+export interface PaywallReader extends Reader<PaywallState> {}
+export interface PaywallActions {
+	makeUserPremium: () => Promise<void>
+	revokeUserPremium: () => Promise<void>
+}
+
+export interface PaywallWiring {
+	loginWithAccessToken: Subscribe<LoginWithAccessToken>
+	notifyUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
+	notifyUserLogout: () => Promise<void>
+}
+
 export interface PaywallModel {
+	wiring: PaywallWiring
+	actions: PaywallActions
 	reader: Reader<PaywallState, Subscribe<() => void>>
-	actions: {
-		makeUserPremium: () => Promise<void>
-		revokeUserPremium: () => Promise<void>
-	}
-	wiring: {
-		loginWithAccessToken: Subscribe<LoginWithAccessToken>
-		notifyUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
-		notifyUserLogout: () => Promise<void>
-	}
 }
 
 export interface LoginDetail {
 	getAuthContext: GetAuthContext
+}
+
+
+export interface ProfileEvents extends Pubsubs {
+	stateUpdate: Pubsub
+}
+
+export interface ProfileModel {
+	reader: Reader<ProfileState>
+	actions: {
+		userLogout: () => Promise<void>
+		userLogin: (detail: LoginDetail) => Promise<void>
+		userLoading: (loginDetail: LoginDetail) => Promise<void>
+	}
+}
+
+export interface ProfileState {
+	error: boolean
+	loading: boolean
+	profile: Profile
 }
 
 export interface AvatarState {
@@ -102,9 +128,11 @@ export interface AvatarState {
 	premium: boolean
 }
 
+export interface ProfileReader extends Reader<ProfileState> {}
+
 export type AvatarListener = () => void
-export type AvatarScribe = Subscribe<AvatarListener>
-export interface AvatarReader extends Reader<AvatarState, AvatarScribe> {}
+export type AvatarSubscribe = Subscribe<AvatarListener>
+export interface AvatarReader extends Reader<AvatarState, AvatarSubscribe> {}
 
 export interface AvatarActions {
 	setPictureUrl(url: string): void
@@ -113,12 +141,12 @@ export interface AvatarActions {
 
 export type AnyListener = (...args: any) => void | Promise<void>
 
-export interface Unsubscribe<Listener extends AnyListener = AnyListener> {
-	(func: Listener): void
+export interface Unsubscribe {
+	(): void
 }
 
 export interface Subscribe<Listener extends AnyListener = AnyListener> {
-	(func: Listener): Unsubscribe<Listener>
+	(func: Listener): Unsubscribe
 }
 
 export interface Pubsub<Listener extends AnyListener = AnyListener> {

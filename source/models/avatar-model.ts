@@ -4,13 +4,13 @@ import {makeReader} from "../toolbox/make-reader.js"
 import {
 	Reader,
 	AvatarState,
-	AvatarScribe,
+	AvatarSubscribe,
 	AvatarActions,
 	AvatarListener,
 } from "../system/interfaces.js"
 
 export function createAvatarModel(): {
-	reader: Reader<AvatarState, AvatarScribe>
+	reader: Reader<AvatarState, AvatarSubscribe>
 	actions: AvatarActions
 } {
 
@@ -19,13 +19,12 @@ export function createAvatarModel(): {
 		premium: false,
 	}
 
-	const {publish, subscribe, unsubscribe} = pubsub<AvatarListener>()
+	const {publish, subscribe} = pubsub<AvatarListener>()
 
 	return {
-		reader: makeReader<AvatarState, AvatarScribe>({
+		reader: makeReader<AvatarState, AvatarSubscribe>({
 			state,
 			subscribe,
-			unsubscribe,
 		}),
 
 		actions: {

@@ -2,7 +2,7 @@
 import {property, html, css, svg} from "lit-element"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-import {PaywallPanelAccess} from "../system/interfaces.js"
+import {PaywallReader, PaywallActions, Unsubscribe} from "../system/interfaces.js"
 import {PaywallMode} from "../models/paywall-model.js"
 
 const icons = {
@@ -11,11 +11,26 @@ const icons = {
 
 export class PaywallPanel extends LoadableElement {
 	loadingMessage = "loading paywall panel"
-	@property({type: Object}) access: PaywallPanelAccess
+	@property({type: Object}) reader: PaywallReader
+	@property({type: Object}) actions: PaywallActions
+	@property({type: Number}) mode: PaywallMode
+
+	private _unsubscribers: Unsubscribe[] = []
+
+	connectedCallback() {
+		this._unsubscribers = [
+			this.reader.subscribe(() => {this.requestUpdate()})
+		]
+	}
+
+	disconnectedCallback() {
+		for (const unsubscribe of this._unsubscribers) unsubscribe()
+	}
 
 	updated() {
-		if (!this.access) return
-		switch (this.access.state.mode) {
+		if (!this.reader) return
+		const {mode} = this.reader.state
+		switch (mode) {
 			case PaywallMode.Loading:
 				this.loadableState = LoadableState.Loading
 				break
@@ -25,6 +40,7 @@ export class PaywallPanel extends LoadableElement {
 			default:
 				this.loadableState = LoadableState.Ready
 		}
+		this.mode = mode
 	}
 
 	static get styles() {return [super.styles, css`
@@ -78,7 +94,7 @@ export class PaywallPanel extends LoadableElement {
 	`]}
 
 	private _renderNotPremium() {
-		const {actions} = this.access
+		const {actions} = this
 		return html`
 			<header>
 				<h3>Become a premium supporter!</h3>
@@ -94,7 +110,7 @@ export class PaywallPanel extends LoadableElement {
 	}
 
 	private _renderPremium() {
-		const {actions} = this.access
+		const {actions} = this
 		return html`
 			<header>
 				<div class="icon">${icons.star}</div>
@@ -111,8 +127,8 @@ export class PaywallPanel extends LoadableElement {
 	}
 
 	renderReady() {
-		if (!this.access) return html``
-		switch (this.access.state.mode) {
+		if (this.mode === undefined) return html``
+		switch (this.mode) {
 			case PaywallMode.LoggedOut: return html``
 			case PaywallMode.NotPremium: return this._renderNotPremium()
 			case PaywallMode.Premium: return this._renderPremium()

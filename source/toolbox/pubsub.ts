@@ -16,7 +16,7 @@ export function pubsub<Listener extends AnyListener = AnyListener>():
 			const operations = listeners.map(listener => listener(...args))
 			await Promise.all(operations)
 		}),
-		subscribe(func: Listener): Unsubscribe<Listener> {
+		subscribe(func: Listener): Unsubscribe {
 			listeners.push(func)
 			return () => {
 				listeners = listeners.filter(listener => listener !== func)
@@ -28,14 +28,14 @@ export function pubsub<Listener extends AnyListener = AnyListener>():
 export function pubsubs<O extends Pubsubs>(
 	obj: O // extends infer U ? U : never
 ): {
-	pub: Pubify<O>
-	sub: Subify<O>
+	publishers: Pubify<O>
+	subscribers: Subify<O>
 } {
-	const pub: any = {}
-	const sub: any = {}
+	const publishers: any = {}
+	const subscribers: any = {}
 	for (const [key, original] of Object.entries(obj)) {
-		pub[key] = original.publish
-		sub[key] = original.subscribe
+		publishers[key] = original.publish
+		subscribers[key] = original.subscribe
 	}
-	return {pub, sub}
+	return {publishers, subscribers}
 }

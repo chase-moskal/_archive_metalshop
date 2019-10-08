@@ -49,6 +49,10 @@ export async function start({
 		paywallGuardian,
 	})
 
+	const profile = createProfileModel({
+		profiler
+	})
+
 	const avatar = createAvatarModel()
 
 	//
@@ -60,14 +64,25 @@ export async function start({
 		user.actions.loginWithAccessToken
 	)
 
-	// for (const component of [...userButtons, ...profilePanels]) {
-	// 	component.avatarReader = avatar.reader
-	// }
+	// update avatar picture on profile update
+	profile.reader.subscribe(() => {
+		const {state} = profile.reader
+		if (!state.profile) return
+		const {picture} = profile.reader.state.profile.public
+		if (picture) avatar.actions.setPictureUrl(picture)
+	})
 
-	// profile.reader.subscribe(() => {
-	// 	const {state} = profile.reader
-	// 	avatar.setPictureUrl(state.public.url)
-	// })
+	// attach component readers
+	for (const component of [...userButtons, ...profilePanels])
+		component.avatarReader = avatar.reader
+	for (const component of paywallPanels)
+		component.reader
+
+	// user panel login/logout clicks
+	for (const userPanel of userPanels) {
+		userPanel.onLoginClick = user.actions.login
+		userPanel.onLogoutClick = user.actions.logout
+	}
 
 	return {
 		async start() { return user.actions.start() },
@@ -98,38 +113,6 @@ export async function start({
 	// //
 	// // lower level functions help setup the models
 	// //
-
-	// function setupAvatar() {
-	// 	const {reader: avatarReadAccess, actions: avatarWriteAccess} = createAvatarModel()
-	// 	createEventListener(
-	// 		ProfileUpdateEvent, eventTarget, {},
-	// 		event => {
-	// 			avatarWriteAccess.setPictureUrl(event.detail.profile.public.picture)
-	// 		}
-	// 	)
-	// 	createEventListener(
-	// 		ProfileErrorEvent, eventTarget, {},
-	// 		event => {
-	// 			avatarWriteAccess.setPictureUrl(null)
-	// 		}
-	// 	)
-	// 	for (const component of [...userButtons, ...profilePanels])
-	// 		component.avatarReadAccess = avatarReadAccess
-	// }
-
-	// async function setupUser() {
-	// 	const userModel = createUserModel({
-	// 		eventTarget,
-	// 		tokenStorage,
-	// 		loginPopupRoutine,
-	// 		decodeAccessToken,
-	// 	})
-	// 	for (const userPanel of userPanels) {
-	// 		userPanel.onLoginClick = userModel.login
-	// 		userPanel.onLogoutClick = userModel.logout
-	// 	}
-	// 	return userModel
-	// }
 
 	// async function setupPaywall(userModel: UserModel) {
 	// 	const paywallModel = createPaywallModel({

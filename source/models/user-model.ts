@@ -50,62 +50,62 @@ export function createUserModel({
 		}
 	}
 
-	const {pub, sub} = pubsubs<UserEvents>({
-		userLogout: pubsub<() => void>(),
-		userLoading: pubsub<() => void>(),
-		userError: pubsub<(error: Error) => void>(),
-		userLogin: pubsub<(auth: LoginDetail) => void>(),
+	const {publishers, subscribers} = pubsubs<UserEvents>({
+		userLogin: pubsub(),
+		userError: pubsub(),
+		userLogout: pubsub(),
+		userLoading: pubsub(),
 	})
 
 	return {
-		events: sub,
+		events: subscribers,
 		actions: {
 
 			/** Initial passive check, to see if we're already logged in */
 			async start() {
-				pub.userLoading()
+				publishers.userLoading()
 				try {
 					const accessToken = await tokenStorage.passiveCheck()
 
 					if (accessToken) {
-						pub.userLogin(processAccessToken(accessToken))
+						publishers.userLogin(processAccessToken(accessToken))
 					}
 					else {
-						pub.userLogout()
+						publishers.userLogout()
 					}
 				}
 				catch (error) {
 					error.message = `user-model error in start(): ${error.message}`
 					console.error(error)
-					pub.userError(error)
+					publishers.userError(error)
 				}
 			},
 
 			/** Trigger a user login routine */
 			async login() {
-				pub.userLoading()
+				publishers.userLoading()
 				try {
 					const authTokens = await loginPopupRoutine()
 					await tokenStorage.writeTokens(authTokens)
-					pub.userLogin(processAccessToken(authTokens.accessToken))
+					publishers.userLogin(processAccessToken(authTokens.accessToken))
 				}
 				catch (error) {
 					console.error(error)
-					pub.userError(error)
+					publishers.userError(error)
 				}
 			},
 
 			/** Trigger a user logout routine */
 			async logout() {
-				pub.userLoading()
+				publishers.userLoading()
 				try {
 					await tokenStorage.clearTokens()
 					authContext = null
-					pub.userLogout()
+					publishers.userLogout()
 				}
 				catch (error) {
 					console.error(error)
-					pub.userError(error)
+					publishers.userError(error)
 				}
 			},
 
@@ -114,7 +114,7 @@ export function createUserModel({
 			async loginWithAccessToken(accessToken: AccessToken) {
 				const detail = processAccessToken(accessToken)
 				await tokenStorage.writeAccessToken(accessToken)
-				pub.userLogin(detail)
+				publishers.userLogin(detail)
 			}
 		}
 	}

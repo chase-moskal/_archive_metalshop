@@ -31,7 +31,7 @@ export function createPaywallModel({paywallGuardian}: {
 		mode: PaywallMode.LoggedOut
 	}
 
-	const {pub, sub} = pubsubs<PaywallEvents>({
+	const {publishers, subscribers} = pubsubs<PaywallEvents>({
 		stateUpdate: pubsub(),
 		loginWithAccessToken: pubsub(),
 	})
@@ -39,52 +39,52 @@ export function createPaywallModel({paywallGuardian}: {
 	return {
 		reader: makeReader<PaywallState>({
 			state,
-			subscribe: sub.stateUpdate
+			subscribe: subscribers.stateUpdate
 		}),
 
 		actions: {
 			async makeUserPremium() {
 				state.mode = PaywallMode.Loading
-				pub.stateUpdate()
+				publishers.stateUpdate()
 				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.makeUserPremium({
 					accessToken
 				})
-				await pub.loginWithAccessToken(newAccessToken)
-				pub.stateUpdate()
+				await publishers.loginWithAccessToken(newAccessToken)
+				publishers.stateUpdate()
 			},
 
 			async revokeUserPremium() {
 				state.mode = PaywallMode.Loading
-				pub.stateUpdate()
+				publishers.stateUpdate()
 				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.revokeUserPremium({
 					accessToken
 				})
-				await pub.loginWithAccessToken(newAccessToken)
-				pub.stateUpdate()
+				await publishers.loginWithAccessToken(newAccessToken)
+				publishers.stateUpdate()
 			},
 		},
 
 		wiring: {
-			loginWithAccessToken: sub.loginWithAccessToken,
+			loginWithAccessToken: subscribers.loginWithAccessToken,
 
 			async notifyUserLogin(options) {
 				state.mode = PaywallMode.Loading
 				getAuthContext = options.getAuthContext
-				pub.stateUpdate()
+				publishers.stateUpdate()
 				const context = await getAuthContext()
 				const premium = !!context.user.claims.premium
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium
-				pub.stateUpdate()
+				publishers.stateUpdate()
 			},
 
 			async notifyUserLogout() {
 				state.mode = PaywallMode.LoggedOut
-				pub.stateUpdate()
-			},
-		},
+				publishers.stateUpdate()
+			}
+		}
 	}
 }
