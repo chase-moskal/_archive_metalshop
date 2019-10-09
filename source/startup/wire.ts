@@ -4,7 +4,6 @@ import {createAvatarModel} from "../models/avatar-model.js"
 import {createProfileModel} from "../models/profile-model.js"
 import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
 
-import {exist} from "../toolbox/exist.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 import {wireStateUpdates} from "../toolbox/wire-state-updates.js"
 import {
@@ -37,7 +36,7 @@ export async function wire({
 	avatarDisplays,
 }: AuthoritarianOptions) {
 
-	if (!exist(userPanels, avatarDisplays))
+	if (![...userPanels, ...avatarDisplays].length)
 		throw err(`no elements found related to authoritarian`)
 
 	//
