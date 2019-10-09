@@ -1,5 +1,5 @@
 
-import {Dispatcher, dashifyEventName, EventDetails} from "event-decorators"
+import {Dispatcher, dashifyEventName} from "event-decorators"
 
 export function createEventDispatcher<E extends CustomEvent>(
 	EventClass: {new(name: string, opts: CustomEventInit): E},

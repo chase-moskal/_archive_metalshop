@@ -4,7 +4,7 @@
 		"rootDir": "source",
 		"outDir": "dist",
 		"target": "esnext",
-		"lib": ["es6", "dom"],
+		"lib": ["esnext", "dom"],
 		"module": "esnext",
 		"moduleResolution": "node",
 		"experimentalDecorators": true,

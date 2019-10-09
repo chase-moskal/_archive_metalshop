@@ -1,54 +1,29 @@
 
-import {listener} from "event-decorators"
 import {property, html, css} from "lit-element"
 
+import {UserState, Reader} from "../system/interfaces.js"
+import {mixinStateReader} from "../toolbox/mixin-state-reader.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-import {
-	UserLoginEvent,
-	UserLogoutEvent,
-	UserLoadingEvent,
-	UserErrorEvent,
-} from "../system/events.js"
-
 export class UserPanel extends LoadableElement {
-	loadingMessage = "loading user panel"
-
-	@property({type: Boolean})
-	private _loggedIn: boolean = false
-	
-	@property({type: Function})
+	@property({type: Object}) userState: UserState
 	onLoginClick: (event: MouseEvent) => void = () => {}
-
-	@property({type: Function})
 	onLogoutClick: (event: MouseEvent) => void = () => {}
+	loadingMessage = "loading user panel"
+	errorMessage = "user account system error"
 
-	@listener(UserLoadingEvent, {target: window})
-	protected _handleUserLoading = (event: UserLoadingEvent) => {
-		this._loggedIn = false
-		this.loadableState = LoadableState.Loading
-	}
-
-	@listener(UserErrorEvent, {target: window})
-	protected _handleUserError = (event: UserErrorEvent) => {
-		this._loggedIn = false
-		this.loadableState = LoadableState.Error
-	}
-
-	@listener(UserLoginEvent, {target: window})
-	protected _handleUserLogin = (event: UserLoginEvent) => {
-		this._loggedIn = true
-		this.loadableState = LoadableState.Ready
-	}
-
-	@listener(UserLogoutEvent, {target: window})
-	protected _handleLogoutEvent = (event: UserLogoutEvent) => {
-		this._loggedIn = false
-		this.loadableState = LoadableState.Ready
+	updated() {
+		if (!this.userState) return
+		const {loading, error} = this.userState
+		this.loadableState = error
+			? LoadableState.Error
+			: loading
+				? LoadableState.Loading
+				: LoadableState.Ready
 	}
 
 	static get styles() {
-		return [super.styles, css`
+		return [LoadableElement.styles, css`
 			:host {
 				display: block;
 			}
@@ -88,7 +63,8 @@ export class UserPanel extends LoadableElement {
 	}
 
 	renderReady() {
-		return this._loggedIn ? html`
+		const {loggedIn} = this.userState
+		return loggedIn ? html`
 				<slot></slot>
 				<div>
 					<button class="logout" @click=${this.onLogoutClick}>

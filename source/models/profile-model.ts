@@ -1,33 +1,16 @@
 
-import {AuthContext} from "../system/interfaces.js"
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
-import {createEventListener} from "../toolbox/event-listener.js"
-import {createEventDispatcher} from "../toolbox/event-dispatcher.js"
-
 import {
-	UserLoginEvent,
-	UserLogoutEvent,
-	UserLoadingEvent,
-	ProfileErrorEvent,
-	ProfileUpdateEvent,
-} from "../system/events.js"
+	AuthContext,
+	LoginDetail,
+	ProfileModel,
+	ProfileState,
+} from "../system/interfaces.js"
+import {makeReader} from "../toolbox/make-reader.js"
 
-import {Dispatcher} from "event-decorators"
-
-export function createProfileModel({profiler, eventTarget = document.body}: {
+export function createProfileModel({profiler}: {
 	profiler: ProfilerTopic
-	eventTarget: EventTarget
-}) {
-
-	//
-	// privates
-	//
-
-	let cancel: boolean = false
-	const bubbling: CustomEventInit = {bubbles: true, composed: true}
-	const listening: AddEventListenerOptions = {
-		capture: false, once: false, passive: false
-	}
+}): ProfileModel {
 
 	async function loadProfile(authContext: AuthContext): Promise<Profile> {
 		const {accessToken} = authContext
@@ -36,70 +19,46 @@ export function createProfileModel({profiler, eventTarget = document.body}: {
 		return profile
 	}
 
-	//
-	// event dispatchers,
-	// functions which can dispatch events
-	//
+	let cancel: boolean = false
+	const state: ProfileState = {
+		error: null,
+		loading: true,
+		profile: null,
+	}
 
-	const dispatchProfileError: Dispatcher<ProfileErrorEvent> =
-		createEventDispatcher<ProfileErrorEvent>(
-			ProfileErrorEvent,
-			eventTarget,
-			bubbling,
-		)
-
-	const dispatchProfileUpdate: Dispatcher<ProfileUpdateEvent> =
-		createEventDispatcher<ProfileUpdateEvent>(
-			ProfileUpdateEvent,
-			eventTarget,
-			bubbling,
-		)
-
-	//
-	// event listeners,
-	// process user events, load profiles, and dispatch profile events
-	//
-
-	const listeners: (() => void)[] = [
-		createEventListener<UserLoadingEvent>(
-			UserLoadingEvent, eventTarget, listening,
-			async() => {
-				cancel = true
-			}
-		),
-		createEventListener<UserLoginEvent>(
-			UserLoginEvent, eventTarget, listening,
-			async event => {
-				cancel = false
-				try {
-					const authContext = await event.detail.getAuthContext()
-					const profile = await loadProfile(authContext)
-					if (!cancel)
-						dispatchProfileUpdate({detail: {profile}})
-					else
-						dispatchProfileUpdate({detail: {profile: null}})
-				}
-				catch (error) {
-					dispatchProfileError({detail: {error}})
-				}
-			}
-		),
-		createEventListener<UserLogoutEvent>(
-			UserLogoutEvent, eventTarget, listening,
-			async() => {
-				const profile = null
-				dispatchProfileUpdate({detail: {profile}})
-			}
-		)
-	]
-
-	//
-	// public
-	//
+	const reader = makeReader<ProfileState>(state)
+	const {publishStateUpdate} = reader
 
 	return {
-		removeListeners() {
-			for (const remove of listeners) remove()
+		reader,
+		wiring: {
+			async receiveUserLoading() {
+				cancel = true
+				state.error = null
+				state.loading = true
+				state.profile = null
+				publishStateUpdate()
+			},
+			async receiveUserLogin(detail: LoginDetail) {
+				cancel = false
+				try {
+					const authContext = await detail.getAuthContext()
+					const profile = await loadProfile(authContext)
+					state.profile = cancel ? null : profile
+				}
+				catch (error) {
+					console.error(error)
+					state.error = error
+				}
+				state.loading = false
+				publishStateUpdate()
+			},
+			async receiveUserLogout() {
+				state.error = null
+				state.profile = null
+				state.loading = false
+				publishStateUpdate()
+			}
 		}
 	}
 }
