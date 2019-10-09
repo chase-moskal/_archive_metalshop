@@ -1,12 +1,10 @@
 
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
-import {pubsub, pubsubs} from "../toolbox/pubsub.js"
 import {
 	AuthContext,
 	LoginDetail,
 	ProfileModel,
 	ProfileState,
-	ProfileEvents,
 } from "../system/interfaces.js"
 import {makeReader} from "../toolbox/make-reader.js"
 

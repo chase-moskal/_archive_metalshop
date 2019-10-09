@@ -1,9 +1,9 @@
 
 import {
 	Pubsub,
-	Pubsubs,
 	Pubify,
 	Subify,
+	Pubsubs,
 	Unsubscribe,
 	AnyListener,
 } from "../system/interfaces.js"
@@ -25,9 +25,7 @@ export function pubsub<Listener extends AnyListener = AnyListener>():
 	}
 }
 
-export function pubsubs<O extends Pubsubs>(
-	obj: O // extends infer U ? U : never
-): {
+export function pubsubs<O extends Pubsubs>(obj: O): {
 	publishers: Pubify<O>
 	subscribers: Subify<O>
 } {

@@ -9,6 +9,7 @@ import {
 	PaywallState,
 	PaywallEvents,
 	GetAuthContext,
+	LoginWithAccessToken,
 } from "../system/interfaces.js"
 
 export enum PaywallMode {
@@ -31,8 +32,8 @@ export function createPaywallModel({paywallGuardian}: {
 
 	const reader = makeReader<PaywallState>(state)
 	const {publishStateUpdate} = reader
-	const {publishers, subscribers} = pubsubs<PaywallEvents>({
-		loginWithAccessToken: pubsub(),
+	const {publishers, subscribers} = pubsubs({
+		loginWithAccessToken: pubsub<LoginWithAccessToken>(),
 	})
 
 	return {
