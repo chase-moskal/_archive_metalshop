@@ -37,7 +37,8 @@ export function createUserModel({
 		loggedIn: true,
 	}
 
-	const {reader, publishStateUpdate} = makeReader<UserState>(state)
+	const reader = makeReader<UserState>(state)
+	const {publishStateUpdate} = reader
 
 	const {publishers, subscribers} = pubsubs<UserEvents>({
 		userLogin: pubsub(),

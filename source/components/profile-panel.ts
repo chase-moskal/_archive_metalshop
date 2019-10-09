@@ -4,18 +4,21 @@ import {ProfileState, AvatarState} from "../system/interfaces.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class ProfilePanel extends LoadableElement {
-	@property({type: Object}) state: ProfileState
 	@property({type: Object}) avatarState: AvatarState
+	@property({type: Object}) profileState: ProfileState
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
 
 	updated() {
-		const {error, loading} = this.state
-		this.loadableState = error
-			? LoadableState.Error
-			: loading
-				? LoadableState.Loading
-				: LoadableState.Ready
+		console.log(this.profileState)
+		if (this.profileState) {
+			const {error, loading} = this.profileState
+			this.loadableState = error
+				? LoadableState.Error
+				: loading
+					? LoadableState.Loading
+					: LoadableState.Ready
+		}
 	}
 
 	static get styles() {return [super.styles, css`
@@ -62,12 +65,13 @@ export class ProfilePanel extends LoadableElement {
 	`]}
 
 	renderReady() {
+		if (!this.avatarState || !this.profileState) return
 		const {avatarState} = this
-		const {profile} = this.state
+		const {profile} = this.profileState
 		return profile ? html`
 			<div class="container">
 				<img src=${profile.public.picture} alt="[your profile picture]"/>
-				<avatar-display .state=${avatarState}></avatar-display>
+				<avatar-display .avatarState=${avatarState}></avatar-display>
 				<div>
 					<h2>${profile.private.realname}</h2>
 					<p>${profile.public.nickname}</p>

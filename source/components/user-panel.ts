@@ -1,21 +1,20 @@
 
-import {property, html, css, PropertyValues} from "lit-element"
+import {property, html, css} from "lit-element"
 
 import {UserState, Reader} from "../system/interfaces.js"
 import {mixinStateReader} from "../toolbox/mixin-state-reader.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-export class UserPanel extends mixinStateReader<UserState, typeof LoadableElement>(LoadableElement) {
-	reader: Reader<UserState>
+export class UserPanel extends LoadableElement {
+	@property({type: Object}) userState: UserState
 	onLoginClick: (event: MouseEvent) => void = () => {}
 	onLogoutClick: (event: MouseEvent) => void = () => {}
-
-	@property({type: Object}) state: UserState
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
 
-	stateUpdateCallback() {
-		const {loading, error} = this.state
+	updated() {
+		if (!this.userState) return
+		const {loading, error} = this.userState
 		this.loadableState = error
 			? LoadableState.Error
 			: loading
@@ -64,7 +63,7 @@ export class UserPanel extends mixinStateReader<UserState, typeof LoadableElemen
 	}
 
 	renderReady() {
-		const {loggedIn} = this.state
+		const {loggedIn} = this.userState
 		return loggedIn ? html`
 				<slot></slot>
 				<div>

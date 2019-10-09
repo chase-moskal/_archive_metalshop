@@ -5,8 +5,20 @@ import {createProfileModel} from "../models/profile-model.js"
 import {createPaywallModel} from "../models/paywall-model.js"
 
 import {exist} from "../toolbox/exist.js"
-import {AuthoritarianOptions, Reader} from "../system/interfaces.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
+import {wireStateUpdates} from "../toolbox/wire-state-updates.js"
+import {
+	UserState,
+	AvatarState,
+	PaywallState,
+	ProfileState,
+	AuthoritarianOptions,
+} from "../system/interfaces.js"
+
+import {UserPanel} from "../components/user-panel.js"
+import {PaywallPanel} from "../components/paywall-panel.js"
+import {ProfilePanel} from "../components/profile-panel.js"
+import {AvatarDisplay} from "../components/avatar-display.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -20,15 +32,13 @@ export async function wire({
 	decodeAccessToken,
 
 	userPanels,
-	userButtons,
 	profilePanels,
 	paywallPanels,
 	avatarDisplays,
 }: AuthoritarianOptions) {
 
-	if (!exist(userPanels, userButtons))
-		throw err(`none of the required <user-panel> or <user-button> elements `
-			+ `were found`)
+	if (!exist(userPanels, avatarDisplays))
+		throw err(`no elements found related to authoritarian`)
 
 	//
 	// instance the models
@@ -72,30 +82,40 @@ export async function wire({
 	// wire models to dom elements
 	//
 
-	const wireStateDistribution = (reader: Reader, state: any) => {}
-
-	profile.reader.subscribe(state => {
-		for (const profilePanel of profilePanels) {
-			profilePanel.state = state
-		}
+	wireStateUpdates<ProfileState, ProfilePanel>({
+		initialPublish: true,
+		reader: profile.reader,
+		components: profilePanels,
+		updateComponent: (component, state) => component.profileState = state,
 	})
 
-	for (const profilePanel of profilePanels) {
-		profilePanel.reader = profile.reader
-		profilePanel.avatarReader = avatar.reader
-	}
+	wireStateUpdates<AvatarState, (ProfilePanel | AvatarDisplay)>({
+		initialPublish: true,
+		reader: avatar.reader,
+		components: [...profilePanels, ...avatarDisplays],
+		updateComponent: (component, state) => component.avatarState = state
+	})
 
-	for (const userButton of userButtons) {
-		userButton.avatarReader = avatar.reader
-	}
+	wireStateUpdates<PaywallState, PaywallPanel>({
+		initialPublish: true,
+		reader: paywall.reader,
+		components: paywallPanels,
+		updateComponent: (component, state) => component.paywallState = state
+	})
+
+	wireStateUpdates<UserState, UserPanel>({
+		initialPublish: true,
+		reader: user.reader,
+		components: userPanels,
+		updateComponent: (component, state) => component.userState = state
+	})
 
 	for (const paywallPanel of paywallPanels) {
-		paywallPanel.reader = paywall.reader
-		paywallPanel.actions = paywall.actions
+		paywallPanel.onMakeUserPremium = paywall.actions.makeUserPremium
+		paywallPanel.onRevokeUserPremium = paywall.actions.revokeUserPremium
 	}
 
 	for (const userPanel of userPanels) {
-		userPanel.reader = user.reader
 		userPanel.onLoginClick = user.actions.login
 		userPanel.onLogoutClick = user.actions.logout
 	}

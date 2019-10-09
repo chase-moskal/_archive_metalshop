@@ -1,6 +1,4 @@
 
-import {LitElement} from "lit-element"
-
 import {
 	User,
 	Profile,
@@ -14,7 +12,6 @@ import {
 import {PaywallMode} from "../models/paywall-model.js"
 
 import {UserPanel} from "../components/user-panel.js"
-import {UserButton} from "../components/user-button.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
@@ -39,7 +36,6 @@ export interface AuthoritarianOptions {
 	decodeAccessToken: DecodeAccessToken
 
 	userPanels: UserPanel[]
-	userButtons: UserButton[]
 	profilePanels: ProfilePanel[]
 	paywallPanels: PaywallPanel[]
 	avatarDisplays: AvatarDisplay[]
@@ -178,6 +174,7 @@ export type Subify<P extends Pubsubs> = {
 
 export interface Reader<S extends {} = {}> {
 	state: Readonly<S>
+	publishStateUpdate: () => void
 	subscribe: Subscribe<(state: S) => void>
 }
 

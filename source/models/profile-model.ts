@@ -28,7 +28,8 @@ export function createProfileModel({profiler}: {
 		profile: null,
 	}
 
-	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
+	const reader = makeReader<ProfileState>(state)
+	const {publishStateUpdate} = reader
 
 	return {
 		reader,
