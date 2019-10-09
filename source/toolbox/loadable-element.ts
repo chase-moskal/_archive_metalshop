@@ -9,6 +9,10 @@ import {
 	CSSResultArray,
 } from "lit-element"
 
+export class LoadableElementError extends Error {}
+
+const err = (message: string) => new LoadableElementError(message)
+
 export enum LoadableState {
 	Loading,
 	Error,
@@ -66,7 +70,7 @@ export class LoadableElement extends LitElement {
 	`}
 
 	renderReady() {
-		throw new Error("loadable: renderReady must be implemented")
+		throw err(`renderReady must be implemented`)
 	}
 
 	render() {

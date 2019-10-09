@@ -2,6 +2,10 @@
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
 import {AccountPopupLogin} from "../system/interfaces"
 
+import {AuthoritarianAuthError} from "../system/errors.js"
+
+const err = (message: string) => new AuthoritarianAuthError(message)
+
 const namespace = "authoritarian-account-popup"
 
 export function prepareLoginPopupRoutine(
@@ -45,7 +49,7 @@ export async function accountPopupLogin(authServerUrl: string) {
 				}
 
 				else {
-					throw new Error("unknown message")
+					throw err(`${namespace}: unknown message`)
 				}
 			}
 			catch (error) {

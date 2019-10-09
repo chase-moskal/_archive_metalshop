@@ -13,18 +13,25 @@ import {decodeAccessToken} from "../toolbox/decode-access-token.js"
 import {selects} from "../toolbox/selects.js"
 import {AuthoritarianOptions, AuthoritarianConfig} from "../system/interfaces.js"
 
+/**
+ * Prepare all of the options for the start routine
+ * - use the simpler config to decide how to start
+ * - create microservice instances
+ * - otherwise provide mock instances
+ */
 export async function initializeOptions(config: AuthoritarianConfig): Promise<AuthoritarianOptions> {
 	let progress: Partial<AuthoritarianOptions> = {}
-
+	if (config.debug) progress.debug = true
+	progress.eventTarget = document.body
+	progress.decodeAccessToken = decodeAccessToken
 	progress.userPanels = selects("user-panel")
 	progress.userButtons = selects("user-button")
 	progress.paywallPanels = selects("paywall-panel")
 	progress.profilePanels = selects("profile-panel")
 
-	progress.eventTarget = document.body
-	progress.decodeAccessToken = decodeAccessToken
-
-	if (config.debug) progress.debug = true
+	//
+	// use mocks instead of real microservices
+	//
 
 	if (config.mock) {
 		const {
@@ -32,27 +39,28 @@ export async function initializeOptions(config: AuthoritarianConfig): Promise<Au
 			MockTokenStorage,
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
-			// mockDecodeAccessToken,
 		} = await import("../system/mocks.js")
 		progress = {
 			...progress,
 			profiler: new MockProfiler(),
 			tokenStorage: new MockTokenStorage(),
 			loginPopupRoutine: mockLoginPopupRoutine,
-			paywallGuardian: new MockPaywallGuardian()
-			// using the real decodeAccessToken, we have legit mock tokens for it
+			paywallGuardian: new MockPaywallGuardian(),
 		}
 	}
+
+	//
+	// use real microservices
+	//
+
 	else {
 
-		// profiler
 		if (config.profilerService) {
 			progress.profiler = await createProfilerCacheCrosscallClient({
 				url: config.profilerService
 			})
 		}
 
-		// auth server - token storage and login popup routine
 		if (config.authServer) {
 			progress.loginPopupRoutine = prepareLoginPopupRoutine(
 				config.authServer,
@@ -62,8 +70,7 @@ export async function initializeOptions(config: AuthoritarianConfig): Promise<Au
 				url: `${config.authServer}/html/token-storage`
 			})
 		}
-
-		// paywall guardian
+	
 		if (config.paywallGuardian) {
 			progress.paywallGuardian = null
 		}
