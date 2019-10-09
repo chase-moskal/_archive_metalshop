@@ -1,36 +1,19 @@
 
 import {property, html, css} from "lit-element"
+import {ProfileState, AvatarState} from "../system/interfaces.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
-import {
-	Unsubscribe,
-	AvatarReader,
-	ProfileReader,
-} from "../system/interfaces.js"
 
 export class ProfilePanel extends LoadableElement {
-	loadingMessage = "loading profile panel"
+	@property({type: Object}) state: ProfileState
+	@property({type: Object}) avatarState: AvatarState
 	errorMessage = "error in profile panel"
-	@property({type: Object}) reader: ProfileReader
-	@property({type: Object}) avatarReader: AvatarReader
-
-	private _unsubscribers: Unsubscribe[] = []
-
-	connectedCallback() {
-		this._unsubscribers = [
-			this.avatarReader.subscribe(() => this.requestUpdate()),
-			this.reader.subscribe(() => {this.requestUpdate()})
-		]
-	}
-
-	disconnectedCallback() {
-		for (const unsubscribe of this._unsubscribers) unsubscribe()
-	}
+	loadingMessage = "loading profile panel"
 
 	updated() {
-		const {state} = this.reader
-		this.loadableState = state.error
+		const {error, loading} = this.state
+		this.loadableState = error
 			? LoadableState.Error
-			: state.loading
+			: loading
 				? LoadableState.Loading
 				: LoadableState.Ready
 	}
@@ -79,8 +62,8 @@ export class ProfilePanel extends LoadableElement {
 	`]}
 
 	renderReady() {
-		const {profile} = this.reader.state
-		const avatarState = this.avatarReader.state
+		const {avatarState} = this
+		const {profile} = this.state
 		return profile ? html`
 			<div class="container">
 				<img src=${profile.public.picture} alt="[your profile picture]"/>

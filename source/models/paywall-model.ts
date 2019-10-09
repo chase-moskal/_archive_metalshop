@@ -1,7 +1,5 @@
 
-import {
-	PaywallGuardianTopic
-} from "authoritarian/dist/interfaces.js"
+import {PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
 
 import {pubsub, pubsubs} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"
@@ -31,59 +29,51 @@ export function createPaywallModel({paywallGuardian}: {
 		mode: PaywallMode.LoggedOut
 	}
 
+	const {reader, publishStateUpdate} = makeReader<PaywallState>(state)
 	const {publishers, subscribers} = pubsubs<PaywallEvents>({
-		stateUpdate: pubsub(),
 		loginWithAccessToken: pubsub(),
 	})
 
 	return {
-		reader: makeReader<PaywallState>({
-			state,
-			subscribe: subscribers.stateUpdate
-		}),
-
+		reader,
 		actions: {
 			async makeUserPremium() {
 				state.mode = PaywallMode.Loading
-				publishers.stateUpdate()
+				publishStateUpdate()
 				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.makeUserPremium({
 					accessToken
 				})
 				await publishers.loginWithAccessToken(newAccessToken)
-				publishers.stateUpdate()
+				publishStateUpdate()
 			},
-
 			async revokeUserPremium() {
 				state.mode = PaywallMode.Loading
-				publishers.stateUpdate()
+				publishStateUpdate()
 				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.revokeUserPremium({
 					accessToken
 				})
 				await publishers.loginWithAccessToken(newAccessToken)
-				publishers.stateUpdate()
-			},
+				publishStateUpdate()
+			}
 		},
-
 		wiring: {
 			loginWithAccessToken: subscribers.loginWithAccessToken,
-
 			async notifyUserLogin(options) {
 				state.mode = PaywallMode.Loading
 				getAuthContext = options.getAuthContext
-				publishers.stateUpdate()
+				publishStateUpdate()
 				const context = await getAuthContext()
 				const premium = !!context.user.claims.premium
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium
-				publishers.stateUpdate()
+				publishStateUpdate()
 			},
-
 			async notifyUserLogout() {
 				state.mode = PaywallMode.LoggedOut
-				publishers.stateUpdate()
+				publishStateUpdate()
 			}
 		}
 	}

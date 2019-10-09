@@ -1,12 +1,17 @@
 
-import {Reader, Subscribe} from "../system/interfaces.js"
+import {pubsub} from "./pubsub.js"
+import {Reader} from "../system/interfaces.js"
 
-export function makeReader<State extends {} = {}, Sub extends Subscribe = Subscribe>({
-	state,
-	subscribe
-}: Reader<State, Sub>): Reader<State, Sub> {
+export function makeReader<S extends {} = {}>(state: S): {
+	reader: Reader<S>
+	publishStateUpdate: () => void
+} {
+	const {publish, subscribe} = pubsub<(state: S) => void>()
 	return {
-		get state() {return Object.freeze({...state})},
-		subscribe
+		reader: {
+			subscribe,
+			get state() {return Object.freeze({...state})},
+		},
+		publishStateUpdate: () => publish(Object.freeze({...state})),
 	}
 }

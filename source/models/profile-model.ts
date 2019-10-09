@@ -13,7 +13,6 @@ import {makeReader} from "../toolbox/make-reader.js"
 export function createProfileModel({profiler}: {
 	profiler: ProfilerTopic
 }): ProfileModel {
-	let cancel: boolean = false
 
 	async function loadProfile(authContext: AuthContext): Promise<Profile> {
 		const {accessToken} = authContext
@@ -22,31 +21,25 @@ export function createProfileModel({profiler}: {
 		return profile
 	}
 
+	let cancel: boolean = false
 	const state: ProfileState = {
 		error: null,
 		loading: true,
 		profile: null,
 	}
 
-	const {publishers, subscribers} = pubsubs<ProfileEvents>({
-		stateUpdate: pubsub()
-	})
+	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
 
 	return {
-
-		reader: makeReader<ProfileState>({
-			state,
-			subscribe: subscribers.stateUpdate
-		}),
-
+		reader,
 		actions: {
 			async userLoading() {
 				cancel = true
 				state.error = null
 				state.loading = true
 				state.profile = null
+				publishStateUpdate()
 			},
-
 			async userLogin(detail: LoginDetail) {
 				cancel = false
 				try {
@@ -59,14 +52,13 @@ export function createProfileModel({profiler}: {
 					state.error = true
 				}
 				state.loading = false
-				publishers.stateUpdate()
+				publishStateUpdate()
 			},
-
 			async userLogout() {
 				state.error = null
 				state.profile = null
 				state.loading = false
-				publishers.stateUpdate()
+				publishStateUpdate()
 			}
 		}
 	}

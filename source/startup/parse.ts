@@ -4,7 +4,7 @@ import {AuthoritarianStartupError} from "../system/errors.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
-export function parseConfigElement(element: HTMLElement): AuthoritarianConfig {
+export function parse(element: HTMLElement): AuthoritarianConfig {
 	if (!element) throw err(`<authoritarian-config> required, missing`)
 	return {
 		mock: element.hasAttribute("mock"),

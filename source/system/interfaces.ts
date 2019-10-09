@@ -1,4 +1,6 @@
 
+import {LitElement} from "lit-element"
+
 import {
 	User,
 	Profile,
@@ -8,11 +10,14 @@ import {
 	TokenStorageTopic,
 	PaywallGuardianTopic,
 } from "authoritarian/dist/interfaces.js"
+
 import {PaywallMode} from "../models/paywall-model.js"
+
 import {UserPanel} from "../components/user-panel.js"
 import {UserButton} from "../components/user-button.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
+import {AvatarDisplay} from "../components/avatar-display.js"
 
 export interface AuthoritarianConfig {
 	mock: boolean
@@ -34,10 +39,10 @@ export interface AuthoritarianOptions {
 	decodeAccessToken: DecodeAccessToken
 
 	userPanels: UserPanel[]
-	eventTarget: EventTarget
 	userButtons: UserButton[]
 	profilePanels: ProfilePanel[]
 	paywallPanels: PaywallPanel[]
+	avatarDisplays: AvatarDisplay[]
 }
 
 export interface AuthContext {
@@ -51,6 +56,12 @@ export type AccountPopupLogin = (authServerUrl: string) => Promise<AuthTokens>
 export type LoginPopupRoutine = () => Promise<AuthTokens>
 export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 
+export interface UserState {
+	error: Error
+	loading: boolean
+	loggedIn: boolean
+}
+
 export interface UserEvents extends Pubsubs {
 	userLoading: Pubsub<() => void>
 	userLogin: Pubsub<(auth: LoginDetail) => void>
@@ -58,8 +69,13 @@ export interface UserEvents extends Pubsubs {
 	userLogout: Pubsub<() => void>
 }
 
+export interface UserEventSubscribers extends Subify<UserEvents> {}
+
+export type UserReader = Reader<UserState>
+
 export interface UserModel {
-	events: Subify<UserEvents>
+	reader: UserReader
+	subscribers: UserEventSubscribers
 	actions: {
 		start: () => Promise<void>
 		login: () => Promise<void>
@@ -77,7 +93,6 @@ export interface LoginWithAccessToken {
 }
 
 export interface PaywallEvents extends Pubsubs {
-	stateUpdate: Pubsub
 	loginWithAccessToken: Pubsub<LoginWithAccessToken>
 }
 
@@ -96,13 +111,12 @@ export interface PaywallWiring {
 export interface PaywallModel {
 	wiring: PaywallWiring
 	actions: PaywallActions
-	reader: Reader<PaywallState, Subscribe<() => void>>
+	reader: Reader<PaywallState>
 }
 
 export interface LoginDetail {
 	getAuthContext: GetAuthContext
 }
-
 
 export interface ProfileEvents extends Pubsubs {
 	stateUpdate: Pubsub
@@ -128,11 +142,7 @@ export interface AvatarState {
 	premium: boolean
 }
 
-export interface ProfileReader extends Reader<ProfileState> {}
-
-export type AvatarListener = () => void
-export type AvatarSubscribe = Subscribe<AvatarListener>
-export interface AvatarReader extends Reader<AvatarState, AvatarSubscribe> {}
+export interface AvatarReader extends Reader<AvatarState> {}
 
 export interface AvatarActions {
 	setPictureUrl(url: string): void
@@ -166,10 +176,18 @@ export type Subify<P extends Pubsubs> = {
 	[K in keyof P]: P[K]["subscribe"]
 }
 
-export interface Reader<
-	State extends {} = {},
-	S extends Subscribe = Subscribe
-> {
-	state: Readonly<State>
-	subscribe: S
+export interface Reader<S extends {} = {}> {
+	state: Readonly<S>
+	subscribe: Subscribe<(state: S) => void>
+}
+
+export interface WebComponent extends HTMLElement {
+	adoptedCallback?(): void
+	connectedCallback?(): void
+	disconnectedCallback?(): void
+	attributeChangedCallback?(
+		name: string,
+		oldValue: string,
+		newValue: string
+	): void
 }

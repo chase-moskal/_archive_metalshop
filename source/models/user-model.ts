@@ -11,9 +11,11 @@ import {
 	AuthContext,
 	LoginPopupRoutine,
 	DecodeAccessToken,
+	UserState,
 } from "../system/interfaces.js"
 
 import {pubsub, pubsubs} from "../toolbox/pubsub.js"
+import {makeReader} from "../toolbox/make-reader.js"
 
 const expiryGraceSeconds = 60
 
@@ -28,6 +30,44 @@ export function createUserModel({
 }): UserModel {
 
 	let authContext: AuthContext
+
+	const state: UserState = {
+		error: null,
+		loading: false,
+		loggedIn: true,
+	}
+
+	const {reader, publishStateUpdate} = makeReader<UserState>(state)
+
+	const {publishers, subscribers} = pubsubs<UserEvents>({
+		userLogin: pubsub(),
+		userError: pubsub(),
+		userLogout: pubsub(),
+		userLoading: pubsub(),
+	})
+
+	subscribers.userLoading(() => {
+		state.error = null
+		state.loading = true
+		state.loggedIn = false
+		publishStateUpdate()
+	})
+
+	subscribers.userLogin(() => {
+		state.loggedIn = true
+		state.loading = false
+		publishStateUpdate()
+	})
+
+	subscribers.userError(error => {
+		state.error = error
+		publishStateUpdate()
+	})
+
+	subscribers.userLogout(() => {
+		state.loggedIn = false
+		publishStateUpdate()
+	})
 
 	/** Receive and decode an access token for login
 	 * - return an async getter which seamlessly refreshes expired tokens
@@ -50,15 +90,9 @@ export function createUserModel({
 		}
 	}
 
-	const {publishers, subscribers} = pubsubs<UserEvents>({
-		userLogin: pubsub(),
-		userError: pubsub(),
-		userLogout: pubsub(),
-		userLoading: pubsub(),
-	})
-
 	return {
-		events: subscribers,
+		reader,
+		subscribers,
 		actions: {
 
 			/** Initial passive check, to see if we're already logged in */

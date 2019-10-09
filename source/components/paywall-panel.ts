@@ -1,9 +1,9 @@
 
 import {property, html, css, svg} from "lit-element"
-import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
-import {PaywallReader, PaywallActions, Unsubscribe} from "../system/interfaces.js"
 import {PaywallMode} from "../models/paywall-model.js"
+import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
+import {PaywallReader, PaywallActions, Unsubscribe} from "../system/interfaces.js"
 
 const icons = {
 	star: svg`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"><path fill-rule="evenodd" d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74L14 6z"/></svg>`
@@ -11,9 +11,9 @@ const icons = {
 
 export class PaywallPanel extends LoadableElement {
 	loadingMessage = "loading paywall panel"
-	@property({type: Object}) reader: PaywallReader
-	@property({type: Object}) actions: PaywallActions
 	@property({type: Number}) mode: PaywallMode
+	reader: PaywallReader
+	actions: PaywallActions
 
 	private _unsubscribers: Unsubscribe[] = []
 

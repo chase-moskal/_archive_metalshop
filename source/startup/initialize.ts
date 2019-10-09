@@ -19,15 +19,25 @@ import {AuthoritarianOptions, AuthoritarianConfig} from "../system/interfaces.js
  * - create microservice instances
  * - otherwise provide mock instances
  */
-export async function initializeOptions(config: AuthoritarianConfig): Promise<AuthoritarianOptions> {
+export async function initialize(config: AuthoritarianConfig): Promise<AuthoritarianOptions> {
 	let progress: Partial<AuthoritarianOptions> = {}
-	if (config.debug) progress.debug = true
-	progress.eventTarget = document.body
+
+	//
+	// pass over simple config as options
+	//
+
+	progress.debug = !!config.debug
 	progress.decodeAccessToken = decodeAccessToken
+
+	//
+	// select dom elements
+	//
+
 	progress.userPanels = selects("user-panel")
 	progress.userButtons = selects("user-button")
 	progress.paywallPanels = selects("paywall-panel")
 	progress.profilePanels = selects("profile-panel")
+	progress.avatarDisplays = selects("avatar-display")
 
 	//
 	// use mocks instead of real microservices
@@ -76,6 +86,10 @@ export async function initializeOptions(config: AuthoritarianConfig): Promise<Au
 		}
 	}
 
+	//
+	// return options
+	//
+
 	return {
 		debug: progress.debug,
 
@@ -87,9 +101,9 @@ export async function initializeOptions(config: AuthoritarianConfig): Promise<Au
 		loginPopupRoutine: progress.loginPopupRoutine,
 
 		userPanels: progress.userPanels,
-		eventTarget: progress.eventTarget,
 		userButtons: progress.userButtons,
 		paywallPanels: progress.paywallPanels,
 		profilePanels: progress.profilePanels,
+		avatarDisplays: progress.avatarDisplays
 	}
 }
