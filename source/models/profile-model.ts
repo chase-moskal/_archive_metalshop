@@ -33,15 +33,15 @@ export function createProfileModel({profiler}: {
 
 	return {
 		reader,
-		actions: {
-			async userLoading() {
+		wiring: {
+			async receiveUserLoading() {
 				cancel = true
 				state.error = null
 				state.loading = true
 				state.profile = null
 				publishStateUpdate()
 			},
-			async userLogin(detail: LoginDetail) {
+			async receiveUserLogin(detail: LoginDetail) {
 				cancel = false
 				try {
 					const authContext = await detail.getAuthContext()
@@ -50,12 +50,12 @@ export function createProfileModel({profiler}: {
 				}
 				catch (error) {
 					console.error(error)
-					state.error = true
+					state.error = error
 				}
 				state.loading = false
 				publishStateUpdate()
 			},
-			async userLogout() {
+			async receiveUserLogout() {
 				state.error = null
 				state.profile = null
 				state.loading = false

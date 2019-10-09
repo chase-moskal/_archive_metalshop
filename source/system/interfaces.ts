@@ -72,11 +72,13 @@ export type UserReader = Reader<UserState>
 export interface UserModel {
 	reader: UserReader
 	subscribers: UserEventSubscribers
-	actions: {
+	wiring: {
 		start: () => Promise<void>
+		loginWithAccessToken: (accessToken: AccessToken) => Promise<void>
+	},
+	actions: {
 		login: () => Promise<void>
 		logout: () => Promise<void>
-		loginWithAccessToken: (accessToken: AccessToken) => Promise<void>
 	}
 }
 
@@ -100,8 +102,8 @@ export interface PaywallActions {
 
 export interface PaywallWiring {
 	loginWithAccessToken: Subscribe<LoginWithAccessToken>
-	notifyUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
-	notifyUserLogout: () => Promise<void>
+	receiveUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
+	receiveUserLogout: () => Promise<void>
 }
 
 export interface PaywallModel {
@@ -120,15 +122,15 @@ export interface ProfileEvents extends Pubsubs {
 
 export interface ProfileModel {
 	reader: Reader<ProfileState>
-	actions: {
-		userLogout: () => Promise<void>
-		userLogin: (detail: LoginDetail) => Promise<void>
-		userLoading: (loginDetail: LoginDetail) => Promise<void>
+	wiring: {
+		receiveUserLogout: () => Promise<void>
+		receiveUserLoading: () => Promise<void>
+		receiveUserLogin: (detail: LoginDetail) => Promise<void>
 	}
 }
 
 export interface ProfileState {
-	error: boolean
+	error: Error
 	loading: boolean
 	profile: Profile
 }

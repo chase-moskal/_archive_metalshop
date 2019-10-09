@@ -2,7 +2,7 @@
 import {createUserModel} from "../models/user-model.js"
 import {createAvatarModel} from "../models/avatar-model.js"
 import {createProfileModel} from "../models/profile-model.js"
-import {createPaywallModel} from "../models/paywall-model.js"
+import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
 
 import {exist} from "../toolbox/exist.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
@@ -64,18 +64,29 @@ export async function wire({
 	// wire models to each other
 	//
 
-	// wire together the paywall and the user model
-	paywall.wiring.loginWithAccessToken(user.actions.loginWithAccessToken)
-	user.subscribers.userLogin(detail => paywall.wiring.notifyUserLogin(detail))
-	user.subscribers.userLogout(() => paywall.wiring.notifyUserLogout())
-	user.subscribers.userError(() => paywall.wiring.notifyUserLogout())
+	// wire user to paywall
+	paywall.wiring.loginWithAccessToken(user.wiring.loginWithAccessToken)
+	user.subscribers.userLogin(paywall.wiring.receiveUserLogin)
+	user.subscribers.userLogout(paywall.wiring.receiveUserLogout)
+	user.subscribers.userError(paywall.wiring.receiveUserLogout)
+
+	// wire user to profile
+	user.subscribers.userLogin(profile.wiring.receiveUserLogin)
+	user.subscribers.userError(profile.wiring.receiveUserLogout)
+	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
+	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
 
 	// on profile update, set avatar picture url
-	profile.reader.subscribe(() => {
-		const {state} = profile.reader
+	profile.reader.subscribe(state => {
 		if (!state.profile) return
 		const {picture} = profile.reader.state.profile.public
-		if (picture) avatar.actions.setPictureUrl(picture)
+		if (picture) avatar.wiring.setPictureUrl(picture)
+	})
+
+	// on paywall update, set avatar premium
+	paywall.reader.subscribe(state => {
+		const premium = state.mode === PaywallMode.Premium
+		avatar.wiring.setPremium(premium)
 	})
 
 	//
@@ -86,7 +97,7 @@ export async function wire({
 		initialPublish: true,
 		reader: profile.reader,
 		components: profilePanels,
-		updateComponent: (component, state) => component.profileState = state,
+		updateComponent: (component, state) => component.profileState = state
 	})
 
 	wireStateUpdates<AvatarState, (ProfilePanel | AvatarDisplay)>({
@@ -132,7 +143,7 @@ export async function wire({
 		paywall,
 		profile,
 		async start() {
-			return user.actions.start()
+			return user.wiring.start()
 		}
 	}
 

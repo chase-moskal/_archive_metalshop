@@ -9,6 +9,11 @@ export class AvatarDisplay extends LitElement {
 	@property({type: Object}) defaultPicture = defaultPicture
 
 	static get styles() {return css`
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 		:host {
 			display: block;
 			width: var(--avatar-display-size, 3em);
@@ -20,6 +25,9 @@ export class AvatarDisplay extends LitElement {
 		svg, img {
 			width: 100%;
 			height: 100%;
+		}
+		img[data-premium] {
+			border: 2px solid yellow;
 		}
 	`}
 

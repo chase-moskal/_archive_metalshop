@@ -66,6 +66,8 @@ export function createUserModel({
 	})
 
 	subscribers.userLogout(() => {
+		state.loading = false
+		state.error = null
 		state.loggedIn = false
 		publishStateUpdate()
 	})
@@ -94,7 +96,7 @@ export function createUserModel({
 	return {
 		reader,
 		subscribers,
-		actions: {
+		wiring: {
 
 			/** Initial passive check, to see if we're already logged in */
 			async start() {
@@ -115,6 +117,17 @@ export function createUserModel({
 					publishers.userError(error)
 				}
 			},
+
+			/** Process a new token as a login
+			 * - some services might return new tokens from the auth server for you */
+			async loginWithAccessToken(accessToken: AccessToken) {
+				const detail = processAccessToken(accessToken)
+				await tokenStorage.writeAccessToken(accessToken)
+				publishers.userLogin(detail)
+			}
+
+		},
+		actions: {
 
 			/** Trigger a user login routine */
 			async login() {
@@ -142,14 +155,6 @@ export function createUserModel({
 					console.error(error)
 					publishers.userError(error)
 				}
-			},
-
-			/** Process a new token as a login
-			 * - some services might return new tokens from the auth server for you */
-			async loginWithAccessToken(accessToken: AccessToken) {
-				const detail = processAccessToken(accessToken)
-				await tokenStorage.writeAccessToken(accessToken)
-				publishers.userLogin(detail)
 			}
 		}
 	}

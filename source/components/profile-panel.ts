@@ -10,7 +10,6 @@ export class ProfilePanel extends LoadableElement {
 	loadingMessage = "loading profile panel"
 
 	updated() {
-		console.log(this.profileState)
 		if (this.profileState) {
 			const {error, loading} = this.profileState
 			this.loadableState = error
@@ -31,12 +30,9 @@ export class ProfilePanel extends LoadableElement {
 			display: flex;
 			flex-direction: row;
 		}
-		img {
+		avatar-display {
 			flex: 0 0 auto;
-			width: 30%;
-			min-width: 60px;
-			max-width: 140px;
-			object-fit: cover;
+			--avatar-display-size: 6em;
 			border: 5px solid rgba(255,255,255, 0.5);
 		}
 		.container > div {
@@ -57,9 +53,9 @@ export class ProfilePanel extends LoadableElement {
 				flex-direction: column;
 				align-items: flex-start;
 			}
-			img {
-				width: 60%;
-				max-width: 240px;
+			avatar-display {
+				/* width: 60%;
+				max-width: 240px; */
 			}
 		}
 	`]}
@@ -70,7 +66,6 @@ export class ProfilePanel extends LoadableElement {
 		const {profile} = this.profileState
 		return profile ? html`
 			<div class="container">
-				<img src=${profile.public.picture} alt="[your profile picture]"/>
 				<avatar-display .avatarState=${avatarState}></avatar-display>
 				<div>
 					<h2>${profile.private.realname}</h2>

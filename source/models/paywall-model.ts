@@ -61,7 +61,7 @@ export function createPaywallModel({paywallGuardian}: {
 		},
 		wiring: {
 			loginWithAccessToken: subscribers.loginWithAccessToken,
-			async notifyUserLogin(options) {
+			async receiveUserLogin(options) {
 				state.mode = PaywallMode.Loading
 				getAuthContext = options.getAuthContext
 				publishStateUpdate()
@@ -72,7 +72,7 @@ export function createPaywallModel({paywallGuardian}: {
 					: PaywallMode.NotPremium
 				publishStateUpdate()
 			},
-			async notifyUserLogout() {
+			async receiveUserLogout() {
 				state.mode = PaywallMode.LoggedOut
 				publishStateUpdate()
 			}

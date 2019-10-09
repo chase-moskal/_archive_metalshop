@@ -8,7 +8,7 @@ import {
 
 export function createAvatarModel(): {
 	reader: Reader<AvatarState>
-	actions: AvatarActions
+	wiring: AvatarActions
 } {
 	const state: AvatarState = {
 		url: "",
@@ -17,7 +17,7 @@ export function createAvatarModel(): {
 	const reader = makeReader<AvatarState>(state)
 	return {
 		reader,
-		actions: {
+		wiring: {
 			setPictureUrl(url: string) {
 				state.url = url
 				reader.publishStateUpdate()
