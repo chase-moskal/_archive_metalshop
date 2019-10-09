@@ -3,7 +3,7 @@ import {
 	Reader,
 	Unsubscribe,
 	WebComponent,
-} from "../system/interfaces.js"
+} from "../../system/interfaces.js"
 
 export type Constructor<T = {}> = new(...args: any[]) => T
 
