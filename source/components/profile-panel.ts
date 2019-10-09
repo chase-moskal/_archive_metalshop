@@ -53,10 +53,6 @@ export class ProfilePanel extends LoadableElement {
 				flex-direction: column;
 				align-items: flex-start;
 			}
-			avatar-display {
-				/* width: 60%;
-				max-width: 240px; */
-			}
 		}
 	`]}
 
