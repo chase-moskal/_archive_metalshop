@@ -40,6 +40,8 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 			},
 			async receiveUserLogin(detail: LoginDetail) {
 				cancel = false
+				state.loading = true
+				publishStateUpdate()
 				try {
 					const authContext = await detail.getAuthContext()
 					const profile = await loadProfile(authContext)

@@ -145,8 +145,10 @@ export async function wire({
 
 	if (debug) {
 		for (const [name, subscriber] of Object.entries(user.subscribers))
-			subscriber(() => console.debug("event.user", name))
-		paywall.wiring.loginWithAccessToken(async() => console.debug("event.paywall", "loginWithAccessToken"))
+			subscriber(() => console.debug("event.user:", name))
+		paywall.wiring.loginWithAccessToken(
+			async() => console.debug("event.paywall:", "loginWithAccessToken")
+		)
 	}
 
 	//

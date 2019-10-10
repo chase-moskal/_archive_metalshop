@@ -31,7 +31,7 @@ export function createPaywallModel({paywallGuardian}: {
 	}
 
 	const {reader, publishStateUpdate} = makeReader<PaywallState>(state)
-	const {publishers, subscribers} = pubsubs({
+	const {publishers, subscribers} = pubsubs<PaywallEvents>({
 		loginWithAccessToken: pubsub<LoginWithAccessToken>(),
 	})
 
