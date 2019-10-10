@@ -3,28 +3,29 @@ import {makeReader} from "../toolbox/make-reader.js"
 import {
 	Reader,
 	AvatarState,
-	AvatarActions,
+	AvatarWiring,
 } from "../system/interfaces.js"
 
 export function createAvatarModel(): {
 	reader: Reader<AvatarState>
-	wiring: AvatarActions
+	wiring: AvatarWiring
 } {
 	const state: AvatarState = {
 		url: "",
 		premium: false,
 	}
-	const reader = makeReader<AvatarState>(state)
+	const {reader, publishStateUpdate} = makeReader<AvatarState>(state)
 	return {
 		reader,
 		wiring: {
+			publishStateUpdate,
 			setPictureUrl(url: string) {
 				state.url = url
-				reader.publishStateUpdate()
+				publishStateUpdate()
 			},
 			setPremium(premium: boolean) {
 				state.premium = premium
-				reader.publishStateUpdate()
+				publishStateUpdate()
 			},
 		}
 	}

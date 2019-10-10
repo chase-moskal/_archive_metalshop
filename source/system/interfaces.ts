@@ -73,6 +73,7 @@ export interface UserModel {
 	reader: UserReader
 	subscribers: UserEventSubscribers
 	wiring: {
+		publishStateUpdate: () => void
 		start: () => Promise<void>
 		loginWithAccessToken: (accessToken: AccessToken) => Promise<void>
 	},
@@ -101,6 +102,7 @@ export interface PaywallActions {
 }
 
 export interface PaywallWiring {
+	publishStateUpdate: () => void
 	loginWithAccessToken: Subscribe<LoginWithAccessToken>
 	receiveUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
 	receiveUserLogout: () => Promise<void>
@@ -123,6 +125,7 @@ export interface ProfileEvents extends Pubsubs {
 export interface ProfileModel {
 	reader: Reader<ProfileState>
 	wiring: {
+		publishStateUpdate: () => void
 		receiveUserLogout: () => Promise<void>
 		receiveUserLoading: () => Promise<void>
 		receiveUserLogin: (detail: LoginDetail) => Promise<void>
@@ -142,7 +145,8 @@ export interface AvatarState {
 
 export interface AvatarReader extends Reader<AvatarState> {}
 
-export interface AvatarActions {
+export interface AvatarWiring {
+	publishStateUpdate: () => void
 	setPictureUrl(url: string): void
 	setPremium(premium: boolean): void
 }
@@ -176,8 +180,12 @@ export type Subify<P extends Pubsubs> = {
 
 export interface Reader<S extends {} = {}> {
 	state: Readonly<S>
-	publishStateUpdate: () => void
 	subscribe: Subscribe<(state: S) => void>
+}
+
+export interface ReaderContext<S extends {} = {}> {
+	reader: Reader<S>
+	publishStateUpdate: () => void
 }
 
 export interface WebComponent extends HTMLElement {

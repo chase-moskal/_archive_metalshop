@@ -30,8 +30,7 @@ export function createPaywallModel({paywallGuardian}: {
 		mode: PaywallMode.LoggedOut
 	}
 
-	const reader = makeReader<PaywallState>(state)
-	const {publishStateUpdate} = reader
+	const {reader, publishStateUpdate} = makeReader<PaywallState>(state)
 	const {publishers, subscribers} = pubsubs({
 		loginWithAccessToken: pubsub<LoginWithAccessToken>(),
 	})
@@ -61,6 +60,7 @@ export function createPaywallModel({paywallGuardian}: {
 			}
 		},
 		wiring: {
+			publishStateUpdate,
 			loginWithAccessToken: subscribers.loginWithAccessToken,
 			async receiveUserLogin(options) {
 				state.mode = PaywallMode.Loading

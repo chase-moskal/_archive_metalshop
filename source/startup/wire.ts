@@ -93,28 +93,24 @@ export async function wire({
 	//
 
 	wireStateUpdates<ProfileState, ProfilePanel>({
-		initialPublish: true,
 		reader: profile.reader,
 		components: profilePanels,
 		updateComponent: (component, state) => component.profileState = state
 	})
 
 	wireStateUpdates<AvatarState, (ProfilePanel | AvatarDisplay)>({
-		initialPublish: true,
 		reader: avatar.reader,
 		components: [...profilePanels, ...avatarDisplays],
 		updateComponent: (component, state) => component.avatarState = state
 	})
 
 	wireStateUpdates<PaywallState, PaywallPanel>({
-		initialPublish: true,
 		reader: paywall.reader,
 		components: paywallPanels,
 		updateComponent: (component, state) => component.paywallState = state
 	})
 
 	wireStateUpdates<UserState, UserPanel>({
-		initialPublish: true,
 		reader: user.reader,
 		components: userPanels,
 		updateComponent: (component, state) => component.userState = state
@@ -130,10 +126,16 @@ export async function wire({
 		userPanel.onLogoutClick = user.actions.logout
 	}
 
+	profile.wiring.publishStateUpdate()
+	avatar.wiring.publishStateUpdate()
+	paywall.wiring.publishStateUpdate()
+	user.wiring.publishStateUpdate()
+
 	//
-	// put together the "supermodel"
+	// return the "supermodel"
 	// - contains references to all of the models
 	// - might be useful for debugging
+	// - could be basis of extensibility
 	//
 
 	const supermodel = {

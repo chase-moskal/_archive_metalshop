@@ -37,8 +37,7 @@ export function createUserModel({
 		loggedIn: true,
 	}
 
-	const reader = makeReader<UserState>(state)
-	const {publishStateUpdate} = reader
+	const {reader, publishStateUpdate} = makeReader<UserState>(state)
 
 	const {publishers, subscribers} = pubsubs<UserEvents>({
 		userLogin: pubsub(),
@@ -97,6 +96,7 @@ export function createUserModel({
 		reader,
 		subscribers,
 		wiring: {
+			publishStateUpdate,
 
 			/** Initial passive check, to see if we're already logged in */
 			async start() {

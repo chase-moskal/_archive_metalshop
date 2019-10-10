@@ -8,9 +8,8 @@ import {
 } from "../system/interfaces.js"
 import {makeReader} from "../toolbox/make-reader.js"
 
-export function createProfileModel({profiler}: {
-	profiler: ProfilerTopic
-}): ProfileModel {
+export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
+ ProfileModel {
 
 	async function loadProfile(authContext: AuthContext): Promise<Profile> {
 		const {accessToken} = authContext
@@ -26,12 +25,12 @@ export function createProfileModel({profiler}: {
 		profile: null,
 	}
 
-	const reader = makeReader<ProfileState>(state)
-	const {publishStateUpdate} = reader
+	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
 
 	return {
 		reader,
 		wiring: {
+			publishStateUpdate,
 			async receiveUserLoading() {
 				cancel = true
 				state.error = null
