@@ -126,6 +126,12 @@ user-panel {
 	--user-panel-logout-justify: flex-end;
 }
 
+@media (max-width: 800px) {
+	user-panel {
+		text-align: left;
+	}
+}
+
 user-panel > * {
 	font-family: sans-serif;
 	color: rgba(25, 71, 93, 0.6);
@@ -136,6 +142,7 @@ user-panel > * {
 
 user-panel > h2 {
 	padding: 0;
+	text-align: center;
 	font-family: "Big Shoulders Text", sans-serif;
 	background: transparent;
 	text-transform: uppercase;

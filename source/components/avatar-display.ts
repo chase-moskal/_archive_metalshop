@@ -23,6 +23,7 @@ export class AvatarDisplay extends LitElement {
 			display: none;
 		}
 		svg, img {
+			display: block;
 			width: 100%;
 			height: 100%;
 		}

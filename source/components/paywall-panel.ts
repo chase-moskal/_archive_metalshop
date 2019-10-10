@@ -67,36 +67,32 @@ export class PaywallPanel extends LoadableElement {
 		}
 	`]}
 
-	private _renderNotPremium() {
-		return html`
-			<header>
-				<h3>Become a premium supporter!</h3>
-			</header>
-			<section>
-				<p>It comes with cool features!</p>
-			</section>
-			<footer>
-				<button @click=${this.onMakeUserPremium}>Subscribe</button>
-				<span class="price">$5<small>/month</small></span>
-			</footer>
-		`
-	}
+	private _renderNotPremium() {return html`
+		<header>
+			<h3>Become a premium supporter!</h3>
+		</header>
+		<section>
+			<p>It comes with cool features!</p>
+		</section>
+		<footer>
+			<button @click=${this.onMakeUserPremium}>Subscribe</button>
+			<span class="price">$5<small>/month</small></span>
+		</footer>
+	`}
 
-	private _renderPremium() {
-		return html`
-			<header>
-				<div class="icon">${icons.star}</div>
-				<h3>You are a premium supporter!</h3>
-			</header>
-			<section>
-				<p>You have the cool features!</p>
-			</section>
-			<footer>
-				<button @click=${this.onRevokeUserPremium}>Unsubscribe</button>
-				<span class="remaining">You have X days remaining</span>
-			</footer>
-		`
-	}
+	private _renderPremium() {return html`
+		<header>
+			<div class="icon">${icons.star}</div>
+			<h3>You are a premium supporter!</h3>
+		</header>
+		<section>
+			<p>You have the cool features!</p>
+		</section>
+		<footer>
+			<button @click=${this.onRevokeUserPremium}>Unsubscribe</button>
+			<span class="remaining">You have X days remaining</span>
+		</footer>
+	`}
 
 	renderReady() {
 		const {mode} = this.paywallState

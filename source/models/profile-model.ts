@@ -11,13 +11,7 @@ import {makeReader} from "../toolbox/make-reader.js"
 export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
  ProfileModel {
 
-	async function loadProfile(authContext: AuthContext): Promise<Profile> {
-		const {accessToken} = authContext
-		const profile = await profiler.getFullProfile({accessToken})
-		if (!profile) console.warn("failed to load profile")
-		return profile
-	}
-
+	let authContext: AuthContext
 	let cancel: boolean = false
 	const state: ProfileState = {
 		error: null,
@@ -27,8 +21,21 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 
 	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
 
+	async function loadProfile(): Promise<Profile> {
+		const {accessToken} = authContext
+		const profile = await profiler.getFullProfile({accessToken})
+		if (!profile) console.warn("failed to load profile")
+		return profile
+	}
+
 	return {
 		reader,
+		actions: {
+			async saveProfile(profile: Profile): Promise<void> {
+				const {accessToken} = authContext
+				await profiler.setFullProfile({accessToken, profile})
+			}
+		},
 		wiring: {
 			publishStateUpdate,
 			async receiveUserLoading() {
@@ -43,8 +50,8 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 				state.loading = true
 				publishStateUpdate()
 				try {
-					const authContext = await detail.getAuthContext()
-					const profile = await loadProfile(authContext)
+					authContext = await detail.getAuthContext()
+					const profile = await loadProfile()
 					state.profile = cancel ? null : profile
 				}
 				catch (error) {

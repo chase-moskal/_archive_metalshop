@@ -24,7 +24,7 @@ export class UserPanel extends LoadableElement {
 	}
 
 	static get styles() {
-		return [LoadableElement.styles, css`
+		return [super.styles, css`
 			:host {
 				display: block;
 			}
@@ -72,28 +72,30 @@ export class UserPanel extends LoadableElement {
 		`]
 	}
 
+	private _renderLoggedIn = () => html`
+		<slot></slot>
+		<div class="logout">
+			<button @click=${this.onLogoutClick}>
+				Logout
+			</button>
+		</div>
+	`
+
+	private _renderLoggedOut = () => html`
+		<div class="login">
+			<button @click=${this.onLoginClick}>
+				Login
+			</button>
+		</div>
+	`
+
 	renderReady() {
+		const {_renderLoggedIn, _renderLoggedOut} = this
 		const {loggedIn} = this.userState
-		
-		return wrapTopAndBottom(loggedIn ? html`
-				<slot></slot>
-				<div class="logout">
-					<button @click=${this.onLogoutClick}>
-						Logout
-					</button>
-				</div>
-		` : html`
-			<div class="login">
-				<button @click=${this.onLoginClick}>
-					Login
-				</button>
-			</div>
-		`)
+		return html`
+			<slot name="top"></slot>
+			${loggedIn ? _renderLoggedIn() : _renderLoggedOut()}
+			<slot name="bottom"></slot>
+		`
 	}
 }
-
-function wrapTopAndBottom(h: any) {return html`
-	<slot name="top"></slot>
-	${h}
-	<slot name="bottom"></slot>
-`}

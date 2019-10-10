@@ -124,6 +124,9 @@ export interface ProfileEvents extends Pubsubs {
 
 export interface ProfileModel {
 	reader: Reader<ProfileState>
+	actions: {
+		saveProfile: (profile: Profile) => Promise<void>
+	},
 	wiring: {
 		publishStateUpdate: () => void
 		receiveUserLogout: () => Promise<void>

@@ -24,8 +24,7 @@ export function createPaywallModel({paywallGuardian}: {
 	paywallGuardian: PaywallGuardianTopic
 }): PaywallModel {
 
-	let getAuthContext: GetAuthContext = null
-
+	let getAuthContext: GetAuthContext
 	const state: PaywallState = {
 		mode: PaywallMode.LoggedOut
 	}

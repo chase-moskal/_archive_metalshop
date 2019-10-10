@@ -18,6 +18,7 @@ import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
+import { Profile } from "authoritarian/dist/interfaces";
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -123,6 +124,10 @@ export async function wire({
 		components: userPanels,
 		updateComponent: (component, state) => component.userState = state
 	})
+
+	for (const profilePanel of profilePanels) {
+		profilePanel.onProfileSave = profile.actions.saveProfile
+	}
 
 	for (const paywallPanel of paywallPanels) {
 		paywallPanel.onMakeUserPremium = paywall.actions.makeUserPremium
