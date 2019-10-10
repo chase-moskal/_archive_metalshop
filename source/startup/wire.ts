@@ -88,6 +88,14 @@ export async function wire({
 		avatar.wiring.setPremium(premium)
 	})
 
+	// on user logout or error, reset avatar
+	const resetAvatar = () => {
+		avatar.wiring.setPremium(false)
+		avatar.wiring.setPictureUrl(null)
+	}
+	user.subscribers.userError(resetAvatar)
+	user.subscribers.userLogout(resetAvatar)
+
 	//
 	// wire models to dom elements
 	//
@@ -130,6 +138,16 @@ export async function wire({
 	avatar.wiring.publishStateUpdate()
 	paywall.wiring.publishStateUpdate()
 	user.wiring.publishStateUpdate()
+
+	//
+	// debug logging
+	//
+
+	if (debug) {
+		for (const [name, subscriber] of Object.entries(user.subscribers))
+			subscriber(() => console.debug("event.user", name))
+		paywall.wiring.loginWithAccessToken(async() => console.debug("event.paywall", "loginWithAccessToken"))
+	}
 
 	//
 	// return the "supermodel"
