@@ -42,12 +42,6 @@ export class PaywallPanel extends LoadableElement {
 			padding: 1em 0;
 		}
 
-		header {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-		}
-
 		header svg {
 			width: 2em;
 			height: 2em;
@@ -56,14 +50,7 @@ export class PaywallPanel extends LoadableElement {
 		}
 
 		section {
-			padding: 0.5em 1em;
-		}
-
-		footer {
-			display: flex;
-			flex-direction: row;
-			justify-content: flex-end;
-			align-items: center;
+			padding: 1em 0;
 		}
 
 		footer > * {

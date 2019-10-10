@@ -6,6 +6,7 @@ import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class UserPanel extends LoadableElement {
 	@property({type: Object}) userState: UserState
+	@property({type: Boolean, reflect: true}) ["logged-in"]: boolean = false
 	onLoginClick: (event: MouseEvent) => void = () => {}
 	onLogoutClick: (event: MouseEvent) => void = () => {}
 	loadingMessage = "loading user panel"
@@ -13,7 +14,8 @@ export class UserPanel extends LoadableElement {
 
 	updated() {
 		if (!this.userState) return
-		const {loading, error} = this.userState
+		const {loading, error, loggedIn} = this.userState
+		this["logged-in"] = loggedIn
 		this.loadableState = error
 			? LoadableState.Error
 			: loading
@@ -27,9 +29,18 @@ export class UserPanel extends LoadableElement {
 				display: block;
 			}
 			div {
-				text-align: center;
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+			}
+			.login {
+				justify-content: var(--user-panel-login-justify, center);
+			}
+			.logout {
+				justify-content: var(--user-panel-logout-justify, flex-end);
 			}
 			button {
+				font-family: inherit;
 				font-weight: bold;
 				font-size: 1.2em;
 				border: none;
@@ -63,19 +74,26 @@ export class UserPanel extends LoadableElement {
 
 	renderReady() {
 		const {loggedIn} = this.userState
-		return loggedIn ? html`
+		
+		return wrapTopAndBottom(loggedIn ? html`
 				<slot></slot>
-				<div>
-					<button class="logout" @click=${this.onLogoutClick}>
+				<div class="logout">
+					<button @click=${this.onLogoutClick}>
 						Logout
 					</button>
 				</div>
 		` : html`
-			<div>
-				<button class="login" @click=${this.onLoginClick}>
+			<div class="login">
+				<button @click=${this.onLoginClick}>
 					Login
 				</button>
 			</div>
-		`
+		`)
 	}
 }
+
+function wrapTopAndBottom(h: any) {return html`
+	<slot name="top"></slot>
+	${h}
+	<slot name="bottom"></slot>
+`}
