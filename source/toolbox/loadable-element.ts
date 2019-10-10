@@ -9,20 +9,28 @@ import {
 	CSSResultArray,
 } from "lit-element"
 
-export class LoadableElementError extends Error {}
-
-const err = (message: string) => new LoadableElementError(message)
-
 export enum LoadableState {
 	Loading,
 	Error,
 	Ready
 }
 
+class LoadableElementError extends Error {}
+const err = (message: string) => new LoadableElementError(message)
+
 const _state = Symbol()
 const _renderError = Symbol()
 const _renderLoading = Symbol()
 
+// TODO
+// convert LoadableElement to a mixin with the same types as the
+// mixin-state-reader
+import {mixinStateReader} from "./_archive/mixin-state-reader.js"
+
+/**
+ * Add loading and error states to your component
+ * - currently a lit-element subclass
+ */
 export class LoadableElement extends LitElement {
 	@property({type: String}) errorMessage: string = "error"
 	@property({type: String}) loadingMessage: string = "loading..."
@@ -73,14 +81,6 @@ export class LoadableElement extends LitElement {
 		throw err(`renderReady must be implemented`)
 	}
 
-	render() {
-		switch (this[_state]) {
-			case LoadableState.Loading: return this[_renderLoading]()
-			case LoadableState.Error: return this[_renderError]()
-			case LoadableState.Ready: return this.renderReady()
-		}
-	}
-
 	private [_renderLoading]() {
 		return html`
 			<div class="loadable loading">
@@ -97,5 +97,13 @@ export class LoadableElement extends LitElement {
 				<p>${this.errorMessage}</p>
 			</div>
 		`
+	}
+
+	render() {
+		switch (this[_state]) {
+			case LoadableState.Loading: return this[_renderLoading]()
+			case LoadableState.Error: return this[_renderError]()
+			case LoadableState.Ready: return this.renderReady()
+		}
 	}
 }

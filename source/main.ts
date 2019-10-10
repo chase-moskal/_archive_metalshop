@@ -20,7 +20,7 @@ async function main() {
 	// instantiate microservice facilities, or mocks
 	const options = await initialize(config)
 
-	// instance the models and wire them together and to the dom
+	// instance the models, and wire them to the dom and each other
 	const supermodel = await wire(options)
 
 	// start the passive login routine
