@@ -1,6 +1,6 @@
 {
 	"name": "authoritarian-client",
-	"version": "0.0.0-dev.13",
+	"version": "0.0.0-dev.14",
 	"description": "browser ui library for login and user settings",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
