@@ -22,11 +22,6 @@ const _state = Symbol()
 const _renderError = Symbol()
 const _renderLoading = Symbol()
 
-// TODO
-// convert LoadableElement to a mixin with the same types as the
-// mixin-state-reader
-import {mixinStateReader} from "./_archive/mixin-state-reader.js"
-
 /**
  * Add loading and error states to your component
  * - currently a lit-element subclass
