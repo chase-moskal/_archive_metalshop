@@ -5,6 +5,11 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	--focus-outline: 2px solid cyan;
+}
+
+*:focus {
+	outline: var(--focus-outline);
 }
 
 html, body {
@@ -107,7 +112,6 @@ menu-system[initially-hidden] {
 /* setting the demo menu panel's aesthetic properties like colors and such */
 menu-display {
 	color: rgb(41, 95, 78);
-	--focus-outline: 2px solid cyan;
 	--menu-panel-width: 720px;
 	--menu-panel-padding: 1rem;
 	--menu-panel-box-shadow: none;
@@ -120,24 +124,26 @@ avatar-display {
 }
 
 user-panel {
-	text-align: center;
+	text-align: left;
 	font-family: "Big Shoulders Text", sans-serif;
 	--user-panel-login-justify: center;
 	--user-panel-logout-justify: flex-end;
 }
 
-@media (max-width: 800px) {
+/* @media (max-width: 800px) {
 	user-panel {
 		text-align: left;
 	}
-}
+} */
 
 user-panel > * {
 	font-family: sans-serif;
 	color: rgba(25, 71, 93, 0.6);
-	background: rgba(255,255,255, 0.2);
+	background: rgba(255,255,255, 0.5);
 	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
 	padding: 0.5em;
+	--coolbutton-font-family: "Big Shoulders Text", sans-serif;
+	--coolbutton-background: #00a464;
 }
 
 user-panel > h2 {

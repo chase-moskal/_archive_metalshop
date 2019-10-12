@@ -42,9 +42,13 @@ export class PaywallPanel extends LoadableElement {
 			padding: 1em 0;
 		}
 
-		header svg {
-			width: 2em;
-			height: 2em;
+		header .icon {
+			float: right;
+		}
+
+		header .icon svg {
+			width: 4em;
+			height: 4em;
 			margin-right: 0.5em;
 			fill: yellow;
 		}
@@ -55,10 +59,6 @@ export class PaywallPanel extends LoadableElement {
 
 		footer > * {
 			padding: 0 0.5em;
-		}
-
-		footer > button {
-			font-size: 1em;
 		}
 
 		footer > span {
@@ -74,7 +74,7 @@ export class PaywallPanel extends LoadableElement {
 		<section>
 			<p>It comes with cool features!</p>
 		</section>
-		<footer>
+		<footer class="coolbuttonarea">
 			<button @click=${this.onMakeUserPremium}>Subscribe</button>
 			<span class="price">$5<small>/month</small></span>
 		</footer>
@@ -88,7 +88,7 @@ export class PaywallPanel extends LoadableElement {
 		<section>
 			<p>You have the cool features!</p>
 		</section>
-		<footer>
+		<footer class="coolbuttonarea">
 			<button @click=${this.onRevokeUserPremium}>Unsubscribe</button>
 			<span class="remaining">You have X days remaining</span>
 		</footer>

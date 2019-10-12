@@ -18,6 +18,7 @@ export class AvatarDisplay extends LitElement {
 			display: block;
 			width: var(--avatar-display-size, 3em);
 			height: var(--avatar-display-size, 3em);
+			max-width: 100%;
 		}
 		:host([hidden]) {
 			display: none;
@@ -26,6 +27,7 @@ export class AvatarDisplay extends LitElement {
 			display: block;
 			width: 100%;
 			height: 100%;
+			object-fit: cover;
 		}
 		img[data-premium] {
 			border: 2px solid yellow;

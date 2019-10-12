@@ -39,26 +39,6 @@ export class UserPanel extends LoadableElement {
 			.logout {
 				justify-content: var(--user-panel-logout-justify, flex-end);
 			}
-			button {
-				font-family: inherit;
-				font-weight: bold;
-				font-size: 1.2em;
-				border: none;
-				padding: 0.2em 1em;
-				background: #00a464;
-				color: white;
-				box-shadow: 1px 2px 1px rgba(0,0,0, 0.15);
-				text-shadow: 0 0 7px rgba(255,255,255, 0.4);
-				cursor: pointer;
-			}
-			button:hover, button:focus {
-				background: rgb(8, 175, 110);
-				text-decoration: underline;
-				text-shadow: 0 0 7px rgba(255,255,255, 0.7);
-			}
-			button:active {
-				background: rgb(21, 185, 121);
-			}
 			* + div {
 				margin-top: var(--user-panel-margins, 0.5em);
 			}
@@ -74,7 +54,7 @@ export class UserPanel extends LoadableElement {
 
 	private _renderLoggedIn = () => html`
 		<slot></slot>
-		<div class="logout">
+		<div class="logout coolbuttonarea">
 			<button @click=${this.onLogoutClick}>
 				Logout
 			</button>
@@ -82,7 +62,7 @@ export class UserPanel extends LoadableElement {
 	`
 
 	private _renderLoggedOut = () => html`
-		<div class="login">
+		<div class="login coolbuttonarea">
 			<button @click=${this.onLoginClick}>
 				Login
 			</button>

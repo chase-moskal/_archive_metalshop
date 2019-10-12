@@ -61,16 +61,22 @@ export class ProfilePanel extends LoadableElement {
 		.container > div > * + * {
 			margin-top: 0.6em;
 		}
-		h2 {
+		button.save {
+			margin-left: auto;
+		}
+		input {
+			width: 100%;
+		}
+		h3 {
 			font-size: 1.1em;
 		}
-		@media (max-width: 400px) {
+		@media (max-width: 600px) {
 			.container {
 				flex-direction: column;
 				align-items: flex-start;
 			}
 			avatar-display {
-				--avatar-display-size: 68%;
+				--avatar-display-size: 5em;
 				margin: auto;
 			}
 		}
@@ -115,25 +121,25 @@ export class ProfilePanel extends LoadableElement {
 
 		if (!profile) return html``
 		return html`
-			<div class="container">
+			<div class="container formarea coolbuttonarea">
 				<avatar-display .avatarState=${avatarState}></avatar-display>
 				<div>
-					<h2>${profile.private.realname}</h2>
-					<p>${profile.public.nickname}</p>
+					<h3>${profile.private.realname}</h3>
 					<input
 						type="text"
 						name="nickname"
+						spellcheck="false"
 						autocomplete="off"
 						placeholder="nickname"
 						@change=${_handleInputChange}
 						@keyup=${_inputDebouncer.queue}
 						.value=${profile.public.nickname}
 						/>
+					${showSaveButton
+						? html`<button class="save" @click=${_handleSaveClick}>Save</button>`
+						: html``}
 				</div>
 			</div>
-			${showSaveButton
-				? html`<button @click=${_handleSaveClick}>Save</button>`
-				: html``}
 		`
 	}
 }

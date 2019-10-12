@@ -60,7 +60,6 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 				publishStateUpdate()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
-				console.log("USER LOGIN")
 				getAuthContext = detail.getAuthContext
 				cancel = false
 				state.loading = true
