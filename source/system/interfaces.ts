@@ -124,6 +124,7 @@ export interface ProfileEvents extends Pubsubs {
 
 export interface ProfileModel {
 	reader: Reader<ProfileState>
+	subscribeReset: Subscribe
 	actions: {
 		saveProfile: (profile: Profile) => Promise<void>
 	},

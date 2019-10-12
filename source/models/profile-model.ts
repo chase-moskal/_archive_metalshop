@@ -1,17 +1,18 @@
 
 import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
 import {
-	AuthContext,
 	LoginDetail,
 	ProfileModel,
 	ProfileState,
+	GetAuthContext,
 } from "../system/interfaces.js"
+import {pubsub} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"
 
 export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
  ProfileModel {
 
-	let authContext: AuthContext
+	let getAuthContext: GetAuthContext
 	let cancel: boolean = false
 	const state: ProfileState = {
 		error: null,
@@ -20,9 +21,10 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 	}
 
 	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
+	const {publish: publishReset, subscribe: subscribeReset} = pubsub()
 
 	async function loadProfile(): Promise<Profile> {
-		const {accessToken} = authContext
+		const {accessToken} = await getAuthContext()
 		const profile = await profiler.getFullProfile({accessToken})
 		if (!profile) console.warn("failed to load profile")
 		return profile
@@ -30,10 +32,22 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 
 	return {
 		reader,
+		subscribeReset,
 		actions: {
 			async saveProfile(profile: Profile): Promise<void> {
-				const {accessToken} = authContext
-				await profiler.setFullProfile({accessToken, profile})
+				try {
+					state.loading = true
+					publishStateUpdate()
+					const {accessToken} = await getAuthContext()
+					await profiler.setFullProfile({accessToken, profile})
+					state.profile = profile
+				}
+				catch (error) {
+					state.error = error
+					state.profile = null
+				}
+				state.loading = false
+				publishStateUpdate()
 			}
 		},
 		wiring: {
@@ -46,11 +60,13 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 				publishStateUpdate()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
+				console.log("USER LOGIN")
+				getAuthContext = detail.getAuthContext
 				cancel = false
 				state.loading = true
+				publishReset()
 				publishStateUpdate()
 				try {
-					authContext = await detail.getAuthContext()
 					const profile = await loadProfile()
 					state.profile = cancel ? null : profile
 				}

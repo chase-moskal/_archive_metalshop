@@ -1,6 +1,10 @@
 
 import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces"
+
+import {select} from "../toolbox/selects.js"
+import {Debouncer} from "../toolbox/debouncer.js"
+import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {ProfileState, AvatarState} from "../system/interfaces.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
@@ -11,8 +15,15 @@ export class ProfilePanel extends LoadableElement {
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
 
-	@property({type: Boolean}) _saving: boolean = false
 	@property({type: Object}) _changedProfile: Profile = null
+	private _inputDebouncer = new Debouncer({
+		delay: 1000,
+		action: () => this._handleInputChange()
+	})
+
+	reset() {
+		this._changedProfile = null
+	}
 
 	updated() {
 		if (this.profileState) {
@@ -67,35 +78,40 @@ export class ProfilePanel extends LoadableElement {
 
 	private _handleInputChange = () => {
 		const {profile} = this.profileState
+		if (!profile) return
 		const newProfile = this._generateNewProfileFromInputs()
-		const changes = this._compareProfilesForChanges(profile, newProfile)
+		const changes = !deepEqual(profile, newProfile)
 		this._changedProfile = changes ? newProfile : null
 	}
 
 	private _handleSaveClick = async() => {
-		this._saving = true
-		await this.onProfileSave(this._changedProfile)
+		const {_changedProfile} = this
 		this._changedProfile = null
-		this._saving = false
+		await this.onProfileSave(_changedProfile)
 	}
 
 	private _generateNewProfileFromInputs(): Profile {
-		return null
-	}
-
-	private _compareProfilesForChanges(a: Profile, b: Profile): boolean {
-		return false
+		const profile = deepClone(this.profileState.profile)
+		{
+			const input = select<HTMLInputElement>(
+				"input[name=nickname]",
+				this.shadowRoot
+			)
+			profile.public.nickname = input.value
+		}
+		return profile
 	}
 
 	renderReady() {
 		if (!this.avatarState || !this.profileState) return
 		const {
 			avatarState,
-			_handleInputChange,
+			_inputDebouncer,
 			_handleSaveClick,
+			_handleInputChange,
 		} = this
 		const {profile} = this.profileState
-		const showSaveButton = !this._saving && !!this._changedProfile
+		const showSaveButton = !!this._changedProfile
 
 		if (!profile) return html``
 		return html`
@@ -106,8 +122,11 @@ export class ProfilePanel extends LoadableElement {
 					<p>${profile.public.nickname}</p>
 					<input
 						type="text"
+						name="nickname"
+						autocomplete="off"
 						placeholder="nickname"
 						@change=${_handleInputChange}
+						@keyup=${_inputDebouncer.queue}
 						.value=${profile.public.nickname}
 						/>
 				</div>

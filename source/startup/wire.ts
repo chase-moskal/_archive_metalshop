@@ -101,6 +101,11 @@ export async function wire({
 	// wire models to dom elements
 	//
 
+	profile.subscribeReset(() => {
+		for (const profilePanel of profilePanels)
+			profilePanel.reset()
+	})
+
 	wireStateUpdates<ProfileState, ProfilePanel>({
 		reader: profile.reader,
 		components: profilePanels,
