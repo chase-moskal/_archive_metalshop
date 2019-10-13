@@ -10,15 +10,18 @@ import {
 } from "authoritarian/dist/interfaces.js"
 
 import {PaywallMode} from "../models/paywall-model.js"
+import {LivestreamMode} from "../models/livestream-model.js"
 
 import {UserPanel} from "../components/user-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
+import {PrivateLivestream} from "../components/private-livestream.js"
 
 export interface AuthoritarianConfig {
 	mock: boolean
 	debug: boolean
+	mockAdmin: boolean
 
 	authServer: string
 	profilerService: string
@@ -39,6 +42,7 @@ export interface AuthoritarianOptions {
 	profilePanels: ProfilePanel[]
 	paywallPanels: PaywallPanel[]
 	avatarDisplays: AvatarDisplay[]
+	privateLivestreams: PrivateLivestream[]
 }
 
 export interface AuthContext {
@@ -201,4 +205,13 @@ export interface WebComponent extends HTMLElement {
 		oldValue: string,
 		newValue: string
 	): void
+}
+
+export interface Livestream {
+	embed: string
+}
+
+export interface LivestreamState {
+	livestream: Livestream
+	mode: LivestreamMode
 }

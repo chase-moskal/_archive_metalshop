@@ -39,6 +39,7 @@ export async function initialize(config: AuthoritarianConfig):
 	progress.paywallPanels = selects("paywall-panel")
 	progress.profilePanels = selects("profile-panel")
 	progress.avatarDisplays = selects("avatar-display")
+	progress.privateLivestreams = selects("private-livestream")
 
 	//
 	// use mocks instead of real microservices
@@ -54,7 +55,7 @@ export async function initialize(config: AuthoritarianConfig):
 		progress = {
 			...progress,
 			profiler: new MockProfiler(),
-			tokenStorage: new MockTokenStorage(),
+			tokenStorage: new MockTokenStorage({mockAdmin: config.mockAdmin}),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
 		}
@@ -104,6 +105,7 @@ export async function initialize(config: AuthoritarianConfig):
 		userPanels: progress.userPanels,
 		paywallPanels: progress.paywallPanels,
 		profilePanels: progress.profilePanels,
-		avatarDisplays: progress.avatarDisplays
+		avatarDisplays: progress.avatarDisplays,
+		privateLivestreams: progress.privateLivestreams,
 	}
 }

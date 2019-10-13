@@ -48,6 +48,7 @@ async function createMockRefreshToken({expiresIn = "60d"}: {
 const mockRefreshToken = createMockRefreshToken()
 const mockAccessToken = createMockAccessToken({claims: {premium: false}})
 const mockPremiumAccessToken = createMockAccessToken({claims: {premium: true}})
+const mockAdminAccessToken = createMockAccessToken({claims: {admin: true, premium: true}})
 
 export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
 	debug("mockLoginPopupRoutine")
@@ -69,10 +70,15 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 }
 
 export class MockTokenStorage implements TokenStorageTopic {
+	private _mockAdmin: boolean
+	constructor({mockAdmin}: {mockAdmin: boolean}) {
+		this._mockAdmin = mockAdmin
+	}
+
 	async passiveCheck() {
 		debug("passiveCheck")
 		await nap()
-		return mockAccessToken
+		return this._mockAdmin ? mockAdminAccessToken : mockAccessToken
 	}
 	async writeTokens(tokens: AuthTokens) {
 		debug("writeTokens")

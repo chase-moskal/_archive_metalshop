@@ -12,7 +12,9 @@
 
 		<!-- authoritarian config -->
 		<authoritarian-config
-			mock debug
+			debug
+			mock="admin"
+			livestream="http://localhost:8003"
 			auth-server="http://localhost:8000"
 			profiler-service="http://localhost:8001"
 			paywall-guardian="http://localhost:8002">
@@ -37,6 +39,14 @@
 			</menu-system>
 		</header>
 		<main class="content">
+
+			<private-livestream>
+				<div slot="loggedout">
+					<h2>Private Livestream</h2>
+					<p>If you are logged in as a Premium Supporter, you'll get to view the livestream</p>
+				</div>
+			</private-livestream>
+
 			<h1>authentication and authorization with an iron fist</h1>
 			<p>you're now looking at <em><a href="https://github.com/chase-moskal/authoritarian-client">authoritarian-client's</a></em> ui web components demo</p>
 			<p>this demo is using mock microservices for easy development</p>

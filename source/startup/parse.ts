@@ -8,6 +8,7 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 	if (!element) throw err(`<authoritarian-config> required, missing`)
 	return {
 		mock: element.hasAttribute("mock"),
+		mockAdmin: element.getAttribute("mock") === "admin",
 		debug: element.hasAttribute("debug"),
 		authServer: element.getAttribute("auth-server"),
 		profilerService: element.getAttribute("profiler-service"),

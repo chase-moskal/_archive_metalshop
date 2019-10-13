@@ -1,9 +1,4 @@
 
-import {createUserModel} from "../models/user-model.js"
-import {createAvatarModel} from "../models/avatar-model.js"
-import {createProfileModel} from "../models/profile-model.js"
-import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
-
 import {AuthoritarianStartupError} from "../system/errors.js"
 import {wireStateUpdates} from "../toolbox/wire-state-updates.js"
 import {
@@ -12,13 +7,20 @@ import {
 	PaywallState,
 	ProfileState,
 	AuthoritarianOptions,
+	LivestreamState,
 } from "../system/interfaces.js"
+
+import {createUserModel} from "../models/user-model.js"
+import {createAvatarModel} from "../models/avatar-model.js"
+import {createProfileModel} from "../models/profile-model.js"
+import {createLivestreamModel} from "../models/livestream-model.js"
+import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
 
 import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import { Profile } from "authoritarian/dist/interfaces";
+import { PrivateLivestream } from "source/components/private-livestream.js";
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -35,6 +37,7 @@ export async function wire({
 	profilePanels,
 	paywallPanels,
 	avatarDisplays,
+	privateLivestreams,
 }: AuthoritarianOptions) {
 
 	if (![...userPanels, ...avatarDisplays].length)
@@ -60,6 +63,8 @@ export async function wire({
 
 	const avatar = createAvatarModel()
 
+	const livestream = createLivestreamModel()
+
 	//
 	// wire models to each other
 	//
@@ -75,6 +80,12 @@ export async function wire({
 	user.subscribers.userError(profile.wiring.receiveUserLogout)
 	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
 	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
+
+	// wire user to livestream
+	user.subscribers.userLogin(livestream.wiring.receiveUserLogin)
+	user.subscribers.userError(livestream.wiring.receiveUserLogout)
+	user.subscribers.userLogout(livestream.wiring.receiveUserLogout)
+	user.subscribers.userLoading(livestream.wiring.receiveUserLoading)
 
 	// on profile update, set avatar picture url
 	profile.reader.subscribe(state => {
@@ -124,6 +135,12 @@ export async function wire({
 		updateComponent: (component, state) => component.paywallState = state
 	})
 
+	wireStateUpdates<LivestreamState, PrivateLivestream>({
+		reader: livestream.reader,
+		components: privateLivestreams,
+		updateComponent: (component, state) => component.livestreamState = state
+	})
+
 	wireStateUpdates<UserState, UserPanel>({
 		reader: user.reader,
 		components: userPanels,
@@ -137,6 +154,11 @@ export async function wire({
 	for (const paywallPanel of paywallPanels) {
 		paywallPanel.onMakeUserPremium = paywall.actions.makeUserPremium
 		paywallPanel.onRevokeUserPremium = paywall.actions.revokeUserPremium
+	}
+
+	for (const privateLivestream of privateLivestreams) {
+		privateLivestream.onUpdateLivestream = (lol) =>
+			console.log("UPDATE LIVESTREAM", lol)
 	}
 
 	for (const userPanel of userPanels) {
