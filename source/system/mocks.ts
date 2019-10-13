@@ -109,34 +109,34 @@ export class MockTokenStorage implements TokenStorageTopic {
 	}
 }
 
-const fakeProfileData: Profile = {
-	userId: "fake-h31829h381273h",
-	public: {
-		nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-		picture: "https://picsum.photos/id/375/200/200",
-	},
-	private: {
-		realname: "Captain Branstock Dudley-Faddington",
-	}
-}
-
 export class MockProfiler implements ProfilerTopic {
+	private _profile: Profile = {
+		userId: "fake-h31829h381273h",
+		public: {
+			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+			picture: "https://picsum.photos/id/375/200/200",
+		},
+		private: {
+			realname: "Captain Branstock Dudley-Faddington",
+		}
+	}
 	async getPublicProfile({userId}): Promise<Profile> {
 		debug("getPublicProfile")
 		await nap()
 		return {
-			...fakeProfileData,
+			...this._profile,
 			userId,
 		}
 	}
 	async getFullProfile(options): Promise<Profile> {
 		debug("getFullProfile")
 		await nap()
-		return fakeProfileData
+		return this._profile
 	}
-	async setFullProfile(options): Promise<void> {
+	async setFullProfile({profile}): Promise<void> {
 		debug("setFullProfile")
 		await nap()
+		this._profile = profile
 		return undefined
 	}
 }
