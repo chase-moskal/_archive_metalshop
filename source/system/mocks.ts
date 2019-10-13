@@ -12,7 +12,7 @@ import {
 import {signToken} from "authoritarian/dist/crypto.js"
 
 import {privateKey} from "./mock-keys.js"
-import {AuthContext, LoginPopupRoutine} from "./interfaces.js"
+import {AuthContext, LoginPopupRoutine, RestrictedLivestream, Livestream} from "./interfaces.js"
 
 const debug = (message: string) => console.debug(`mock: ${message}`)
 
@@ -67,6 +67,21 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 		user: {userId: "u123", claims: {premium: true}},
 		accessToken
 	})
+}
+
+export class MockRestrictedLivestream implements RestrictedLivestream {
+	private _livestream: Livestream = {
+		embed: "livestream-data-lol"
+	}
+	async getLivestream(options: {accessToken: AccessToken}) {
+		return this._livestream
+	}
+	async updateLivestream(options: {
+		accessToken: AccessToken
+		livestream: Livestream
+	}) {
+		this._livestream = options.livestream
+	}
 }
 
 export class MockTokenStorage implements TokenStorageTopic {

@@ -18,6 +18,12 @@ import {PaywallPanel} from "../components/paywall-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
 import {PrivateLivestream} from "../components/private-livestream.js"
 
+export interface RestrictedLivestream {
+	getLivestream(o: {accessToken: AccessToken}): Promise<Livestream>
+	updateLivestream(o: {accessToken: AccessToken; livestream: Livestream}):
+		Promise<void>
+}
+
 export interface AuthoritarianConfig {
 	mock: boolean
 	debug: boolean
@@ -26,6 +32,7 @@ export interface AuthoritarianConfig {
 	authServer: string
 	profilerService: string
 	paywallGuardian: string
+	livestreamServer: string
 }
 
 export interface AuthoritarianOptions {
@@ -34,6 +41,7 @@ export interface AuthoritarianOptions {
 	profiler: ProfilerTopic
 	tokenStorage: TokenStorageTopic
 	paywallGuardian: PaywallGuardianTopic
+	restrictedLivestream: RestrictedLivestream
 
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken

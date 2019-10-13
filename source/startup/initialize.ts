@@ -51,6 +51,7 @@ export async function initialize(config: AuthoritarianConfig):
 			MockTokenStorage,
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
+			MockRestrictedLivestream,
 		} = await import("../system/mocks.js")
 		progress = {
 			...progress,
@@ -58,6 +59,7 @@ export async function initialize(config: AuthoritarianConfig):
 			tokenStorage: new MockTokenStorage({mockAdmin: config.mockAdmin}),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
+			restrictedLivestream: new MockRestrictedLivestream()
 		}
 	}
 
@@ -82,9 +84,15 @@ export async function initialize(config: AuthoritarianConfig):
 				url: `${config.authServer}/html/token-storage`
 			})
 		}
-	
+
 		if (config.paywallGuardian) {
+			console.log("coming soon: paywall guardian initialization")
 			progress.paywallGuardian = null
+		}
+
+		if (config.livestreamServer) {
+			console.log("coming soon: paywall guardian initialization")
+			progress.restrictedLivestream = null
 		}
 	}
 
@@ -98,6 +106,7 @@ export async function initialize(config: AuthoritarianConfig):
 		profiler: progress.profiler,
 		tokenStorage: progress.tokenStorage,
 		paywallGuardian: progress.paywallGuardian,
+		restrictedLivestream: progress.restrictedLivestream,
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,

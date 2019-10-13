@@ -2,6 +2,7 @@
 import {LitElement, html, css, property} from "lit-element"
 import {LivestreamMode} from "../models/livestream-model.js"
 import {LivestreamState, Livestream} from "../system/interfaces.js"
+import { select } from "../toolbox/selects.js";
 
 export class PrivateLivestream extends LitElement {
 	@property({type: Object}) livestreamState: LivestreamState
@@ -50,8 +51,12 @@ export class PrivateLivestream extends LitElement {
 	}
 
 	private _handleClickUpdateLivestream = () => {
+		const input = select<HTMLInputElement>(
+			"input[name=livestream-embed]",
+			this.shadowRoot
+		)
 		const livestream: Livestream = {
-			embed: "lul"
+			embed: input.value
 		}
 		this.onUpdateLivestream(livestream)
 	}

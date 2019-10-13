@@ -20,7 +20,7 @@ import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import { PrivateLivestream } from "source/components/private-livestream.js";
+import { PrivateLivestream } from "../components/private-livestream.js";
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -32,6 +32,7 @@ export async function wire({
 	paywallGuardian,
 	loginPopupRoutine,
 	decodeAccessToken,
+	restrictedLivestream,
 
 	userPanels,
 	profilePanels,
@@ -63,7 +64,7 @@ export async function wire({
 
 	const avatar = createAvatarModel()
 
-	const livestream = createLivestreamModel()
+	const livestream = createLivestreamModel({restrictedLivestream})
 
 	//
 	// wire models to each other
@@ -157,8 +158,8 @@ export async function wire({
 	}
 
 	for (const privateLivestream of privateLivestreams) {
-		privateLivestream.onUpdateLivestream = (lol) =>
-			console.log("UPDATE LIVESTREAM", lol)
+		privateLivestream.onUpdateLivestream =
+			ls => livestream.actions.updateLivestream(ls)
 	}
 
 	for (const userPanel of userPanels) {
