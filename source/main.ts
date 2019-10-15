@@ -3,8 +3,8 @@ import "menutown/dist/register-all.js"
 import "./system/register-all.js"
 
 import {wire} from "./startup/wire.js"
-import {select} from "./toolbox/selects.js"
 import {parse} from "./startup/parse.js"
+import {select} from "./toolbox/selects.js"
 import {initialize} from "./startup/initialize.js"
 
 main()
