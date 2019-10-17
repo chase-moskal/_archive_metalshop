@@ -149,6 +149,8 @@ export interface ProfileModel {
 
 export interface ProfileState {
 	error: Error
+	admin: boolean
+	premium: boolean
 	loading: boolean
 	profile: Profile
 }

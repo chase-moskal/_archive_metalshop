@@ -59,10 +59,19 @@ export class ProfilePanel extends LoadableElement {
 			justify-content: center;
 		}
 		.container > div > * + * {
-			margin-top: 0.6em;
+			margin-top: 0.25em;
 		}
 		button.save {
 			margin-left: auto;
+		}
+		ul > li {
+			opacity: 0.7;
+			font-size: 0.7em;
+			display: inline-block;
+			padding: 0.2em 0.5em;
+			border-radius: 0.5em;
+			font-family: monospace;
+			border: 1px solid;
 		}
 		input {
 			width: 100%;
@@ -116,7 +125,7 @@ export class ProfilePanel extends LoadableElement {
 			_handleSaveClick,
 			_handleInputChange,
 		} = this
-		const {profile} = this.profileState
+		const {profile, admin, premium} = this.profileState
 		const showSaveButton = !!this._changedProfile
 
 		if (!profile) return html``
@@ -124,6 +133,10 @@ export class ProfilePanel extends LoadableElement {
 			<div class="container formarea coolbuttonarea">
 				<avatar-display .avatarState=${avatarState}></avatar-display>
 				<div>
+					<ul>
+						${admin ? html`<li data-tag="admin">Admin</li>` : html``}
+						${premium ? html`<li data-tag="premium">Premium</li>` : html``}
+					</ul>
 					<h3>${profile.private.realname}</h3>
 					<input
 						type="text"

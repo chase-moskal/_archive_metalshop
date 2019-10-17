@@ -16,8 +16,10 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 	let cancel: boolean = false
 	const state: ProfileState = {
 		error: null,
+		admin: false,
 		loading: true,
 		profile: null,
+		premium: false,
 	}
 
 	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
@@ -60,10 +62,14 @@ export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
 				publishStateUpdate()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
+				publishReset()
 				getAuthContext = detail.getAuthContext
 				cancel = false
 				state.loading = true
-				publishReset()
+				publishStateUpdate()
+				const {user} = await getAuthContext()
+				state.admin = !!user.claims.admin
+				state.premium = !!user.claims.premium
 				publishStateUpdate()
 				try {
 					const profile = await loadProfile()
