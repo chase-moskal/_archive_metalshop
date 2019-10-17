@@ -19,7 +19,7 @@ export const theme = css`
 	:-ms-input-placeholder { color: inherit; }
 
 	.formarea input {
-		opacity: 0.7;
+		opacity: 0.85;
 		padding: 0.2em;
 		font-size: inherit;
 		font-family: inherit;
@@ -58,9 +58,11 @@ export const theme = css`
 	}
 	.coolbuttonarea button:hover,
 	.coolbuttonarea button:focus {
-		outline: var(--focus-outline, 2px solid cyan);
 		text-decoration: underline;
 		text-shadow: 0 0 7px rgba(255,255,255, 0.7);
+	}
+	.coolbuttonarea button:focus {
+		outline: var(--focus-outline, 2px solid cyan);
 	}
 
 	.coolbuttonarea button:hover::before,
