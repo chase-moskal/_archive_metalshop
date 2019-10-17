@@ -159,7 +159,7 @@ export async function wire({
 
 	for (const privateLivestream of privateLivestreams) {
 		privateLivestream.onUpdateLivestream =
-			ls => livestream.actions.updateLivestream(ls)
+			vimeostring => livestream.actions.updateLivestream(vimeostring)
 	}
 
 	for (const userPanel of userPanels) {

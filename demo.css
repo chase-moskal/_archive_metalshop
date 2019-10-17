@@ -50,6 +50,7 @@ body > header > * {
 main {
 	padding: 1rem;
 	background: rgba(255,255,255, 0.1);
+	padding-bottom: 10rem;
 }
 
 .content > * + * {
@@ -104,6 +105,16 @@ body > header {
 	position: relative;
 }
 
+menu-system {
+	--menu-margin: 1em 0 0 0;
+}
+
+@media (max-width: 500px) {
+	body > header {
+		padding-top: 4rem;
+	}
+}
+
 /* menu system will remove [initially-hidden] property when it has loaded */
 menu-system[initially-hidden] {
 	display: none;
@@ -153,4 +164,10 @@ user-panel > h2 {
 	background: transparent;
 	text-transform: uppercase;
 	box-shadow: none;
+}
+
+private-livestream {
+	/* display: block; */
+	border: 1px solid rgba(255,255,255, 0.1);
+	padding: 0.5em;
 }

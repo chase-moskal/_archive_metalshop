@@ -15,11 +15,16 @@ export enum LivestreamMode {
 	Admin,
 }
 
+import {AuthoritarianLivestreamError} from "../system/errors.js"
+
+const err = (message: string) => new AuthoritarianLivestreamError(message)
+
 export function createLivestreamModel({restrictedLivestream}: {
 	restrictedLivestream: RestrictedLivestream
 }) {
 	let getAuthContext: GetAuthContext
 	const state: LivestreamState = {
+		errorMessage: null,
 		livestream: null,
 		mode: LivestreamMode.LoggedOut,
 	}
@@ -29,11 +34,36 @@ export function createLivestreamModel({restrictedLivestream}: {
 	return {
 		reader,
 		actions: {
-			async updateLivestream(livestream: Livestream) {
-				const {accessToken} = await getAuthContext()
-				await restrictedLivestream.updateLivestream({accessToken, livestream})
-				state.livestream = livestream
+			async updateLivestream(vimeostring: string) {
+				vimeostring = vimeostring.trim()
+				state.errorMessage = null
 				publishStateUpdate()
+
+				let id: string
+				{
+					const vimeoId = /^\d{5,}$/i.exec(vimeostring)
+					const vimeoLink = /vimeo\.com\/(\d{5,})/i.exec(vimeostring)
+					if (vimeoId) {
+						id = vimeostring
+					}
+					else if (vimeoLink) {
+						id = vimeoLink[1]
+					}
+				}
+
+				if (id) {
+					const livestream: Livestream = {
+						embed: `<iframe src="https://player.vimeo.com/video/${id}?color=00a651&title=0&byline=0&portrait=0&badge=0" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
+					}
+					const {accessToken} = await getAuthContext()
+					await restrictedLivestream.updateLivestream({accessToken, livestream})
+					state.livestream = livestream
+					publishStateUpdate()
+				}
+				else {
+					state.errorMessage = "invalid vimeo link or id"
+					publishStateUpdate()
+				}
 			}
 		},
 		wiring: {

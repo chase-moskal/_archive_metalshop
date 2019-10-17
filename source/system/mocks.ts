@@ -71,7 +71,7 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 
 export class MockRestrictedLivestream implements RestrictedLivestream {
 	private _livestream: Livestream = {
-		embed: "livestream-data-lol"
+		embed: `<iframe src="https://player.vimeo.com/video/109943349?color=00a651&title=0&byline=0&portrait=0&badge=0" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
 	}
 	async getLivestream(options: {accessToken: AccessToken}) {
 		return this._livestream
@@ -85,15 +85,10 @@ export class MockRestrictedLivestream implements RestrictedLivestream {
 }
 
 export class MockTokenStorage implements TokenStorageTopic {
-	private _mockAdmin: boolean
-	constructor({mockAdmin}: {mockAdmin: boolean}) {
-		this._mockAdmin = mockAdmin
-	}
-
 	async passiveCheck() {
 		debug("passiveCheck")
 		await nap()
-		return this._mockAdmin ? mockAdminAccessToken : mockAccessToken
+		return mockAccessToken
 	}
 	async writeTokens(tokens: AuthTokens) {
 		debug("writeTokens")
@@ -106,6 +101,22 @@ export class MockTokenStorage implements TokenStorageTopic {
 	async clearTokens() {
 		debug("clearTokens")
 		await nap()
+	}
+}
+
+export class MockTokenStorageAdmin extends MockTokenStorage {
+	async passiveCheck() {
+		debug("passiveCheck admin")
+		await nap()
+		return mockAdminAccessToken
+	}
+}
+
+export class MockTokenStorageLoggedOut extends MockTokenStorage {
+	async passiveCheck() {
+		debug("passiveCheck loggedout")
+		await nap()
+		return null
 	}
 }
 

@@ -12,23 +12,30 @@ export const theme = css`
 	FORMAREA
 	*/
 
+	::placeholder { color: inherit; }
+	::-webkit-input-placeholder { color: inherit; }
+	:-moz-placeholder { color: inherit; }
+	::-moz-placeholder { color: inherit; }
+	:-ms-input-placeholder { color: inherit; }
+
 	.formarea input {
+		opacity: 0.7;
 		padding: 0.2em;
-		color: inherit;
-		font-family: inherit;
 		font-size: inherit;
+		font-family: inherit;
+		color: inherit;
 		background: transparent;
-		border: 1px solid rgba(0,0,0, 0.1);
+		border: 1px solid;
 		border-radius: 3px;
 	}
 
 	.formarea input:hover {
-		border: 1px solid rgba(0,0,0, 0.2);
+		opacity: 1;
 	}
 
 	.formarea input:focus {
+		opacity: 1;
 		outline: var(--focus-outline, 2px solid cyan);
-		background: rgba(255,255,255, 0.8);
 	}
 
 	/*

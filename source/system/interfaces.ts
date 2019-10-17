@@ -25,9 +25,8 @@ export interface RestrictedLivestream {
 }
 
 export interface AuthoritarianConfig {
-	mock: boolean
+	mock: string
 	debug: boolean
-	mockAdmin: boolean
 
 	authServer: string
 	profilerService: string
@@ -220,6 +219,7 @@ export interface Livestream {
 }
 
 export interface LivestreamState {
-	livestream: Livestream
 	mode: LivestreamMode
+	errorMessage: string
+	livestream: Livestream
 }

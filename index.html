@@ -25,7 +25,7 @@
 	<body>
 		<header>
 			<h1>authoritarian-client</h1>
-			<menu-system initially-hidden>
+			<menu-system sticky initially-hidden>
 				<menu-display>
 
 					<!-- authoritarian ui components -->
@@ -40,14 +40,6 @@
 			</menu-system>
 		</header>
 		<main class="content">
-
-			<private-livestream>
-				<div slot="loggedout">
-					<h2>Private Livestream</h2>
-					<p>If you are logged in as a Premium Supporter, you'll get to view the livestream</p>
-				</div>
-			</private-livestream>
-
 			<h1>authentication and authorization with an iron fist</h1>
 			<p>you're now looking at <em><a href="https://github.com/chase-moskal/authoritarian-client">authoritarian-client's</a></em> ui web components demo</p>
 			<p>this demo is using mock microservices for easy development</p>
@@ -63,6 +55,12 @@
 			<p>here's a cool sketchboard of <a href="https://sketchboard.me/DBK6n9pXvGpr#/">authoritarian's architecture</a></p>
 			<p>free and open source on <a href="https://github.com/chase-moskal/authoritarian-client">github</a></p>
 			<p>&nbsp;&nbsp; 👋 <a href="https://chasemoskal.com/">chase</a></p>
+			<br/>
+
+			<private-livestream>
+				<h2>Welcome to the private livestream!</h2>
+				<p>You are logged in as a premium supporter</p>
+			</private-livestream>
 		</main>
 	</body>
 </html>

@@ -5,13 +5,21 @@ import {
 } from "authoritarian/dist/clients.js"
 
 import {
+	AuthoritarianConfig,
+	AuthoritarianOptions,
+} from "../system/interfaces.js"
+
+import {
+	MockTokenStorageAdmin,
+	MockTokenStorageLoggedOut,
+} from "../system/mocks.js"
+
+import {
 	accountPopupLogin,
 	prepareLoginPopupRoutine,
 } from "../toolbox/account-popup-login.js"
-import {decodeAccessToken} from "../toolbox/decode-access-token.js"
-
 import {selects} from "../toolbox/selects.js"
-import {AuthoritarianOptions, AuthoritarianConfig} from "../system/interfaces.js"
+import {decodeAccessToken} from "../toolbox/decode-access-token.js"
 
 /**
  * Prepare all of the options for the start routine
@@ -45,7 +53,7 @@ export async function initialize(config: AuthoritarianConfig):
 	// use mocks instead of real microservices
 	//
 
-	if (config.mock) {
+	if (config.mock !== undefined) {
 		const {
 			MockProfiler,
 			MockTokenStorage,
@@ -56,7 +64,11 @@ export async function initialize(config: AuthoritarianConfig):
 		progress = {
 			...progress,
 			profiler: new MockProfiler(),
-			tokenStorage: new MockTokenStorage({mockAdmin: config.mockAdmin}),
+			tokenStorage: config.mock === "admin"
+				? new MockTokenStorageAdmin()
+				: config.mock === "loggedout"
+					? new MockTokenStorageLoggedOut()
+					: new MockTokenStorage(),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
 			restrictedLivestream: new MockRestrictedLivestream()
