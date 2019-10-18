@@ -1,5 +1,5 @@
 
-import {LitElement, html, css, svg, property} from "lit-element"
+import {property, html, css, svg} from "lit-element"
 import {unsafeHTML} from "lit-html/directives/unsafe-html.js"
 
 import {select} from "../toolbox/selects.js"
