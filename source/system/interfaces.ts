@@ -221,7 +221,9 @@ export interface Livestream {
 }
 
 export interface LivestreamState {
+	loading: boolean
 	mode: LivestreamMode
 	errorMessage: string
 	livestream: Livestream
+	validationMessage: string
 }

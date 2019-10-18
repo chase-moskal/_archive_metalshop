@@ -15,17 +15,15 @@ export enum LivestreamMode {
 	Admin,
 }
 
-import {AuthoritarianLivestreamError} from "../system/errors.js"
-
-const err = (message: string) => new AuthoritarianLivestreamError(message)
-
 export function createLivestreamModel({restrictedLivestream}: {
 	restrictedLivestream: RestrictedLivestream
 }) {
 	let getAuthContext: GetAuthContext
 	const state: LivestreamState = {
-		errorMessage: null,
+		loading: false,
 		livestream: null,
+		errorMessage: null,
+		validationMessage: null,
 		mode: LivestreamMode.LoggedOut,
 	}
 
@@ -36,7 +34,9 @@ export function createLivestreamModel({restrictedLivestream}: {
 		actions: {
 			async updateLivestream(vimeostring: string) {
 				vimeostring = vimeostring.trim()
+				state.loading = true
 				state.errorMessage = null
+				state.validationMessage = null
 				publishStateUpdate()
 
 				let id: string
@@ -58,22 +58,28 @@ export function createLivestreamModel({restrictedLivestream}: {
 					const {accessToken} = await getAuthContext()
 					await restrictedLivestream.updateLivestream({accessToken, livestream})
 					state.livestream = livestream
-					publishStateUpdate()
 				}
 				else {
-					state.errorMessage = "invalid vimeo link or id"
-					publishStateUpdate()
+					state.validationMessage = "invalid vimeo link or id"
 				}
+				state.loading = false
+				publishStateUpdate()
 			}
 		},
 		wiring: {
 			async receiveUserLoading() {
 				state.mode = LivestreamMode.LoggedOut
+				state.loading = true
 				state.livestream = null
+				state.errorMessage = null
+				state.validationMessage = null
 				publishStateUpdate()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
+				state.loading = true
 				state.livestream = null
+				state.errorMessage = null
+				state.validationMessage = null
 				publishStateUpdate()
 				getAuthContext = detail.getAuthContext
 				const {user, accessToken} = await getAuthContext()
@@ -86,11 +92,15 @@ export function createLivestreamModel({restrictedLivestream}: {
 				state.livestream = await restrictedLivestream.getLivestream({
 					accessToken
 				})
+				state.loading = false
 				publishStateUpdate()
 			},
 			async receiveUserLogout() {
 				state.mode = LivestreamMode.LoggedOut
+				state.loading = false
 				state.livestream = null
+				state.errorMessage = null
+				state.validationMessage = null
 				publishStateUpdate()
 			}
 		}
