@@ -1,15 +1,21 @@
 
-### Authoritarian overview
+# authoritarian is auth with an iron fist
 
-Authentication and authorization solution for microservices and the web
+## authentication and authorization for node microservices
 
-- [`authoritarian`](https://github.com/chase-moskal/authoritarian#authoritarian-overview) – node library for auth and user management
-- ***[`authoritarian-client`](https://github.com/chase-moskal/authoritarian-client#authoritarian-overview) (you are here)*** – browser ui library for login and user settings
-- [`auth-server`](https://github.com/chase-moskal/auth-server#authoritarian-overview) – example standalone auth server
-- [`auth-webapp`](https://github.com/chase-moskal/auth-webapp#authoritarian-overview) – example microservice and frontend
+🛠️ work in progress
 
----
+🕹 [ui demo using mocks](https://chasemoskal.com/authoritarian-client/)
 
-# Authoritarian Client
+🔐 user login, logout, profile information
 
-web components for integrating with authoritarian-related microservices
+💳 paywall subscription management, private videos/livestreams
+
+🎁 web components, just drop 'em in!
+
+🔌 connects with microservices:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [auth-server](https://github.com/chase-moskal/auth-server), [profile-server](https://github.com/chase-moskal/profile-server), [paywall-server](https://github.com/chase-moskal/paywall-server), private-vimeo-server
+
+🧭 here's a cool [sketchboard of authoritarian's architecture](https://sketchboard.me/DBK6n9pXvGpr)
+
+> 👋😎 chase
