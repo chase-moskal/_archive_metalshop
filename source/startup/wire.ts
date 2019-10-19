@@ -7,38 +7,38 @@ import {
 	PaywallState,
 	ProfileState,
 	AuthoritarianOptions,
-	LivestreamState,
+	VimeoState,
 } from "../system/interfaces.js"
 
 import {createUserModel} from "../models/user-model.js"
 import {createAvatarModel} from "../models/avatar-model.js"
 import {createProfileModel} from "../models/profile-model.js"
-import {createLivestreamModel} from "../models/livestream-model.js"
+import {createPrivateVimeoModel} from "../models/private-vimeo-model.js"
 import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
 
 import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
+import {PrivateVimeo} from "../components/private-vimeo.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import { PrivateLivestream } from "../components/private-livestream.js";
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
 export async function wire({
 	debug,
 
-	profiler,
+	profileMagistrate: profiler,
 	tokenStorage,
 	paywallGuardian,
 	loginPopupRoutine,
 	decodeAccessToken,
-	restrictedLivestream,
+	privateVimeoGovernor,
 
 	userPanels,
 	profilePanels,
 	paywallPanels,
+	privateVimeos,
 	avatarDisplays,
-	privateLivestreams,
 }: AuthoritarianOptions) {
 
 	if (![...userPanels, ...avatarDisplays].length)
@@ -64,8 +64,6 @@ export async function wire({
 
 	const avatar = createAvatarModel()
 
-	const livestream = createLivestreamModel({restrictedLivestream})
-
 	//
 	// wire models to each other
 	//
@@ -81,12 +79,6 @@ export async function wire({
 	user.subscribers.userError(profile.wiring.receiveUserLogout)
 	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
 	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
-
-	// wire user to livestream
-	user.subscribers.userLogin(livestream.wiring.receiveUserLogin)
-	user.subscribers.userError(livestream.wiring.receiveUserLogout)
-	user.subscribers.userLogout(livestream.wiring.receiveUserLogout)
-	user.subscribers.userLoading(livestream.wiring.receiveUserLoading)
 
 	// on profile update, set avatar picture url
 	profile.reader.subscribe(state => {
@@ -136,12 +128,6 @@ export async function wire({
 		updateComponent: (component, state) => component.paywallState = state
 	})
 
-	wireStateUpdates<LivestreamState, PrivateLivestream>({
-		reader: livestream.reader,
-		components: privateLivestreams,
-		updateComponent: (component, state) => component.livestreamState = state
-	})
-
 	wireStateUpdates<UserState, UserPanel>({
 		reader: user.reader,
 		components: userPanels,
@@ -157,14 +143,36 @@ export async function wire({
 		paywallPanel.onRevokeUserPremium = paywall.actions.revokeUserPremium
 	}
 
-	for (const privateLivestream of privateLivestreams) {
-		privateLivestream.onUpdateLivestream =
-			vimeostring => livestream.actions.updateLivestream(vimeostring)
-	}
-
 	for (const userPanel of userPanels) {
 		userPanel.onLoginClick = user.actions.login
 		userPanel.onLogoutClick = user.actions.logout
+	}
+
+	//
+	// funky complex wirings
+	//
+
+	for (const privateVimeo of privateVimeos) {
+
+		// require [video-name] attributes
+		const videoName = privateVimeo.getAttribute("video-name")
+		if (!videoName) err(`<private-vimeo> is missing attribute [video-name]`)
+
+		// create a model for each component
+		const model = createPrivateVimeoModel({
+			videoName,
+			privateVimeoGovernor
+		})
+
+		// wire model to other models
+		user.subscribers.userLogin(model.wiring.receiveUserLogin)
+		user.subscribers.userError(model.wiring.receiveUserLogout)
+		user.subscribers.userLogout(model.wiring.receiveUserLogout)
+		user.subscribers.userLoading(model.wiring.receiveUserLoading)
+
+		// wire model to component
+		privateVimeo.onUpdateVideo = model.actions.updateVideo
+		model.reader.subscribe(state => privateVimeo.vimeoState = state)
 	}
 
 	profile.wiring.publishStateUpdate()

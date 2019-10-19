@@ -4,15 +4,16 @@ import {
 	AuthTokens,
 	AccessToken,
 	AccessPayload,
-	ProfilerTopic,
 	RefreshPayload,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
+	ProfileMagistrateTopic,
+	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 import {signToken} from "authoritarian/dist/crypto.js"
 
 import {privateKey} from "./mock-keys.js"
-import {AuthContext, LoginPopupRoutine, RestrictedLivestream, Livestream} from "./interfaces.js"
+import {AuthContext, LoginPopupRoutine} from "./interfaces.js"
 
 const debug = (message: string) => console.debug(`mock: ${message}`)
 
@@ -69,18 +70,23 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 	})
 }
 
-export class MockRestrictedLivestream implements RestrictedLivestream {
-	private _livestream: Livestream = {
-		embed: `<iframe src="https://player.vimeo.com/video/109943349?color=00a651&title=0&byline=0&portrait=0&badge=0" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
-	}
-	async getLivestream(options: {accessToken: AccessToken}) {
-		return this._livestream
-	}
-	async updateLivestream(options: {
+export class MockPrivateVimeoGovernor implements PrivateVimeoGovernorTopic {
+	private _vimeoId = "109943349"
+
+	async getVimeo(options: {
 		accessToken: AccessToken
-		livestream: Livestream
+		videoName: string
+	}): Promise<{vimeoId: string}> {
+		const {_vimeoId: vimeoId} = this
+		return {vimeoId}
+	}
+
+	async setVimeo({vimeoId}: {
+		accessToken: AccessToken
+		vimeoId: string
+		videoName: string
 	}) {
-		this._livestream = options.livestream
+		this._vimeoId = vimeoId
 	}
 }
 
@@ -120,7 +126,7 @@ export class MockTokenStorageLoggedOut extends MockTokenStorage {
 	}
 }
 
-export class MockProfiler implements ProfilerTopic {
+export class MockProfileMagistrate implements ProfileMagistrateTopic {
 	private _profile: Profile = {
 		userId: "fake-h31829h381273h",
 		public: {

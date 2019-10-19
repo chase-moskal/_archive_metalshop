@@ -1,63 +1,64 @@
 
+import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
+
 import {makeReader} from "../toolbox/make-reader.js"
 import {
-	Livestream,
+	VimeoState,
 	LoginDetail,
 	GetAuthContext,
-	LivestreamState,
-	RestrictedLivestream,
 } from "../system/interfaces.js"
 
-export enum LivestreamMode {
+export enum PrivilegeMode {
 	LoggedOut,
 	Unprivileged,
 	Privileged,
 	Admin,
 }
 
-export function createLivestreamModel({restrictedLivestream}: {
-	restrictedLivestream: RestrictedLivestream
+export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
+	videoName: string
+	privateVimeoGovernor: PrivateVimeoGovernorTopic
 }) {
 	let getAuthContext: GetAuthContext
-	const state: LivestreamState = {
+	const state: VimeoState = {
 		loading: false,
-		livestream: null,
+		vimeoId: null,
 		errorMessage: null,
 		validationMessage: null,
-		mode: LivestreamMode.LoggedOut,
+		mode: PrivilegeMode.LoggedOut,
 	}
-
 	const {reader, publishStateUpdate} = makeReader(state)
 
 	return {
 		reader,
 		actions: {
-			async updateLivestream(vimeostring: string) {
+			async updateVideo(vimeostring: string) {
 				vimeostring = vimeostring.trim()
 				state.loading = true
 				state.errorMessage = null
 				state.validationMessage = null
 				publishStateUpdate()
 
-				let id: string
+				let vimeoId: string
 				{
-					const vimeoId = /^\d{5,}$/i.exec(vimeostring)
-					const vimeoLink = /vimeo\.com\/(\d{5,})/i.exec(vimeostring)
-					if (vimeoId) {
-						id = vimeostring
+					const idParse = /^\d{5,}$/i.exec(vimeostring)
+					const linkParse = /vimeo\.com\/(\d{5,})/i.exec(vimeostring)
+					if (idParse) {
+						vimeoId = vimeostring
 					}
-					else if (vimeoLink) {
-						id = vimeoLink[1]
+					else if (linkParse) {
+						vimeoId = linkParse[1]
 					}
 				}
 
-				if (id) {
-					const livestream: Livestream = {
-						embed: `<iframe src="https://player.vimeo.com/video/${id}?color=00a651&title=0&byline=0&portrait=0&badge=0" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
-					}
+				if (vimeoId || vimeostring === "") {
 					const {accessToken} = await getAuthContext()
-					await restrictedLivestream.updateLivestream({accessToken, livestream})
-					state.livestream = livestream
+					await privateVimeoGovernor.setVimeo({
+						accessToken,
+						videoName,
+						vimeoId
+					})
+					state.vimeoId = vimeoId
 				}
 				else {
 					state.validationMessage = "invalid vimeo link or id"
@@ -68,37 +69,39 @@ export function createLivestreamModel({restrictedLivestream}: {
 		},
 		wiring: {
 			async receiveUserLoading() {
-				state.mode = LivestreamMode.LoggedOut
+				state.mode = PrivilegeMode.LoggedOut
 				state.loading = true
-				state.livestream = null
+				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
 				publishStateUpdate()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
 				state.loading = true
-				state.livestream = null
+				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
 				publishStateUpdate()
 				getAuthContext = detail.getAuthContext
 				const {user, accessToken} = await getAuthContext()
 				state.mode = user.claims.admin
-					? LivestreamMode.Admin
+					? PrivilegeMode.Admin
 					: user.claims.premium
-						? LivestreamMode.Privileged
-						: LivestreamMode.Unprivileged
+						? PrivilegeMode.Privileged
+						: PrivilegeMode.Unprivileged
 				publishStateUpdate()
-				state.livestream = await restrictedLivestream.getLivestream({
-					accessToken
+				const {vimeoId} = await privateVimeoGovernor.getVimeo({
+					accessToken,
+					videoName
 				})
+				state.vimeoId = vimeoId
 				state.loading = false
 				publishStateUpdate()
 			},
 			async receiveUserLogout() {
-				state.mode = LivestreamMode.LoggedOut
+				state.mode = PrivilegeMode.LoggedOut
 				state.loading = false
-				state.livestream = null
+				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
 				publishStateUpdate()

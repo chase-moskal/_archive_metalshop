@@ -1,7 +1,7 @@
 
 import {
 	createTokenStorageCrosscallClient,
-	createProfilerCacheCrosscallClient,
+	createProfileMagistrateCacheCrosscallClient,
 } from "authoritarian/dist/clients.js"
 
 import {
@@ -46,8 +46,8 @@ export async function initialize(config: AuthoritarianConfig):
 	progress.userPanels = selects("user-panel")
 	progress.paywallPanels = selects("paywall-panel")
 	progress.profilePanels = selects("profile-panel")
+	progress.privateVimeos = selects("private-vimeo")
 	progress.avatarDisplays = selects("avatar-display")
-	progress.privateLivestreams = selects("private-livestream")
 
 	//
 	// use mocks instead of real microservices
@@ -55,15 +55,15 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.mock !== undefined) {
 		const {
-			MockProfiler,
 			MockTokenStorage,
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
-			MockRestrictedLivestream,
+			MockProfileMagistrate,
+			MockPrivateVimeoGovernor,
 		} = await import("../system/mocks.js")
 		progress = {
 			...progress,
-			profiler: new MockProfiler(),
+			profileMagistrate: new MockProfileMagistrate(),
 			tokenStorage: config.mock === "admin"
 				? new MockTokenStorageAdmin()
 				: config.mock === "loggedout"
@@ -71,7 +71,7 @@ export async function initialize(config: AuthoritarianConfig):
 					: new MockTokenStorage(),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
-			restrictedLivestream: new MockRestrictedLivestream()
+			privateVimeoGovernor: new MockPrivateVimeoGovernor()
 		}
 	}
 
@@ -82,9 +82,10 @@ export async function initialize(config: AuthoritarianConfig):
 	else {
 
 		if (config.profilerService) {
-			progress.profiler = await createProfilerCacheCrosscallClient({
-				url: config.profilerService
-			})
+			progress.profileMagistrate =
+				await createProfileMagistrateCacheCrosscallClient({
+					url: config.profilerService
+				})
 		}
 
 		if (config.authServer) {
@@ -102,9 +103,9 @@ export async function initialize(config: AuthoritarianConfig):
 			progress.paywallGuardian = null
 		}
 
-		if (config.livestreamServer) {
+		if (config.privateVimeoServer) {
 			console.log("coming soon: paywall guardian initialization")
-			progress.restrictedLivestream = null
+			progress.privateVimeoGovernor = null
 		}
 	}
 
@@ -115,10 +116,10 @@ export async function initialize(config: AuthoritarianConfig):
 	return {
 		debug: progress.debug,
 
-		profiler: progress.profiler,
+		profileMagistrate: progress.profileMagistrate,
 		tokenStorage: progress.tokenStorage,
 		paywallGuardian: progress.paywallGuardian,
-		restrictedLivestream: progress.restrictedLivestream,
+		privateVimeoGovernor: progress.privateVimeoGovernor,
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,
@@ -126,7 +127,7 @@ export async function initialize(config: AuthoritarianConfig):
 		userPanels: progress.userPanels,
 		paywallPanels: progress.paywallPanels,
 		profilePanels: progress.profilePanels,
+		privateVimeos: progress.privateVimeos,
 		avatarDisplays: progress.avatarDisplays,
-		privateLivestreams: progress.privateLivestreams,
 	}
 }

@@ -1,5 +1,5 @@
 
-import {ProfilerTopic, Profile} from "authoritarian/dist/interfaces.js"
+import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
 import {
 	LoginDetail,
 	ProfileModel,
@@ -9,7 +9,7 @@ import {
 import {pubsub} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"
 
-export function createProfileModel({profiler}: {profiler: ProfilerTopic}):
+export function createProfileModel({profiler}: {profiler: ProfileMagistrateTopic}):
  ProfileModel {
 
 	let getAuthContext: GetAuthContext

@@ -4,25 +4,20 @@ import {
 	Profile,
 	AuthTokens,
 	AccessToken,
-	ProfilerTopic,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
+	ProfileMagistrateTopic,
+	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 
 import {PaywallMode} from "../models/paywall-model.js"
-import {LivestreamMode} from "../models/livestream-model.js"
+import {PrivilegeMode} from "../models/private-vimeo-model.js"
 
 import {UserPanel} from "../components/user-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
+import {PrivateVimeo} from "../components/private-vimeo.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import {PrivateLivestream} from "../components/private-livestream.js"
-
-export interface RestrictedLivestream {
-	getLivestream(o: {accessToken: AccessToken}): Promise<Livestream>
-	updateLivestream(o: {accessToken: AccessToken; livestream: Livestream}):
-		Promise<void>
-}
 
 export interface AuthoritarianConfig {
 	mock: string
@@ -31,16 +26,16 @@ export interface AuthoritarianConfig {
 	authServer: string
 	profilerService: string
 	paywallGuardian: string
-	livestreamServer: string
+	privateVimeoServer: string
 }
 
 export interface AuthoritarianOptions {
 	debug: boolean
 
-	profiler: ProfilerTopic
 	tokenStorage: TokenStorageTopic
 	paywallGuardian: PaywallGuardianTopic
-	restrictedLivestream: RestrictedLivestream
+	profileMagistrate: ProfileMagistrateTopic
+	privateVimeoGovernor: PrivateVimeoGovernorTopic
 
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
@@ -48,8 +43,8 @@ export interface AuthoritarianOptions {
 	userPanels: UserPanel[]
 	profilePanels: ProfilePanel[]
 	paywallPanels: PaywallPanel[]
+	privateVimeos: PrivateVimeo[]
 	avatarDisplays: AvatarDisplay[]
-	privateLivestreams: PrivateLivestream[]
 }
 
 export interface AuthContext {
@@ -216,14 +211,10 @@ export interface WebComponent extends HTMLElement {
 	): void
 }
 
-export interface Livestream {
-	embed: string
-}
-
-export interface LivestreamState {
+export interface VimeoState {
+	vimeoId: string
 	loading: boolean
-	mode: LivestreamMode
+	mode: PrivilegeMode
 	errorMessage: string
-	livestream: Livestream
 	validationMessage: string
 }

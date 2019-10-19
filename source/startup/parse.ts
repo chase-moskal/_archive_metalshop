@@ -12,6 +12,6 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 		authServer: element.getAttribute("auth-server"),
 		profilerService: element.getAttribute("profiler-service"),
 		paywallGuardian: element.getAttribute("paywall-guardian"),
-		livestreamServer: element.getAttribute("livestream-server"),
+		privateVimeoServer: element.getAttribute("private-vimeo-server"),
 	}
 }
