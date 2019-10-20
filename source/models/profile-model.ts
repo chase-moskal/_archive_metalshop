@@ -9,8 +9,9 @@ import {
 import {pubsub} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"
 
-export function createProfileModel({profiler}: {profiler: ProfileMagistrateTopic}):
- ProfileModel {
+export function createProfileModel({profileMagistrate}: {
+	profileMagistrate: ProfileMagistrateTopic
+}): ProfileModel {
 
 	let getAuthContext: GetAuthContext
 	let cancel: boolean = false
@@ -27,7 +28,7 @@ export function createProfileModel({profiler}: {profiler: ProfileMagistrateTopic
 
 	async function loadProfile(): Promise<Profile> {
 		const {accessToken} = await getAuthContext()
-		const profile = await profiler.getFullProfile({accessToken})
+		const profile = await profileMagistrate.getFullProfile({accessToken})
 		if (!profile) console.warn("failed to load profile")
 		return profile
 	}
@@ -41,7 +42,7 @@ export function createProfileModel({profiler}: {profiler: ProfileMagistrateTopic
 					state.loading = true
 					publishStateUpdate()
 					const {accessToken} = await getAuthContext()
-					await profiler.setFullProfile({accessToken, profile})
+					await profileMagistrate.setFullProfile({accessToken, profile})
 					state.profile = profile
 				}
 				catch (error) {

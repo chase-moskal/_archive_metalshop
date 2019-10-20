@@ -7,7 +7,6 @@ import {
 	PaywallState,
 	ProfileState,
 	AuthoritarianOptions,
-	VimeoState,
 } from "../system/interfaces.js"
 
 import {createUserModel} from "../models/user-model.js"
@@ -19,7 +18,6 @@ import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
 import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
-import {PrivateVimeo} from "../components/private-vimeo.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
@@ -27,11 +25,11 @@ const err = (message: string) => new AuthoritarianStartupError(message)
 export async function wire({
 	debug,
 
-	profileMagistrate: profiler,
 	tokenStorage,
 	paywallGuardian,
 	loginPopupRoutine,
 	decodeAccessToken,
+	profileMagistrate,
 	privateVimeoGovernor,
 
 	userPanels,
@@ -59,7 +57,7 @@ export async function wire({
 	})
 
 	const profile = createProfileModel({
-		profiler
+		profileMagistrate
 	})
 
 	const avatar = createAvatarModel()
