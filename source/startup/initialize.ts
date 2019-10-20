@@ -81,10 +81,10 @@ export async function initialize(config: AuthoritarianConfig):
 
 	else {
 
-		if (config.profilerService) {
+		if (config.profileServer) {
 			progress.profileMagistrate =
 				await createProfileMagistrateCacheCrosscallClient({
-					url: config.profilerService
+					url: config.profileServer
 				})
 		}
 
@@ -98,7 +98,7 @@ export async function initialize(config: AuthoritarianConfig):
 			})
 		}
 
-		if (config.paywallGuardian) {
+		if (config.paywallServer) {
 			console.log("coming soon: paywall guardian initialization")
 			progress.paywallGuardian = null
 		}

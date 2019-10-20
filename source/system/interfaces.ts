@@ -24,8 +24,8 @@ export interface AuthoritarianConfig {
 	debug: boolean
 
 	authServer: string
-	profilerService: string
-	paywallGuardian: string
+	profileServer: string
+	paywallServer: string
 	privateVimeoServer: string
 }
 
