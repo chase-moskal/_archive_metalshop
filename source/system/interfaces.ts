@@ -18,6 +18,7 @@ import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {PrivateVimeo} from "../components/private-vimeo.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
+import {QuestionsForum} from "../components/questions-forum.js"
 
 export interface AuthoritarianConfig {
 	mock: string
@@ -27,6 +28,7 @@ export interface AuthoritarianConfig {
 	profileServer: string
 	paywallServer: string
 	privateVimeoServer: string
+	questionsForumServer: string
 }
 
 export interface AuthoritarianOptions {
@@ -34,6 +36,7 @@ export interface AuthoritarianOptions {
 
 	tokenStorage: TokenStorageTopic
 	paywallGuardian: PaywallGuardianTopic
+	questionsBureau: QuestionsBureauTopic
 	profileMagistrate: ProfileMagistrateTopic
 	privateVimeoGovernor: PrivateVimeoGovernorTopic
 
@@ -45,6 +48,7 @@ export interface AuthoritarianOptions {
 	paywallPanels: PaywallPanel[]
 	privateVimeos: PrivateVimeo[]
 	avatarDisplays: AvatarDisplay[]
+	questionsForums: QuestionsForum[]
 }
 
 export interface AuthContext {
@@ -217,4 +221,67 @@ export interface VimeoState {
 	mode: PrivilegeMode
 	errorMessage: string
 	validationMessage: string
+}
+
+export interface QuestionAuthor {
+	picture: string
+	premium: boolean
+	nickname: string
+}
+
+export interface QuestionDraft {
+	time: number
+	likes: number
+	title: string
+	content: string
+	author: QuestionAuthor
+	comments: QuestionComment[]
+}
+
+export interface QuestionCommentDraft {
+	content: string
+	author: QuestionAuthor
+}
+
+export interface QuestionComment extends QuestionCommentDraft {
+	commentId: string
+}
+
+export interface Question extends QuestionDraft {
+	questionId: string
+}
+
+export interface QuestionsState {
+	admin: boolean
+	forums: {
+		[forumName: string]: {
+			questions: Question[]
+		}
+	}
+}
+
+export interface QuestionsBureauTopic {
+	fetchQuestions(o: {forumName: string}): Promise<Question[]>
+
+	postQuestion(o: {
+		forumName: string
+		question: QuestionDraft
+	}): Promise<Question>
+
+	postComment(o: {
+		forumName: string
+		questionId: string
+		comment: QuestionCommentDraft
+	}): Promise<QuestionComment>
+
+	deleteQuestion(o: {
+		forumName: string
+		questionId: string
+	}): Promise<void>
+
+	deleteComment(o: {
+		forumName: string
+		questionId: string
+		commentId: string
+	}): Promise<void>
 }

@@ -13,7 +13,15 @@ import {
 import {signToken} from "authoritarian/dist/crypto.js"
 
 import {privateKey} from "./mock-keys.js"
-import {AuthContext, LoginPopupRoutine} from "./interfaces.js"
+import {
+	AuthContext,
+	LoginPopupRoutine,
+	QuestionsBureauTopic,
+	Question,
+	QuestionDraft,
+	QuestionCommentDraft,
+	QuestionComment,
+} from "./interfaces.js"
 
 const debug = (message: string) => console.debug(`mock: ${message}`)
 
@@ -169,4 +177,52 @@ export class MockPaywallGuardian implements PaywallGuardianTopic {
 		await nap()
 		return mockAccessToken
 	}
+}
+
+const mockQuestions: Question[] = [
+	{
+		questionId: "q123",
+		author: {
+			nickname: "Johnny Texas",
+			picture: "",
+			premium: false,
+		},
+		comments: [],
+		title: "what's going on?",
+		content: "no srssly?",
+		likes: 2,
+		time: Date.now() - (100 * 1000),
+	}
+]
+
+export class MockQuestionsBureau implements QuestionsBureauTopic {
+	async fetchQuestions(o: {forumName: string}): Promise<Question[]> {
+		return mockQuestions
+	}
+
+	async postQuestion({question}: {
+		forumName: string
+		question: QuestionDraft
+	}): Promise<Question> {
+		return {...question, questionId: `q${Math.random()}`}
+	}
+
+	async postComment({comment}: {
+		forumName: string
+		questionId: string
+		comment: QuestionCommentDraft
+	}): Promise<QuestionComment> {
+		return {...comment, commentId: `qc${Math.random()}`}
+	}
+
+	async deleteQuestion(o: {
+		forumName: string
+		questionId: string
+	}): Promise<void> {}
+
+	async deleteComment(o: {
+		forumName: string
+		questionId: string
+		commentId: string
+	}): Promise<void> {}
 }

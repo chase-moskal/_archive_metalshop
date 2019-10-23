@@ -7,6 +7,7 @@ import {
 	PaywallState,
 	ProfileState,
 	AuthoritarianOptions,
+	QuestionsState,
 } from "../system/interfaces.js"
 
 import {createUserModel} from "../models/user-model.js"
@@ -19,6 +20,8 @@ import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
+import { QuestionsForum } from "source/components/questions-forum.js"
+import { createQuestionsModel } from "source/models/questions-model.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -27,6 +30,7 @@ export async function wire({
 
 	tokenStorage,
 	paywallGuardian,
+	questionsBureau,
 	loginPopupRoutine,
 	decodeAccessToken,
 	profileMagistrate,
@@ -37,6 +41,7 @@ export async function wire({
 	paywallPanels,
 	privateVimeos,
 	avatarDisplays,
+	questionsForums,
 }: AuthoritarianOptions) {
 
 	if (![...userPanels, ...avatarDisplays].length)
@@ -61,6 +66,8 @@ export async function wire({
 	})
 
 	const avatar = createAvatarModel()
+
+	const questionsModel = createQuestionsModel({questionsBureau})
 
 	//
 	// wire models to each other
@@ -130,6 +137,19 @@ export async function wire({
 		reader: user.reader,
 		components: userPanels,
 		updateComponent: (component, state) => component.userState = state
+	})
+
+	wireStateUpdates<QuestionsState, QuestionsForum>({
+		reader: questionsModel.reader,
+		components: questionsForums,
+		updateComponent: (component, state) => {
+			const forumName = component.getAttribute("forum-name")
+			if (!forumName)
+				throw err(`questions-forum requires attribute [forum-name]`)
+			const forum = state.forums[forumName] || {questions: []}
+			component.admin = state.admin
+			component.questions = forum.questions
+		}
 	})
 
 	for (const profilePanel of profilePanels) {

@@ -12,6 +12,7 @@ import {
 import {
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
+	MockQuestionsBureau,
 } from "../system/mocks.js"
 
 import {
@@ -48,6 +49,7 @@ export async function initialize(config: AuthoritarianConfig):
 	progress.profilePanels = selects("profile-panel")
 	progress.privateVimeos = selects("private-vimeo")
 	progress.avatarDisplays = selects("avatar-display")
+	progress.questionsForums = selects("questions-forum")
 
 	//
 	// use mocks instead of real microservices
@@ -71,7 +73,8 @@ export async function initialize(config: AuthoritarianConfig):
 					: new MockTokenStorage(),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
-			privateVimeoGovernor: new MockPrivateVimeoGovernor()
+			questionsBureau: new MockQuestionsBureau(),
+			privateVimeoGovernor: new MockPrivateVimeoGovernor(),
 		}
 	}
 
@@ -116,9 +119,10 @@ export async function initialize(config: AuthoritarianConfig):
 	return {
 		debug: progress.debug,
 
-		profileMagistrate: progress.profileMagistrate,
 		tokenStorage: progress.tokenStorage,
 		paywallGuardian: progress.paywallGuardian,
+		questionsBureau: progress.questionsBureau,
+		profileMagistrate: progress.profileMagistrate,
 		privateVimeoGovernor: progress.privateVimeoGovernor,
 
 		decodeAccessToken: progress.decodeAccessToken,
@@ -129,5 +133,6 @@ export async function initialize(config: AuthoritarianConfig):
 		profilePanels: progress.profilePanels,
 		privateVimeos: progress.privateVimeos,
 		avatarDisplays: progress.avatarDisplays,
+		questionsForums: progress.questionsForums,
 	}
 }
