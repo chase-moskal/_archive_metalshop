@@ -69,8 +69,8 @@ export function createProfileModel({profileMagistrate}: {
 				state.loading = true
 				publishStateUpdate()
 				const {user} = await getAuthContext()
-				state.admin = !!user.claims.admin
-				state.premium = !!user.claims.premium
+				state.admin = !!user.public.claims.admin
+				state.premium = !!user.public.claims.premium
 				publishStateUpdate()
 				try {
 					const profile = await loadProfile()

@@ -8,6 +8,16 @@ export class AvatarDisplay extends LitElement {
 	@property({type: Object}) avatarState: AvatarState
 	@property({type: Object}) defaultPicture = defaultPicture
 
+	updated() {
+		const {premium = false} = this.avatarState || {}
+		if (premium) {
+			this.setAttribute("premium", "")
+		}
+		else {
+			this.removeAttribute("premium")
+		}
+	}
+
 	static get styles() {return css`
 		* {
 			margin: 0;
@@ -28,16 +38,18 @@ export class AvatarDisplay extends LitElement {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
+			fill: currentColor;
 		}
-		img[data-premium] {
+		:host([premium]) img,
+		:host([premium]) svg {
 			border: 2px solid yellow;
 		}
 	`}
 
 	render() {
-		const {url, premium} = this.avatarState || {url: null, premium: false}
+		const {url = null} = this.avatarState || {}
 		return url
-			? html`<img src=${url} ?data-premium=${premium} alt=""/>`
+			? html`<img src=${url} alt=""/>`
 			: this.defaultPicture
 	}
 }

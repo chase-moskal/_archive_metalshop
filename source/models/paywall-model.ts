@@ -34,6 +34,9 @@ export function createPaywallModel({paywallGuardian}: {
 		loginWithAccessToken: pubsub<LoginWithAccessToken>(),
 	})
 
+	// TODO paypal
+	const paypalToken = `paypal-lol-fake-token`
+
 	return {
 		reader,
 		actions: {
@@ -41,7 +44,8 @@ export function createPaywallModel({paywallGuardian}: {
 				state.mode = PaywallMode.Loading
 				publishStateUpdate()
 				const {accessToken} = await getAuthContext()
-				const newAccessToken = await paywallGuardian.makeUserPremium({
+				const newAccessToken = await paywallGuardian.grantUserPremium({
+					paypalToken,
 					accessToken
 				})
 				await publishers.loginWithAccessToken(newAccessToken)
@@ -52,6 +56,7 @@ export function createPaywallModel({paywallGuardian}: {
 				publishStateUpdate()
 				const {accessToken} = await getAuthContext()
 				const newAccessToken = await paywallGuardian.revokeUserPremium({
+					paypalToken,
 					accessToken
 				})
 				await publishers.loginWithAccessToken(newAccessToken)
@@ -66,7 +71,7 @@ export function createPaywallModel({paywallGuardian}: {
 				getAuthContext = options.getAuthContext
 				publishStateUpdate()
 				const context = await getAuthContext()
-				const premium = !!context.user.claims.premium
+				const premium = !!context.user.public.claims.premium
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium

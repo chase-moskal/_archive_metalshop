@@ -224,6 +224,7 @@ export interface VimeoState {
 }
 
 export interface QuestionAuthor {
+	userId: string
 	picture: string
 	premium: boolean
 	nickname: string
@@ -231,8 +232,6 @@ export interface QuestionAuthor {
 
 export interface QuestionDraft {
 	time: number
-	likes: number
-	title: string
 	content: string
 	author: QuestionAuthor
 	comments: QuestionComment[]
@@ -248,11 +247,14 @@ export interface QuestionComment extends QuestionCommentDraft {
 }
 
 export interface Question extends QuestionDraft {
+	likes: number
+	liked: boolean
 	questionId: string
 }
 
 export interface QuestionsState {
-	admin: boolean
+	user: User
+	profile: Profile
 	forums: {
 		[forumName: string]: {
 			questions: Question[]
@@ -268,20 +270,27 @@ export interface QuestionsBureauTopic {
 		question: QuestionDraft
 	}): Promise<Question>
 
+	deleteQuestion(o: {
+		forumName: string
+		questionId: string
+	}): Promise<void>
+
 	postComment(o: {
 		forumName: string
 		questionId: string
 		comment: QuestionCommentDraft
 	}): Promise<QuestionComment>
 
-	deleteQuestion(o: {
-		forumName: string
-		questionId: string
-	}): Promise<void>
-
 	deleteComment(o: {
 		forumName: string
 		questionId: string
 		commentId: string
 	}): Promise<void>
+
+	likeQuestion(o: {
+		like: boolean
+		forumName: string
+		questionId: string
+		accessToken: AccessToken
+	}): Promise<number>
 }

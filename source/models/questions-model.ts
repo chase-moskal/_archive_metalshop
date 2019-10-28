@@ -1,6 +1,8 @@
 
+import {Profile} from "authoritarian/dist/interfaces.js"
 import {makeReader} from "../toolbox/make-reader.js"
 import {
+	LoginDetail,
 	QuestionDraft,
 	QuestionsState,
 	QuestionCommentDraft,
@@ -11,8 +13,9 @@ export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
 }) {
 	const state: QuestionsState = {
-		admin: false,
-		forums: {}
+		forums: {},
+		user: null,
+		profile: null,
 	}
 
 	const {reader, publishStateUpdate} = makeReader(state)
@@ -82,11 +85,30 @@ export function createQuestionsModel({questionsBureau}: {
 				({commentId}) => commentId !== options.commentId
 			)
 			publishStateUpdate()
+		},
+
+		async likeQuestion(o) {
+			return null
 		}
 	}
 
 	return {
 		reader,
 		actions,
+		wiring: {
+			async receiveUserLogin({getAuthContext}: LoginDetail) {
+				const {user} = await getAuthContext()
+				state.user = user
+				publishStateUpdate()
+			},
+			async receiveUserLogout() {
+				state.user = null
+				publishStateUpdate()
+			},
+			updateProfile(profile: Profile) {
+				state.profile = profile
+				publishStateUpdate()
+			}
+		}
 	}
 }

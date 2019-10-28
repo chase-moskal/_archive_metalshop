@@ -20,8 +20,8 @@ import {UserPanel} from "../components/user-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import { QuestionsForum } from "source/components/questions-forum.js"
-import { createQuestionsModel } from "source/models/questions-model.js"
+import {QuestionsForum} from "../components/questions-forum.js"
+import {createQuestionsModel} from "../models/questions-model.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -106,6 +106,14 @@ export async function wire({
 	user.subscribers.userError(resetAvatar)
 	user.subscribers.userLogout(resetAvatar)
 
+	// update the questions model
+	user.subscribers.userLogin(questionsModel.wiring.receiveUserLogin)
+	user.subscribers.userError(questionsModel.wiring.receiveUserLogout)
+	user.subscribers.userLogout(questionsModel.wiring.receiveUserLogout)
+	user.subscribers.userLoading(questionsModel.wiring.receiveUserLogout)
+	profile.reader.subscribe(state =>
+		questionsModel.wiring.updateProfile(state.profile))
+
 	//
 	// wire models to dom elements
 	//
@@ -147,7 +155,7 @@ export async function wire({
 			if (!forumName)
 				throw err(`questions-forum requires attribute [forum-name]`)
 			const forum = state.forums[forumName] || {questions: []}
-			component.admin = state.admin
+			component.user = state.user
 			component.questions = forum.questions
 		}
 	})
@@ -164,6 +172,10 @@ export async function wire({
 	for (const userPanel of userPanels) {
 		userPanel.onLoginClick = user.actions.login
 		userPanel.onLogoutClick = user.actions.logout
+	}
+
+	for (const questionsForum of questionsForums) {
+		questionsForum.actions = questionsModel.actions
 	}
 
 	//

@@ -22,7 +22,7 @@
 		"start": "http-server"
 	},
 	"devDependencies": {
-		"@types/jest": "^24.0.19",
+		"@types/jest": "^24.0.20",
 		"browserify": "16.5.0",
 		"envify": "4.1.0",
 		"es6-promise": "4.2.8",
@@ -41,7 +41,7 @@
 		"uglifyify": "5.0.2"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.30",
+		"authoritarian": "0.0.0-dev.34",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.11",
 		"event-decorators": "0.0.0-dev.0",
@@ -49,7 +49,7 @@
 		"lit-element": "^2.2.1",
 		"lit-html": "^1.1.2",
 		"menutown": "0.0.1-dev.2",
-		"renraku": "0.0.0-dev.13",
+		"renraku": "0.0.0-dev.16",
 		"sassbass": "0.0.2"
 	},
 	"repository": {

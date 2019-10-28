@@ -29,17 +29,25 @@ const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))
 
 async function createMockAccessToken({
-	claims = {cool: true},
-	expiresIn = "20m"
+	expiresIn = "20m",
+	publicClaims = {cool: true},
+	privateClaims = {supercool: true},
 }: {
-	claims?: Object
 	expiresIn?: string
+	publicClaims?: Object
+	privateClaims?: Object
 } = {}) {
 	debug("createMockAccessToken")
 	return signToken<AccessPayload>({
-		payload: {user: {userId: "u123", claims}},
 		expiresIn,
-		privateKey
+		privateKey,
+		payload: {
+			user: {
+				userId: "u123",
+				public: {claims: publicClaims},
+				private: {claims: privateClaims}
+			}
+		}
 	})
 }
 
@@ -55,9 +63,9 @@ async function createMockRefreshToken({expiresIn = "60d"}: {
 }
 
 const mockRefreshToken = createMockRefreshToken()
-const mockAccessToken = createMockAccessToken({claims: {premium: false}})
-const mockPremiumAccessToken = createMockAccessToken({claims: {premium: true}})
-const mockAdminAccessToken = createMockAccessToken({claims: {admin: true, premium: true}})
+const mockAccessToken = createMockAccessToken({publicClaims: {premium: false}})
+const mockPremiumAccessToken = createMockAccessToken({publicClaims: {premium: true}})
+const mockAdminAccessToken = createMockAccessToken({publicClaims: {admin: true, premium: true}})
 
 export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
 	debug("mockLoginPopupRoutine")
@@ -73,7 +81,11 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
 	debug("mockDecodeAccessToken")
 	return ({
 		exp: (Date.now() / 1000) + 10,
-		user: {userId: "u123", claims: {premium: true}},
+		user: {
+			userId: "u123",
+			public: {claims: {premium: true}},
+			private: {claims: {}}
+		},
 		accessToken
 	})
 }
@@ -167,8 +179,8 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 }
 
 export class MockPaywallGuardian implements PaywallGuardianTopic {
-	async makeUserPremium(options: {accessToken: AccessToken}) {
-		debug("makeUserPremium")
+	async grantUserPremium(options: {accessToken: AccessToken}) {
+		debug("grantUserPremium")
 		await nap()
 		return mockPremiumAccessToken
 	}
@@ -183,16 +195,137 @@ const mockQuestions: Question[] = [
 	{
 		questionId: "q123",
 		author: {
+			userId: "u345",
 			nickname: "Johnny Texas",
 			picture: "",
 			premium: false,
 		},
-		comments: [],
-		title: "what's going on?",
-		content: "no srssly?",
+		content: "how is lord brim so cool?",
+		comments: [
+			{
+				author: {
+					userId: "u346",
+					nickname: "superman420",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc1234",
+				content: "pretty great forum i must say"
+			}
+		],
 		likes: 2,
+		liked: false,
 		time: Date.now() - (100 * 1000),
-	}
+	},
+	{
+		questionId: "q123",
+		author: {
+			userId: "u123",
+			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+			picture: "https://picsum.photos/id/375/200/200",
+			premium: true,
+		},
+		content: "lol this questions forum is the bestest",
+		comments: [
+			{
+				author: {
+					userId: "u345",
+					nickname: "Johnny Texas",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "man you are so cool"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "superman420",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc1234",
+				content: "pretty great forum i must say"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "Donald Trump",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "i make the best comments, nobody makes comments better than me"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "anybody",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "what're we gonna do lol?"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "Johnny Texas",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "man you are so cool"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "superman420",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc1234",
+				content: "pretty great form i must say"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "Donald Trump",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "i make the best comments, nobody makes comments better than me"
+			},
+			{
+				author: {
+					userId: "u345",
+					nickname: "anybody",
+					picture: "",
+					premium: false,
+				},
+				commentId: "qc123",
+				content: "what're we gonna do lol?"
+			},
+		],
+		likes: 999,
+		liked: true,
+		time: Date.now() - (1000 * 1000 * 1000),
+	},
+	{
+		questionId: "q678",
+		author: {
+			userId: "u456",
+			nickname: "Donald Trump",
+			picture: "",
+			premium: false,
+		},
+		content: "this authoritarian system is the best, i have no doubts",
+		comments: [],
+		likes: 420,
+		liked: false,
+		time: Date.now() - (500 * 1000),
+	},
 ]
 
 export class MockQuestionsBureau implements QuestionsBureauTopic {
@@ -204,7 +337,7 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		forumName: string
 		question: QuestionDraft
 	}): Promise<Question> {
-		return {...question, questionId: `q${Math.random()}`}
+		return {...question, likes: 1, liked: true, questionId: `q${Math.random()}`}
 	}
 
 	async postComment({comment}: {
@@ -225,4 +358,8 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		questionId: string
 		commentId: string
 	}): Promise<void> {}
+
+	async likeQuestion(o) {
+		return null
+	}
 }

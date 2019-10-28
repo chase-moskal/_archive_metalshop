@@ -84,9 +84,9 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 				publishStateUpdate()
 				getAuthContext = detail.getAuthContext
 				const {user, accessToken} = await getAuthContext()
-				state.mode = user.claims.admin
+				state.mode = user.public.claims.admin
 					? PrivilegeMode.Admin
-					: user.claims.premium
+					: user.public.claims.premium
 						? PrivilegeMode.Privileged
 						: PrivilegeMode.Unprivileged
 				publishStateUpdate()
