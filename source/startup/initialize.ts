@@ -1,7 +1,7 @@
 
 import {
-	createTokenStorageCrosscallClient,
-	createProfileMagistrateCacheCrosscallClient,
+	tokenStorageClient,
+	profileMagistrateCacheClient,
 } from "authoritarian/dist/clients.js"
 
 import {
@@ -10,15 +10,19 @@ import {
 } from "../system/interfaces.js"
 
 import {
+	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
-	MockQuestionsBureau,
 } from "../system/mocks.js"
+
+import {AuthoritarianStartupError} from "../system/errors.js"
+const err = (message: string) => new AuthoritarianStartupError(message)
 
 import {
 	accountPopupLogin,
 	prepareLoginPopupRoutine,
 } from "../toolbox/account-popup-login.js"
+
 import {selects} from "../toolbox/selects.js"
 import {decodeAccessToken} from "../toolbox/decode-access-token.js"
 
@@ -55,7 +59,7 @@ export async function initialize(config: AuthoritarianConfig):
 	// use mocks instead of real microservices
 	//
 
-	if (config.mock !== undefined) {
+	if (config.mock) {
 		const {
 			MockTokenStorage,
 			MockPaywallGuardian,
@@ -82,34 +86,48 @@ export async function initialize(config: AuthoritarianConfig):
 	// use real microservices
 	//
 
-	else {
+	const operations = []
+	const queue = (func: () => Promise<any>) => operations.push(func())
 
-		if (config.profileServer) {
-			progress.profileMagistrate =
-				await createProfileMagistrateCacheCrosscallClient({
-					url: config.profileServer
-				})
-		}
-
+	queue(async() => {
 		if (config.authServer) {
 			progress.loginPopupRoutine = prepareLoginPopupRoutine(
 				config.authServer,
 				accountPopupLogin
 			)
-			progress.tokenStorage = await createTokenStorageCrosscallClient({
+			progress.tokenStorage = await tokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
 			})
 		}
+	})
 
+	queue(async() => {
+		if (config.profileServer) {
+			progress.profileMagistrate = await profileMagistrateCacheClient({
+				url: config.profileServer
+			})
+		}
+	})
+
+	queue(async() => {
 		if (config.paywallServer) {
 			console.log("coming soon: paywall guardian initialization")
 			progress.paywallGuardian = null
 		}
+	})
 
+	queue(async() => {
 		if (config.privateVimeoServer) {
 			console.log("coming soon: paywall guardian initialization")
 			progress.privateVimeoGovernor = null
 		}
+	})
+
+	try {
+		await Promise.all(operations)
+	}
+	catch (error) {
+		console.error(err(error.message))
 	}
 
 	//

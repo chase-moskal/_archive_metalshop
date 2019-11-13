@@ -1,8 +1,7 @@
 
-import {AuthTokens} from "authoritarian/dist/interfaces.js"
-import {AccountPopupLogin} from "../system/interfaces"
-
+import {AccountPopupLogin} from "../system/interfaces.js"
 import {AuthoritarianAuthError} from "../system/errors.js"
+import {AuthTokens} from "authoritarian/dist/interfaces.js"
 
 const err = (message: string) => new AuthoritarianAuthError(message)
 
@@ -47,14 +46,6 @@ export async function accountPopupLogin(authServerUrl: string):
 				const allowed = originsMatch && correctMessage
 				if (!allowed) return
 
-				// respond to handshake so the server can learn our origin
-				if (event.data.handshake) {
-					popup.postMessage({
-						namespace,
-						handshake: true
-					}, authServerOrigin)
-				}
-
 				// getting those sweet tokens we've been waiting for
 				else if (event.data.tokens) {
 					const tokens: AuthTokens = event.data.tokens
@@ -72,6 +63,7 @@ export async function accountPopupLogin(authServerUrl: string):
 			}
 		}
 		window.addEventListener("message", listener)
+		popup.postMessage({}, authServerOrigin)
 	})
 
 	return promisedAuthTokens

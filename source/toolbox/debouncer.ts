@@ -2,7 +2,7 @@
 export class Debouncer {
 	private _delay: number
 	private _action: () => void
-	private _timeout: number = null
+	private _timeout: any = null
 
 	constructor({action, delay}: {
 		delay: number

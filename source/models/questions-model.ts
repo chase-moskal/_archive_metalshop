@@ -1,5 +1,5 @@
 
-import {Profile} from "authoritarian/dist/interfaces.js"
+import {Profile, User} from "authoritarian/dist/interfaces.js"
 import {makeReader} from "../toolbox/make-reader.js"
 import {
 	LoginDetail,
@@ -92,17 +92,30 @@ export function createQuestionsModel({questionsBureau}: {
 		}
 	}
 
+	const updateUser = (user: User) => {
+		state.user = user
+		if (user) {
+			for (const [, forum] of Object.entries(state.forums)) {
+				for (const question of forum.questions) {
+					if (question.author.userId === user.userId) {
+						question.author.premium = user.public.claims.premium
+					}
+				}
+			}
+		}
+	}
+
 	return {
 		reader,
 		actions,
 		wiring: {
 			async receiveUserLogin({getAuthContext}: LoginDetail) {
 				const {user} = await getAuthContext()
-				state.user = user
+				updateUser(user)
 				publishStateUpdate()
 			},
 			async receiveUserLogout() {
-				state.user = null
+				updateUser(null)
 				publishStateUpdate()
 			},
 			updateProfile(profile: Profile) {
