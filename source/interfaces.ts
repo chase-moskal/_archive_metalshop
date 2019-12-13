@@ -10,15 +10,15 @@ import {
 	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 
-import {PaywallMode} from "../models/paywall-model.js"
-import {PrivilegeMode} from "../models/private-vimeo-model.js"
+import {PaywallMode} from "./models/paywall-model.js"
+import {PrivilegeMode} from "./models/private-vimeo-model.js"
 
-import {UserPanel} from "../components/user-panel.js"
-import {ProfilePanel} from "../components/profile-panel.js"
-import {PaywallPanel} from "../components/paywall-panel.js"
-import {PrivateVimeo} from "../components/private-vimeo.js"
-import {AvatarDisplay} from "../components/avatar-display.js"
-import {QuestionsForum} from "../components/questions-forum.js"
+import {UserPanel} from "./components/user-panel.js"
+import {ProfilePanel} from "./components/profile-panel.js"
+import {PaywallPanel} from "./components/paywall-panel.js"
+import {PrivateVimeo} from "./components/private-vimeo.js"
+import {AvatarDisplay} from "./components/avatar-display.js"
+import {QuestionsForum} from "./components/questions-forum.js"
 
 export interface AuthoritarianConfig {
 	mock: string

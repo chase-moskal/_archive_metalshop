@@ -7,7 +7,7 @@ import {
 	QuestionsState,
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic

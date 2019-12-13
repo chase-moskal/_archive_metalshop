@@ -1,6 +1,6 @@
 
 import {pubsub} from "./pubsub.js"
-import {ReaderContext} from "../system/interfaces.js"
+import {ReaderContext} from "../interfaces.js"
 
 /**
  * Produce a "reader" for a given state object

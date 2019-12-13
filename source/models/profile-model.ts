@@ -5,7 +5,7 @@ import {
 	ProfileModel,
 	ProfileState,
 	GetAuthContext,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 import {pubsub} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"
 

@@ -5,7 +5,7 @@ import {
 	Question,
 	QuestionComment,
 	QuestionsBureauTopic,
-} from "../system/interfaces"
+} from "../interfaces"
 
 export class QuestionsForum extends LitElement {
 	@property({type: Object}) user: User

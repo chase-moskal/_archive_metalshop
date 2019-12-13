@@ -1,7 +1,7 @@
 
 import {property, html, css, svg} from "lit-element"
 
-import {PaywallState} from "../system/interfaces.js"
+import {PaywallState} from "../interfaces.js"
 import {PaywallMode} from "../models/paywall-model.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 

@@ -10,7 +10,7 @@ import {
 	PaywallEvents,
 	GetAuthContext,
 	LoginWithAccessToken,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 export enum PaywallMode {
 	Loading,

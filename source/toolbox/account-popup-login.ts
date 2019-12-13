@@ -1,5 +1,5 @@
 
-import {AccountPopupLogin} from "../system/interfaces.js"
+import {AccountPopupLogin} from "../interfaces.js"
 import {AuthoritarianAuthError} from "../system/errors.js"
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
 

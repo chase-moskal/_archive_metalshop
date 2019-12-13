@@ -5,7 +5,7 @@ import {Profile} from "authoritarian/dist/interfaces"
 import {select} from "../toolbox/selects.js"
 import {Debouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
-import {ProfileState, AvatarState} from "../system/interfaces.js"
+import {ProfileState, AvatarState} from "../interfaces.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class ProfilePanel extends LoadableElement {

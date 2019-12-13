@@ -2,7 +2,7 @@
 import {property, html, css, svg} from "lit-element"
 
 import {select} from "../toolbox/selects.js"
-import {VimeoState} from "../system/interfaces.js"
+import {VimeoState} from "../interfaces.js"
 import {PrivilegeMode} from "../models/private-vimeo-model.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 

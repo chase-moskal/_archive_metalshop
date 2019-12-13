@@ -4,7 +4,7 @@ import {
 	Reader,
 	AvatarState,
 	AvatarWiring,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 export function createAvatarModel(): {
 	reader: Reader<AvatarState>

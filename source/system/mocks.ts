@@ -21,7 +21,7 @@ import {
 	QuestionDraft,
 	QuestionCommentDraft,
 	QuestionComment,
-} from "./interfaces.js"
+} from "../interfaces.js"
 
 const debug = (message: string) => console.debug(`mock: ${message}`)
 

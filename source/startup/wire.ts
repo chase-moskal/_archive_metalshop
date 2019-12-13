@@ -8,7 +8,7 @@ import {
 	ProfileState,
 	AuthoritarianOptions,
 	QuestionsState,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 import {createUserModel} from "../models/user-model.js"
 import {createAvatarModel} from "../models/avatar-model.js"

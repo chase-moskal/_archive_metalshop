@@ -12,7 +12,7 @@ import {
 	LoginPopupRoutine,
 	DecodeAccessToken,
 	UserState,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 import {pubsub, pubsubs} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/make-reader.js"

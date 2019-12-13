@@ -7,7 +7,7 @@ import {
 import {
 	AuthoritarianConfig,
 	AuthoritarianOptions,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 import {
 	MockQuestionsBureau,

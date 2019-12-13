@@ -1,7 +1,7 @@
 
 import {property, html, css} from "lit-element"
 
-import {UserState} from "../system/interfaces.js"
+import {UserState} from "../interfaces.js"
 import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
 
 export class UserPanel extends LoadableElement {

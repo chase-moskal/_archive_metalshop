@@ -6,7 +6,7 @@ import {
 	Pubsubs,
 	Unsubscribe,
 	AnyListener,
-} from "../system/interfaces.js"
+} from "../interfaces.js"
 
 export function pubsub<Listener extends AnyListener = AnyListener>():
 	Pubsub<Listener> {
