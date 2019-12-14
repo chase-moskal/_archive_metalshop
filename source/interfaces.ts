@@ -222,6 +222,18 @@ export interface VimeoState {
 	validationMessage: string
 }
 
+export interface VimeoModel {
+	reader: Reader<VimeoState>
+	actions: {
+		updateVideo(vimeostring: string): Promise<void>
+	}
+	wiring: {
+		receiveUserLoading(): Promise<void>
+		receiveUserLogin(detail: LoginDetail): Promise<void>
+		receiveUserLogout(): Promise<void>
+	}
+}
+
 export interface QuestionAuthor {
 	userId: string
 	picture: string
@@ -258,6 +270,16 @@ export interface QuestionsState {
 		[forumName: string]: {
 			questions: Question[]
 		}
+	}
+}
+
+export interface QuestionsModel {
+	reader: Reader<QuestionsState>
+	actions: QuestionsBureauTopic
+	wiring: {
+		receiveUserLogin(detail: LoginDetail): Promise<void>
+		receiveUserLogout(): Promise<void>
+		updateProfile(profile: Profile): void
 	}
 }
 

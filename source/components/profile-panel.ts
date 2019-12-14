@@ -135,7 +135,10 @@ export class ProfilePanel extends (
 		if (!profile) return html``
 		return html`
 			<div class="container formarea coolbuttonarea">
-				<avatar-display .avatarState=${avatarState}></avatar-display>
+				<avatar-display
+					src=${profile && profile.public.picture}
+					?premium=${premium}
+				></avatar-display>
 				<div>
 					<ul>
 						${admin ? html`<li data-tag="admin">Admin</li>` : html``}

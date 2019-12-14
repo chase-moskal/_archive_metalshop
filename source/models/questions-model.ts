@@ -5,13 +5,14 @@ import {
 	LoginDetail,
 	QuestionDraft,
 	QuestionsState,
+	QuestionsModel,
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
 } from "../interfaces.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
-}) {
+}): QuestionsModel {
 	const state: QuestionsState = {
 		forums: {},
 		user: null,

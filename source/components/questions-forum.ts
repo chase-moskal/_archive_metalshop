@@ -1,26 +1,29 @@
 
-import { User, Profile } from "authoritarian/dist/interfaces.js"
-import {LitElement, property, html, css, svg} from "lit-element"
+import {User, Profile} from "authoritarian/dist/interfaces.js"
+import {LitElement, property, html, css} from "lit-element"
+
 import {
 	Question,
 	QuestionComment,
 	QuestionsBureauTopic,
+	QuestionsModel,
 } from "../interfaces"
 
-export class QuestionsForum extends LitElement {
-	@property({type: Object}) user: User
-	@property({type: Object}) profile: Profile
-	@property({type: Object}) questions: Question[] = []
-	@property({type: Object}) actions: QuestionsBureauTopic
+import {mixinAuth} from "../framework/mixin-auth.js"
+
+export class QuestionsForum extends (
+	mixinAuth<QuestionsModel, typeof LitElement>(
+		LitElement
+	)
+) {
+	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["forum-name"]: string
 
-	updated(changedProperties: Map<string, any>) {
-		if (changedProperties.has("actions")) {
-			const forumName = this["forum-name"]
-			if (!forumName) throw new Error(`questions-forum requires attribute `
-				+ `[forum-name] before actions are set`)
-			this.actions.fetchQuestions({forumName})
-		}
+	async firstUpdated() {
+		const {["forum-name"]: forumName} = this
+		if (!forumName) throw new Error(`questions-forum requires attribute `
+			+ `[forum-name]`)
+		this.questions = await this.model.actions.fetchQuestions({forumName})
 	}
 
 	static get styles() {return css`
@@ -141,7 +144,8 @@ export class QuestionsForum extends LitElement {
 	`}
 
 	render() {
-		const {questions, user, profile} = this
+		const {questions} = this
+		const {user, profile} = this.model.reader.state
 		const {admin = false, premium = false} = (user && user.public.claims) || {}
 		const isMine = (question: Question) => {
 			return admin || (user && (user.userId === question.author.userId))
@@ -226,10 +230,10 @@ function renderQuestion({
 	return html`
 		<div class="question" ?data-mine=${mine}>
 			<div class="author">
-				<avatar-display .avatarState=${{
-					url: author.picture,
-					premium: author.premium
-				}}></avatar-display>
+				<avatar-display
+					src=${author.picture}
+					?premium=${author.premium}
+				></avatar-display>
 				<div class="details">
 					<p class="nickname">${author.nickname}</p>
 					<p class="time" title=${`${datestring} ${timestring}`}>

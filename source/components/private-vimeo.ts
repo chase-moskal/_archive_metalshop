@@ -1,21 +1,29 @@
 
-import {property, html, css, svg} from "lit-element"
+import {LitElement, html, css, svg} from "lit-element"
+
+import {VimeoModel} from "../interfaces.js"
 
 import {select} from "../toolbox/selects.js"
-import {VimeoState} from "../interfaces.js"
+import {mixinAuth} from "../framework/mixin-auth.js"
 import {PrivilegeMode} from "../models/private-vimeo-model.js"
-import {LoadableElement, LoadableState} from "../framework/loadable-element.js"
+import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
 const icons = {
 	cancel: svg`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm0 1.3c1.3 0 2.5.44 3.47 1.17l-8 8A5.755 5.755 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zm0 11.41c-1.3 0-2.5-.44-3.47-1.17l8-8c.73.97 1.17 2.17 1.17 3.47 0 3.14-2.56 5.7-5.7 5.7z"/></svg>`
 }
 
-export class PrivateVimeo extends LoadableElement {
-	@property({type: Object}) vimeoState: VimeoState
+export class PrivateVimeo extends (
+	mixinLoadable(
+		mixinAuth<VimeoModel, typeof LitElement>(
+			LitElement
+		)
+	)
+) {
+
 	onUpdateVideo: (vimeostring: string) => void = () => {}
 
 	updated() {
-		const {errorMessage = null, loading = true} = this.vimeoState || {}
+		const {errorMessage = null, loading = true} = this.model.reader.state
 		this.errorMessage = errorMessage
 		this.loadableState = errorMessage
 			? LoadableState.Error
@@ -152,7 +160,7 @@ export class PrivateVimeo extends LoadableElement {
 	}
 
 	private _renderViewer() {
-		const {vimeoId} = this.vimeoState
+		const {vimeoId} = this.model.reader.state
 		const query = "?color=00a651&title=0&byline=0&portrait=0&badge=0"
 		const viewer = html`
 			<div class="viewer">
@@ -190,8 +198,7 @@ export class PrivateVimeo extends LoadableElement {
 	}
 
 	private _renderAdmin() {
-		const {vimeoState: livestreamState} = this
-		const {validationMessage} = livestreamState
+		const {validationMessage} = this.model.reader.state
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
@@ -215,8 +222,8 @@ export class PrivateVimeo extends LoadableElement {
 	}
 
 	renderReady() {
-		if (!this.vimeoState) return html``
-		switch (this.vimeoState.mode) {
+		const {mode} = this.model.reader.state
+		switch (mode) {
 			case PrivilegeMode.LoggedOut: return this._renderLoggedOut()
 			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()
 			case PrivilegeMode.Privileged: return this._renderPrivileged()

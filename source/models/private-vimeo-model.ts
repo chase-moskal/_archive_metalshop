@@ -3,6 +3,7 @@ import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
 
 import {makeReader} from "../toolbox/make-reader.js"
 import {
+	VimeoModel,
 	VimeoState,
 	LoginDetail,
 	GetAuthContext,
@@ -18,7 +19,7 @@ export enum PrivilegeMode {
 export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 	videoName: string
 	privateVimeoGovernor: PrivateVimeoGovernorTopic
-}) {
+}): VimeoModel {
 	let getAuthContext: GetAuthContext
 	const state: VimeoState = {
 		loading: false,
