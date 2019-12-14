@@ -1,20 +1,27 @@
 
-import {property, html, css} from "lit-element"
+import {LitElement, property, html, css} from "lit-element"
 
-import {UserState} from "../interfaces.js"
-import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
+import {UserModel} from "../interfaces.js"
+import {mixinAuth} from "../framework/mixin-auth.js"
+import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
-export class UserPanel extends LoadableElement {
-	@property({type: Object}) userState: UserState
+export class UserPanel extends (
+	mixinLoadable(
+		mixinAuth<UserModel, typeof LitElement>(
+			LitElement
+		)
+	)
+) {
+
 	@property({type: Boolean, reflect: true}) ["logged-in"]: boolean = false
-	onLoginClick: (event: MouseEvent) => void = () => {}
-	onLogoutClick: (event: MouseEvent) => void = () => {}
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
 
+	onLoginClick: (event: MouseEvent) => void = () => {}
+	onLogoutClick: (event: MouseEvent) => void = () => {}
+
 	updated() {
-		if (!this.userState) return
-		const {loading, error, loggedIn} = this.userState
+		const {loading, error, loggedIn} = this.model.reader.state
 		this["logged-in"] = loggedIn
 		this.loadableState = error
 			? LoadableState.Error
@@ -71,7 +78,7 @@ export class UserPanel extends LoadableElement {
 
 	renderReady() {
 		const {_renderLoggedIn, _renderLoggedOut} = this
-		const {loggedIn} = this.userState
+		const {loggedIn} = this.model.reader.state
 		return html`
 			<slot name="top"></slot>
 			${loggedIn ? _renderLoggedIn() : _renderLoggedOut()}

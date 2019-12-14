@@ -62,6 +62,12 @@ export type AccountPopupLogin = (authServerUrl: string) => Promise<AuthTokens>
 export type LoginPopupRoutine = () => Promise<AuthTokens>
 export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 
+export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
+
+export interface AuthModel {
+	reader: Reader
+}
+
 export interface UserState {
 	error: Error
 	loading: boolean
@@ -153,13 +159,6 @@ export interface ProfileState {
 	loading: boolean
 	profile: Profile
 }
-
-export interface AvatarState {
-	url: string
-	premium: boolean
-}
-
-export interface AvatarReader extends Reader<AvatarState> {}
 
 export interface AvatarWiring {
 	publishStateUpdate: () => void
