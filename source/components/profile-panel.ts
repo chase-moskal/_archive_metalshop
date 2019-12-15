@@ -1,15 +1,14 @@
 
-import {property, html, css, LitElement} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces"
-
-import {ProfileModel} from "../interfaces.js"
+import {property, html, css, LitElement} from "lit-element"
 
 import {select} from "../toolbox/selects.js"
 import {Debouncer} from "../toolbox/debouncer.js"
-import {deepClone, deepEqual} from "../toolbox/deep.js"
-
 import {mixinAuth} from "../framework/mixin-auth.js"
+import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+
+import {ProfileModel} from "../interfaces.js"
 
 export class ProfilePanel extends (
 	mixinLoadable(
@@ -159,7 +158,12 @@ export class ProfilePanel extends (
 						.value=${profile.public.nickname}
 						/>
 					${showSaveButton
-						? html`<button class="save" @click=${_handleSaveClick}>Save</button>`
+						? html`
+							<button
+								class="save"
+								@click=${_handleSaveClick}>
+									Save
+							</button>`
 						: html``}
 				</div>
 			</div>

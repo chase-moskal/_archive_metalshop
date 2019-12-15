@@ -12,16 +12,17 @@ import {
 } from "authoritarian/dist/interfaces.js"
 import {signToken} from "authoritarian/dist/crypto.js"
 
-import {privateKey} from "./mock-keys.js"
 import {
+	Question,
 	AuthContext,
+	QuestionDraft,
+	QuestionComment,
 	LoginPopupRoutine,
 	QuestionsBureauTopic,
-	Question,
-	QuestionDraft,
 	QuestionCommentDraft,
-	QuestionComment,
 } from "../interfaces.js"
+
+import {privateKey} from "./mock-keys.js"
 
 const debug = (message: string) => console.debug(`mock: ${message}`)
 

@@ -12,7 +12,6 @@ import {
 
 import {PaywallMode} from "./models/paywall-model.js"
 import {PrivilegeMode} from "./models/private-vimeo-model.js"
-
 import {Reader, Pubsubs, Pubsub, Subify, Subscribe} from "./toolbox/pubsub.js"
 
 export interface AuthoritarianConfig {

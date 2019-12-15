@@ -1,5 +1,6 @@
 
 import {select} from "../toolbox/selects.js"
+
 import {AuthoritarianOptions} from "../interfaces.js"
 
 import {parse} from "./parse.js"

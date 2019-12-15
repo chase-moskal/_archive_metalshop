@@ -5,26 +5,23 @@ import {
 } from "authoritarian/dist/clients.js"
 
 import {
-	AuthoritarianConfig,
-	AuthoritarianOptions,
-} from "../interfaces.js"
-
-import {
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
 } from "../system/mocks.js"
-
-import {AuthoritarianStartupError} from "../system/errors.js"
-const err = (message: string) => new AuthoritarianStartupError(message)
-
 import {
 	accountPopupLogin,
 	prepareLoginPopupRoutine,
 } from "../toolbox/account-popup-login.js"
-
-import {selects} from "../toolbox/selects.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
 import {decodeAccessToken} from "../toolbox/decode-access-token.js"
+
+import {
+	AuthoritarianConfig,
+	AuthoritarianOptions,
+} from "../interfaces.js"
+
+const err = (message: string) => new AuthoritarianStartupError(message)
 
 /**
  * Prepare all of the options for the start routine

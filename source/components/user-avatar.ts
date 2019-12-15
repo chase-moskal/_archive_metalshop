@@ -1,6 +1,5 @@
 
 import {LitElement, html} from "lit-element"
-
 import {ProfileModel} from "../interfaces.js"
 import {mixinAuth} from "../framework/mixin-auth.js"
 

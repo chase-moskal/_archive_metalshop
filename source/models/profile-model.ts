@@ -1,13 +1,18 @@
 
-import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
+import {
+	Profile,
+	ProfileMagistrateTopic,
+} from "authoritarian/dist/interfaces.js"
+
+import {pubsub} from "../toolbox/pubsub.js"
+import {makeReader} from "../toolbox/pubsub.js"
+
 import {
 	LoginDetail,
 	ProfileModel,
 	ProfileState,
 	GetAuthContext,
 } from "../interfaces.js"
-import {pubsub} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/pubsub.js"
 
 export function createProfileModel({profileMagistrate}: {
 	profileMagistrate: ProfileMagistrateTopic

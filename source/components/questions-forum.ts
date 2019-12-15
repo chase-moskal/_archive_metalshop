@@ -1,15 +1,14 @@
 
-import {User, Profile} from "authoritarian/dist/interfaces.js"
 import {LitElement, property, html, css} from "lit-element"
+import {User, Profile} from "authoritarian/dist/interfaces.js"
+
+import {mixinAuth} from "../framework/mixin-auth.js"
 
 import {
 	Question,
-	QuestionComment,
-	QuestionsBureauTopic,
 	QuestionsModel,
-} from "../interfaces"
-
-import {mixinAuth} from "../framework/mixin-auth.js"
+	QuestionComment,
+} from "../interfaces.js"
 
 export class QuestionsForum extends (
 	mixinAuth<QuestionsModel, typeof LitElement>(

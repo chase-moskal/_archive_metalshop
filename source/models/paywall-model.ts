@@ -1,7 +1,6 @@
 
-import {PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
-
 import {pubsub, pubsubs, makeReader} from "../toolbox/pubsub.js"
+import {PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
 
 import {
 	PaywallModel,

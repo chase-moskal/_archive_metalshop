@@ -1,7 +1,6 @@
 
-import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
-
 import {makeReader} from "../toolbox/pubsub.js"
+import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
 import {
 	VimeoModel,
 	VimeoState,

@@ -4,9 +4,9 @@ import {AuthoritarianOptions} from "../interfaces.js"
 import {theme} from "../system/theme.js"
 import {themeComponents} from "../toolbox/theme-components.js"
 import {registerComponents} from "../toolbox/register-components.js"
-import {ascertainOptionsFromDom} from "./ascertain-options-from-dom.js"
 
 import {prepareComponents} from "./prepare-components.js"
+import {ascertainOptionsFromDom} from "./ascertain-options-from-dom.js"
 
 export async function installAuthoritarian(options?: AuthoritarianOptions) {
 

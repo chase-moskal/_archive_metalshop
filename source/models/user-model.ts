@@ -4,6 +4,9 @@ import {
 	TokenStorageTopic,
 } from "authoritarian/dist/interfaces.js"
 
+import {makeReader} from "../toolbox/pubsub.js"
+import {pubsub, pubsubs} from "../toolbox/pubsub.js"
+
 import {
 	UserModel,
 	UserEvents,
@@ -13,9 +16,6 @@ import {
 	DecodeAccessToken,
 	UserState,
 } from "../interfaces.js"
-
-import {pubsub, pubsubs} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/pubsub.js"
 
 const expiryGraceSeconds = 60
 

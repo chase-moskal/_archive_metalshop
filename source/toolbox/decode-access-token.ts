@@ -1,8 +1,7 @@
 
+import {DecodeAccessToken} from "../interfaces.js"
 import {bdecode} from "authoritarian/dist/bdecode.js"
 import {AccessPayload} from "authoritarian/dist/interfaces.js"
-
-import {DecodeAccessToken} from "../interfaces.js"
 
 /**
  * Simply read what's in an access token
