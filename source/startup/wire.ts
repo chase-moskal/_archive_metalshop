@@ -20,7 +20,7 @@ export async function wire({
 	questionsBureau,
 	profileMagistrate,
 	privateVimeoGovernor,
-	
+
 	loginPopupRoutine,
 	decodeAccessToken,
 }: AuthoritarianOptions): Promise<Supermodel> {
@@ -212,7 +212,7 @@ export async function wire({
 		paywallModel,
 		profileModel,
 		questionsModel,
-		vimeoModel: null,
+		vimeoModel: <any>{},
 		async start() {
 			return userModel.wiring.start()
 		}
