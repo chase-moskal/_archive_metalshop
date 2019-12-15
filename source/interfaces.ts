@@ -51,7 +51,7 @@ export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 
 export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
 
-export interface AuthModel {
+export interface SimpleModel {
 	reader: Reader
 }
 

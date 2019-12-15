@@ -75,8 +75,8 @@ export async function initialize(config: AuthoritarianConfig):
 	const operations = []
 	const queue = (func: () => Promise<any>) => operations.push(func())
 
-	queue(async() => {
-		if (config.authServer) {
+	if (config.authServer) {
+		queue(async() => {
 			progress.loginPopupRoutine = prepareLoginPopupRoutine(
 				config.authServer,
 				accountPopupLogin
@@ -84,30 +84,30 @@ export async function initialize(config: AuthoritarianConfig):
 			progress.tokenStorage = await tokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
 			})
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.profileServer) {
+	if (config.profileServer) {
+		queue(async() => {
 			progress.profileMagistrate = await profileMagistrateCacheClient({
 				url: config.profileServer
 			})
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.paywallServer) {
+	if (config.paywallServer) {
+		queue(async() => {
 			console.log("coming soon: paywall guardian initialization")
 			progress.paywallGuardian = null
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.privateVimeoServer) {
+	if (config.privateVimeoServer) {
+		queue(async() => {
 			console.log("coming soon: paywall guardian initialization")
 			progress.privateVimeoGovernor = null
-		}
-	})
+		})
+	}
 
 	try {
 		await Promise.all(operations)

@@ -13,8 +13,15 @@ import {createPaywallModel} from "../models/paywall-model.js"
 import {createQuestionsModel} from "../models/questions-model.js"
 
 import {AuthComponent} from "../framework/mixin-auth.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
 
-import {AuthModel, AuthoritarianOptions} from "../interfaces.js"
+import {SimpleModel, AuthoritarianOptions} from "../interfaces.js"
+
+const err = (message: string) => new AuthoritarianStartupError(message)
+
+const validate = (condition: any, message: string) => {
+	if (!condition) throw err(message)
+}
 
 export function prepareComponents({
 	debug,
@@ -28,6 +35,12 @@ export function prepareComponents({
 	loginPopupRoutine,
 	decodeAccessToken,
 }: AuthoritarianOptions) {
+
+	validate(
+		tokenStorage && decodeAccessToken && loginPopupRoutine,
+		"must have tokenStorage, decodeAccessToken, and "
+			+ "loginPopupRoutine to instantiate the user model"
+	)
 
 	//
 	// instance the models
@@ -92,11 +105,11 @@ export function prepareComponents({
 				static vimeoGovernor = privateVimeoGovernor
 				static user = user
 			},
-			UserPanel: provideAuthModel(user, UserPanel),
-			UserAvatar: provideAuthModel(profile, UserAvatar),
-			ProfilePanel: provideAuthModel(profile, ProfilePanel),
-			PaywallPanel: provideAuthModel(paywall, PaywallPanel),
-			QuestionsForum: provideAuthModel(questions, QuestionsForum),
+			UserPanel: provideModel(user, UserPanel),
+			UserAvatar: provideModel(profile, UserAvatar),
+			ProfilePanel: provideModel(profile, ProfilePanel),
+			PaywallPanel: provideModel(paywall, PaywallPanel),
+			QuestionsForum: provideModel(questions, QuestionsForum),
 		},
 		async start() {
 			return user.wiring.start()
@@ -104,9 +117,9 @@ export function prepareComponents({
 	}
 }
 
-function provideAuthModel<
+function provideModel<
 	C extends new(...args: any[]) => AuthComponent,
-	M extends AuthModel = AuthModel
+	M extends SimpleModel = SimpleModel
 >(model: M, Constructor: C): C {
 
 	return class extends Constructor {

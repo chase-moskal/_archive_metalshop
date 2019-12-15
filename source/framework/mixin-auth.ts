@@ -1,25 +1,25 @@
 
 import {LitElement} from "lit-element"
 import {Unsubscribe} from "../toolbox/pubsub.js"
-import {AuthModel, ConstructorFor} from "../interfaces.js"
+import {SimpleModel, ConstructorFor} from "../interfaces.js"
 
 const _unsubscribe = Symbol()
 
 export class AuthComponent<
-	M extends AuthModel = AuthModel,
+	M extends SimpleModel = SimpleModel,
 > extends LitElement {
-	static model: AuthModel
+	static model: SimpleModel
 	model: M
 	authUpdate() {}
 }
 
 export function mixinAuth<
-	M extends AuthModel,
+	M extends SimpleModel,
 	C extends ConstructorFor<LitElement>,
 >(Constructor: C): typeof LitElement & ConstructorFor<AuthComponent<M>> & C {
 
 	return <any>class extends Constructor implements AuthComponent<M> {
-		static model: AuthModel
+		static model: SimpleModel
 
 		private [_unsubscribe]: Unsubscribe
 		model: M = (<any>this.constructor).model
