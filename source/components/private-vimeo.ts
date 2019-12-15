@@ -27,8 +27,8 @@ export class PrivateVimeo extends (
 	private _model: VimeoModel
 	private _vimeoGovernor: PrivateVimeoGovernorTopic =
 		(<any>this.constructor).vimeoGovernor
-	private _userModel: UserModel =
-		(<any>this.constructor).userModel
+	private _user: UserModel =
+		(<any>this.constructor).user
 
 	@property({type: String, reflect: true}) ["video-name"]: string
 	onUpdateVideo = (vimeostring: string) => {
@@ -42,7 +42,7 @@ export class PrivateVimeo extends (
 			privateVimeoGovernor: this._vimeoGovernor
 		})
 
-		const {_userModel: user, _model: vimeo} = this
+		const {_user: user, _model: vimeo} = this
 		user.subscribers.userLogin(vimeo.wiring.receiveUserLogin)
 		user.subscribers.userError(vimeo.wiring.receiveUserLogout)
 		user.subscribers.userLogout(vimeo.wiring.receiveUserLogout)
