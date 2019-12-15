@@ -1,13 +1,44 @@
 
-import {
-	Pubsub,
-	Pubify,
-	Subify,
-	Pubsubs,
-	Unsubscribe,
-	AnyListener,
-} from "../interfaces.js"
+export type AnyListener = (...args: any) => void | Promise<void>
 
+export interface Unsubscribe {
+	(): void
+}
+
+export interface Subscribe<Listener extends AnyListener = AnyListener> {
+	(func: Listener): Unsubscribe
+}
+
+export interface Pubsub<Listener extends AnyListener = AnyListener> {
+	publish: Listener
+	subscribe: Subscribe<Listener>
+}
+
+export interface Pubsubs {
+	[key: string]: Pubsub
+}
+
+export type Pubify<P extends Pubsubs> = {
+	[K in keyof P]: P[K]["publish"]
+}
+
+export type Subify<P extends Pubsubs> = {
+	[K in keyof P]: P[K]["subscribe"]
+}
+
+export interface Reader<S extends {} = {}> {
+	state: Readonly<S>
+	subscribe: Subscribe<(state: S) => void>
+}
+
+export interface ReaderContext<S extends {} = {}> {
+	reader: Reader<S>
+	update: () => void
+}
+
+/**
+ * create a pub/sub context
+ */
 export function pubsub<Listener extends AnyListener = AnyListener>():
 	Pubsub<Listener> {
 	let listeners: Listener[] = []
@@ -25,6 +56,9 @@ export function pubsub<Listener extends AnyListener = AnyListener>():
 	}
 }
 
+/**
+ * create a separated group of publish and subscribe functions
+ */
 export function pubsubs<O extends Pubsubs>(obj: O): {
 	publishers: Pubify<O>
 	subscribers: Subify<O>
@@ -36,4 +70,18 @@ export function pubsubs<O extends Pubsubs>(obj: O): {
 		subscribers[key] = original.subscribe
 	}
 	return {publishers, subscribers}
+}
+
+/**
+ * make a state reader
+ */
+export function makeReader<S extends {} = {}>(state: S): ReaderContext<S> {
+	const {publish, subscribe} = pubsub<(state: S) => void>()
+	return {
+		reader: {
+			subscribe,
+			get state() {return Object.freeze({...state})},
+		},
+		update: () => publish(Object.freeze({...state})),
+	}
 }

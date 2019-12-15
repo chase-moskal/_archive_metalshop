@@ -1,6 +1,6 @@
 
 import {Profile, User} from "authoritarian/dist/interfaces.js"
-import {makeReader} from "../toolbox/make-reader.js"
+import {makeReader} from "../toolbox/pubsub.js"
 import {
 	LoginDetail,
 	QuestionDraft,
@@ -19,7 +19,7 @@ export function createQuestionsModel({questionsBureau}: {
 		profile: null,
 	}
 
-	const {reader, publishStateUpdate} = makeReader(state)
+	const {reader, update} = makeReader(state)
 
 	const getOrCreateForum = (forumName: string) => {
 		const existing = state.forums[forumName]
@@ -39,7 +39,7 @@ export function createQuestionsModel({questionsBureau}: {
 		async fetchQuestions({forumName}: {forumName: string}) {
 			const questions = await questionsBureau.fetchQuestions({forumName})
 			state.forums[forumName] = {questions}
-			publishStateUpdate()
+			update()
 			return questions
 		},
 
@@ -47,7 +47,7 @@ export function createQuestionsModel({questionsBureau}: {
 			const question = await questionsBureau.postQuestion(options)
 			const forum = getOrCreateForum(options.forumName)
 			forum.questions.push(question)
-			publishStateUpdate()
+			update()
 			return question
 		},
 
@@ -59,7 +59,7 @@ export function createQuestionsModel({questionsBureau}: {
 			const comment = await questionsBureau.postComment(options)
 			const question = getQuestion(options.forumName, options.questionId)
 			question.comments.push(comment)
-			publishStateUpdate()
+			update()
 			return comment
 		},
 
@@ -72,7 +72,7 @@ export function createQuestionsModel({questionsBureau}: {
 			forum.questions = forum.questions.filter(
 				({questionId}) => questionId !== options.questionId
 			)
-			publishStateUpdate()
+			update()
 		},
 
 		async deleteComment(options: {
@@ -85,7 +85,7 @@ export function createQuestionsModel({questionsBureau}: {
 			question.comments = question.comments.filter(
 				({commentId}) => commentId !== options.commentId
 			)
-			publishStateUpdate()
+			update()
 		},
 
 		async likeQuestion(o) {
@@ -113,15 +113,15 @@ export function createQuestionsModel({questionsBureau}: {
 			async receiveUserLogin({getAuthContext}: LoginDetail) {
 				const {user} = await getAuthContext()
 				updateUser(user)
-				publishStateUpdate()
+				update()
 			},
 			async receiveUserLogout() {
 				updateUser(null)
-				publishStateUpdate()
+				update()
 			},
 			updateProfile(profile: Profile) {
 				state.profile = profile
-				publishStateUpdate()
+				update()
 			}
 		}
 	}

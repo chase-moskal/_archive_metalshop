@@ -7,7 +7,7 @@ import {
 	GetAuthContext,
 } from "../interfaces.js"
 import {pubsub} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/make-reader.js"
+import {makeReader} from "../toolbox/pubsub.js"
 
 export function createProfileModel({profileMagistrate}: {
 	profileMagistrate: ProfileMagistrateTopic
@@ -23,7 +23,7 @@ export function createProfileModel({profileMagistrate}: {
 		premium: false,
 	}
 
-	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
+	const {reader, update} = makeReader<ProfileState>(state)
 	const {publish: publishReset, subscribe: subscribeReset} = pubsub()
 
 	async function loadProfile(): Promise<Profile> {
@@ -40,7 +40,7 @@ export function createProfileModel({profileMagistrate}: {
 			async saveProfile(profile: Profile): Promise<void> {
 				try {
 					state.loading = true
-					publishStateUpdate()
+					update()
 					const {accessToken} = await getAuthContext()
 					await profileMagistrate.setFullProfile({accessToken, profile})
 					state.profile = profile
@@ -50,28 +50,28 @@ export function createProfileModel({profileMagistrate}: {
 					state.profile = null
 				}
 				state.loading = false
-				publishStateUpdate()
+				update()
 			}
 		},
 		wiring: {
-			publishStateUpdate,
+			update,
 			async receiveUserLoading() {
 				cancel = true
 				state.error = null
 				state.loading = true
 				state.profile = null
-				publishStateUpdate()
+				update()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
 				publishReset()
 				getAuthContext = detail.getAuthContext
 				cancel = false
 				state.loading = true
-				publishStateUpdate()
+				update()
 				const {user} = await getAuthContext()
 				state.admin = !!user.public.claims.admin
 				state.premium = !!user.public.claims.premium
-				publishStateUpdate()
+				update()
 				try {
 					const profile = await loadProfile()
 					state.profile = cancel ? null : profile
@@ -81,13 +81,13 @@ export function createProfileModel({profileMagistrate}: {
 					state.error = error
 				}
 				state.loading = false
-				publishStateUpdate()
+				update()
 			},
 			async receiveUserLogout() {
 				state.error = null
 				state.profile = null
 				state.loading = false
-				publishStateUpdate()
+				update()
 			}
 		}
 	}

@@ -1,26 +1,26 @@
 
 import {AuthoritarianOptions} from "../interfaces.js"
 
-import {wire} from "./wire.js"
-import {
-	registerComponentsWithModels
-} from "./register-components-with-models.js"
+import {theme} from "../system/theme.js"
+import {themeComponents} from "../toolbox/theme-components.js"
+import {registerComponents} from "../toolbox/register-components.js"
 import {ascertainOptionsFromDom} from "./ascertain-options-from-dom.js"
+
+import {prepareComponents} from "./prepare-components.js"
 
 export async function installAuthoritarian(options?: AuthoritarianOptions) {
 
 	// use the provided options, or parse them from the dom
-	options = options || await ascertainOptionsFromDom()
+	options = options || await ascertainOptionsFromDom({
+		selector: "authoritarian-config"
+	})
 
-	// instance the models, and wire them to the dom and each other
-	const supermodel = await wire(options)
+	// create the components all wired up with their models
+	const {components, start} = prepareComponents(options)
 
-	// register the components
-	registerComponentsWithModels(supermodel)
+	// define the custom elements and apply the css theme
+	registerComponents(themeComponents(theme, components))
 
-	// start the passive login routine
-	await supermodel.start()
-
-	// return the supermodel for debugging
-	return supermodel
+	// give back the start function
+	return {start}
 }

@@ -1,12 +1,16 @@
 
-import {LitElement, html, css, svg} from "lit-element"
-
-import {VimeoModel} from "../interfaces.js"
+import {LitElement, html, css, svg, property} from "lit-element"
+import {
+	PrivateVimeoGovernorTopic,
+} from "authoritarian/dist/interfaces.js"
+import {VimeoModel, UserModel} from "../interfaces.js"
 
 import {select} from "../toolbox/selects.js"
 import {mixinAuth} from "../framework/mixin-auth.js"
 import {PrivilegeMode} from "../models/private-vimeo-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+
+import {createPrivateVimeoModel} from "../models/private-vimeo-model.js"
 
 const icons = {
 	cancel: svg`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm0 1.3c1.3 0 2.5.44 3.47 1.17l-8 8A5.755 5.755 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zm0 11.41c-1.3 0-2.5-.44-3.47-1.17l8-8c.73.97 1.17 2.17 1.17 3.47 0 3.14-2.56 5.7-5.7 5.7z"/></svg>`
@@ -14,16 +18,40 @@ const icons = {
 
 export class PrivateVimeo extends (
 	mixinLoadable(
-		mixinAuth<VimeoModel, typeof LitElement>(
-			LitElement
-		)
+		LitElement
 	)
 ) {
+	static userModel: UserModel
+	static vimeoGovernor: PrivateVimeoGovernorTopic
+	
+	private _model: VimeoModel
+	private _vimeoGovernor: PrivateVimeoGovernorTopic =
+		(<any>this.constructor).vimeoGovernor
+	private _userModel: UserModel =
+		(<any>this.constructor).userModel
 
-	onUpdateVideo: (vimeostring: string) => void = () => {}
+	@property({type: String, reflect: true}) ["video-name"]: string
+	onUpdateVideo = (vimeostring: string) => {
+		this._model.actions.updateVideo(vimeostring)
+	}
+
+	firstUpdated() {
+		const {["video-name"]: videoName} = this
+		this._model = createPrivateVimeoModel({
+			videoName,
+			privateVimeoGovernor: this._vimeoGovernor
+		})
+
+		const {_userModel: user, _model: vimeo} = this
+		user.subscribers.userLogin(vimeo.wiring.receiveUserLogin)
+		user.subscribers.userError(vimeo.wiring.receiveUserLogout)
+		user.subscribers.userLogout(vimeo.wiring.receiveUserLogout)
+		user.subscribers.userLoading(vimeo.wiring.receiveUserLoading)
+		vimeo.reader.subscribe(() => this.requestUpdate())
+	}
 
 	updated() {
-		const {errorMessage = null, loading = true} = this.model.reader.state
+		const {errorMessage = null, loading = true} = this._model.reader.state
 		this.errorMessage = errorMessage
 		this.loadableState = errorMessage
 			? LoadableState.Error
@@ -160,7 +188,7 @@ export class PrivateVimeo extends (
 	}
 
 	private _renderViewer() {
-		const {vimeoId} = this.model.reader.state
+		const {vimeoId} = this._model.reader.state
 		const query = "?color=00a651&title=0&byline=0&portrait=0&badge=0"
 		const viewer = html`
 			<div class="viewer">
@@ -198,7 +226,7 @@ export class PrivateVimeo extends (
 	}
 
 	private _renderAdmin() {
-		const {validationMessage} = this.model.reader.state
+		const {validationMessage} = this._model.reader.state
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
@@ -222,7 +250,7 @@ export class PrivateVimeo extends (
 	}
 
 	renderReady() {
-		const {mode} = this.model.reader.state
+		const {mode} = this._model.reader.state
 		switch (mode) {
 			case PrivilegeMode.LoggedOut: return this._renderLoggedOut()
 			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()

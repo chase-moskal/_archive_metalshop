@@ -1,7 +1,7 @@
 
 import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
 
-import {makeReader} from "../toolbox/make-reader.js"
+import {makeReader} from "../toolbox/pubsub.js"
 import {
 	VimeoModel,
 	VimeoState,
@@ -28,7 +28,7 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 		validationMessage: null,
 		mode: PrivilegeMode.LoggedOut,
 	}
-	const {reader, publishStateUpdate} = makeReader(state)
+	const {reader, update} = makeReader(state)
 
 	return {
 		reader,
@@ -38,7 +38,7 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 				state.loading = true
 				state.errorMessage = null
 				state.validationMessage = null
-				publishStateUpdate()
+				update()
 
 				let vimeoId: string
 				{
@@ -65,7 +65,7 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 					state.validationMessage = "invalid vimeo link or id"
 				}
 				state.loading = false
-				publishStateUpdate()
+				update()
 			}
 		},
 		wiring: {
@@ -75,14 +75,14 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
-				publishStateUpdate()
+				update()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
 				state.loading = true
 				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
-				publishStateUpdate()
+				update()
 				getAuthContext = detail.getAuthContext
 				const {user, accessToken} = await getAuthContext()
 				state.mode = user.public.claims.admin
@@ -90,14 +90,14 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 					: user.public.claims.premium
 						? PrivilegeMode.Privileged
 						: PrivilegeMode.Unprivileged
-				publishStateUpdate()
+				update()
 				const {vimeoId} = await privateVimeoGovernor.getVimeo({
 					accessToken,
 					videoName
 				})
 				state.vimeoId = vimeoId
 				state.loading = false
-				publishStateUpdate()
+				update()
 			},
 			async receiveUserLogout() {
 				state.mode = PrivilegeMode.LoggedOut
@@ -105,7 +105,7 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
-				publishStateUpdate()
+				update()
 			}
 		}
 	}

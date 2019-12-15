@@ -1,5 +1,5 @@
 
-import {Reader} from "../interfaces.js"
+import {Reader} from "../toolbox/pubsub.js"
 
 export function wireStateUpdates<
 	S extends {} = {},

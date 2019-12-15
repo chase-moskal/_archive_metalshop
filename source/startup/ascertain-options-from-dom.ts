@@ -5,11 +5,9 @@ import {AuthoritarianOptions} from "../interfaces.js"
 import {parse} from "./parse.js"
 import {initialize} from "./initialize.js"
 
-export async function ascertainOptionsFromDom({
-	selector = "authoritarian-config"
-}: {
-	selector?: string
-} = {}): Promise<AuthoritarianOptions> {
+export async function ascertainOptionsFromDom({selector}: {
+	selector: string
+}): Promise<AuthoritarianOptions> {
 
 	// grab the <authoritarian-config> element
 	const element = select(selector)

@@ -13,12 +13,7 @@ import {
 import {PaywallMode} from "./models/paywall-model.js"
 import {PrivilegeMode} from "./models/private-vimeo-model.js"
 
-import {UserPanel} from "./components/user-panel.js"
-import {ProfilePanel} from "./components/profile-panel.js"
-import {PaywallPanel} from "./components/paywall-panel.js"
-import {PrivateVimeo} from "./components/private-vimeo.js"
-import {AvatarDisplay} from "./components/avatar-display.js"
-import {QuestionsForum} from "./components/questions-forum.js"
+import {Reader, Pubsubs, Pubsub, Subify, Subscribe} from "./toolbox/pubsub.js"
 
 export interface AuthoritarianConfig {
 	mock: string
@@ -82,7 +77,7 @@ export interface UserModel {
 	reader: UserReader
 	subscribers: UserEventSubscribers
 	wiring: {
-		publishStateUpdate: () => void
+		update: () => void
 		start: () => Promise<void>
 		loginWithAccessToken: (accessToken: AccessToken) => Promise<void>
 	},
@@ -111,7 +106,7 @@ export interface PaywallActions {
 }
 
 export interface PaywallWiring {
-	publishStateUpdate: () => void
+	update: () => void
 	loginWithAccessToken: Subscribe<LoginWithAccessToken>
 	receiveUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
 	receiveUserLogout: () => Promise<void>
@@ -138,7 +133,7 @@ export interface ProfileModel {
 		saveProfile: (profile: Profile) => Promise<void>
 	},
 	wiring: {
-		publishStateUpdate: () => void
+		update: () => void
 		receiveUserLogout: () => Promise<void>
 		receiveUserLoading: () => Promise<void>
 		receiveUserLogin: (detail: LoginDetail) => Promise<void>
@@ -154,46 +149,9 @@ export interface ProfileState {
 }
 
 export interface AvatarWiring {
-	publishStateUpdate: () => void
+	update: () => void
 	setPictureUrl(url: string): void
 	setPremium(premium: boolean): void
-}
-
-export type AnyListener = (...args: any) => void | Promise<void>
-
-export interface Unsubscribe {
-	(): void
-}
-
-export interface Subscribe<Listener extends AnyListener = AnyListener> {
-	(func: Listener): Unsubscribe
-}
-
-export interface Pubsub<Listener extends AnyListener = AnyListener> {
-	publish: Listener
-	subscribe: Subscribe<Listener>
-}
-
-export interface Pubsubs {
-	[key: string]: Pubsub
-}
-
-export type Pubify<P extends Pubsubs> = {
-	[K in keyof P]: P[K]["publish"]
-}
-
-export type Subify<P extends Pubsubs> = {
-	[K in keyof P]: P[K]["subscribe"]
-}
-
-export interface Reader<S extends {} = {}> {
-	state: Readonly<S>
-	subscribe: Subscribe<(state: S) => void>
-}
-
-export interface ReaderContext<S extends {} = {}> {
-	reader: Reader<S>
-	publishStateUpdate: () => void
 }
 
 export interface WebComponent extends HTMLElement {

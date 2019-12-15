@@ -15,7 +15,7 @@ import {
 } from "../interfaces.js"
 
 import {pubsub, pubsubs} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/make-reader.js"
+import {makeReader} from "../toolbox/pubsub.js"
 
 const expiryGraceSeconds = 60
 
@@ -37,7 +37,7 @@ export function createUserModel({
 		loggedIn: true,
 	}
 
-	const {reader, publishStateUpdate} = makeReader<UserState>(state)
+	const {reader, update} = makeReader<UserState>(state)
 
 	const {publishers, subscribers} = pubsubs<UserEvents>({
 		userLogin: pubsub(),
@@ -50,25 +50,25 @@ export function createUserModel({
 		state.error = null
 		state.loading = true
 		state.loggedIn = false
-		publishStateUpdate()
+		update()
 	})
 
 	subscribers.userLogin(() => {
 		state.loggedIn = true
 		state.loading = false
-		publishStateUpdate()
+		update()
 	})
 
 	subscribers.userError(error => {
 		state.error = error
-		publishStateUpdate()
+		update()
 	})
 
 	subscribers.userLogout(() => {
 		state.loading = false
 		state.error = null
 		state.loggedIn = false
-		publishStateUpdate()
+		update()
 	})
 
 	/** Receive and decode an access token for login
@@ -96,7 +96,7 @@ export function createUserModel({
 		reader,
 		subscribers,
 		wiring: {
-			publishStateUpdate,
+			update,
 
 			/** Initial passive check, to see if we're already logged in */
 			async start() {

@@ -1,6 +1,7 @@
 
 import {LitElement} from "lit-element"
-import {AuthModel, Unsubscribe, ConstructorFor} from "../interfaces.js"
+import {Unsubscribe} from "../toolbox/pubsub.js"
+import {AuthModel, ConstructorFor} from "../interfaces.js"
 
 const _unsubscribe = Symbol()
 
