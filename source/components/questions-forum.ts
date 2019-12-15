@@ -2,7 +2,7 @@
 import {LitElement, property, html, css} from "lit-element"
 import {User, Profile} from "authoritarian/dist/interfaces.js"
 
-import {mixinAuth} from "../framework/mixin-auth.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {
 	Question,
@@ -11,7 +11,7 @@ import {
 } from "../interfaces.js"
 
 export class QuestionsForum extends (
-	mixinAuth<QuestionsModel, typeof LitElement>(
+	mixinModelSubscription<QuestionsModel, typeof LitElement>(
 		LitElement
 	)
 ) {

@@ -12,9 +12,9 @@ import {
 import {
 	accountPopupLogin,
 	prepareLoginPopupRoutine,
-} from "../toolbox/account-popup-login.js"
+} from "../system/account-popup-login.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
-import {decodeAccessToken} from "../toolbox/decode-access-token.js"
+import {decodeAccessToken} from "../system/decode-access-token.js"
 
 import {
 	AuthoritarianConfig,

@@ -4,15 +4,15 @@ import {property, html, css, LitElement} from "lit-element"
 
 import {select} from "../toolbox/selects.js"
 import {Debouncer} from "../toolbox/debouncer.js"
-import {mixinAuth} from "../framework/mixin-auth.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {ProfileModel} from "../interfaces.js"
 
 export class ProfilePanel extends (
 	mixinLoadable(
-		mixinAuth<ProfileModel, typeof LitElement>(
+		mixinModelSubscription<ProfileModel, typeof LitElement>(
 			LitElement
 		)
 	)

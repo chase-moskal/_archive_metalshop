@@ -1,10 +1,10 @@
 
-import {LitElement, html, css} from "lit-element"
 import {ProfileModel} from "../interfaces.js"
-import {mixinAuth} from "../framework/mixin-auth.js"
+import {LitElement, html} from "lit-element"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 export class UserAvatar extends (
-	mixinAuth<ProfileModel, typeof LitElement>(
+	mixinModelSubscription<ProfileModel, typeof LitElement>(
 		LitElement
 	)
 ) {

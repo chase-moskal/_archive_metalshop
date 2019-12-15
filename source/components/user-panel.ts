@@ -1,14 +1,14 @@
 
 import {LitElement, property, html, css} from "lit-element"
 
-import {mixinAuth} from "../framework/mixin-auth.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {UserModel} from "../interfaces.js"
 
 export class UserPanel extends (
 	mixinLoadable(
-		mixinAuth<UserModel, typeof LitElement>(
+		mixinModelSubscription<UserModel, typeof LitElement>(
 			LitElement
 		)
 	)

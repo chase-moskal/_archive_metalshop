@@ -5,38 +5,31 @@ import {SimpleModel, ConstructorFor} from "../interfaces.js"
 
 const _unsubscribe = Symbol()
 
-export class AuthComponent<
+export class ComponentWithModel<
 	M extends SimpleModel = SimpleModel,
 > extends LitElement {
 	static model: SimpleModel
 	model: M
-	authUpdate() {}
 }
 
-export function mixinAuth<
+export function mixinModelSubscription<
 	M extends SimpleModel,
 	C extends ConstructorFor<LitElement>,
->(Constructor: C): typeof LitElement & ConstructorFor<AuthComponent<M>> & C {
+>(Constructor: C): typeof LitElement & ConstructorFor<ComponentWithModel<M>> & C {
 
-	return <any>class extends Constructor implements AuthComponent<M> {
+	return <any>class extends Constructor implements ComponentWithModel<M> {
 		static model: SimpleModel
 
 		private [_unsubscribe]: Unsubscribe
 		model: M = (<any>this.constructor).model
 
-		authUpdate() {}
-
 		connectedCallback() {
 			super.connectedCallback()
 			const {model} = this
-			if (!model) throw new Error("auth component model missing")
+			if (!model) throw new Error("component model missing")
 
-			this.authUpdate()
 			this[_unsubscribe] = model.reader.subscribe(
-				() => {
-					this.authUpdate()
-					this.requestUpdate()
-				}
+				() => this.requestUpdate()
 			)
 		}
 

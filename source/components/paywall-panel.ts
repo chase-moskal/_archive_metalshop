@@ -1,9 +1,9 @@
 
 import {html, css, svg, LitElement} from "lit-element"
 
-import {mixinAuth} from "../framework/mixin-auth.js"
 import {PaywallMode} from "../models/paywall-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {PaywallModel} from "../interfaces.js"
 
@@ -13,7 +13,7 @@ const icons = {
 
 export class PaywallPanel extends (
 	mixinLoadable(
-		mixinAuth<PaywallModel, typeof LitElement>(
+		mixinModelSubscription<PaywallModel, typeof LitElement>(
 			LitElement
 		)
 	)

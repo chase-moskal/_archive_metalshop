@@ -2,7 +2,7 @@
 import {AuthoritarianOptions} from "../interfaces.js"
 
 import {theme} from "../system/theme.js"
-import {themeComponents} from "../toolbox/theme-components.js"
+import {themeComponents} from "../framework/theme-components.js"
 import {registerComponents} from "../toolbox/register-components.js"
 
 import {prepareComponents} from "./prepare-components.js"

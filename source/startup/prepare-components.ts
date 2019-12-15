@@ -12,10 +12,10 @@ import {createProfileModel} from "../models/profile-model.js"
 import {createPaywallModel} from "../models/paywall-model.js"
 import {createQuestionsModel} from "../models/questions-model.js"
 
-import {AuthComponent} from "../framework/mixin-auth.js"
+import {provideModel} from "../framework/provide-model.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 
-import {SimpleModel, AuthoritarianOptions} from "../interfaces.js"
+import {AuthoritarianOptions} from "../interfaces.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -114,15 +114,5 @@ export function prepareComponents({
 		async start() {
 			return user.wiring.start()
 		}
-	}
-}
-
-function provideModel<
-	C extends new(...args: any[]) => AuthComponent,
-	M extends SimpleModel = SimpleModel
->(model: M, Constructor: C): C {
-
-	return class extends Constructor {
-		static model = model
 	}
 }
