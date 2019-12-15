@@ -65,27 +65,6 @@ export function prepareComponents({
 	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
 	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
 
-	// // on profile update, set avatar picture url
-	// profile.reader.subscribe(state => {
-	// 	if (!state.profile) return
-	// 	const {picture} = profile.reader.state.profile.public
-	// 	if (picture) avatar.wiring.setPictureUrl(picture)
-	// })
-
-	// // on paywall update, set avatar premium
-	// paywall.reader.subscribe(state => {
-	// 	const premium = state.mode === PaywallMode.Premium
-	// 	avatar.wiring.setPremium(premium)
-	// })
-
-	// // on user logout or error, reset avatar
-	// const resetAvatar = () => {
-	// 	avatar.wiring.setPremium(false)
-	// 	avatar.wiring.setPictureUrl(null)
-	// }
-	// user.subscribers.userError(resetAvatar)
-	// user.subscribers.userLogout(resetAvatar)
-
 	// update the questions model
 	user.subscribers.userLogin(questions.wiring.receiveUserLogin)
 	user.subscribers.userError(questions.wiring.receiveUserLogout)
