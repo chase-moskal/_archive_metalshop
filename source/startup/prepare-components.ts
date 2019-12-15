@@ -1,5 +1,6 @@
 
 import {UserPanel} from "../components/user-panel.js"
+import {UserAvatar} from "../components/user-avatar.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {PrivateVimeo} from "../components/private-vimeo.js"
@@ -113,6 +114,7 @@ export function prepareComponents({
 				static user = user
 			},
 			UserPanel: provideAuthModel(user, UserPanel),
+			UserAvatar: provideAuthModel(profile, UserAvatar),
 			ProfilePanel: provideAuthModel(profile, ProfilePanel),
 			PaywallPanel: provideAuthModel(paywall, PaywallPanel),
 			QuestionsForum: provideAuthModel(questions, QuestionsForum),

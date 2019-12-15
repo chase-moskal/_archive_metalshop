@@ -65,6 +65,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.error = null
 				state.loading = true
 				state.profile = null
+				state.premium = false
 				update()
 			},
 			async receiveUserLogin(detail: LoginDetail) {
@@ -92,6 +93,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.error = null
 				state.profile = null
 				state.loading = false
+				state.premium = false
 				update()
 			}
 		}
