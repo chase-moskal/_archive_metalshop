@@ -42,13 +42,6 @@ export interface AuthoritarianOptions {
 
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
-
-	userPanels: UserPanel[]
-	profilePanels: ProfilePanel[]
-	paywallPanels: PaywallPanel[]
-	privateVimeos: PrivateVimeo[]
-	avatarDisplays: AvatarDisplay[]
-	questionsForums: QuestionsForum[]
 }
 
 export interface AuthContext {
@@ -314,4 +307,13 @@ export interface QuestionsBureauTopic {
 		questionId: string
 		accessToken: AccessToken
 	}): Promise<number>
+}
+
+export interface Supermodel {
+	userModel: UserModel
+	paywallModel: PaywallModel
+	profileModel: ProfileModel
+	vimeoModel: VimeoModel
+	questionsModel: QuestionsModel
+	start(): Promise<void>
 }

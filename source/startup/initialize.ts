@@ -45,17 +45,6 @@ export async function initialize(config: AuthoritarianConfig):
 	progress.decodeAccessToken = decodeAccessToken
 
 	//
-	// select dom elements
-	//
-
-	progress.userPanels = selects("user-panel")
-	progress.paywallPanels = selects("paywall-panel")
-	progress.profilePanels = selects("profile-panel")
-	progress.privateVimeos = selects("private-vimeo")
-	progress.avatarDisplays = selects("avatar-display")
-	progress.questionsForums = selects("questions-forum")
-
-	//
 	// use mocks instead of real microservices
 	//
 
@@ -145,12 +134,5 @@ export async function initialize(config: AuthoritarianConfig):
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,
-
-		userPanels: progress.userPanels,
-		paywallPanels: progress.paywallPanels,
-		profilePanels: progress.profilePanels,
-		privateVimeos: progress.privateVimeos,
-		avatarDisplays: progress.avatarDisplays,
-		questionsForums: progress.questionsForums,
 	}
 }

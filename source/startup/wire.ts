@@ -1,29 +1,16 @@
 
-import {AuthoritarianStartupError} from "../system/errors.js"
-import {wireStateUpdates} from "../toolbox/wire-state-updates.js"
+// import {AuthoritarianStartupError} from "../system/errors.js"
 import {
-	UserState,
-	AvatarState,
-	PaywallState,
-	ProfileState,
+	Supermodel,
 	AuthoritarianOptions,
-	QuestionsState,
 } from "../interfaces.js"
 
 import {createUserModel} from "../models/user-model.js"
-import {createAvatarModel} from "../models/avatar-model.js"
 import {createProfileModel} from "../models/profile-model.js"
-import {createPrivateVimeoModel} from "../models/private-vimeo-model.js"
-import {createPaywallModel, PaywallMode} from "../models/paywall-model.js"
-
-import {UserPanel} from "../components/user-panel.js"
-import {PaywallPanel} from "../components/paywall-panel.js"
-import {ProfilePanel} from "../components/profile-panel.js"
-import {AvatarDisplay} from "../components/avatar-display.js"
-import {QuestionsForum} from "../components/questions-forum.js"
+import {createPaywallModel} from "../models/paywall-model.js"
 import {createQuestionsModel} from "../models/questions-model.js"
 
-const err = (message: string) => new AuthoritarianStartupError(message)
+// const err = (message: string) => new AuthoritarianStartupError(message)
 
 export async function wire({
 	debug,
@@ -31,41 +18,32 @@ export async function wire({
 	tokenStorage,
 	paywallGuardian,
 	questionsBureau,
-	loginPopupRoutine,
-	decodeAccessToken,
 	profileMagistrate,
 	privateVimeoGovernor,
-
-	userPanels,
-	profilePanels,
-	paywallPanels,
-	privateVimeos,
-	avatarDisplays,
-	questionsForums,
-}: AuthoritarianOptions) {
-
-	if (![...userPanels, ...avatarDisplays].length)
-		throw err(`no elements found related to authoritarian`)
+	
+	loginPopupRoutine,
+	decodeAccessToken,
+}: AuthoritarianOptions): Promise<Supermodel> {
 
 	//
 	// instance the models
 	//
 
-	const user = createUserModel({
+	const userModel = createUserModel({
 		tokenStorage,
 		decodeAccessToken,
 		loginPopupRoutine,
 	})
 
-	const paywall = createPaywallModel({
+	const paywallModel = createPaywallModel({
 		paywallGuardian,
 	})
 
-	const profile = createProfileModel({
+	const profileModel = createProfileModel({
 		profileMagistrate
 	})
 
-	const avatar = createAvatarModel()
+	// const avatar = createAvatarModel()
 
 	const questionsModel = createQuestionsModel({questionsBureau})
 
@@ -74,150 +52,150 @@ export async function wire({
 	//
 
 	// wire user to paywall
-	paywall.wiring.loginWithAccessToken(user.wiring.loginWithAccessToken)
-	user.subscribers.userLogin(paywall.wiring.receiveUserLogin)
-	user.subscribers.userLogout(paywall.wiring.receiveUserLogout)
-	user.subscribers.userError(paywall.wiring.receiveUserLogout)
+	paywallModel.wiring.loginWithAccessToken(userModel.wiring.loginWithAccessToken)
+	userModel.subscribers.userLogin(paywallModel.wiring.receiveUserLogin)
+	userModel.subscribers.userLogout(paywallModel.wiring.receiveUserLogout)
+	userModel.subscribers.userError(paywallModel.wiring.receiveUserLogout)
 
 	// wire user to profile
-	user.subscribers.userLogin(profile.wiring.receiveUserLogin)
-	user.subscribers.userError(profile.wiring.receiveUserLogout)
-	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
-	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
+	userModel.subscribers.userLogin(profileModel.wiring.receiveUserLogin)
+	userModel.subscribers.userError(profileModel.wiring.receiveUserLogout)
+	userModel.subscribers.userLogout(profileModel.wiring.receiveUserLogout)
+	userModel.subscribers.userLoading(profileModel.wiring.receiveUserLoading)
 
-	// on profile update, set avatar picture url
-	profile.reader.subscribe(state => {
-		if (!state.profile) return
-		const {picture} = profile.reader.state.profile.public
-		if (picture) avatar.wiring.setPictureUrl(picture)
-	})
+	// // on profile update, set avatar picture url
+	// profile.reader.subscribe(state => {
+	// 	if (!state.profile) return
+	// 	const {picture} = profile.reader.state.profile.public
+	// 	if (picture) avatar.wiring.setPictureUrl(picture)
+	// })
 
-	// on paywall update, set avatar premium
-	paywall.reader.subscribe(state => {
-		const premium = state.mode === PaywallMode.Premium
-		avatar.wiring.setPremium(premium)
-	})
+	// // on paywall update, set avatar premium
+	// paywall.reader.subscribe(state => {
+	// 	const premium = state.mode === PaywallMode.Premium
+	// 	avatar.wiring.setPremium(premium)
+	// })
 
-	// on user logout or error, reset avatar
-	const resetAvatar = () => {
-		avatar.wiring.setPremium(false)
-		avatar.wiring.setPictureUrl(null)
-	}
-	user.subscribers.userError(resetAvatar)
-	user.subscribers.userLogout(resetAvatar)
+	// // on user logout or error, reset avatar
+	// const resetAvatar = () => {
+	// 	avatar.wiring.setPremium(false)
+	// 	avatar.wiring.setPictureUrl(null)
+	// }
+	// user.subscribers.userError(resetAvatar)
+	// user.subscribers.userLogout(resetAvatar)
 
 	// update the questions model
-	user.subscribers.userLogin(questionsModel.wiring.receiveUserLogin)
-	user.subscribers.userError(questionsModel.wiring.receiveUserLogout)
-	user.subscribers.userLogout(questionsModel.wiring.receiveUserLogout)
-	user.subscribers.userLoading(questionsModel.wiring.receiveUserLogout)
-	profile.reader.subscribe(state =>
+	userModel.subscribers.userLogin(questionsModel.wiring.receiveUserLogin)
+	userModel.subscribers.userError(questionsModel.wiring.receiveUserLogout)
+	userModel.subscribers.userLogout(questionsModel.wiring.receiveUserLogout)
+	userModel.subscribers.userLoading(questionsModel.wiring.receiveUserLogout)
+	profileModel.reader.subscribe(state =>
 		questionsModel.wiring.updateProfile(state.profile))
 
-	//
-	// wire models to dom elements
-	//
+	// //
+	// // wire models to dom elements
+	// //
 
-	profile.subscribeReset(() => {
-		for (const profilePanel of profilePanels)
-			profilePanel.reset()
-	})
+	// profile.subscribeReset(() => {
+	// 	for (const profilePanel of profilePanels)
+	// 		profilePanel.reset()
+	// })
 
-	wireStateUpdates<ProfileState, ProfilePanel>({
-		reader: profile.reader,
-		components: profilePanels,
-		updateComponent: (component, state) => component.profileState = state
-	})
+	// wireStateUpdates<ProfileState, ProfilePanel>({
+	// 	reader: profile.reader,
+	// 	components: profilePanels,
+	// 	updateComponent: (component, state) => component.profileState = state
+	// })
 
-	wireStateUpdates<AvatarState, (ProfilePanel | AvatarDisplay)>({
-		reader: avatar.reader,
-		components: [...profilePanels, ...avatarDisplays],
-		updateComponent: (component, state) => component.avatarState = state
-	})
+	// wireStateUpdates<AvatarState, (ProfilePanel | AvatarDisplay)>({
+	// 	reader: avatar.reader,
+	// 	components: [...profilePanels, ...avatarDisplays],
+	// 	updateComponent: (component, state) => component.avatarState = state
+	// })
 
-	wireStateUpdates<PaywallState, PaywallPanel>({
-		reader: paywall.reader,
-		components: paywallPanels,
-		updateComponent: (component, state) => component.paywallState = state
-	})
+	// wireStateUpdates<PaywallState, PaywallPanel>({
+	// 	reader: paywall.reader,
+	// 	components: paywallPanels,
+	// 	updateComponent: (component, state) => component.paywallState = state
+	// })
 
-	wireStateUpdates<UserState, UserPanel>({
-		reader: user.reader,
-		components: userPanels,
-		updateComponent: (component, state) => component.userState = state
-	})
+	// wireStateUpdates<UserState, UserPanel>({
+	// 	reader: user.reader,
+	// 	components: userPanels,
+	// 	updateComponent: (component, state) => component.userState = state
+	// })
 
-	wireStateUpdates<QuestionsState, QuestionsForum>({
-		reader: questionsModel.reader,
-		components: questionsForums,
-		updateComponent: (component, state) => {
-			const forumName = component.getAttribute("forum-name")
-			if (!forumName)
-				throw err(`questions-forum requires attribute [forum-name]`)
-			const forum = state.forums[forumName] || {questions: []}
-			component.user = state.user
-			component.questions = forum.questions
-		}
-	})
+	// wireStateUpdates<QuestionsState, QuestionsForum>({
+	// 	reader: questionsModel.reader,
+	// 	components: questionsForums,
+	// 	updateComponent: (component, state) => {
+	// 		const forumName = component.getAttribute("forum-name")
+	// 		if (!forumName)
+	// 			throw err(`questions-forum requires attribute [forum-name]`)
+	// 		const forum = state.forums[forumName] || {questions: []}
+	// 		component.user = state.user
+	// 		component.questions = forum.questions
+	// 	}
+	// })
 
-	for (const profilePanel of profilePanels) {
-		profilePanel.onProfileSave = profile.actions.saveProfile
-	}
+	// for (const profilePanel of profilePanels) {
+	// 	profilePanel.onProfileSave = profile.actions.saveProfile
+	// }
 
-	for (const paywallPanel of paywallPanels) {
-		paywallPanel.onMakeUserPremium = paywall.actions.makeUserPremium
-		paywallPanel.onRevokeUserPremium = paywall.actions.revokeUserPremium
-	}
+	// for (const paywallPanel of paywallPanels) {
+	// 	paywallPanel.onMakeUserPremium = paywall.actions.makeUserPremium
+	// 	paywallPanel.onRevokeUserPremium = paywall.actions.revokeUserPremium
+	// }
 
-	for (const userPanel of userPanels) {
-		userPanel.onLoginClick = user.actions.login
-		userPanel.onLogoutClick = user.actions.logout
-	}
+	// for (const userPanel of userPanels) {
+	// 	userPanel.onLoginClick = user.actions.login
+	// 	userPanel.onLogoutClick = user.actions.logout
+	// }
 
-	for (const questionsForum of questionsForums) {
-		questionsForum.actions = questionsModel.actions
-	}
+	// for (const questionsForum of questionsForums) {
+	// 	questionsForum.actions = questionsModel.actions
+	// }
 
-	//
-	// funky complex wirings
-	//
+	// //
+	// // funky complex wirings
+	// //
 
-	for (const privateVimeo of privateVimeos) {
+	// for (const privateVimeo of privateVimeos) {
 
-		// require [video-name] attributes
-		const videoName = privateVimeo.getAttribute("video-name")
-		if (!videoName) err(`<private-vimeo> is missing attribute [video-name]`)
+	// 	// require [video-name] attributes
+	// 	const videoName = privateVimeo.getAttribute("video-name")
+	// 	if (!videoName) err(`<private-vimeo> is missing attribute [video-name]`)
 
-		// create a model for each component
-		const model = createPrivateVimeoModel({
-			videoName,
-			privateVimeoGovernor
-		})
+	// 	// create a model for each component
+	// 	const model = createPrivateVimeoModel({
+	// 		videoName,
+	// 		privateVimeoGovernor
+	// 	})
 
-		// wire model to other models
-		user.subscribers.userLogin(model.wiring.receiveUserLogin)
-		user.subscribers.userError(model.wiring.receiveUserLogout)
-		user.subscribers.userLogout(model.wiring.receiveUserLogout)
-		user.subscribers.userLoading(model.wiring.receiveUserLoading)
+	// 	// wire model to other models
+	// 	user.subscribers.userLogin(model.wiring.receiveUserLogin)
+	// 	user.subscribers.userError(model.wiring.receiveUserLogout)
+	// 	user.subscribers.userLogout(model.wiring.receiveUserLogout)
+	// 	user.subscribers.userLoading(model.wiring.receiveUserLoading)
 
-		// wire model to component
-		privateVimeo.onUpdateVideo = model.actions.updateVideo
-		model.reader.subscribe(state => privateVimeo.vimeoState = state)
-	}
+	// 	// wire model to component
+	// 	privateVimeo.onUpdateVideo = model.actions.updateVideo
+	// 	model.reader.subscribe(state => privateVimeo.vimeoState = state)
+	// }
 
-	profile.wiring.publishStateUpdate()
-	avatar.wiring.publishStateUpdate()
-	paywall.wiring.publishStateUpdate()
-	user.wiring.publishStateUpdate()
+	// profile.wiring.publishStateUpdate()
+	// avatar.wiring.publishStateUpdate()
+	// paywall.wiring.publishStateUpdate()
+	// user.wiring.publishStateUpdate()
 
 	//
 	// debug logging
 	//
 
 	if (debug) {
-		for (const [name, subscriber] of Object.entries(user.subscribers))
+		for (const [name, subscriber] of Object.entries(userModel.subscribers))
 			subscriber(() => console.debug("event.user:", name))
-		paywall.wiring.loginWithAccessToken(
+		paywallModel.wiring.loginWithAccessToken(
 			async() => console.debug("event.paywall:", "loginWithAccessToken")
 		)
 	}
@@ -229,13 +207,14 @@ export async function wire({
 	// - could be basis of extensibility
 	//
 
-	const supermodel = {
-		user,
-		avatar,
-		paywall,
-		profile,
+	const supermodel: Supermodel = {
+		userModel,
+		paywallModel,
+		profileModel,
+		questionsModel,
+		vimeoModel: null,
 		async start() {
-			return user.wiring.start()
+			return userModel.wiring.start()
 		}
 	}
 
