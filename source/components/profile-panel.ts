@@ -19,7 +19,6 @@ export class ProfilePanel extends (
 	)
 ) {
 
-	onProfileSave = async(profile: Profile) => {}
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
 
@@ -28,6 +27,10 @@ export class ProfilePanel extends (
 		delay: 1000,
 		action: () => this._handleInputChange()
 	})
+
+	onProfileSave = async(profile: Profile) => {
+		this.model.actions.saveProfile(profile)
+	}
 
 	reset() {
 		this._changedProfile = null

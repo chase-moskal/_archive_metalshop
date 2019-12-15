@@ -19,9 +19,15 @@ export class PaywallPanel extends (
 	)
 ) {
 
-	onMakeUserPremium = async() => {}
-	onRevokeUserPremium = async() => {}
 	loadingMessage = "loading paywall panel"
+
+	onMakeUserPremium = async() => {
+		this.model.actions.makeUserPremium()
+	}
+
+	onRevokeUserPremium = async() => {
+		this.model.actions.revokeUserPremium()
+	}
 
 	updated() {
 		if (!this.model) throw new Error("paywall panel requires model")

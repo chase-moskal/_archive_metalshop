@@ -17,8 +17,13 @@ export class UserPanel extends (
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
 
-	onLoginClick: (event: MouseEvent) => void = () => {}
-	onLogoutClick: (event: MouseEvent) => void = () => {}
+	onLoginClick: (event: MouseEvent) => void = () => {
+		this.model.actions.login()
+	}
+
+	onLogoutClick: (event: MouseEvent) => void = () => {
+		this.model.actions.logout()
+	}
 
 	updated() {
 		const {loading, error, loggedIn} = this.model.reader.state
