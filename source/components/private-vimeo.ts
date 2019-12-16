@@ -15,9 +15,10 @@ export class PrivateVimeo extends
 		LitElement
 	)
 {
+	static get styles() {return [super.styles, styles]}
 	static userModel: UserModel
 	static vimeoGovernor: PrivateVimeoGovernorTopic
-	
+
 	private _model: VimeoModel
 	private _vimeoGovernor: PrivateVimeoGovernorTopic =
 		(<any>this.constructor).vimeoGovernor
@@ -56,109 +57,6 @@ export class PrivateVimeo extends
 				? LoadableState.Loading
 				: LoadableState.Ready
 	}
-
-	static get styles() {return [super.styles, css`
-		:host, :host > * {
-			display: block;
-		}
-		:host([hidden]) {
-			display: none;
-		}
-		* + .ghostplayer,
-		* + .viewer,
-		* + .adminpanel {
-			margin-top: 1em;
-		}
-		.ghostplayer {
-			position: relative;
-			display: block;
-			width: 100%;
-			background: rgba(0,0,0, 0.2);
-			border: 0.2em solid rgba(0,0,0, 0.1);
-		}
-		.ghostplayer::before {
-			content: "";
-			display: block;
-			padding-top: 56.25%;
-		}
-		.ghostplayer svg {
-			position: absolute;
-			opacity: 0.5;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			right: 0;
-			margin: auto;
-			width: 30%;
-			height: 30%;
-			max-width: 10em;
-			fill: currentColor;
-		}
-		.ghostplayer p {
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-		.missing {
-			opacity: 0.8;
-			font-style: italic;
-		}
-		.viewer {
-			position: relative;
-		}
-		.viewer::before {
-			content: "";
-			display: block;
-			padding-top: 56.25%;
-		}
-		.viewer iframe {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-		}
-		.adminpanel {
-			padding: 0.5em;
-			max-width: 640px;
-			margin-left: auto;
-			margin-right: auto;
-			text-align: center;
-			border: 1px solid;
-			border-radius: 3px;
-		}
-		.adminpanel p,
-		.adminpanel h3 {
-			margin: 0.1em 0.5em;
-		}
-		.adminpanel h3 {
-			text-transform: uppercase;
-		}
-		.adminpanel .inputarea {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-		}
-		.adminpanel .inputarea > * {
-			flex: 1 1 auto;
-			margin: 0.5em;
-			max-width: 100%;
-		}
-		.adminpanel .inputarea > button {
-			flex: 0 1 auto;
-			margin-left: auto;
-		}
-		.error {
-			color: red;
-			border: 1px solid;
-			border-radius: 3px;
-		}
-	`]}
 
 	private _renderLoggedOut() {
 		return html`
@@ -256,3 +154,108 @@ export class PrivateVimeo extends
 		}
 	}
 }
+
+const styles = css`
+
+	:host, :host > * {
+		display: block;
+	}
+	:host([hidden]) {
+		display: none;
+	}
+	* + .ghostplayer,
+	* + .viewer,
+	* + .adminpanel {
+		margin-top: 1em;
+	}
+	.ghostplayer {
+		position: relative;
+		display: block;
+		width: 100%;
+		background: rgba(0,0,0, 0.2);
+		border: 0.2em solid rgba(0,0,0, 0.1);
+	}
+	.ghostplayer::before {
+		content: "";
+		display: block;
+		padding-top: 56.25%;
+	}
+	.ghostplayer svg {
+		position: absolute;
+		opacity: 0.5;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto;
+		width: 30%;
+		height: 30%;
+		max-width: 10em;
+		fill: currentColor;
+	}
+	.ghostplayer p {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.missing {
+		opacity: 0.8;
+		font-style: italic;
+	}
+	.viewer {
+		position: relative;
+	}
+	.viewer::before {
+		content: "";
+		display: block;
+		padding-top: 56.25%;
+	}
+	.viewer iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.adminpanel {
+		padding: 0.5em;
+		max-width: 640px;
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+		border: 1px solid;
+		border-radius: 3px;
+	}
+	.adminpanel p,
+	.adminpanel h3 {
+		margin: 0.1em 0.5em;
+	}
+	.adminpanel h3 {
+		text-transform: uppercase;
+	}
+	.adminpanel .inputarea {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+	.adminpanel .inputarea > * {
+		flex: 1 1 auto;
+		margin: 0.5em;
+		max-width: 100%;
+	}
+	.adminpanel .inputarea > button {
+		flex: 0 1 auto;
+		margin-left: auto;
+	}
+	.error {
+		color: red;
+		border: 1px solid;
+		border-radius: 3px;
+	}
+
+`

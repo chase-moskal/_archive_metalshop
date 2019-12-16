@@ -14,6 +14,7 @@ export class UserPanel extends
 		)
 	)
 {
+	static get styles() {return [super.styles, styles]}
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
 	@property({type: Boolean, reflect: true}) get ["logged-in"]() {
@@ -35,35 +36,6 @@ export class UserPanel extends
 			: (mode === UserMode.Loading)
 				? LoadableState.Loading
 				: LoadableState.Ready
-	}
-
-	static get styles() {
-		return [super.styles, css`
-			:host {
-				display: block;
-			}
-			div {
-				display: flex;
-				flex-direction: row;
-				justify-content: center;
-			}
-			.login {
-				justify-content: var(--user-panel-login-justify, center);
-			}
-			.logout {
-				justify-content: var(--user-panel-logout-justify, flex-end);
-			}
-			* + div {
-				margin-top: var(--user-panel-margins, 0.5em);
-			}
-			::slotted(*) {
-				display: block;
-				margin-top: var(--user-panel-margins, 0.5em) !important;
-			}
-			::slotted(*:first-child) {
-				margin-top: unset !important;
-			}
-		`]
 	}
 
 	private _renderLoggedIn = () => html`
@@ -96,3 +68,30 @@ export class UserPanel extends
 		`
 	}
 }
+
+const styles = css`
+	:host {
+		display: block;
+	}
+	div {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+	}
+	.login {
+		justify-content: var(--user-panel-login-justify, center);
+	}
+	.logout {
+		justify-content: var(--user-panel-logout-justify, flex-end);
+	}
+	* + div {
+		margin-top: var(--user-panel-margins, 0.5em);
+	}
+	::slotted(*) {
+		display: block;
+		margin-top: var(--user-panel-margins, 0.5em) !important;
+	}
+	::slotted(*:first-child) {
+		margin-top: unset !important;
+	}
+`

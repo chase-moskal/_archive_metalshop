@@ -15,16 +15,10 @@ export class PaywallPanel extends
 		)
 	)
 {
-
+	static get styles() {return [super.styles, styles]}
 	loadingMessage = "loading paywall panel"
-
-	onMakeUserPremium = async() => {
-		this.model.makeUserPremium()
-	}
-
-	onRevokeUserPremium = async() => {
-		this.model.revokeUserPremium()
-	}
+	onMakeUserPremium = this.model.makeUserPremium
+	onRevokeUserPremium = this.model.revokeUserPremium
 
 	updated() {
 		if (!this.model) throw new Error("paywall panel requires model")
@@ -40,43 +34,6 @@ export class PaywallPanel extends
 				this.loadableState = LoadableState.Ready
 		}
 	}
-
-	static get styles() {return [super.styles, css`
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		:host {
-			display: block;
-			padding: 1em 0;
-		}
-
-		header .icon {
-			float: right;
-		}
-
-		header .icon svg {
-			width: 4em;
-			height: 4em;
-			margin-right: 0.5em;
-			fill: yellow;
-		}
-
-		section {
-			padding: 1em 0;
-		}
-
-		footer > * {
-			padding: 0 0.5em;
-		}
-
-		footer > span {
-			font-size: 0.8em;
-			opacity: 0.8;
-		}
-	`]}
 
 	private _renderNotPremium() {return html`
 		<header>
@@ -115,3 +72,40 @@ export class PaywallPanel extends
 		}
 	}
 }
+
+const styles = css`
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	:host {
+		display: block;
+		padding: 1em 0;
+	}
+
+	header .icon {
+		float: right;
+	}
+
+	header .icon svg {
+		width: 4em;
+		height: 4em;
+		margin-right: 0.5em;
+		fill: yellow;
+	}
+
+	section {
+		padding: 1em 0;
+	}
+
+	footer > * {
+		padding: 0 0.5em;
+	}
+
+	footer > span {
+		font-size: 0.8em;
+		opacity: 0.8;
+	}
+`

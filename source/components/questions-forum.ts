@@ -15,6 +15,7 @@ export class QuestionsForum extends
 		LitElement
 	)
 {
+	static get styles() {return styles}
 	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["forum-name"]: string
 
@@ -24,123 +25,6 @@ export class QuestionsForum extends
 			+ `[forum-name]`)
 		this.questions = await this.model.bureau.fetchQuestions({forumName})
 	}
-
-	static get styles() {return css`
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-
-		.questions {
-			list-style: none;
-		}
-
-		.questions > li + li {
-			margin-top: 1em;
-		}
-
-		.question {
-			display: flex;
-			flex-direction: row;
-			background: var(--questions-forum-background, transparent);
-			border: var(--questions-forum-border, 1px solid rgba(255,255,255, 0.2));
-		}
-
-		.question > * {
-			flex: 0 0 auto;
-			padding: 0.5rem;
-		}
-
-		.questions > li > .body {
-			flex: 1 1 auto;
-		}
-
-		.author {
-			width: 32%;
-			text-align: center;
-			background: rgba(255,255,255, 0.1);
-		}
-
-		.author .nickname {
-			font-weight: bold;
-		}
-
-		.author .time {
-			opacity: 0.6;
-			font-size: 0.8em;
-			margin-top: 0.2em;
-		}
-
-		.author .likes {
-			margin-top: 0.5em;
-		}
-
-		.author .likes p {
-			font-size: 0.8em;
-		}
-
-		button {
-			opacity: 0.6;
-			border: none;
-			color: inherit;
-			font-size: 1.5em;
-			background: transparent;
-			cursor: pointer;
-		}
-
-		button:hover {
-			opacity: 1;
-		}
-
-		avatar-display {
-			margin: auto;
-		}
-
-		.body {
-			flex: 1 1 auto;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-		}
-
-		.comments {
-			list-style: none;
-			font-size: 0.8em;
-			padding: 0 1em;
-		}
-
-		.comments > li {
-			padding: 0.2em;
-			margin-top: 0.2em;
-		}
-
-		.comments > li > p > em {
-			opacity: 0.6;
-		}
-
-		.controls {
-			display: flex;
-			justify-content: flex-end;
-		}
-
-		.content {
-			width: 100%;
-			font-size: 1.3em;
-		}
-
-		@media (max-width: 500px) {
-			.question {
-				flex-direction: column;
-			}
-			.author {
-				width: unset;
-			}
-			.controls {
-				order: -1;
-			}
-		}
-	`}
 
 	render() {
 		const {questions} = this
@@ -274,3 +158,120 @@ function renderComment(comment: QuestionComment) {
 		<p>"${comment.content}" <em>— ${comment.author.nickname}</em></p>
 	`
 }
+
+const styles = css`
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.questions {
+		list-style: none;
+	}
+
+	.questions > li + li {
+		margin-top: 1em;
+	}
+
+	.question {
+		display: flex;
+		flex-direction: row;
+		background: var(--questions-forum-background, transparent);
+		border: var(--questions-forum-border, 1px solid rgba(255,255,255, 0.2));
+	}
+
+	.question > * {
+		flex: 0 0 auto;
+		padding: 0.5rem;
+	}
+
+	.questions > li > .body {
+		flex: 1 1 auto;
+	}
+
+	.author {
+		width: 32%;
+		text-align: center;
+		background: rgba(255,255,255, 0.1);
+	}
+
+	.author .nickname {
+		font-weight: bold;
+	}
+
+	.author .time {
+		opacity: 0.6;
+		font-size: 0.8em;
+		margin-top: 0.2em;
+	}
+
+	.author .likes {
+		margin-top: 0.5em;
+	}
+
+	.author .likes p {
+		font-size: 0.8em;
+	}
+
+	button {
+		opacity: 0.6;
+		border: none;
+		color: inherit;
+		font-size: 1.5em;
+		background: transparent;
+		cursor: pointer;
+	}
+
+	button:hover {
+		opacity: 1;
+	}
+
+	avatar-display {
+		margin: auto;
+	}
+
+	.body {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.comments {
+		list-style: none;
+		font-size: 0.8em;
+		padding: 0 1em;
+	}
+
+	.comments > li {
+		padding: 0.2em;
+		margin-top: 0.2em;
+	}
+
+	.comments > li > p > em {
+		opacity: 0.6;
+	}
+
+	.controls {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.content {
+		width: 100%;
+		font-size: 1.3em;
+	}
+
+	@media (max-width: 500px) {
+		.question {
+			flex-direction: column;
+		}
+		.author {
+			width: unset;
+		}
+		.controls {
+			order: -1;
+		}
+	}
+`

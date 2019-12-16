@@ -17,11 +17,11 @@ export class ProfilePanel extends
 		)
 	)
 {
-
+	static get styles() {return [super.styles, styles]}
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
-
-	@property({type: Object}) _changedProfile: Profile = null
+	
+	@property({type: Object}) private _changedProfile: Profile = null
 	private _inputDebouncer = new Debouncer({
 		delay: 1000,
 		action: () => this._handleInputChange()
@@ -43,61 +43,6 @@ export class ProfilePanel extends
 				? LoadableState.Loading
 				: LoadableState.Ready
 	}
-
-	static get styles() {return [super.styles, css`
-		* {
-			margin: 0;
-			padding: 0;
-			box-sizing: border-box;
-		}
-		.container {
-			display: flex;
-			flex-direction: row;
-		}
-		avatar-display {
-			flex: 0 0 auto;
-			--avatar-display-size: 25%;
-			border: 5px solid rgba(255,255,255, 0.5);
-		}
-		.container > div {
-			flex: 1 1 auto;
-			display: flex;
-			padding: 0.5em;
-			flex-direction: column;
-			justify-content: center;
-		}
-		.container > div > * + * {
-			margin-top: 0.25em;
-		}
-		button.save {
-			margin-left: auto;
-		}
-		ul > li {
-			opacity: 0.7;
-			font-size: 0.7em;
-			display: inline-block;
-			padding: 0.2em 0.5em;
-			border-radius: 0.5em;
-			font-family: monospace;
-			border: 1px solid;
-		}
-		input {
-			width: 100%;
-		}
-		h3 {
-			font-size: 1.1em;
-		}
-		@media (max-width: 600px) {
-			.container {
-				flex-direction: column;
-				align-items: flex-start;
-			}
-			avatar-display {
-				--avatar-display-size: 5em;
-				margin: auto;
-			}
-		}
-	`]}
 
 	private _handleInputChange = () => {
 		const {profile} = this.model.reader.state
@@ -170,3 +115,58 @@ export class ProfilePanel extends
 		`
 	}
 }
+
+const styles = css`
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+	.container {
+		display: flex;
+		flex-direction: row;
+	}
+	avatar-display {
+		flex: 0 0 auto;
+		--avatar-display-size: 25%;
+		border: 5px solid rgba(255,255,255, 0.5);
+	}
+	.container > div {
+		flex: 1 1 auto;
+		display: flex;
+		padding: 0.5em;
+		flex-direction: column;
+		justify-content: center;
+	}
+	.container > div > * + * {
+		margin-top: 0.25em;
+	}
+	button.save {
+		margin-left: auto;
+	}
+	ul > li {
+		opacity: 0.7;
+		font-size: 0.7em;
+		display: inline-block;
+		padding: 0.2em 0.5em;
+		border-radius: 0.5em;
+		font-family: monospace;
+		border: 1px solid;
+	}
+	input {
+		width: 100%;
+	}
+	h3 {
+		font-size: 1.1em;
+	}
+	@media (max-width: 600px) {
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		avatar-display {
+			--avatar-display-size: 5em;
+			margin: auto;
+		}
+	}
+`
