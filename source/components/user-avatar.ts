@@ -1,6 +1,6 @@
 
 import {ProfileModel} from "../interfaces.js"
-import {LitElement, html} from "lit-element"
+import {LitElement, html, css} from "lit-element"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 export class UserAvatar extends
@@ -8,6 +8,7 @@ export class UserAvatar extends
 		LitElement
 	)
 {
+	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
 		const {profile, premium = false} = this.model.reader.state
@@ -20,3 +21,9 @@ export class UserAvatar extends
 		`
 	}
 }
+
+const styles = css`
+	:host {
+		display: block;
+	}
+`

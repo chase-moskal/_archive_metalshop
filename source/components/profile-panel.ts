@@ -17,7 +17,7 @@ export class ProfilePanel extends
 		)
 	)
 {
-	static get styles() {return [super.styles, styles]}
+	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
 	

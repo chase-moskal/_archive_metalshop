@@ -4,7 +4,7 @@ import {LitElement, property, html, css} from "lit-element"
 import {silhouette} from "../system/icons.js"
 
 export class AvatarDisplay extends LitElement {
-	static get styles() {return styles}
+	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String}) src: string = ""
 	@property({type: Boolean}) premium: boolean = false
 	@property({type: Object}) defaultPicture = silhouette

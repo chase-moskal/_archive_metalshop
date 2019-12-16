@@ -15,8 +15,8 @@ export class PaywallPanel extends
 		)
 	)
 {
-	static get styles() {return [super.styles, styles]}
-	loadingMessage = "loading paywall panel"
+	static get styles() { return [super.styles || css``, styles] }
+	loadingMessage = "loading supporter panel"
 	onMakeUserPremium = this.model.makeUserPremium
 	onRevokeUserPremium = this.model.revokeUserPremium
 

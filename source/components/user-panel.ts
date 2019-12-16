@@ -14,7 +14,7 @@ export class UserPanel extends
 		)
 	)
 {
-	static get styles() {return [super.styles, styles]}
+	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
 	@property({type: Boolean, reflect: true}) get ["logged-in"]() {

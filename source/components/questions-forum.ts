@@ -15,7 +15,7 @@ export class QuestionsForum extends
 		LitElement
 	)
 {
-	static get styles() {return styles}
+	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["forum-name"]: string
 

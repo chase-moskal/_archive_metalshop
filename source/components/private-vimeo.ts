@@ -15,7 +15,7 @@ export class PrivateVimeo extends
 		LitElement
 	)
 {
-	static get styles() {return [super.styles, styles]}
+	static get styles() { return [super.styles || css``, styles] }
 	static userModel: UserModel
 	static vimeoGovernor: PrivateVimeoGovernorTopic
 
