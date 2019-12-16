@@ -221,12 +221,3 @@ export interface QuestionsBureauTopic {
 		accessToken: AccessToken
 	}): Promise<number>
 }
-
-export interface Supermodel {
-	userModel: UserModel
-	paywallModel: PaywallModel
-	profileModel: ProfileModel
-	vimeoModel: VimeoModel
-	questionsModel: QuestionsModel
-	start(): Promise<void>
-}
