@@ -5,26 +5,23 @@ import {
 } from "authoritarian/dist/clients.js"
 
 import {
-	AuthoritarianConfig,
-	AuthoritarianOptions,
-} from "../system/interfaces.js"
-
-import {
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
 } from "../system/mocks.js"
-
-import {AuthoritarianStartupError} from "../system/errors.js"
-const err = (message: string) => new AuthoritarianStartupError(message)
-
 import {
 	accountPopupLogin,
 	prepareLoginPopupRoutine,
-} from "../toolbox/account-popup-login.js"
+} from "../system/account-popup-login.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
+import {decodeAccessToken} from "../system/decode-access-token.js"
 
-import {selects} from "../toolbox/selects.js"
-import {decodeAccessToken} from "../toolbox/decode-access-token.js"
+import {
+	AuthoritarianConfig,
+	AuthoritarianOptions,
+} from "../interfaces.js"
+
+const err = (message: string) => new AuthoritarianStartupError(message)
 
 /**
  * Prepare all of the options for the start routine
@@ -36,24 +33,7 @@ export async function initialize(config: AuthoritarianConfig):
  Promise<AuthoritarianOptions> {
 
 	let progress: Partial<AuthoritarianOptions> = {}
-
-	//
-	// pass over simple config as options
-	//
-
-	progress.debug = !!config.debug
 	progress.decodeAccessToken = decodeAccessToken
-
-	//
-	// select dom elements
-	//
-
-	progress.userPanels = selects("user-panel")
-	progress.paywallPanels = selects("paywall-panel")
-	progress.profilePanels = selects("profile-panel")
-	progress.privateVimeos = selects("private-vimeo")
-	progress.avatarDisplays = selects("avatar-display")
-	progress.questionsForums = selects("questions-forum")
 
 	//
 	// use mocks instead of real microservices
@@ -89,8 +69,8 @@ export async function initialize(config: AuthoritarianConfig):
 	const operations = []
 	const queue = (func: () => Promise<any>) => operations.push(func())
 
-	queue(async() => {
-		if (config.authServer) {
+	if (config.authServer) {
+		queue(async() => {
 			progress.loginPopupRoutine = prepareLoginPopupRoutine(
 				config.authServer,
 				accountPopupLogin
@@ -98,30 +78,30 @@ export async function initialize(config: AuthoritarianConfig):
 			progress.tokenStorage = await tokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
 			})
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.profileServer) {
+	if (config.profileServer) {
+		queue(async() => {
 			progress.profileMagistrate = await profileMagistrateCacheClient({
 				url: config.profileServer
 			})
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.paywallServer) {
+	if (config.paywallServer) {
+		queue(async() => {
 			console.log("coming soon: paywall guardian initialization")
 			progress.paywallGuardian = null
-		}
-	})
+		})
+	}
 
-	queue(async() => {
-		if (config.privateVimeoServer) {
+	if (config.privateVimeoServer) {
+		queue(async() => {
 			console.log("coming soon: paywall guardian initialization")
 			progress.privateVimeoGovernor = null
-		}
-	})
+		})
+	}
 
 	try {
 		await Promise.all(operations)
@@ -135,8 +115,6 @@ export async function initialize(config: AuthoritarianConfig):
 	//
 
 	return {
-		debug: progress.debug,
-
 		tokenStorage: progress.tokenStorage,
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,
@@ -145,12 +123,5 @@ export async function initialize(config: AuthoritarianConfig):
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,
-
-		userPanels: progress.userPanels,
-		paywallPanels: progress.paywallPanels,
-		profilePanels: progress.profilePanels,
-		privateVimeos: progress.privateVimeos,
-		avatarDisplays: progress.avatarDisplays,
-		questionsForums: progress.questionsForums,
 	}
 }

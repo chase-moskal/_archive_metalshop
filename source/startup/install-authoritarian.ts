@@ -1,27 +1,26 @@
 
-import "menutown/dist/register-all.js"
-import "../system/register-all.js"
+import {AuthoritarianOptions} from "../interfaces.js"
 
-import {select} from "../toolbox/selects.js"
+import {theme} from "../system/theme.js"
+import {themeComponents} from "../framework/theme-components.js"
+import {registerComponents} from "../toolbox/register-components.js"
 
-import {wire} from "./wire.js"
-import {parse} from "./parse.js"
-import {initialize} from "./initialize.js"
+import {prepareComponents} from "./prepare-components.js"
+import {ascertainOptionsFromDom} from "./ascertain-options-from-dom.js"
 
-export async function installAuthoritarian() {
+export async function installAuthoritarian(options?: AuthoritarianOptions) {
 
-	// grab the <authoritarian-config> element
-	const element = select("authoritarian-config")
+	// use the provided options, or parse them from the dom
+	options = options || await ascertainOptionsFromDom({
+		selector: "authoritarian-config"
+	})
 
-	// make sense of the config element's attributes
-	const config = parse(element)
+	// create the components all wired up with their models
+	const {components, start} = prepareComponents(options)
 
-	// instantiate microservice facilities, or mocks
-	const options = await initialize(config)
+	// define the custom elements and apply the css theme
+	registerComponents(themeComponents(theme, components))
 
-	// instance the models, and wire them to the dom and each other
-	const supermodel = await wire(options)
-
-	// start the passive login routine
-	await supermodel.start()
+	// give back the start function
+	return {start}
 }

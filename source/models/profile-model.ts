@@ -1,13 +1,20 @@
 
-import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
 import {
-	LoginDetail,
+	Profile,
+	ProfileMagistrateTopic,
+} from "authoritarian/dist/interfaces.js"
+
+import {pubsub} from "../toolbox/pubsub.js"
+import {makeReader} from "../toolbox/pubsub.js"
+import {AuthoritarianProfileError} from "../system/errors.js"
+
+import {
+	UserState,
 	ProfileModel,
 	ProfileState,
 	GetAuthContext,
-} from "../system/interfaces.js"
-import {pubsub} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/make-reader.js"
+} from "../interfaces.js"
+import {UserMode} from "./user-model.js"
 
 export function createProfileModel({profileMagistrate}: {
 	profileMagistrate: ProfileMagistrateTopic
@@ -15,6 +22,7 @@ export function createProfileModel({profileMagistrate}: {
 
 	let getAuthContext: GetAuthContext
 	let cancel: boolean = false
+
 	const state: ProfileState = {
 		error: null,
 		admin: false,
@@ -23,8 +31,12 @@ export function createProfileModel({profileMagistrate}: {
 		premium: false,
 	}
 
-	const {reader, publishStateUpdate} = makeReader<ProfileState>(state)
-	const {publish: publishReset, subscribe: subscribeReset} = pubsub()
+	const {reader, update} = makeReader<ProfileState>(state)
+
+	const {
+		publish: publishReset,
+		subscribe: subscribeReset,
+	} = pubsub()
 
 	async function loadProfile(): Promise<Profile> {
 		const {accessToken} = await getAuthContext()
@@ -35,43 +47,34 @@ export function createProfileModel({profileMagistrate}: {
 
 	return {
 		reader,
+		update,
 		subscribeReset,
-		actions: {
-			async saveProfile(profile: Profile): Promise<void> {
-				try {
-					state.loading = true
-					publishStateUpdate()
-					const {accessToken} = await getAuthContext()
-					await profileMagistrate.setFullProfile({accessToken, profile})
-					state.profile = profile
-				}
-				catch (error) {
-					state.error = error
-					state.profile = null
-				}
-				state.loading = false
-				publishStateUpdate()
-			}
-		},
-		wiring: {
-			publishStateUpdate,
-			async receiveUserLoading() {
-				cancel = true
-				state.error = null
+		async saveProfile(profile: Profile): Promise<void> {
+			try {
 				state.loading = true
+				update()
+				const {accessToken} = await getAuthContext()
+				await profileMagistrate.setFullProfile({accessToken, profile})
+				state.profile = profile
+			}
+			catch (error) {
+				state.error = error
 				state.profile = null
-				publishStateUpdate()
-			},
-			async receiveUserLogin(detail: LoginDetail) {
+			}
+			state.loading = false
+			update()
+		},
+		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
+			getAuthContext = getContext
+			if (mode === UserMode.LoggedIn) {
 				publishReset()
-				getAuthContext = detail.getAuthContext
 				cancel = false
 				state.loading = true
-				publishStateUpdate()
+				update()
 				const {user} = await getAuthContext()
 				state.admin = !!user.public.claims.admin
 				state.premium = !!user.public.claims.premium
-				publishStateUpdate()
+				update()
 				try {
 					const profile = await loadProfile()
 					state.profile = cancel ? null : profile
@@ -81,14 +84,28 @@ export function createProfileModel({profileMagistrate}: {
 					state.error = error
 				}
 				state.loading = false
-				publishStateUpdate()
-			},
-			async receiveUserLogout() {
-				state.error = null
-				state.profile = null
-				state.loading = false
-				publishStateUpdate()
+				update()
 			}
-		}
+			else if (mode === UserMode.Loading) {
+				cancel = true
+				state.error = null
+				state.loading = true
+				state.profile = null
+				state.premium = false
+			}
+			else if (mode === UserMode.Error) {
+				cancel = true
+				state.error = new AuthoritarianProfileError("profile error")
+				state.loading = true
+				state.profile = null
+				state.premium = false
+			}
+			else {
+				state.error = null
+				state.loading = false
+				state.profile = null
+				state.premium = false
+			}
+		},
 	}
 }

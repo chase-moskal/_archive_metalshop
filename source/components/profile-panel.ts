@@ -1,17 +1,23 @@
 
-import {property, html, css} from "lit-element"
 import {Profile} from "authoritarian/dist/interfaces"
+import {property, html, css, LitElement} from "lit-element"
 
 import {select} from "../toolbox/selects.js"
 import {Debouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
-import {ProfileState, AvatarState} from "../system/interfaces.js"
-import {LoadableElement, LoadableState} from "../toolbox/loadable-element.js"
+import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
-export class ProfilePanel extends LoadableElement {
-	@property({type: Object}) avatarState: AvatarState
-	@property({type: Object}) profileState: ProfileState
-	onProfileSave = async(profile: Profile) => {}
+import {ProfileModel} from "../interfaces.js"
+
+export class ProfilePanel extends
+	mixinLoadable(
+		mixinModelSubscription<ProfileModel, typeof LitElement>(
+			LitElement
+		)
+	)
+{
+
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
 
@@ -21,19 +27,21 @@ export class ProfilePanel extends LoadableElement {
 		action: () => this._handleInputChange()
 	})
 
+	onProfileSave = async(profile: Profile) => {
+		this.model.saveProfile(profile)
+	}
+
 	reset() {
 		this._changedProfile = null
 	}
 
 	updated() {
-		if (this.profileState) {
-			const {error, loading} = this.profileState
-			this.loadableState = error
-				? LoadableState.Error
-				: loading
-					? LoadableState.Loading
-					: LoadableState.Ready
-		}
+		const {error, loading} = this.model.reader.state
+		this.loadableState = error
+			? LoadableState.Error
+			: loading
+				? LoadableState.Loading
+				: LoadableState.Ready
 	}
 
 	static get styles() {return [super.styles, css`
@@ -92,7 +100,7 @@ export class ProfilePanel extends LoadableElement {
 	`]}
 
 	private _handleInputChange = () => {
-		const {profile} = this.profileState
+		const {profile} = this.model.reader.state
 		if (!profile) return
 		const newProfile = this._generateNewProfileFromInputs()
 		const changes = !deepEqual(profile, newProfile)
@@ -106,7 +114,7 @@ export class ProfilePanel extends LoadableElement {
 	}
 
 	private _generateNewProfileFromInputs(): Profile {
-		const profile = deepClone(this.profileState.profile)
+		const profile = deepClone(this.model.reader.state.profile)
 		{
 			const input = select<HTMLInputElement>(
 				"input[name=nickname]",
@@ -118,20 +126,21 @@ export class ProfilePanel extends LoadableElement {
 	}
 
 	renderReady() {
-		if (!this.avatarState || !this.profileState) return
 		const {
-			avatarState,
 			_inputDebouncer,
 			_handleSaveClick,
 			_handleInputChange,
 		} = this
-		const {profile, admin, premium} = this.profileState
+		const {profile, admin, premium} = this.model.reader.state
 		const showSaveButton = !!this._changedProfile
 
 		if (!profile) return html``
 		return html`
 			<div class="container formarea coolbuttonarea">
-				<avatar-display .avatarState=${avatarState}></avatar-display>
+				<avatar-display
+					src=${profile && profile.public.picture}
+					?premium=${premium}
+				></avatar-display>
 				<div>
 					<ul>
 						${admin ? html`<li data-tag="admin">Admin</li>` : html``}
@@ -149,7 +158,12 @@ export class ProfilePanel extends LoadableElement {
 						.value=${profile.public.nickname}
 						/>
 					${showSaveButton
-						? html`<button class="save" @click=${_handleSaveClick}>Save</button>`
+						? html`
+							<button
+								class="save"
+								@click=${_handleSaveClick}>
+									Save
+							</button>`
 						: html``}
 				</div>
 			</div>

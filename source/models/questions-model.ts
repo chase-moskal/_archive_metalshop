@@ -1,24 +1,27 @@
 
 import {Profile, User} from "authoritarian/dist/interfaces.js"
-import {makeReader} from "../toolbox/make-reader.js"
+import {makeReader} from "../toolbox/pubsub.js"
 import {
 	LoginDetail,
 	QuestionDraft,
 	QuestionsState,
+	QuestionsModel,
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
-} from "../system/interfaces.js"
+	UserState,
+} from "../interfaces.js"
+import { UserMode } from "./user-model.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
-}) {
+}): QuestionsModel {
 	const state: QuestionsState = {
 		forums: {},
 		user: null,
 		profile: null,
 	}
 
-	const {reader, publishStateUpdate} = makeReader(state)
+	const {reader, update} = makeReader(state)
 
 	const getOrCreateForum = (forumName: string) => {
 		const existing = state.forums[forumName]
@@ -34,11 +37,11 @@ export function createQuestionsModel({questionsBureau}: {
 		)
 	}
 
-	const actions: QuestionsBureauTopic = {
+	const bureau: QuestionsBureauTopic = {
 		async fetchQuestions({forumName}: {forumName: string}) {
 			const questions = await questionsBureau.fetchQuestions({forumName})
 			state.forums[forumName] = {questions}
-			publishStateUpdate()
+			update()
 			return questions
 		},
 
@@ -46,7 +49,7 @@ export function createQuestionsModel({questionsBureau}: {
 			const question = await questionsBureau.postQuestion(options)
 			const forum = getOrCreateForum(options.forumName)
 			forum.questions.push(question)
-			publishStateUpdate()
+			update()
 			return question
 		},
 
@@ -58,7 +61,7 @@ export function createQuestionsModel({questionsBureau}: {
 			const comment = await questionsBureau.postComment(options)
 			const question = getQuestion(options.forumName, options.questionId)
 			question.comments.push(comment)
-			publishStateUpdate()
+			update()
 			return comment
 		},
 
@@ -71,7 +74,7 @@ export function createQuestionsModel({questionsBureau}: {
 			forum.questions = forum.questions.filter(
 				({questionId}) => questionId !== options.questionId
 			)
-			publishStateUpdate()
+			update()
 		},
 
 		async deleteComment(options: {
@@ -84,7 +87,7 @@ export function createQuestionsModel({questionsBureau}: {
 			question.comments = question.comments.filter(
 				({commentId}) => commentId !== options.commentId
 			)
-			publishStateUpdate()
+			update()
 		},
 
 		async likeQuestion(o) {
@@ -107,21 +110,21 @@ export function createQuestionsModel({questionsBureau}: {
 
 	return {
 		reader,
-		actions,
-		wiring: {
-			async receiveUserLogin({getAuthContext}: LoginDetail) {
+		bureau,
+		async receiveUserUpdate({mode, getAuthContext}: UserState): Promise<void> {
+			if (mode === UserMode.LoggedIn) {
 				const {user} = await getAuthContext()
 				updateUser(user)
-				publishStateUpdate()
-			},
-			async receiveUserLogout() {
-				updateUser(null)
-				publishStateUpdate()
-			},
-			updateProfile(profile: Profile) {
-				state.profile = profile
-				publishStateUpdate()
+				update()
 			}
-		}
+			else {
+				updateUser(null)
+				update()
+			}
+		},
+		updateProfile(profile: Profile) {
+			state.profile = profile
+			update()
+		},
 	}
 }

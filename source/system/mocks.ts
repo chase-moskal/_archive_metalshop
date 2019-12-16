@@ -12,18 +12,19 @@ import {
 } from "authoritarian/dist/interfaces.js"
 import {signToken} from "authoritarian/dist/crypto.js"
 
-import {privateKey} from "./mock-keys.js"
 import {
+	Question,
 	AuthContext,
+	QuestionDraft,
+	QuestionComment,
 	LoginPopupRoutine,
 	QuestionsBureauTopic,
-	Question,
-	QuestionDraft,
 	QuestionCommentDraft,
-	QuestionComment,
-} from "./interfaces.js"
+} from "../interfaces.js"
 
-const debug = (message: string) => console.debug(`mock: ${message}`)
+import {privateKey} from "./mock-keys.js"
+
+const debug = (message: string) => null //console.debug(`mock: ${message}`)
 
 const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))
@@ -62,17 +63,38 @@ async function createMockRefreshToken({expiresIn = "60d"}: {
 	})
 }
 
-const mockRefreshToken = createMockRefreshToken()
-const mockAccessToken = createMockAccessToken({publicClaims: {premium: false}})
-const mockPremiumAccessToken = createMockAccessToken({publicClaims: {premium: true}})
-const mockAdminAccessToken = createMockAccessToken({publicClaims: {admin: true, premium: true}})
+function once<T extends any>(
+	handler: () => Promise<T>
+): () => Promise<T> {
+	let done = false
+	let value: T
+	return async() => {
+		if (done) return value
+		else {
+			value = await handler()
+			done = true
+			return value
+		}
+	}
+}
+
+const getMockRefreshToken = once(() => createMockRefreshToken())
+const getMockAccessToken = once(() => createMockAccessToken({
+	publicClaims: {premium: false}
+}))
+const getMockPremiumAccessToken = once(() => createMockAccessToken({
+	publicClaims: {premium: true}
+}))
+const getMockAdminAccessToken = once(() => createMockAccessToken({
+	publicClaims: {admin: true, premium: true
+}}))
 
 export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
 	debug("mockLoginPopupRoutine")
 	await nap()
 	return {
-		accessToken: await mockAccessToken,
-		refreshToken: await mockRefreshToken
+		accessToken: await getMockAccessToken(),
+		refreshToken: await getMockRefreshToken()
 	}
 }
 
@@ -114,7 +136,7 @@ export class MockTokenStorage implements TokenStorageTopic {
 	async passiveCheck() {
 		debug("passiveCheck")
 		await nap()
-		return mockAccessToken
+		return getMockAccessToken()
 	}
 	async writeTokens(tokens: AuthTokens) {
 		debug("writeTokens")
@@ -134,7 +156,7 @@ export class MockTokenStorageAdmin extends MockTokenStorage {
 	async passiveCheck() {
 		debug("passiveCheck admin")
 		await nap()
-		return mockAdminAccessToken
+		return getMockAdminAccessToken()
 	}
 }
 
@@ -182,12 +204,12 @@ export class MockPaywallGuardian implements PaywallGuardianTopic {
 	async grantUserPremium(options: {accessToken: AccessToken}) {
 		debug("grantUserPremium")
 		await nap()
-		return mockPremiumAccessToken
+		return getMockPremiumAccessToken()
 	}
 	async revokeUserPremium(options: {accessToken: AccessToken}) {
 		debug("revokeUserPremium")
 		await nap()
-		return mockAccessToken
+		return getMockAccessToken()
 	}
 }
 

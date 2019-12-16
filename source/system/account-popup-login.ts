@@ -1,6 +1,6 @@
 
-import {AccountPopupLogin} from "../system/interfaces.js"
-import {AuthoritarianAuthError} from "../system/errors.js"
+import {AccountPopupLogin} from "../interfaces.js"
+import {AuthoritarianAuthError} from "./errors.js"
 import {AuthTokens} from "authoritarian/dist/interfaces.js"
 
 const err = (message: string) => new AuthoritarianAuthError(message)
