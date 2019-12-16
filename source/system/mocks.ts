@@ -168,17 +168,24 @@ export class MockTokenStorageLoggedOut extends MockTokenStorage {
 	}
 }
 
-export class MockProfileMagistrate implements ProfileMagistrateTopic {
-	private _profile: Profile = {
-		userId: "fake-h31829h381273h",
-		public: {
-			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-			picture: "https://picsum.photos/id/375/200/200",
-		},
-		private: {
-			realname: "Captain Branstock Dudley-Faddington",
-		}
+export const mockProfile: Profile = {
+	userId: "fake-h31829h381273h",
+	public: {
+		nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+		picture: "https://picsum.photos/id/375/200/200",
+	},
+	private: {
+		realname: "Captain Branstock Dudley-Faddington",
 	}
+}
+
+export class MockProfileMagistrate implements ProfileMagistrateTopic {
+	private _profile: Profile
+
+	constructor({profile = mockProfile}: {profile?: Profile} = {}) {
+		this._profile = profile
+	}
+
 	async getPublicProfile({userId}): Promise<Profile> {
 		debug("getPublicProfile")
 		await nap()
@@ -187,11 +194,13 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 			userId,
 		}
 	}
+
 	async getFullProfile(options): Promise<Profile> {
 		debug("getFullProfile")
 		await nap()
 		return this._profile
 	}
+
 	async setFullProfile({profile}): Promise<void> {
 		debug("setFullProfile")
 		await nap()
