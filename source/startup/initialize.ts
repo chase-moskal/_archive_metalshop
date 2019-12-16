@@ -33,11 +33,6 @@ export async function initialize(config: AuthoritarianConfig):
  Promise<AuthoritarianOptions> {
 
 	let progress: Partial<AuthoritarianOptions> = {}
-
-	//
-	// pass over simple config as options
-	//
-
 	progress.decodeAccessToken = decodeAccessToken
 
 	//
