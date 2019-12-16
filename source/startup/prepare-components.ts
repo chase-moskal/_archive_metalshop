@@ -24,8 +24,6 @@ const validate = (condition: any, message: string) => {
 }
 
 export function prepareComponents({
-	debug,
-
 	tokenStorage,
 	paywallGuardian,
 	questionsBureau,
@@ -67,18 +65,10 @@ export function prepareComponents({
 	//
 
 	user.reader.subscribe(paywall.receiveUserUpdate)
-	paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
 	user.reader.subscribe(profile.receiveUserUpdate)
 	user.reader.subscribe(questions.receiveUserUpdate)
 	profile.reader.subscribe(state => questions.updateProfile(state.profile))
-
-	// if (debug) {
-	// 	for (const [name, subscriber] of Object.entries(user.subscribers))
-	// 		subscriber(() => console.debug("event.user:", name))
-	// 	paywall.wiring.loginWithAccessToken(
-	// 		async() => console.debug("event.paywall:", "loginWithAccessToken")
-	// 	)
-	// }
+	paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
 
 	//
 	// give back components and high level start function

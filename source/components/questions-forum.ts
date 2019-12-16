@@ -10,11 +10,11 @@ import {
 	QuestionComment,
 } from "../interfaces.js"
 
-export class QuestionsForum extends (
+export class QuestionsForum extends
 	mixinModelSubscription<QuestionsModel, typeof LitElement>(
 		LitElement
 	)
-) {
+{
 	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["forum-name"]: string
 
@@ -22,7 +22,7 @@ export class QuestionsForum extends (
 		const {["forum-name"]: forumName} = this
 		if (!forumName) throw new Error(`questions-forum requires attribute `
 			+ `[forum-name]`)
-		this.questions = await this.model.actions.fetchQuestions({forumName})
+		this.questions = await this.model.bureau.fetchQuestions({forumName})
 	}
 
 	static get styles() {return css`

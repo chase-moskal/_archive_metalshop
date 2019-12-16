@@ -38,7 +38,6 @@ export async function initialize(config: AuthoritarianConfig):
 	// pass over simple config as options
 	//
 
-	progress.debug = !!config.debug
 	progress.decodeAccessToken = decodeAccessToken
 
 	//
@@ -121,8 +120,6 @@ export async function initialize(config: AuthoritarianConfig):
 	//
 
 	return {
-		debug: progress.debug,
-
 		tokenStorage: progress.tokenStorage,
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,

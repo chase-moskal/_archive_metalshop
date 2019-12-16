@@ -17,8 +17,6 @@ import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
 
 export interface AuthoritarianConfig {
 	mock: string
-	debug: boolean
-
 	authServer: string
 	profileServer: string
 	paywallServer: string
@@ -27,8 +25,6 @@ export interface AuthoritarianConfig {
 }
 
 export interface AuthoritarianOptions {
-	debug: boolean
-
 	tokenStorage: TokenStorageTopic
 	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
@@ -143,14 +139,8 @@ export interface VimeoState {
 
 export interface VimeoModel {
 	reader: Reader<VimeoState>
-	actions: {
-		updateVideo(vimeostring: string): Promise<void>
-	}
-	wiring: {
-		receiveUserLoading(): Promise<void>
-		receiveUserLogin(detail: LoginDetail): Promise<void>
-		receiveUserLogout(): Promise<void>
-	}
+	updateVideo(vimeostring: string): Promise<void>
+	receiveUserUpdate(state: UserState): Promise<void>
 }
 
 export interface QuestionAuthor {

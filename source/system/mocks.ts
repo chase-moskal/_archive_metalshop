@@ -24,7 +24,7 @@ import {
 
 import {privateKey} from "./mock-keys.js"
 
-const debug = (message: string) => console.debug(`mock: ${message}`)
+const debug = (message: string) => null //console.debug(`mock: ${message}`)
 
 const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))

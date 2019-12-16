@@ -10,13 +10,13 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {ProfileModel} from "../interfaces.js"
 
-export class ProfilePanel extends (
+export class ProfilePanel extends
 	mixinLoadable(
 		mixinModelSubscription<ProfileModel, typeof LitElement>(
 			LitElement
 		)
 	)
-) {
+{
 
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
@@ -28,7 +28,7 @@ export class ProfilePanel extends (
 	})
 
 	onProfileSave = async(profile: Profile) => {
-		this.model.actions.saveProfile(profile)
+		this.model.saveProfile(profile)
 	}
 
 	reset() {

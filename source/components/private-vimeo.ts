@@ -13,23 +13,23 @@ const icons = {
 	cancel: svg`<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm0 1.3c1.3 0 2.5.44 3.47 1.17l-8 8A5.755 5.755 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zm0 11.41c-1.3 0-2.5-.44-3.47-1.17l8-8c.73.97 1.17 2.17 1.17 3.47 0 3.14-2.56 5.7-5.7 5.7z"/></svg>`
 }
 
-export class PrivateVimeo extends (
+export class PrivateVimeo extends
 	mixinLoadable(
 		LitElement
 	)
-) {
+{
 	static userModel: UserModel
 	static vimeoGovernor: PrivateVimeoGovernorTopic
 	
 	private _model: VimeoModel
 	private _vimeoGovernor: PrivateVimeoGovernorTopic =
 		(<any>this.constructor).vimeoGovernor
-	private _user: UserModel =
+	private _userModel: UserModel =
 		(<any>this.constructor).user
 
 	@property({type: String, reflect: true}) ["video-name"]: string
 	onUpdateVideo = (vimeostring: string) => {
-		this._model.actions.updateVideo(vimeostring)
+		this._model.updateVideo(vimeostring)
 	}
 
 	firstUpdated() {
@@ -39,9 +39,15 @@ export class PrivateVimeo extends (
 			privateVimeoGovernor: this._vimeoGovernor
 		})
 
-		const {_user: user, _model: vimeo} = this
-		user.reader.subscribe(() => this.requestUpdate())
-		vimeo.reader.subscribe(() => this.requestUpdate())
+		const {_userModel: user, _model: model} = this
+		const handleUserUpdate = () => {
+			const {state: userState} = this._userModel.reader
+			model.receiveUserUpdate(userState)
+			this.requestUpdate()
+		}
+		user.reader.subscribe(handleUserUpdate)
+		model.reader.subscribe(() => this.requestUpdate())
+		handleUserUpdate()
 	}
 
 	updated() {

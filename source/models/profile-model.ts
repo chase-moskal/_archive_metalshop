@@ -6,16 +6,15 @@ import {
 
 import {pubsub} from "../toolbox/pubsub.js"
 import {makeReader} from "../toolbox/pubsub.js"
+import {AuthoritarianProfileError} from "../system/errors.js"
 
 import {
-	LoginDetail,
+	UserState,
 	ProfileModel,
 	ProfileState,
 	GetAuthContext,
-	UserState,
 } from "../interfaces.js"
-import { UserMode } from "./user-model.js"
-import { AuthoritarianProfileError } from "source/system/errors.js"
+import {UserMode} from "./user-model.js"
 
 export function createProfileModel({profileMagistrate}: {
 	profileMagistrate: ProfileMagistrateTopic
