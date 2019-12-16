@@ -2,15 +2,14 @@
 import {Profile, User} from "authoritarian/dist/interfaces.js"
 import {makeReader} from "../toolbox/pubsub.js"
 import {
-	LoginDetail,
+	UserState,
 	QuestionDraft,
 	QuestionsState,
 	QuestionsModel,
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
-	UserState,
 } from "../interfaces.js"
-import { UserMode } from "./user-model.js"
+import {UserMode} from "./user-model.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic

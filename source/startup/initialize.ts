@@ -39,7 +39,7 @@ export async function initialize(config: AuthoritarianConfig):
 	// use mocks instead of real microservices
 	//
 
-	if (config.mock) {
+	if (config.mock !== null) {
 		const {
 			MockTokenStorage,
 			MockPaywallGuardian,
@@ -52,9 +52,9 @@ export async function initialize(config: AuthoritarianConfig):
 			profileMagistrate: new MockProfileMagistrate(),
 			tokenStorage: config.mock === "admin"
 				? new MockTokenStorageAdmin()
-				: config.mock === "loggedout"
-					? new MockTokenStorageLoggedOut()
-					: new MockTokenStorage(),
+				: config.mock === "loggedin"
+					? new MockTokenStorage()
+					: new MockTokenStorageLoggedOut(),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
 			questionsBureau: new MockQuestionsBureau(),

@@ -78,8 +78,8 @@ export function prepareComponents({
 		components: {
 			AvatarDisplay,
 			PrivateVimeo: <typeof PrivateVimeo>class extends PrivateVimeo {
-				static vimeoGovernor = privateVimeoGovernor
 				static user = user
+				static vimeoGovernor = privateVimeoGovernor
 			},
 			UserPanel: provideModel(user, UserPanel),
 			UserAvatar: provideModel(profile, UserAvatar),

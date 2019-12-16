@@ -5,7 +5,6 @@ import {
 	UserState,
 	VimeoModel,
 	VimeoState,
-	LoginDetail,
 	GetAuthContext,
 } from "../interfaces.js"
 import { UserMode } from "./user-model.js"

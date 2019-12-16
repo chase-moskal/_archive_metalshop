@@ -12,7 +12,7 @@
 
 		<!-- authoritarian config -->
 		<authoritarian-config
-			mock="admin"
+			mock
 			Xauth-server="http://localhost:8000"
 			Xprofile-server="http://localhost:8001"
 			Xpaywall-server="http://localhost:8002"
@@ -20,6 +20,20 @@
 			Xquestions-forum-server="http://localhost:8004"
 		></authoritarian-config>
 
+		<script>
+			// demo ?mock modes
+			if (location.search.startsWith("?mock")) {
+				const config = document.querySelector("authoritarian-config")
+				config.setAttribute(
+					"mock",
+					location.search.startsWith("?mock=loggedin")
+						? "loggedin"
+						: location.search.startsWith("?mock=admin")
+							? "admin"
+							: ""
+				)
+			}
+		</script>
 	</head>
 	<body>
 		<header>
