@@ -5,19 +5,24 @@ import {
 } from "authoritarian/dist/interfaces.js"
 
 import {makeReader} from "../toolbox/pubsub.js"
-import {pubsub, pubsubs} from "../toolbox/pubsub.js"
 
 import {
 	UserModel,
-	UserEvents,
+	UserState,
 	LoginDetail,
 	AuthContext,
 	LoginPopupRoutine,
 	DecodeAccessToken,
-	UserState,
 } from "../interfaces.js"
 
 const expiryGraceSeconds = 60
+
+export enum UserMode {
+	Error,
+	Loading,
+	LoggedIn,
+	LoggedOut,
+}
 
 export function createUserModel({
 	tokenStorage,
@@ -32,44 +37,36 @@ export function createUserModel({
 	let authContext: AuthContext
 
 	const state: UserState = {
-		error: null,
-		loading: false,
-		loggedIn: true,
+		mode: UserMode.Loading,
+		getAuthContext: null
 	}
 
 	const {reader, update} = makeReader<UserState>(state)
 
-	const {publishers, subscribers} = pubsubs<UserEvents>({
-		userLogin: pubsub(),
-		userError: pubsub(),
-		userLogout: pubsub(),
-		userLoading: pubsub(),
-	})
-
-	subscribers.userLoading(() => {
-		state.error = null
-		state.loading = true
-		state.loggedIn = false
+	const userLoading = () => {
+		state.mode = UserMode.Loading
+		state.getAuthContext = null
 		update()
-	})
+	}
 
-	subscribers.userLogin(() => {
-		state.loggedIn = true
-		state.loading = false
+	const userLogin = ({getAuthContext}: LoginDetail) => {
+		state.mode = UserMode.LoggedIn
+		state.getAuthContext = getAuthContext
 		update()
-	})
+	}
 
-	subscribers.userError(error => {
-		state.error = error
+	const userError = (error: Error) => {
+		state.mode = UserMode.Error
+		state.getAuthContext = null
+		console.error(error)
 		update()
-	})
+	}
 
-	subscribers.userLogout(() => {
-		state.loading = false
-		state.error = null
-		state.loggedIn = false
+	const userLogout = () => {
+		state.mode = UserMode.LoggedOut
+		state.getAuthContext = null
 		update()
-	})
+	}
 
 	/** Receive and decode an access token for login
 	 * - return an async getter which seamlessly refreshes expired tokens
@@ -94,68 +91,62 @@ export function createUserModel({
 
 	return {
 		reader,
-		subscribers,
-		wiring: {
-			update,
 
-			/** Initial passive check, to see if we're already logged in */
-			async start() {
-				publishers.userLoading()
-				try {
-					const accessToken = await tokenStorage.passiveCheck()
+		/** Initial passive check, to see if we're already logged in */
+		async start() {
+			update()
+			userLoading()
+			try {
+				const accessToken = await tokenStorage.passiveCheck()
 
-					if (accessToken) {
-						publishers.userLogin(processAccessToken(accessToken))
-					}
-					else {
-						publishers.userLogout()
-					}
+				if (accessToken) {
+					userLogin(processAccessToken(accessToken))
 				}
-				catch (error) {
-					error.message = `user-model error in start(): ${error.message}`
-					console.error(error)
-					publishers.userError(error)
+				else {
+					userLogout()
 				}
-			},
-
-			/** Process a new token as a login
-			 * - some services might return new tokens from the auth server for you */
-			async loginWithAccessToken(accessToken: AccessToken) {
-				const detail = processAccessToken(accessToken)
-				await tokenStorage.writeAccessToken(accessToken)
-				publishers.userLogin(detail)
 			}
-
+			catch (error) {
+				error.message = `user-model error in start(): ${error.message}`
+				console.error(error)
+				userError(error)
+			}
 		},
-		actions: {
 
-			/** Trigger a user login routine */
-			async login() {
-				publishers.userLoading()
-				try {
-					const authTokens = await loginPopupRoutine()
-					await tokenStorage.writeTokens(authTokens)
-					publishers.userLogin(processAccessToken(authTokens.accessToken))
-				}
-				catch (error) {
-					console.error(error)
-					publishers.userError(error)
-				}
-			},
+		/** Process a new token as a login
+		 * - some services might return new tokens from the auth server for you */
+		async receiveLoginWithAccessToken(accessToken: AccessToken) {
+			const detail = processAccessToken(accessToken)
+			await tokenStorage.writeAccessToken(accessToken)
+			userLogin(detail)
+		},
 
-			/** Trigger a user logout routine */
-			async logout() {
-				publishers.userLoading()
-				try {
-					await tokenStorage.clearTokens()
-					authContext = null
-					publishers.userLogout()
-				}
-				catch (error) {
-					console.error(error)
-					publishers.userError(error)
-				}
+		/** Trigger a user login routine */
+		async login() {
+			userLoading()
+			try {
+				const authTokens = await loginPopupRoutine()
+				await tokenStorage.writeTokens(authTokens)
+				userLogin(processAccessToken(authTokens.accessToken))
 			}
-		}
+			catch (error) {
+				console.error(error)
+				userError(error)
+			}
+		},
+
+		/** Trigger a user logout routine */
+		async logout() {
+			userLoading()
+			try {
+				await tokenStorage.clearTokens()
+				authContext = null
+				userLogout()
+			}
+			catch (error) {
+				console.error(error)
+				userError(error)
+			}
+		},
 	}
 }

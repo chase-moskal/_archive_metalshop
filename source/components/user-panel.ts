@@ -19,11 +19,11 @@ export class UserPanel extends (
 	errorMessage = "user account system error"
 
 	onLoginClick: (event: MouseEvent) => void = () => {
-		this.model.actions.login()
+		this.model.login()
 	}
 
 	onLogoutClick: (event: MouseEvent) => void = () => {
-		this.model.actions.logout()
+		this.model.logout()
 	}
 
 	updated() {

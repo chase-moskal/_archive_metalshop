@@ -8,7 +8,9 @@ import {
 	QuestionsModel,
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
+	UserState,
 } from "../interfaces.js"
+import { UserMode } from "./user-model.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
@@ -35,7 +37,7 @@ export function createQuestionsModel({questionsBureau}: {
 		)
 	}
 
-	const actions: QuestionsBureauTopic = {
+	const bureau: QuestionsBureauTopic = {
 		async fetchQuestions({forumName}: {forumName: string}) {
 			const questions = await questionsBureau.fetchQuestions({forumName})
 			state.forums[forumName] = {questions}
@@ -108,21 +110,21 @@ export function createQuestionsModel({questionsBureau}: {
 
 	return {
 		reader,
-		actions,
-		wiring: {
-			async receiveUserLogin({getAuthContext}: LoginDetail) {
+		bureau,
+		async receiveUserUpdate({mode, getAuthContext}: UserState): Promise<void> {
+			if (mode === UserMode.LoggedIn) {
 				const {user} = await getAuthContext()
 				updateUser(user)
 				update()
-			},
-			async receiveUserLogout() {
+			}
+			else {
 				updateUser(null)
 				update()
-			},
-			updateProfile(profile: Profile) {
-				state.profile = profile
-				update()
 			}
-		}
+		},
+		updateProfile(profile: Profile) {
+			state.profile = profile
+			update()
+		},
 	}
 }

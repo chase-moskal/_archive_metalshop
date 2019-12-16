@@ -66,33 +66,19 @@ export function prepareComponents({
 	// wire models to each other
 	//
 
-	// wire user to paywall
-	paywall.wiring.loginWithAccessToken(user.wiring.loginWithAccessToken)
-	user.subscribers.userLogin(paywall.wiring.receiveUserLogin)
-	user.subscribers.userLogout(paywall.wiring.receiveUserLogout)
-	user.subscribers.userError(paywall.wiring.receiveUserLogout)
+	user.reader.subscribe(paywall.receiveUserUpdate)
+	paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
+	user.reader.subscribe(profile.receiveUserUpdate)
+	user.reader.subscribe(questions.receiveUserUpdate)
+	profile.reader.subscribe(state => questions.updateProfile(state.profile))
 
-	// wire user to profile
-	user.subscribers.userLogin(profile.wiring.receiveUserLogin)
-	user.subscribers.userError(profile.wiring.receiveUserLogout)
-	user.subscribers.userLogout(profile.wiring.receiveUserLogout)
-	user.subscribers.userLoading(profile.wiring.receiveUserLoading)
-
-	// update the questions model
-	user.subscribers.userLogin(questions.wiring.receiveUserLogin)
-	user.subscribers.userError(questions.wiring.receiveUserLogout)
-	user.subscribers.userLogout(questions.wiring.receiveUserLogout)
-	user.subscribers.userLoading(questions.wiring.receiveUserLogout)
-	profile.reader.subscribe(state =>
-		questions.wiring.updateProfile(state.profile))
-
-	if (debug) {
-		for (const [name, subscriber] of Object.entries(user.subscribers))
-			subscriber(() => console.debug("event.user:", name))
-		paywall.wiring.loginWithAccessToken(
-			async() => console.debug("event.paywall:", "loginWithAccessToken")
-		)
-	}
+	// if (debug) {
+	// 	for (const [name, subscriber] of Object.entries(user.subscribers))
+	// 		subscriber(() => console.debug("event.user:", name))
+	// 	paywall.wiring.loginWithAccessToken(
+	// 		async() => console.debug("event.paywall:", "loginWithAccessToken")
+	// 	)
+	// }
 
 	//
 	// give back components and high level start function
@@ -112,7 +98,7 @@ export function prepareComponents({
 			QuestionsForum: provideModel(questions, QuestionsForum),
 		},
 		async start() {
-			return user.wiring.start()
+			return user.start()
 		}
 	}
 }

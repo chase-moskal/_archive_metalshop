@@ -40,10 +40,7 @@ export class PrivateVimeo extends (
 		})
 
 		const {_user: user, _model: vimeo} = this
-		user.subscribers.userLogin(vimeo.wiring.receiveUserLogin)
-		user.subscribers.userError(vimeo.wiring.receiveUserLogout)
-		user.subscribers.userLogout(vimeo.wiring.receiveUserLogout)
-		user.subscribers.userLoading(vimeo.wiring.receiveUserLoading)
+		user.reader.subscribe(() => this.requestUpdate())
 		vimeo.reader.subscribe(() => this.requestUpdate())
 	}
 

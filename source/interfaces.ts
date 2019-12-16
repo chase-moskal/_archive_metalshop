@@ -10,9 +10,10 @@ import {
 	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 
+import {UserMode} from "./models/user-model.js"
 import {PaywallMode} from "./models/paywall-model.js"
 import {PrivilegeMode} from "./models/private-vimeo-model.js"
-import {Reader, Pubsubs, Pubsub, Subify, Subscribe} from "./toolbox/pubsub.js"
+import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
 
 export interface AuthoritarianConfig {
 	mock: string
@@ -56,34 +57,20 @@ export interface SimpleModel {
 }
 
 export interface UserState {
-	error: Error
-	loading: boolean
-	loggedIn: boolean
+	mode: UserMode
+	getAuthContext: GetAuthContext
 }
 
-export interface UserEvents extends Pubsubs {
-	userLoading: Pubsub<() => void>
-	userLogin: Pubsub<(auth: LoginDetail) => void>
-	userError: Pubsub<(error: Error) => void>
-	userLogout: Pubsub<() => void>
-}
-
-export interface UserEventSubscribers extends Subify<UserEvents> {}
+export type UserUpdate = (state: UserState) => void
 
 export type UserReader = Reader<UserState>
 
 export interface UserModel {
 	reader: UserReader
-	subscribers: UserEventSubscribers
-	wiring: {
-		update: () => void
-		start: () => Promise<void>
-		loginWithAccessToken: (accessToken: AccessToken) => Promise<void>
-	},
-	actions: {
-		login: () => Promise<void>
-		logout: () => Promise<void>
-	}
+	start: () => Promise<void>
+	login: () => Promise<void>
+	logout: () => Promise<void>
+	receiveLoginWithAccessToken: (accessToken: AccessToken) => Promise<void>
 }
 
 export interface PaywallState {
@@ -94,27 +81,15 @@ export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
 }
 
-export interface PaywallEvents extends Pubsubs {
-	loginWithAccessToken: Pubsub<LoginWithAccessToken>
-}
-
 export interface PaywallReader extends Reader<PaywallState> {}
-export interface PaywallActions {
-	makeUserPremium: () => Promise<void>
-	revokeUserPremium: () => Promise<void>
-}
-
-export interface PaywallWiring {
-	update: () => void
-	loginWithAccessToken: Subscribe<LoginWithAccessToken>
-	receiveUserLogin: (o: {getAuthContext: GetAuthContext}) => Promise<void>
-	receiveUserLogout: () => Promise<void>
-}
 
 export interface PaywallModel {
-	wiring: PaywallWiring
-	actions: PaywallActions
 	reader: Reader<PaywallState>
+	update(): void
+	makeUserPremium(): Promise<void>
+	revokeUserPremium(): Promise<void>
+	receiveUserUpdate(state: UserState): Promise<void>
+	subscribeLoginWithAccessToken: Subscribe<LoginWithAccessToken>
 }
 
 export interface LoginDetail {
@@ -127,16 +102,10 @@ export interface ProfileEvents extends Pubsubs {
 
 export interface ProfileModel {
 	reader: Reader<ProfileState>
+	update(): void
 	subscribeReset: Subscribe
-	actions: {
-		saveProfile: (profile: Profile) => Promise<void>
-	},
-	wiring: {
-		update: () => void
-		receiveUserLogout: () => Promise<void>
-		receiveUserLoading: () => Promise<void>
-		receiveUserLogin: (detail: LoginDetail) => Promise<void>
-	}
+	saveProfile(profile: Profile): Promise<void>
+	receiveUserUpdate(state: UserState): Promise<void>
 }
 
 export interface ProfileState {
@@ -225,12 +194,9 @@ export interface QuestionsState {
 
 export interface QuestionsModel {
 	reader: Reader<QuestionsState>
-	actions: QuestionsBureauTopic
-	wiring: {
-		receiveUserLogin(detail: LoginDetail): Promise<void>
-		receiveUserLogout(): Promise<void>
-		updateProfile(profile: Profile): void
-	}
+	bureau: QuestionsBureauTopic
+	updateProfile(profile: Profile): void
+	receiveUserUpdate(state: UserState): Promise<void>
 }
 
 export interface QuestionsBureauTopic {
