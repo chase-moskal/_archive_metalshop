@@ -3,7 +3,7 @@ import {UserPanel} from "../components/user-panel.js"
 import {UserAvatar} from "../components/user-avatar.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
-import {PrivateVimeo} from "../components/private-vimeo.js"
+import {VideoViewer} from "../components/video-viewer.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
 import {QuestionsForum} from "../components/questions-forum.js"
 
@@ -16,7 +16,7 @@ import {provideModel} from "../framework/provide-model.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 
 import {AuthoritarianOptions} from "../interfaces.js"
-import { createPrivateVimeoModel } from "source/models/private-vimeo-model.js"
+import {createVideoViewerModel} from "../models/video-viewer-model.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -26,10 +26,10 @@ const validate = (condition: any, message: string) => {
 
 export function prepareComponents({
 	tokenStorage,
+	vimeoGovernor,
 	paywallGuardian,
 	questionsBureau,
 	profileMagistrate,
-	privateVimeoGovernor,
 
 	loginPopupRoutine,
 	decodeAccessToken,
@@ -63,9 +63,9 @@ export function prepareComponents({
 		questionsBureau
 	})
 
-	const vimeo = createPrivateVimeoModel({
+	const viewer = createVideoViewerModel({
 		user,
-		privateVimeoGovernor,
+		vimeoGovernor,
 	})
 
 	//
@@ -87,7 +87,7 @@ export function prepareComponents({
 			AvatarDisplay,
 			UserPanel: provideModel(user, UserPanel),
 			UserAvatar: provideModel(profile, UserAvatar),
-			PrivateVimeo: provideModel(vimeo, PrivateVimeo),
+			VideoViewer: provideModel(viewer, VideoViewer),
 			ProfilePanel: provideModel(profile, ProfilePanel),
 			PaywallPanel: provideModel(paywall, PaywallPanel),
 			QuestionsForum: provideModel(questions, QuestionsForum),

@@ -14,9 +14,9 @@
 		<authoritarian-config
 			mock
 			Xauth-server="http://localhost:8000"
+			Xvimeo-server="http://localhost:8003"
 			Xprofile-server="http://localhost:8001"
 			Xpaywall-server="http://localhost:8002"
-			Xprivate-vimeo-server="http://localhost:8003"
 			Xquestions-forum-server="http://localhost:8004"
 		></authoritarian-config>
 
@@ -56,14 +56,15 @@
 			<p>see <em><a href="https://github.com/chase-moskal/authoritarian-client">authoritarian-client on github</a></em></p>
 			<br/>
 
+			<!-- questions board -->
 			<questions-forum forum-name="qa1"></questions-forum>
 			<br/>
 
 			<!-- private livestream -->
-			<private-vimeo video-name="livestream">
+			<video-viewer video-name="livestream">
 				<h2>Welcome to the private livestream!</h2>
 				<p>You are logged in as a premium supporter</p>
-			</private-vimeo>
+			</video-viewer>
 
 		</main>
 	</body>

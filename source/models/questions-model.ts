@@ -105,6 +105,7 @@ export function createQuestionsModel({questionsBureau}: {
 				}
 			}
 		}
+		update()
 	}
 
 	return {
@@ -114,11 +115,9 @@ export function createQuestionsModel({questionsBureau}: {
 			if (mode === UserMode.LoggedIn) {
 				const {user} = await getAuthContext()
 				updateUser(user)
-				update()
 			}
 			else {
 				updateUser(null)
-				update()
 			}
 		},
 		updateProfile(profile: Profile) {

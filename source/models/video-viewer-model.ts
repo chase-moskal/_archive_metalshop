@@ -4,12 +4,12 @@ import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
 import {
 	UserModel,
 	UserState,
-	VimeoModel,
+	ViewerModel,
 	VimeoState,
 	VideoModel,
 	GetAuthContext,
 } from "../interfaces.js"
-import { UserMode } from "./user-model.js"
+import {UserMode} from "./user-model.js"
 
 export enum PrivilegeMode {
 	LoggedOut,
@@ -18,10 +18,10 @@ export enum PrivilegeMode {
 	Admin,
 }
 
-export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
+export function createVideoViewerModel({user, vimeoGovernor}: {
 	user: UserModel
-	privateVimeoGovernor: PrivateVimeoGovernorTopic
-}): VimeoModel {
+	vimeoGovernor: PrivateVimeoGovernorTopic
+}): ViewerModel {
 	let getAuthContext: GetAuthContext
 
 	const prepareVideoModel = ({videoName}: {videoName: string}): VideoModel => {
@@ -59,7 +59,7 @@ export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
 
 				if (vimeoId || vimeostring === "") {
 					const {accessToken} = await getAuthContext()
-					await privateVimeoGovernor.setVimeo({
+					await vimeoGovernor.setVimeo({
 						accessToken,
 						videoName,
 						vimeoId
@@ -88,13 +88,12 @@ export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
 							? PrivilegeMode.Privileged
 							: PrivilegeMode.Unprivileged
 					update()
-					const {vimeoId} = await privateVimeoGovernor.getVimeo({
+					const {vimeoId} = await vimeoGovernor.getVimeo({
 						accessToken,
 						videoName
 					})
 					state.vimeoId = vimeoId
 					state.loading = false
-					update()
 				}
 				else if (mode === UserMode.Loading) {
 					state.mode = PrivilegeMode.LoggedOut
@@ -102,7 +101,6 @@ export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
 					state.vimeoId = null
 					state.errorMessage = null
 					state.validationMessage = null
-					update()
 				}
 				else {
 					state.mode = PrivilegeMode.LoggedOut
@@ -110,12 +108,13 @@ export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
 					state.vimeoId = null
 					state.errorMessage = null
 					state.validationMessage = null
-					update()
 				}
+				update()
 			},
 		}
 
 		user.reader.subscribe(videoModel.receiveUserUpdate)
+		videoModel.receiveUserUpdate(user.reader.state)
 
 		return videoModel
 	}

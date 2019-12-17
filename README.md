@@ -14,7 +14,7 @@
 🎁 web components, just drop 'em in!
 
 🔌 connects with microservices:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [auth-server](https://github.com/chase-moskal/auth-server), [profile-server](https://github.com/chase-moskal/profile-server), [paywall-server](https://github.com/chase-moskal/paywall-server), private-vimeo-server
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [auth-server](https://github.com/chase-moskal/auth-server), [profile-server](https://github.com/chase-moskal/profile-server), [paywall-server](https://github.com/chase-moskal/paywall-server), vimeo-server
 
 🧭 here's a cool [sketchboard of authoritarian's architecture](https://sketchboard.me/DBK6n9pXvGpr)
 

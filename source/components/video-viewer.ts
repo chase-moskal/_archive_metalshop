@@ -1,18 +1,17 @@
 
-import {LitElement, html, css, svg, property} from "lit-element"
-import {PrivateVimeoGovernorTopic,} from "authoritarian/dist/interfaces.js"
+import {LitElement, html, css, property} from "lit-element"
 
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
-import {PrivilegeMode} from "../models/private-vimeo-model.js"
+import {PrivilegeMode} from "../models/video-viewer-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
-import {VimeoModel, VideoModel} from "../interfaces.js"
+import {ViewerModel, VideoModel} from "../interfaces.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
-export class PrivateVimeo extends
+export class VideoViewer extends
 	mixinLoadable(
-		mixinModelSubscription<VimeoModel, typeof LitElement>(
+		mixinModelSubscription<ViewerModel, typeof LitElement>(
 			LitElement
 		)
 	)
@@ -31,7 +30,10 @@ export class PrivateVimeo extends
 	firstUpdated() {
 		this["initially-hidden"] = false
 		const {["video-name"]: videoName} = this
+
+		// weird specialized wiring
 		this._videoModel = this.model.prepareVideoModel({videoName})
+		this.subscribeToReader(this._videoModel.reader)
 	}
 
 	updated() {
@@ -69,7 +71,7 @@ export class PrivateVimeo extends
 	}
 
 	private _renderViewer() {
-		const {vimeoId} = this._model.reader.state
+		const {vimeoId} = this._videoModel.reader.state
 		const query = "?color=00a651&title=0&byline=0&portrait=0&badge=0"
 		const viewer = html`
 			<div class="viewer">
@@ -107,7 +109,7 @@ export class PrivateVimeo extends
 	}
 
 	private _renderAdmin() {
-		const {validationMessage} = this._model.reader.state
+		const {validationMessage} = this._videoModel.reader.state
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
@@ -131,7 +133,7 @@ export class PrivateVimeo extends
 	}
 
 	renderReady() {
-		const {mode} = this._model.reader.state
+		const {mode} = this._videoModel.reader.state
 		switch (mode) {
 			case PrivilegeMode.LoggedOut: return this._renderLoggedOut()
 			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()

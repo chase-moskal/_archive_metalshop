@@ -58,7 +58,7 @@ export async function initialize(config: AuthoritarianConfig):
 			loginPopupRoutine: mockLoginPopupRoutine,
 			paywallGuardian: new MockPaywallGuardian(),
 			questionsBureau: new MockQuestionsBureau(),
-			privateVimeoGovernor: new MockPrivateVimeoGovernor(),
+			vimeoGovernor: new MockPrivateVimeoGovernor(),
 		}
 	}
 
@@ -96,10 +96,10 @@ export async function initialize(config: AuthoritarianConfig):
 		})
 	}
 
-	if (config.privateVimeoServer) {
+	if (config.vimeoServer) {
 		queue(async() => {
 			console.log("coming soon: paywall guardian initialization")
-			progress.privateVimeoGovernor = null
+			progress.vimeoGovernor = null
 		})
 	}
 
@@ -119,7 +119,7 @@ export async function initialize(config: AuthoritarianConfig):
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,
 		profileMagistrate: progress.profileMagistrate,
-		privateVimeoGovernor: progress.privateVimeoGovernor,
+		vimeoGovernor: progress.vimeoGovernor,
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,

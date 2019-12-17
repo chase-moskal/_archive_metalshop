@@ -9,9 +9,9 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 	return {
 		mock: element.getAttribute("mock"),
 		authServer: element.getAttribute("auth-server"),
+		vimeoServer: element.getAttribute("vimeo-server"),
 		profileServer: element.getAttribute("profile-server"),
 		paywallServer: element.getAttribute("paywall-server"),
-		privateVimeoServer: element.getAttribute("private-vimeo-server"),
 		questionsForumServer: element.getAttribute("questions-forum-server"),
 	}
 }

@@ -12,15 +12,15 @@ import {
 
 import {UserMode} from "./models/user-model.js"
 import {PaywallMode} from "./models/paywall-model.js"
-import {PrivilegeMode} from "./models/private-vimeo-model.js"
+import {PrivilegeMode} from "./models/video-viewer-model.js"
 import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
 
 export interface AuthoritarianConfig {
 	mock: string
 	authServer: string
+	vimeoServer: string
 	profileServer: string
 	paywallServer: string
-	privateVimeoServer: string
 	questionsForumServer: string
 }
 
@@ -28,8 +28,8 @@ export interface AuthoritarianOptions {
 	tokenStorage: TokenStorageTopic
 	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
+	vimeoGovernor: PrivateVimeoGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
-	privateVimeoGovernor: PrivateVimeoGovernorTopic
 
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
@@ -49,7 +49,7 @@ export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
 
 export interface SimpleModel {
-	reader: Reader
+	reader?: Reader
 }
 
 export interface UserState {
@@ -137,13 +137,13 @@ export interface VimeoState {
 	validationMessage: string
 }
 
-export interface VideoModel {
+export interface VideoModel extends SimpleModel {
 	reader: Reader<VimeoState>
 	updateVideo(vimeostring: string): Promise<void>
 	receiveUserUpdate(state: UserState): Promise<void>
 }
 
-export interface VimeoModel {
+export interface ViewerModel extends SimpleModel {
 	prepareVideoModel: (options: {videoName: string}) => VideoModel
 }
 

@@ -75,11 +75,11 @@ export function createPaywallModel({paywallGuardian}: {
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium
-				update()
 			}
 			else {
 				state.mode = PaywallMode.LoggedOut
 			}
+			update()
 		},
 	}
 }
