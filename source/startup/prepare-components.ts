@@ -78,6 +78,11 @@ export function prepareComponents({
 	profile.reader.subscribe(state => questions.updateProfile(state.profile))
 	paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
 
+	paywall.receiveUserUpdate(user.reader.state)
+	profile.receiveUserUpdate(user.reader.state)
+	questions.receiveUserUpdate(user.reader.state)
+	questions.updateProfile(profile.reader.state.profile)
+
 	//
 	// give back components and high level start function
 	//

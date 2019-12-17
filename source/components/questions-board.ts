@@ -142,18 +142,21 @@ function renderQuestion({
 					src=${author.picture}
 					?premium=${author.premium}
 				></avatar-display>
-				<div class="details">
+				<div class="card">
 					<p class="nickname">${author.nickname}</p>
-					<p class="time" title=${`${datestring} ${timestring}`}>
-						${datestring}
-					</p>
-				</div>
-				<div class="likes">
-					<button
-						title="${liked ? "Unlike" : "Like"} question by ${author.nickname}">
-							${liked ? "♥" : "♡"}
-					</button>
-					<p>${likes}</p>
+					<div class="details">
+						<p class="time" title=${`${datestring} ${timestring}`}>
+							${datestring}
+						</p>
+						<div class="likes">
+							<button
+								class="likebutton"
+								title="${liked ? "Unlike" : "Like"} question by ${author.nickname}">
+									<span class="like-heart">${liked ? "♥" : "♡"}</span>
+									<span class="like-number">${likes}</span>
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -194,6 +197,14 @@ const styles = css`
 		box-sizing: border-box;
 	}
 
+	:host {
+		display: block;
+	}
+
+	:host([hidden]) {
+		display: none;
+	}
+
 	.questions {
 		list-style: none;
 	}
@@ -211,52 +222,77 @@ const styles = css`
 
 	.question > * {
 		flex: 0 0 auto;
-		padding: 0.5rem;
-	}
-
-	.questions > li > .body {
-		flex: 1 1 auto;
 	}
 
 	.author {
+		font-size: 0.8em;
+		display: flex;
+		flex-direction: row;
 		width: 32%;
+		min-width: 15em;
+		padding: 0.5em;
 		text-align: center;
 		background: rgba(255,255,255, 0.1);
 	}
 
+	.author .card {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		padding-left: 0.5em;
+	}
+
+	.author avatar-display {
+		flex: 0 0 auto;
+		--avatar-display-size: 5em;
+	}
+
+	.author .details {
+		margin-top: 0.25em;
+	}
+
 	.author .nickname {
+		text-align: left;
 		font-weight: bold;
 	}
 
 	.author .time {
-		opacity: 0.6;
-		font-size: 0.8em;
-		margin-top: 0.2em;
+		opacity: 0.5;
 	}
 
-	.author .likes {
-		margin-top: 0.5em;
+	.author .likes,
+	.author .time {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
 	}
 
-	.author .likes p {
-		font-size: 0.8em;
-	}
-
-	button {
+	.likebutton {
 		opacity: 0.6;
 		border: none;
+		display: flex;
+		align-items: center;
+		font: inherit;
 		color: inherit;
-		font-size: 1.5em;
 		background: transparent;
 		cursor: pointer;
 	}
 
-	button:hover {
-		opacity: 1;
+	.likebutton > * {
+		flex: 1 1 auto;
 	}
 
-	avatar-display {
-		margin: auto;
+	.likebutton .like-heart {
+		font-size: 1.5em;
+	}
+
+	.likebutton .like-number {
+		padding-left: 0.2em;
+	}
+
+	.likebutton:hover {
+		opacity: 1;
 	}
 
 	.body {
@@ -264,6 +300,7 @@ const styles = css`
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+		padding: 0.3em 1em;
 	}
 
 	.comments {
@@ -286,17 +323,25 @@ const styles = css`
 		justify-content: flex-end;
 	}
 
-	.content {
-		width: 100%;
-		font-size: 1.3em;
+	.controls button {
+		border: none;
+		color: inherit;
+		font: inherit;
+		background: transparent;
 	}
 
-	@media (max-width: 500px) {
+	.content {
+		width: 100%;
+		font-size: 1em;
+	}
+
+	@media (max-width: 700px) {
 		.question {
 			flex-direction: column;
 		}
 		.author {
 			width: unset;
+			min-width: unset;
 		}
 		.controls {
 			order: -1;

@@ -58,7 +58,7 @@ export class PaywallPanel extends
 		</section>
 		<footer class="coolbuttonarea">
 			<button @click=${this.onRevokeUserPremium}>Unsubscribe</button>
-			<span class="remaining">You have X days remaining</span>
+			<span class="note">You are currently subscribed</span>
 		</footer>
 	`}
 
