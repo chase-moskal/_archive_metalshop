@@ -5,7 +5,7 @@ import {VideoViewer} from "../components/video-viewer.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
-import {QuestionsForum} from "../components/questions-board.js"
+import {QuestionsBoard} from "../components/questions-board.js"
 
 import {createUserModel} from "../models/user-model.js"
 import {createProfileModel} from "../models/profile-model.js"
@@ -90,7 +90,7 @@ export function prepareComponents({
 			VideoViewer: provideModel(viewer, VideoViewer),
 			ProfilePanel: provideModel(profile, ProfilePanel),
 			PaywallPanel: provideModel(paywall, PaywallPanel),
-			QuestionsForum: provideModel(questions, QuestionsForum),
+			QuestionsBoard: provideModel(questions, QuestionsBoard),
 		},
 		async start() {
 			return user.start()

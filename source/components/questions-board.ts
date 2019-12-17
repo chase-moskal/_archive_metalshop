@@ -10,7 +10,7 @@ import {
 	QuestionComment,
 } from "../interfaces.js"
 
-export class QuestionsForum extends
+export class QuestionsBoard extends
 	mixinModelSubscription<QuestionsModel, typeof LitElement>(
 		LitElement
 	)

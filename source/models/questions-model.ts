@@ -26,7 +26,7 @@ export function createQuestionsModel({questionsBureau}: {
 
 	const {reader, update} = makeReader(state)
 
-	const getOrCreateForum = (boardName: string) => {
+	const getOrCreateBoard = (boardName: string) => {
 		const existing = state.boards[boardName]
 		const board = existing || {questions: []}
 		if (!existing) state.boards[boardName] = board
@@ -34,7 +34,7 @@ export function createQuestionsModel({questionsBureau}: {
 	}
 
 	const getQuestion = (boardName: string, questionId: string) => {
-		const board = getOrCreateForum(boardName)
+		const board = getOrCreateBoard(boardName)
 		return board.questions.find(
 			question => question.questionId === questionId
 		)
@@ -50,7 +50,7 @@ export function createQuestionsModel({questionsBureau}: {
 
 		async postQuestion(options: {boardName: string; question: QuestionDraft}) {
 			const question = await questionsBureau.postQuestion(options)
-			const board = getOrCreateForum(options.boardName)
+			const board = getOrCreateBoard(options.boardName)
 			board.questions.push(question)
 			update()
 			return question
@@ -73,7 +73,7 @@ export function createQuestionsModel({questionsBureau}: {
 			questionId: string
 		}) {
 			await questionsBureau.deleteQuestion(options)
-			const board = getOrCreateForum(options.boardName)
+			const board = getOrCreateBoard(options.boardName)
 			board.questions = board.questions.filter(
 				({questionId}) => questionId !== options.questionId
 			)

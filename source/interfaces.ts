@@ -21,7 +21,7 @@ export interface AuthoritarianConfig {
 	vimeoServer: string
 	profileServer: string
 	paywallServer: string
-	questionsForumServer: string
+	questionsBoardServer: string
 }
 
 export interface AuthoritarianOptions {
