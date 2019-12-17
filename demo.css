@@ -96,9 +96,7 @@ a:active {
 	}
 }
 
-/*******************************************************************************
--- Customizations relevant to menus and auth components
-*******************************************************************************/
+/******************************************************************************/
 
 /* make the menu system positioning relative to the header */
 body > header {
@@ -141,12 +139,6 @@ user-panel {
 	--user-panel-logout-justify: flex-end;
 }
 
-/* @media (max-width: 800px) {
-	user-panel {
-		text-align: left;
-	}
-} */
-
 user-panel > * {
 	font-family: sans-serif;
 	background: rgba(255,255,255, 0.5);
@@ -166,7 +158,6 @@ user-panel > h2 {
 }
 
 video-viewer {
-	/* display: block; */
 	border: 1px solid rgba(255,255,255, 0.1);
 	padding: 0.5em;
 }

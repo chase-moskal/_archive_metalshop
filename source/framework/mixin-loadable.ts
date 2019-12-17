@@ -31,7 +31,7 @@ const _renderError = Symbol()
 const _renderLoading = Symbol()
 
 /**
- * Add loading and error states to a lit element
+ * Add a loading spinner and error state to a lit element
  */
 export function mixinLoadable<
 	C extends ConstructorFor<LitElement>

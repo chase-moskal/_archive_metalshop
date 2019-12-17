@@ -3,9 +3,7 @@ import {
 	AccessToken,
 	TokenStorageTopic,
 } from "authoritarian/dist/interfaces.js"
-
 import {makeReader} from "../toolbox/pubsub.js"
-
 import {
 	UserModel,
 	UserState,

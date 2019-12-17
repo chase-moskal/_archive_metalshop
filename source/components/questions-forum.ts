@@ -126,8 +126,8 @@ function renderQuestion({
 				</div>
 				<div class="likes">
 					<button
-					title="${liked ? "Unlike" : "Like"} question by ${author.nickname}">
-						${liked ? "♥" : "♡"}
+						title="${liked ? "Unlike" : "Like"} question by ${author.nickname}">
+							${liked ? "♥" : "♡"}
 					</button>
 					<p>${likes}</p>
 				</div>
@@ -140,7 +140,10 @@ function renderQuestion({
 			<div class="controls">
 				<div class="buttons">
 					${mine
-						? html`<button title="Delete question by ${author.nickname}">X</button>`
+						? html`
+							<button title="Delete question by ${author.nickname}">
+								X
+							</button>`
 						: null}
 				</div>
 			</div>

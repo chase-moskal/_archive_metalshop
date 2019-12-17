@@ -1,9 +1,9 @@
 
 import {UserPanel} from "../components/user-panel.js"
 import {UserAvatar} from "../components/user-avatar.js"
+import {VideoViewer} from "../components/video-viewer.js"
 import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
-import {VideoViewer} from "../components/video-viewer.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
 import {QuestionsForum} from "../components/questions-forum.js"
 
@@ -11,12 +11,12 @@ import {createUserModel} from "../models/user-model.js"
 import {createProfileModel} from "../models/profile-model.js"
 import {createPaywallModel} from "../models/paywall-model.js"
 import {createQuestionsModel} from "../models/questions-model.js"
+import {createVideoViewerModel} from "../models/video-viewer-model.js"
 
 import {provideModel} from "../framework/provide-model.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 
 import {AuthoritarianOptions} from "../interfaces.js"
-import {createVideoViewerModel} from "../models/video-viewer-model.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 

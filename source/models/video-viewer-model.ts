@@ -1,6 +1,8 @@
 
 import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces.js"
 
+import {makeReader} from "../toolbox/pubsub.js"
+
 import {
 	UserModel,
 	UserState,
@@ -11,7 +13,6 @@ import {
 } from "../interfaces.js"
 
 import {UserMode} from "./user-model.js"
-import {makeReader} from "../toolbox/pubsub.js"
 
 export enum PrivilegeMode {
 	LoggedOut,

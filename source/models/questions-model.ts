@@ -1,6 +1,8 @@
 
 import {Profile, User} from "authoritarian/dist/interfaces.js"
+
 import {makeReader} from "../toolbox/pubsub.js"
+
 import {
 	UserState,
 	QuestionDraft,
@@ -9,11 +11,13 @@ import {
 	QuestionCommentDraft,
 	QuestionsBureauTopic,
 } from "../interfaces.js"
+
 import {UserMode} from "./user-model.js"
 
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
 }): QuestionsModel {
+
 	const state: QuestionsState = {
 		forums: {},
 		user: null,

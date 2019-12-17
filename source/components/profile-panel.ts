@@ -60,13 +60,11 @@ export class ProfilePanel extends
 
 	private _generateNewProfileFromInputs(): Profile {
 		const profile = deepClone(this.model.reader.state.profile)
-		{
-			const input = select<HTMLInputElement>(
-				"input[name=nickname]",
-				this.shadowRoot
-			)
-			profile.public.nickname = input.value
-		}
+		const input = select<HTMLInputElement>(
+			"input[name=nickname]",
+			this.shadowRoot
+		)
+		profile.public.nickname = input.value
 		return profile
 	}
 
@@ -122,15 +120,18 @@ const styles = css`
 		padding: 0;
 		box-sizing: border-box;
 	}
+
 	.container {
 		display: flex;
 		flex-direction: row;
 	}
+
 	avatar-display {
 		flex: 0 0 auto;
 		--avatar-display-size: 25%;
 		border: 5px solid rgba(255,255,255, 0.5);
 	}
+
 	.container > div {
 		flex: 1 1 auto;
 		display: flex;
@@ -138,12 +139,15 @@ const styles = css`
 		flex-direction: column;
 		justify-content: center;
 	}
+
 	.container > div > * + * {
 		margin-top: 0.25em;
 	}
+
 	button.save {
 		margin-left: auto;
 	}
+
 	ul > li {
 		opacity: 0.7;
 		font-size: 0.7em;
@@ -153,17 +157,21 @@ const styles = css`
 		font-family: monospace;
 		border: 1px solid;
 	}
+
 	input {
 		width: 100%;
 	}
+
 	h3 {
 		font-size: 1.1em;
 	}
+
 	@media (max-width: 600px) {
 		.container {
 			flex-direction: column;
 			align-items: flex-start;
 		}
+
 		avatar-display {
 			--avatar-display-size: 5em;
 			margin: auto;

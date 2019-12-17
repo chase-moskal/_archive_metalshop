@@ -1,6 +1,7 @@
 
-import {pubsub, makeReader} from "../toolbox/pubsub.js"
 import {PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
+
+import {pubsub, makeReader} from "../toolbox/pubsub.js"
 
 import {
 	UserState,
@@ -9,7 +10,8 @@ import {
 	GetAuthContext,
 	LoginWithAccessToken,
 } from "../interfaces.js"
-import { UserMode } from "./user-model.js"
+
+import {UserMode} from "./user-model.js"
 
 export enum PaywallMode {
 	Loading,

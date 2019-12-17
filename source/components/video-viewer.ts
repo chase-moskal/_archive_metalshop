@@ -5,9 +5,9 @@ import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
 import {PrivilegeMode} from "../models/video-viewer-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {VideoViewerModel, VideoModel} from "../interfaces.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 export class VideoViewer extends
 	mixinLoadable(
@@ -50,9 +50,7 @@ export class VideoViewer extends
 		return html`
 			<slot name="loggedout">
 				<h2>Private video</h2>
-				<p>
-					You must be logged in to view this video
-				</p>
+				<p>You must be logged in to view this video</p>
 			</slot>
 			<div class="ghostplayer">${cancel}</div>
 		`
@@ -62,9 +60,7 @@ export class VideoViewer extends
 		return html`
 			<slot name="unprivileged">
 				<h2>Private video</h2>
-				<p>
-					Your account does not have privilege to watch this video
-				</p>
+				<p>Your account does not have privilege to watch this video</p>
 			</slot>
 			<div class="ghostplayer">${cancel}</div>
 		`
@@ -80,8 +76,7 @@ export class VideoViewer extends
 					allowfullscreen
 					allow="autoplay; fullscreen"
 					src="https://player.vimeo.com/video/${vimeoId}${query}"
-					>
-				</iframe>
+				></iframe>
 			</div>
 		`
 		const nothing = html`
@@ -144,18 +139,20 @@ export class VideoViewer extends
 }
 
 const styles = css`
-
 	:host, :host > * {
 		display: block;
 	}
+
 	:host([hidden]) {
 		display: none;
 	}
+
 	* + .ghostplayer,
 	* + .viewer,
 	* + .adminpanel {
 		margin-top: 1em;
 	}
+
 	.ghostplayer {
 		position: relative;
 		display: block;
@@ -163,11 +160,13 @@ const styles = css`
 		background: var(--vimeo-ghostplayer-background, rgba(0,0,0, 0.2));
 		border: var(--vimeo-ghostplayer-border, 0.2em solid rgba(0,0,0, 0.1));
 	}
+
 	.ghostplayer::before {
 		content: "";
 		display: block;
 		padding-top: var(--vimeo-aspect-percentage, 56.25%);
 	}
+
 	.ghostplayer svg {
 		position: absolute;
 		opacity: var(--vimeo-ghostplayer-icon-opacity, 0.5);
@@ -181,6 +180,7 @@ const styles = css`
 		max-width: 10em;
 		fill: var(--vimeo-ghostplayer-icon-fill, currentColor);
 	}
+
 	.ghostplayer p {
 		position: absolute;
 		top: 0;
@@ -191,18 +191,22 @@ const styles = css`
 		justify-content: center;
 		align-items: center;
 	}
+
 	.missing {
 		opacity: 0.8;
 		font-style: italic;
 	}
+
 	.viewer {
 		position: relative;
 	}
+
 	.viewer::before {
 		content: "";
 		display: block;
 		padding-top: var(--vimeo-aspect-percentage, 56.25%);
 	}
+
 	.viewer iframe {
 		position: absolute;
 		top: 0;
@@ -210,6 +214,7 @@ const styles = css`
 		width: 100%;
 		height: 100%;
 	}
+
 	.adminpanel {
 		padding: 0.5em;
 		max-width: 640px;
@@ -219,31 +224,36 @@ const styles = css`
 		border: 1px solid;
 		border-radius: 3px;
 	}
+
 	.adminpanel p,
 	.adminpanel h3 {
 		margin: 0.1em 0.5em;
 	}
+
 	.adminpanel h3 {
 		text-transform: uppercase;
 	}
+
 	.adminpanel .inputarea {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
 	}
+
 	.adminpanel .inputarea > * {
 		flex: 1 1 auto;
 		margin: 0.5em;
 		max-width: 100%;
 	}
+
 	.adminpanel .inputarea > button {
 		flex: 0 1 auto;
 		margin-left: auto;
 	}
+
 	.error {
 		color: red;
 		border: 1px solid;
 		border-radius: 3px;
 	}
-
 `

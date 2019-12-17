@@ -93,7 +93,7 @@ const styles = css`
 		width: 4em;
 		height: 4em;
 		margin-right: 0.5em;
-		fill: yellow;
+		fill: var(--paywall-premium-star-fill, yellow);
 	}
 
 	section {
@@ -105,7 +105,7 @@ const styles = css`
 	}
 
 	footer > span {
-		font-size: 0.8em;
 		opacity: 0.8;
+		font-size: 0.8em;
 	}
 `

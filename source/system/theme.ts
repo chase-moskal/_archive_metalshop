@@ -56,11 +56,13 @@ export const theme = css`
 		text-shadow: 0 0 7px rgba(255,255,255, 0.4);
 		cursor: pointer;
 	}
+
 	.coolbuttonarea button:hover,
 	.coolbuttonarea button:focus {
 		text-decoration: underline;
 		text-shadow: 0 0 7px rgba(255,255,255, 0.7);
 	}
+
 	.coolbuttonarea button:focus {
 		outline: var(--focus-outline, 2px solid cyan);
 	}
@@ -76,6 +78,7 @@ export const theme = css`
 		bottom: 0;
 		background: rgba(255,255,255, 0.1);
 	}
+
 	.coolbuttonarea button:active::before {
 		background: rgba(0,0,0, 0.1);
 	}

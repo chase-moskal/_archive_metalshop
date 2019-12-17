@@ -14,6 +14,7 @@ import {
 	ProfileState,
 	GetAuthContext,
 } from "../interfaces.js"
+
 import {UserMode} from "./user-model.js"
 
 export function createProfileModel({profileMagistrate}: {
