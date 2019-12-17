@@ -5,53 +5,37 @@ import {PrivateVimeoGovernorTopic,} from "authoritarian/dist/interfaces.js"
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
 import {PrivilegeMode} from "../models/private-vimeo-model.js"
-import {createPrivateVimeoModel} from "../models/private-vimeo-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
-import {VimeoModel, UserModel} from "../interfaces.js"
+import {VimeoModel, VideoModel} from "../interfaces.js"
+import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 export class PrivateVimeo extends
 	mixinLoadable(
-		LitElement
+		mixinModelSubscription<VimeoModel, typeof LitElement>(
+			LitElement
+		)
 	)
 {
 	static get styles() { return [super.styles || css``, styles] }
-	static userModel: UserModel
-	static vimeoGovernor: PrivateVimeoGovernorTopic
-
-	private _model: VimeoModel
-	private _vimeoGovernor: PrivateVimeoGovernorTopic =
-		(<any>this.constructor).vimeoGovernor
-	private _userModel: UserModel =
-		(<any>this.constructor).user
 
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String, reflect: true}) ["video-name"]: string
+
+	private _videoModel: VideoModel
+
 	onUpdateVideo = (vimeostring: string) => {
-		this._model.updateVideo(vimeostring)
+		this._videoModel.updateVideo(vimeostring)
 	}
 
 	firstUpdated() {
 		this["initially-hidden"] = false
 		const {["video-name"]: videoName} = this
-		this._model = createPrivateVimeoModel({
-			videoName,
-			privateVimeoGovernor: this._vimeoGovernor
-		})
-
-		const {_userModel: user, _model: model} = this
-		const handleUserUpdate = () => {
-			const {state: userState} = this._userModel.reader
-			model.receiveUserUpdate(userState)
-			this.requestUpdate()
-		}
-		user.reader.subscribe(handleUserUpdate)
-		model.reader.subscribe(() => this.requestUpdate())
-		handleUserUpdate()
+		this._videoModel = this.model.prepareVideoModel({videoName})
 	}
 
 	updated() {
-		const {errorMessage = null, loading = true} = this._model.reader.state
+		const {errorMessage = null, loading = true} = this._videoModel.reader.state
 		this.errorMessage = errorMessage
 		this.loadableState = errorMessage
 			? LoadableState.Error

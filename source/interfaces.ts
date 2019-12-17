@@ -137,10 +137,14 @@ export interface VimeoState {
 	validationMessage: string
 }
 
-export interface VimeoModel {
+export interface VideoModel {
 	reader: Reader<VimeoState>
 	updateVideo(vimeostring: string): Promise<void>
 	receiveUserUpdate(state: UserState): Promise<void>
+}
+
+export interface VimeoModel {
+	prepareVideoModel: (options: {videoName: string}) => VideoModel
 }
 
 export interface QuestionAuthor {

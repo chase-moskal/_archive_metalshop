@@ -16,6 +16,7 @@ import {provideModel} from "../framework/provide-model.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 
 import {AuthoritarianOptions} from "../interfaces.js"
+import { createPrivateVimeoModel } from "source/models/private-vimeo-model.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -58,7 +59,14 @@ export function prepareComponents({
 		profileMagistrate
 	})
 
-	const questions = createQuestionsModel({questionsBureau})
+	const questions = createQuestionsModel({
+		questionsBureau
+	})
+
+	const vimeo = createPrivateVimeoModel({
+		user,
+		privateVimeoGovernor,
+	})
 
 	//
 	// wire models to each other
@@ -77,12 +85,9 @@ export function prepareComponents({
 	return {
 		components: {
 			AvatarDisplay,
-			PrivateVimeo: <typeof PrivateVimeo>class extends PrivateVimeo {
-				static user = user
-				static vimeoGovernor = privateVimeoGovernor
-			},
 			UserPanel: provideModel(user, UserPanel),
 			UserAvatar: provideModel(profile, UserAvatar),
+			PrivateVimeo: provideModel(vimeo, PrivateVimeo),
 			ProfilePanel: provideModel(profile, ProfilePanel),
 			PaywallPanel: provideModel(paywall, PaywallPanel),
 			QuestionsForum: provideModel(questions, QuestionsForum),

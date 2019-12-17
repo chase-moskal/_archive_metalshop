@@ -2,9 +2,11 @@
 import {makeReader} from "../toolbox/pubsub.js"
 import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
 import {
+	UserModel,
 	UserState,
 	VimeoModel,
 	VimeoState,
+	VideoModel,
 	GetAuthContext,
 } from "../interfaces.js"
 import { UserMode } from "./user-model.js"
@@ -16,101 +18,107 @@ export enum PrivilegeMode {
 	Admin,
 }
 
-export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
-	videoName: string
+export function createPrivateVimeoModel({user, privateVimeoGovernor}: {
+	user: UserModel
 	privateVimeoGovernor: PrivateVimeoGovernorTopic
 }): VimeoModel {
-
 	let getAuthContext: GetAuthContext
 
-	const state: VimeoState = {
-		loading: false,
-		vimeoId: null,
-		errorMessage: null,
-		validationMessage: null,
-		mode: PrivilegeMode.LoggedOut,
-	}
+	const prepareVideoModel = ({videoName}: {videoName: string}): VideoModel => {
+		const state: VimeoState = {
+			loading: false,
+			vimeoId: null,
+			errorMessage: null,
+			validationMessage: null,
+			mode: PrivilegeMode.LoggedOut,
+		}
 
-	const {reader, update} = makeReader(state)
+		const {reader, update} = makeReader(state)
 
-	return {
+		const videoModel: VideoModel = {
+			reader,
 
-		reader,
-
-		async updateVideo(vimeostring: string) {
-			vimeostring = vimeostring.trim()
-			state.loading = true
-			state.errorMessage = null
-			state.validationMessage = null
-			update()
-
-			let vimeoId: string
-			{
-				const idParse = /^\d{5,}$/i.exec(vimeostring)
-				const linkParse = /vimeo\.com\/(\d{5,})/i.exec(vimeostring)
-				if (idParse) {
-					vimeoId = vimeostring
-				}
-				else if (linkParse) {
-					vimeoId = linkParse[1]
-				}
-			}
-
-			if (vimeoId || vimeostring === "") {
-				const {accessToken} = await getAuthContext()
-				await privateVimeoGovernor.setVimeo({
-					accessToken,
-					videoName,
-					vimeoId
-				})
-				state.vimeoId = vimeoId
-			}
-			else {
-				state.validationMessage = "invalid vimeo link or id"
-			}
-			state.loading = false
-			update()
-		},
-
-		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
-			getAuthContext = getContext
-			if (mode === UserMode.LoggedIn) {
+			async updateVideo(vimeostring: string) {
+				vimeostring = vimeostring.trim()
 				state.loading = true
-				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null
 				update()
-				const {user, accessToken} = await getAuthContext()
-				state.mode = user.public.claims.admin
-					? PrivilegeMode.Admin
-					: user.public.claims.premium
-						? PrivilegeMode.Privileged
-						: PrivilegeMode.Unprivileged
-				update()
-				const {vimeoId} = await privateVimeoGovernor.getVimeo({
-					accessToken,
-					videoName
-				})
-				state.vimeoId = vimeoId
+
+				let vimeoId: string
+				{
+					const idParse = /^\d{5,}$/i.exec(vimeostring)
+					const linkParse = /vimeo\.com\/(\d{5,})/i.exec(vimeostring)
+					if (idParse) {
+						vimeoId = vimeostring
+					}
+					else if (linkParse) {
+						vimeoId = linkParse[1]
+					}
+				}
+
+				if (vimeoId || vimeostring === "") {
+					const {accessToken} = await getAuthContext()
+					await privateVimeoGovernor.setVimeo({
+						accessToken,
+						videoName,
+						vimeoId
+					})
+					state.vimeoId = vimeoId
+				}
+				else {
+					state.validationMessage = "invalid vimeo link or id"
+				}
 				state.loading = false
 				update()
-			}
-			else if (mode === UserMode.Loading) {
-				state.mode = PrivilegeMode.LoggedOut
-				state.loading = false
-				state.vimeoId = null
-				state.errorMessage = null
-				state.validationMessage = null
-				update()
-			}
-			else {
-				state.mode = PrivilegeMode.LoggedOut
-				state.loading = false
-				state.vimeoId = null
-				state.errorMessage = null
-				state.validationMessage = null
-				update()
-			}
-		},
+			},
+
+			async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
+				getAuthContext = getContext
+				if (mode === UserMode.LoggedIn) {
+					state.loading = true
+					state.vimeoId = null
+					state.errorMessage = null
+					state.validationMessage = null
+					update()
+					const {user, accessToken} = await getAuthContext()
+					state.mode = user.public.claims.admin
+						? PrivilegeMode.Admin
+						: user.public.claims.premium
+							? PrivilegeMode.Privileged
+							: PrivilegeMode.Unprivileged
+					update()
+					const {vimeoId} = await privateVimeoGovernor.getVimeo({
+						accessToken,
+						videoName
+					})
+					state.vimeoId = vimeoId
+					state.loading = false
+					update()
+				}
+				else if (mode === UserMode.Loading) {
+					state.mode = PrivilegeMode.LoggedOut
+					state.loading = false
+					state.vimeoId = null
+					state.errorMessage = null
+					state.validationMessage = null
+					update()
+				}
+				else {
+					state.mode = PrivilegeMode.LoggedOut
+					state.loading = false
+					state.vimeoId = null
+					state.errorMessage = null
+					state.validationMessage = null
+					update()
+				}
+			},
+		}
+
+		user.reader.subscribe(videoModel.receiveUserUpdate)
+
+		return videoModel
 	}
+
+	return {prepareVideoModel}
 }
