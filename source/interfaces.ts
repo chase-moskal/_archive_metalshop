@@ -143,7 +143,7 @@ export interface VideoModel extends SimpleModel {
 	receiveUserUpdate(state: UserState): Promise<void>
 }
 
-export interface ViewerModel extends SimpleModel {
+export interface VideoViewerModel extends SimpleModel {
 	prepareVideoModel: (options: {videoName: string}) => VideoModel
 }
 

@@ -6,12 +6,12 @@ import {select} from "../toolbox/selects.js"
 import {PrivilegeMode} from "../models/video-viewer-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
-import {ViewerModel, VideoModel} from "../interfaces.js"
+import {VideoViewerModel, VideoModel} from "../interfaces.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 export class VideoViewer extends
 	mixinLoadable(
-		mixinModelSubscription<ViewerModel, typeof LitElement>(
+		mixinModelSubscription<VideoViewerModel, typeof LitElement>(
 			LitElement
 		)
 	)

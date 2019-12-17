@@ -1,5 +1,5 @@
 
-import {Profile} from "authoritarian/dist/interfaces"
+import {Profile} from "authoritarian/dist/interfaces.js"
 import {property, html, css, LitElement} from "lit-element"
 
 import {select} from "../toolbox/selects.js"

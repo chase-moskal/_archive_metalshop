@@ -1,15 +1,17 @@
 
-import {makeReader} from "../toolbox/pubsub.js"
-import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces"
+import {PrivateVimeoGovernorTopic} from "authoritarian/dist/interfaces.js"
+
 import {
 	UserModel,
 	UserState,
-	ViewerModel,
+	VideoViewerModel,
 	VimeoState,
 	VideoModel,
 	GetAuthContext,
 } from "../interfaces.js"
+
 import {UserMode} from "./user-model.js"
+import {makeReader} from "../toolbox/pubsub.js"
 
 export enum PrivilegeMode {
 	LoggedOut,
@@ -21,7 +23,7 @@ export enum PrivilegeMode {
 export function createVideoViewerModel({user, vimeoGovernor}: {
 	user: UserModel
 	vimeoGovernor: PrivateVimeoGovernorTopic
-}): ViewerModel {
+}): VideoViewerModel {
 	let getAuthContext: GetAuthContext
 
 	const prepareVideoModel = ({videoName}: {videoName: string}): VideoModel => {
