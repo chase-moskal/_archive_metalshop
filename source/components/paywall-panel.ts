@@ -64,9 +64,9 @@ export class PaywallPanel extends
 
 	renderReady() {
 		const {mode} = this.model.reader.state
-		if (mode === undefined) return html``
+		if (mode === undefined) return null
 		switch (mode) {
-			case PaywallMode.LoggedOut: return html``
+			case PaywallMode.LoggedOut: return null
 			case PaywallMode.NotPremium: return this._renderNotPremium()
 			case PaywallMode.Premium: return this._renderPremium()
 		}

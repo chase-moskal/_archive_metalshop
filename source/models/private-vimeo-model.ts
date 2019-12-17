@@ -97,7 +97,7 @@ export function createPrivateVimeoModel({videoName, privateVimeoGovernor}: {
 			}
 			else if (mode === UserMode.Loading) {
 				state.mode = PrivilegeMode.LoggedOut
-				state.loading = true
+				state.loading = false
 				state.vimeoId = null
 				state.errorMessage = null
 				state.validationMessage = null

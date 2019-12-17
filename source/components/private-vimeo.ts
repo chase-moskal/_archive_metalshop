@@ -25,12 +25,14 @@ export class PrivateVimeo extends
 	private _userModel: UserModel =
 		(<any>this.constructor).user
 
+	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String, reflect: true}) ["video-name"]: string
 	onUpdateVideo = (vimeostring: string) => {
 		this._model.updateVideo(vimeostring)
 	}
 
 	firstUpdated() {
+		this["initially-hidden"] = false
 		const {["video-name"]: videoName} = this
 		this._model = createPrivateVimeoModel({
 			videoName,
@@ -139,7 +141,7 @@ export class PrivateVimeo extends
 				</div>
 				${validationMessage
 					? html`<p class="error">${validationMessage}</p>`
-					: html``}
+					: null}
 			</div>
 		`
 	}
@@ -172,17 +174,17 @@ const styles = css`
 		position: relative;
 		display: block;
 		width: 100%;
-		background: rgba(0,0,0, 0.2);
-		border: 0.2em solid rgba(0,0,0, 0.1);
+		background: var(--vimeo-ghostplayer-background, rgba(0,0,0, 0.2));
+		border: var(--vimeo-ghostplayer-border, 0.2em solid rgba(0,0,0, 0.1));
 	}
 	.ghostplayer::before {
 		content: "";
 		display: block;
-		padding-top: 56.25%;
+		padding-top: var(--vimeo-aspect-percentage, 56.25%);
 	}
 	.ghostplayer svg {
 		position: absolute;
-		opacity: 0.5;
+		opacity: var(--vimeo-ghostplayer-icon-opacity, 0.5);
 		top: 0;
 		left: 0;
 		bottom: 0;
@@ -191,7 +193,7 @@ const styles = css`
 		width: 30%;
 		height: 30%;
 		max-width: 10em;
-		fill: currentColor;
+		fill: var(--vimeo-ghostplayer-icon-fill, currentColor);
 	}
 	.ghostplayer p {
 		position: absolute;
@@ -213,7 +215,7 @@ const styles = css`
 	.viewer::before {
 		content: "";
 		display: block;
-		padding-top: 56.25%;
+		padding-top: var(--vimeo-aspect-percentage, 56.25%);
 	}
 	.viewer iframe {
 		position: absolute;

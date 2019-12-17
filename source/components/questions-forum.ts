@@ -16,10 +16,12 @@ export class QuestionsForum extends
 	)
 {
 	static get styles() { return [super.styles || css``, styles] }
+	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["forum-name"]: string
 
 	async firstUpdated() {
+		this["initially-hidden"] = false
 		const {["forum-name"]: forumName} = this
 		if (!forumName) throw new Error(`questions-forum requires attribute `
 			+ `[forum-name]`)
@@ -34,10 +36,9 @@ export class QuestionsForum extends
 			return admin || (user && (user.userId === question.author.userId))
 		}
 		return html`
-			<h1>Questions</h1>
 			${premium
 				? renderQuestionDraft({user, profile})
-				: html``}
+				: null}
 			<ol class="questions">
 				${questions.sort(sortLikes).map(question => html`
 					<li>
@@ -84,7 +85,7 @@ function renderQuestionDraft({user, profile}: {user: User; profile: Profile}) {
 	// 			<div class="buttons">
 	// 				${mine
 	// 					? html`<button title="Delete question by ${author.nickname}">X</button>`
-	// 					: html``}
+	// 					: null}
 	// 			</div>
 	// 		</div>
 	// 	</div>
@@ -140,7 +141,7 @@ function renderQuestion({
 				<div class="buttons">
 					${mine
 						? html`<button title="Delete question by ${author.nickname}">X</button>`
-						: html``}
+						: null}
 				</div>
 			</div>
 		</div>

@@ -79,7 +79,7 @@ export class ProfilePanel extends
 		const {profile, admin, premium} = this.model.reader.state
 		const showSaveButton = !!this._changedProfile
 
-		if (!profile) return html``
+		if (!profile) return null
 		return html`
 			<div class="container formarea coolbuttonarea">
 				<avatar-display
@@ -88,8 +88,8 @@ export class ProfilePanel extends
 				></avatar-display>
 				<div>
 					<ul>
-						${admin ? html`<li data-tag="admin">Admin</li>` : html``}
-						${premium ? html`<li data-tag="premium">Premium</li>` : html``}
+						${admin ? html`<li data-tag="admin">Admin</li>` : null}
+						${premium ? html`<li data-tag="premium">Premium</li>` : null}
 					</ul>
 					<h3>${profile.private.realname}</h3>
 					<input
@@ -109,7 +109,7 @@ export class ProfilePanel extends
 								@click=${_handleSaveClick}>
 									Save
 							</button>`
-						: html``}
+						: null}
 				</div>
 			</div>
 		`
