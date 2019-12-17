@@ -12,6 +12,10 @@
 	outline: var(--focus-outline);
 }
 
+[initially-hidden] {
+	display: none;
+}
+
 html, body {
 	font-family: Dosis, sans-serif;
 	background: fixed linear-gradient(to bottom right, #09534e, #01120d);

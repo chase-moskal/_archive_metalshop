@@ -361,6 +361,7 @@ const mockQuestions: Question[] = [
 
 export class MockQuestionsBureau implements QuestionsBureauTopic {
 	async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
+		await nap()
 		return mockQuestions
 	}
 
@@ -368,6 +369,7 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		boardName: string
 		question: QuestionDraft
 	}): Promise<Question> {
+		await nap()
 		return {...question, likes: 1, liked: true, questionId: `q${Math.random()}`}
 	}
 
@@ -376,21 +378,27 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		questionId: string
 		comment: QuestionCommentDraft
 	}): Promise<QuestionComment> {
+		await nap()
 		return {...comment, commentId: `qc${Math.random()}`}
 	}
 
 	async deleteQuestion(o: {
 		boardName: string
 		questionId: string
-	}): Promise<void> {}
+	}): Promise<void> {
+		await nap()
+	}
 
 	async deleteComment(o: {
 		boardName: string
 		questionId: string
 		commentId: string
-	}): Promise<void> {}
+	}): Promise<void> {
+		await nap()
+	}
 
 	async likeQuestion(o) {
+		await nap()
 		return null
 	}
 }

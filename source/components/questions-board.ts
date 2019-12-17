@@ -1,7 +1,8 @@
 
-import {LitElement, property, html, css} from "lit-element"
 import {User, Profile} from "authoritarian/dist/interfaces.js"
+import {LitElement, property, html, css, PropertyValues} from "lit-element"
 
+import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {
@@ -11,8 +12,10 @@ import {
 } from "../interfaces.js"
 
 export class QuestionsBoard extends
-	mixinModelSubscription<QuestionsModel, typeof LitElement>(
-		LitElement
+	mixinLoadable(
+		mixinModelSubscription<QuestionsModel, typeof LitElement>(
+			LitElement
+		)
 	)
 {
 	static get styles() { return [super.styles || css``, styles] }
@@ -20,15 +23,36 @@ export class QuestionsBoard extends
 	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["board-name"]: string
 
-	async firstUpdated() {
-		this["initially-hidden"] = false
-		const {["board-name"]: boardName} = this
-		if (!boardName) throw new Error(`questions-board requires attribute `
-			+ `[board-name]`)
-		this.questions = await this.model.bureau.fetchQuestions({boardName})
+	loadingMessage = "loading questions board..."
+	errorMessage = "questions board error"
+
+	private async _downloadQuestions() {
+		try {
+			const {["board-name"]: boardName} = this
+			this.loadableState = LoadableState.Loading
+			if (!boardName)
+				throw new Error(`questions-board requires attribute [board-name]`)
+			this.questions = await this.model.bureau.fetchQuestions({boardName})
+			this.loadableState = LoadableState.Ready
+		}
+		catch (error) {
+			this.loadableState = LoadableState.Error
+			console.error(error)
+		}
 	}
 
-	render() {
+	firstUpdated() {
+		this["initially-hidden"] = false
+		this._downloadQuestions()
+	}
+
+	updated(changedProperties: PropertyValues) {
+		if (changedProperties.has("board-name")) {
+			this._downloadQuestions()
+		}
+	}
+
+	renderReady() {
 		const {questions} = this
 		const {user, profile} = this.model.reader.state
 		const {admin = false, premium = false} = (user && user.public.claims) || {}
