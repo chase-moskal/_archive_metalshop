@@ -84,7 +84,6 @@ export function createProfileModel({profileMagistrate}: {
 					state.error = error
 				}
 				state.loading = false
-				update()
 			}
 			else if (mode === UserMode.Loading) {
 				cancel = true
@@ -106,6 +105,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.profile = null
 				state.premium = false
 			}
+			update()
 		},
 	}
 }
