@@ -179,8 +179,8 @@ export interface Question extends QuestionDraft {
 export interface QuestionsState {
 	user: User
 	profile: Profile
-	forums: {
-		[forumName: string]: {
+	boards: {
+		[boardName: string]: {
 			questions: Question[]
 		}
 	}
@@ -194,33 +194,33 @@ export interface QuestionsModel {
 }
 
 export interface QuestionsBureauTopic {
-	fetchQuestions(o: {forumName: string}): Promise<Question[]>
+	fetchQuestions(o: {boardName: string}): Promise<Question[]>
 
 	postQuestion(o: {
-		forumName: string
+		boardName: string
 		question: QuestionDraft
 	}): Promise<Question>
 
 	deleteQuestion(o: {
-		forumName: string
+		boardName: string
 		questionId: string
 	}): Promise<void>
 
 	postComment(o: {
-		forumName: string
+		boardName: string
 		questionId: string
 		comment: QuestionCommentDraft
 	}): Promise<QuestionComment>
 
 	deleteComment(o: {
-		forumName: string
+		boardName: string
 		questionId: string
 		commentId: string
 	}): Promise<void>
 
 	likeQuestion(o: {
 		like: boolean
-		forumName: string
+		boardName: string
 		questionId: string
 		accessToken: AccessToken
 	}): Promise<number>

@@ -241,7 +241,7 @@ const mockQuestions: Question[] = [
 					premium: false,
 				},
 				commentId: "qc1234",
-				content: "pretty great forum i must say"
+				content: "pretty great board i must say"
 			}
 		],
 		likes: 2,
@@ -256,7 +256,7 @@ const mockQuestions: Question[] = [
 			picture: "https://picsum.photos/id/375/200/200",
 			premium: true,
 		},
-		content: "lol this questions forum is the bestest",
+		content: "lol this questions board is the bestest",
 		comments: [
 			{
 				author: {
@@ -276,7 +276,7 @@ const mockQuestions: Question[] = [
 					premium: false,
 				},
 				commentId: "qc1234",
-				content: "pretty great forum i must say"
+				content: "pretty great board i must say"
 			},
 			{
 				author: {
@@ -360,19 +360,19 @@ const mockQuestions: Question[] = [
 ]
 
 export class MockQuestionsBureau implements QuestionsBureauTopic {
-	async fetchQuestions(o: {forumName: string}): Promise<Question[]> {
+	async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
 		return mockQuestions
 	}
 
 	async postQuestion({question}: {
-		forumName: string
+		boardName: string
 		question: QuestionDraft
 	}): Promise<Question> {
 		return {...question, likes: 1, liked: true, questionId: `q${Math.random()}`}
 	}
 
 	async postComment({comment}: {
-		forumName: string
+		boardName: string
 		questionId: string
 		comment: QuestionCommentDraft
 	}): Promise<QuestionComment> {
@@ -380,12 +380,12 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 	}
 
 	async deleteQuestion(o: {
-		forumName: string
+		boardName: string
 		questionId: string
 	}): Promise<void> {}
 
 	async deleteComment(o: {
-		forumName: string
+		boardName: string
 		questionId: string
 		commentId: string
 	}): Promise<void> {}

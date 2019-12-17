@@ -12,6 +12,6 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 		vimeoServer: element.getAttribute("vimeo-server"),
 		profileServer: element.getAttribute("profile-server"),
 		paywallServer: element.getAttribute("paywall-server"),
-		questionsForumServer: element.getAttribute("questions-forum-server"),
+		questionsForumServer: element.getAttribute("questions-board-server"),
 	}
 }

@@ -19,74 +19,74 @@ export function createQuestionsModel({questionsBureau}: {
 }): QuestionsModel {
 
 	const state: QuestionsState = {
-		forums: {},
+		boards: {},
 		user: null,
 		profile: null,
 	}
 
 	const {reader, update} = makeReader(state)
 
-	const getOrCreateForum = (forumName: string) => {
-		const existing = state.forums[forumName]
-		const forum = existing || {questions: []}
-		if (!existing) state.forums[forumName] = forum
-		return forum
+	const getOrCreateForum = (boardName: string) => {
+		const existing = state.boards[boardName]
+		const board = existing || {questions: []}
+		if (!existing) state.boards[boardName] = board
+		return board
 	}
 
-	const getQuestion = (forumName: string, questionId: string) => {
-		const forum = getOrCreateForum(forumName)
-		return forum.questions.find(
+	const getQuestion = (boardName: string, questionId: string) => {
+		const board = getOrCreateForum(boardName)
+		return board.questions.find(
 			question => question.questionId === questionId
 		)
 	}
 
 	const bureau: QuestionsBureauTopic = {
-		async fetchQuestions({forumName}: {forumName: string}) {
-			const questions = await questionsBureau.fetchQuestions({forumName})
-			state.forums[forumName] = {questions}
+		async fetchQuestions({boardName}: {boardName: string}) {
+			const questions = await questionsBureau.fetchQuestions({boardName})
+			state.boards[boardName] = {questions}
 			update()
 			return questions
 		},
 
-		async postQuestion(options: {forumName: string; question: QuestionDraft}) {
+		async postQuestion(options: {boardName: string; question: QuestionDraft}) {
 			const question = await questionsBureau.postQuestion(options)
-			const forum = getOrCreateForum(options.forumName)
-			forum.questions.push(question)
+			const board = getOrCreateForum(options.boardName)
+			board.questions.push(question)
 			update()
 			return question
 		},
 
 		async postComment(options: {
-			forumName: string
+			boardName: string
 			questionId: string
 			comment: QuestionCommentDraft
 		}) {
 			const comment = await questionsBureau.postComment(options)
-			const question = getQuestion(options.forumName, options.questionId)
+			const question = getQuestion(options.boardName, options.questionId)
 			question.comments.push(comment)
 			update()
 			return comment
 		},
 
 		async deleteQuestion(options: {
-			forumName: string
+			boardName: string
 			questionId: string
 		}) {
 			await questionsBureau.deleteQuestion(options)
-			const forum = getOrCreateForum(options.forumName)
-			forum.questions = forum.questions.filter(
+			const board = getOrCreateForum(options.boardName)
+			board.questions = board.questions.filter(
 				({questionId}) => questionId !== options.questionId
 			)
 			update()
 		},
 
 		async deleteComment(options: {
-			forumName: string
+			boardName: string
 			questionId: string
 			commentId: string
 		}) {
 			await questionsBureau.deleteComment(options)
-			const question = getQuestion(options.forumName, options.questionId)
+			const question = getQuestion(options.boardName, options.questionId)
 			question.comments = question.comments.filter(
 				({commentId}) => commentId !== options.commentId
 			)
@@ -101,8 +101,8 @@ export function createQuestionsModel({questionsBureau}: {
 	const updateUser = (user: User) => {
 		state.user = user
 		if (user) {
-			for (const [, forum] of Object.entries(state.forums)) {
-				for (const question of forum.questions) {
+			for (const [, board] of Object.entries(state.boards)) {
+				for (const question of board.questions) {
 					if (question.author.userId === user.userId) {
 						question.author.premium = user.public.claims.premium
 					}

@@ -18,14 +18,14 @@ export class QuestionsForum extends
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: Array}) questions: Question[] = []
-	@property({type: String, reflect: true}) ["forum-name"]: string
+	@property({type: String, reflect: true}) ["board-name"]: string
 
 	async firstUpdated() {
 		this["initially-hidden"] = false
-		const {["forum-name"]: forumName} = this
-		if (!forumName) throw new Error(`questions-forum requires attribute `
-			+ `[forum-name]`)
-		this.questions = await this.model.bureau.fetchQuestions({forumName})
+		const {["board-name"]: boardName} = this
+		if (!boardName) throw new Error(`questions-board requires attribute `
+			+ `[board-name]`)
+		this.questions = await this.model.bureau.fetchQuestions({boardName})
 	}
 
 	render() {
@@ -181,8 +181,8 @@ const styles = css`
 	.question {
 		display: flex;
 		flex-direction: row;
-		background: var(--questions-forum-background, transparent);
-		border: var(--questions-forum-border, 1px solid rgba(255,255,255, 0.2));
+		background: var(--questions-board-background, transparent);
+		border: var(--questions-board-border, 1px solid rgba(255,255,255, 0.2));
 	}
 
 	.question > * {
