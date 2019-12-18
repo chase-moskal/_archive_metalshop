@@ -8,7 +8,6 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 import {
 	Question,
 	QuestionsModel,
-	QuestionComment,
 } from "../interfaces.js"
 
 export class QuestionsBoard extends
@@ -127,7 +126,6 @@ function renderQuestion({
 		liked,
 		author,
 		content,
-		comments,
 	} = question
 
 	const date = new Date(time)
@@ -175,18 +173,6 @@ function renderQuestion({
 				</div>
 			</div>
 		</div>
-
-		<!-- <ol class="comments">
-			${comments.map(comment => html`
-				<li>${renderComment(comment)}</li>
-			`)}
-		</ol> -->
-	`
-}
-
-function renderComment(comment: QuestionComment) {
-	return html`
-		<p>"${comment.content}" <em>— ${comment.author.nickname}</em></p>
 	`
 }
 
@@ -301,21 +287,6 @@ const styles = css`
 		flex-direction: column;
 		justify-content: center;
 		padding: 0.3em 1em;
-	}
-
-	.comments {
-		list-style: none;
-		font-size: 0.8em;
-		padding: 0 1em;
-	}
-
-	.comments > li {
-		padding: 0.2em;
-		margin-top: 0.2em;
-	}
-
-	.comments > li > p > em {
-		opacity: 0.6;
 	}
 
 	.controls {

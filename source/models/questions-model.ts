@@ -8,7 +8,6 @@ import {
 	QuestionDraft,
 	QuestionsState,
 	QuestionsModel,
-	QuestionCommentDraft,
 	QuestionsBureauTopic,
 } from "../interfaces.js"
 
@@ -56,18 +55,6 @@ export function createQuestionsModel({questionsBureau}: {
 			return question
 		},
 
-		async postComment(options: {
-			boardName: string
-			questionId: string
-			comment: QuestionCommentDraft
-		}) {
-			const comment = await questionsBureau.postComment(options)
-			const question = getQuestion(options.boardName, options.questionId)
-			question.comments.push(comment)
-			update()
-			return comment
-		},
-
 		async deleteQuestion(options: {
 			boardName: string
 			questionId: string
@@ -76,19 +63,6 @@ export function createQuestionsModel({questionsBureau}: {
 			const board = getOrCreateBoard(options.boardName)
 			board.questions = board.questions.filter(
 				({questionId}) => questionId !== options.questionId
-			)
-			update()
-		},
-
-		async deleteComment(options: {
-			boardName: string
-			questionId: string
-			commentId: string
-		}) {
-			await questionsBureau.deleteComment(options)
-			const question = getQuestion(options.boardName, options.questionId)
-			question.comments = question.comments.filter(
-				({commentId}) => commentId !== options.commentId
 			)
 			update()
 		},

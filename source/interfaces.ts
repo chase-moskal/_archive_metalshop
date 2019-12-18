@@ -158,16 +158,6 @@ export interface QuestionDraft {
 	time: number
 	content: string
 	author: QuestionAuthor
-	comments: QuestionComment[]
-}
-
-export interface QuestionCommentDraft {
-	content: string
-	author: QuestionAuthor
-}
-
-export interface QuestionComment extends QuestionCommentDraft {
-	commentId: string
 }
 
 export interface Question extends QuestionDraft {
@@ -204,18 +194,6 @@ export interface QuestionsBureauTopic {
 	deleteQuestion(o: {
 		boardName: string
 		questionId: string
-	}): Promise<void>
-
-	postComment(o: {
-		boardName: string
-		questionId: string
-		comment: QuestionCommentDraft
-	}): Promise<QuestionComment>
-
-	deleteComment(o: {
-		boardName: string
-		questionId: string
-		commentId: string
 	}): Promise<void>
 
 	likeQuestion(o: {
