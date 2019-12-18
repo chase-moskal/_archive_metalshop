@@ -13,7 +13,8 @@ export const styles = css`
 	}
 
 	:host {
-		display: block;
+		display: flex;
+		flex-direction: var(--questions-board-flex-direction, column);
 	}
 
 	:host([hidden]) {
@@ -28,15 +29,18 @@ export const styles = css`
 		margin-top: 1em;
 	}
 
+	slot[name=edit],
+	slot[name=rate] {
+		display: block;
+		margin: 1.5em auto;
+		text-align: center;
+	}
+
 	.question {
 		display: flex;
 		flex-direction: row;
 		background: var(--questions-board-background, transparent);
-		border: var(--questions-board-border, 1px solid rgba(255,255,255, 0.2));
-	}
-
-	.question.editor {
-		margin-bottom: 2em;
+		border-radius: var(--question-border-radius, 0.25em);
 	}
 
 	.question > * {
@@ -49,22 +53,20 @@ export const styles = css`
 		flex-direction: row;
 		width: 32%;
 		min-width: 16em;
-		padding: 0.5em;
 		text-align: center;
-		background: rgba(255,255,255, 0.1);
+		margin-top: 1.2em;
 	}
 
 	.author .card {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		flex: 1 1 auto;
 		padding-left: 0.5em;
 	}
 
 	.author avatar-display {
 		flex: 0 0 auto;
-		margin: auto;
 		--avatar-display-size: 5em;
 	}
 
@@ -117,42 +119,90 @@ export const styles = css`
 	}
 
 	.body {
+		position: relative;
 		flex: 1 1 auto;
 		display: flex;
 		flex-direction: column;
+		justify-content: space-between;
+		padding: 0em;
+		background: var(--question-background, rgba(255,255,255, 0.1));
+		border-radius: inherit;
+	}
+
+	.body::before {
+		content: "";
+		display: block;
+		position: absolute;
+		top: 1em;
+		right: 100%;
+		border: 0.5em solid transparent;
+		border-right-color: var(--question-background, rgba(255,255,255, 0.1));
 	}
 	
 	.content {
-		flex: 1 1 auto;
-		display: flex;
-		align-items: center;
-		padding: 0.3em 1em;
+		padding: 1em;
 		font: inherit;
 		color: inherit;
 		background: transparent;
+		white-space: pre-wrap;
 	}
 
 	textarea.content {
-		background: rgba(255,255,255, 0.2);
-		border-radius: 5px;
+		min-height: 6em;
+		transition: min-height 500ms ease;
+		border: 1px dashed var(--question-background, rgba(255,255,255, 0.2));
+	}
+
+	textarea.content:focus {
+		min-height: 12em;
 	}
 
 	.controls {
 		display: flex;
 		justify-content: flex-end;
+		padding: 0.2em;
 	}
 
 	.controls button {
+		opacity: 0.7;
 		border: none;
 		color: inherit;
 		font: inherit;
-		background: transparent;
+		font-size: 0.8em;
+		margin: 0 0.1em;
+		padding: 0.2em 0.6em;
+		background: rgba(0,0,0, 0.2);
+		border: 1px solid rgba(0,0,0, 0.2);
+		border-radius: 3px;
+		text-shadow: 1px 1px 2px rgba(0,0,0, 0.5);
+		cursor: pointer;
+	}
+
+	.controls button:hover,
+	.controls button:focus {
+		opacity: 1;
+	}
+
+	.controls button[disabled] {
+		background: rgba(255,255,255, 0.2);
+		opacity: 0.4;
 	}
 
 	.question.editor {
-		padding-left: 2em;
-		padding-right: 2em;
-		border: none;
+		order: 1;
+		border: 1px dashed var(--question-background, rgba(255,255,255, 0.2));
+	}
+
+	.question.editor .body textarea {
+		border-radius: inherit;
+	}
+
+	.question.editor .body textarea::placeholder {
+		opacity: 0.3;
+	}
+
+	.controls .postbutton {
+		background: #00bb3a;
 	}
 
 	@media (max-width: 700px) {
@@ -162,6 +212,16 @@ export const styles = css`
 		.author {
 			width: unset;
 			min-width: unset;
+			margin-top: unset;
+			margin-bottom: 0.5em;
+		}
+		.body::before {
+			border-right-color: transparent;
+			border-bottom-color: var(--question-background, rgba(255,255,255, 0.1));
+			top: unset;
+			right: unset;
+			bottom: 100%;
+			left: 1.5em;
 		}
 		.controls {
 			order: -1;

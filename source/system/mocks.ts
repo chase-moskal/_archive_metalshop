@@ -259,7 +259,7 @@ const mockQuestions: Question[] = [
 			picture: "",
 			premium: false,
 		},
-		content: "this authoritarian system is the best, i have no doubts",
+		content: "Everybody needs a friend. Just think about these things in your mind - then bring them into your world. We'll have a super time. Play with the angles. Think about a cloud. Just float around and be there.\n\nI sincerely wish for you every possible joy life could bring. We're trying to teach you a technique here and how to use it. Nice little clouds playing around in the sky.\n\nMaking all those little fluffies that live in the clouds. You better get your coat out, this is going to be a cold painting. Everything's not great in life, but we can still find beauty in it. If these lines aren't straight, your water's going to run right out of your painting and get your floor wet. Every highlight needs it's own personal shadow.",
 		likeInfo: {
 			likes: 420,
 			liked: false,
