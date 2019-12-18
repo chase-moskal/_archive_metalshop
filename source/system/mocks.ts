@@ -230,8 +230,10 @@ const mockQuestions: Question[] = [
 			premium: false,
 		},
 		content: "how is lord brim so cool?",
-		likes: 2,
-		liked: false,
+		likeInfo: {
+			likes: 2,
+			liked: false,
+		},
 		time: Date.now() - (100 * 1000),
 	},
 	{
@@ -243,8 +245,10 @@ const mockQuestions: Question[] = [
 			premium: true,
 		},
 		content: "lol this questions board is the bestest",
-		likes: 999,
-		liked: true,
+		likeInfo: {
+			likes: 999,
+			liked: true,
+		},
 		time: Date.now() - (1000 * 1000 * 1000),
 	},
 	{
@@ -256,8 +260,10 @@ const mockQuestions: Question[] = [
 			premium: false,
 		},
 		content: "this authoritarian system is the best, i have no doubts",
-		likes: 420,
-		liked: false,
+		likeInfo: {
+			likes: 420,
+			liked: false,
+		},
 		time: Date.now() - (500 * 1000),
 	},
 ]
@@ -273,7 +279,11 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		question: QuestionDraft
 	}): Promise<Question> {
 		await nap()
-		return {...question, likes: 1, liked: true, questionId: `q${Math.random()}`}
+		return {
+			...question,
+			likeInfo: {likes: 1, liked: true},
+			questionId: `q${Math.random()}`
+		}
 	}
 
 	async deleteQuestion(o: {

@@ -154,6 +154,11 @@ export interface QuestionAuthor {
 	nickname: string
 }
 
+export interface LikeInfo {
+	liked: boolean
+	likes: number
+}
+
 export interface QuestionDraft {
 	time: number
 	content: string
@@ -161,9 +166,8 @@ export interface QuestionDraft {
 }
 
 export interface Question extends QuestionDraft {
-	likes: number
-	liked: boolean
 	questionId: string
+	likeInfo: LikeInfo
 }
 
 export interface QuestionsState {
