@@ -29,9 +29,8 @@ export class QuestionsBoard extends
 	)
 {
 	static get styles() { return [super.styles || css``, styles] }
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	@property({type: Array}) questions: Question[] = []
 	@property({type: String, reflect: true}) ["board-name"]: string
+	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 
 	@property({type: String}) draftText: string = ""
 	@property({type: Number}) minCharacterLimit: number = 10
@@ -46,7 +45,7 @@ export class QuestionsBoard extends
 			this.loadableState = LoadableState.Loading
 			if (!boardName)
 				throw new Error(`questions-board requires attribute [board-name]`)
-			this.questions = await this.model.bureau.fetchQuestions({boardName})
+			await this.model.bureau.fetchQuestions({boardName})
 			this.loadableState = LoadableState.Ready
 		}
 		catch (error) {
@@ -77,11 +76,18 @@ export class QuestionsBoard extends
 			: null
 	}
 
+	private _prepareHandleDeleteClick = (questionId: string) => async() => {
+		const {["board-name"]: boardName} = this
+		const {bureau} = this.model
+		await bureau.deleteQuestion({boardName, questionId})
+	}
+
 	private _handlePostClick = async(event: MouseEvent) => {
 		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
 		const question = this.getQuestionDraft()
 		await bureau.postQuestion({boardName, question})
+		this.draftText = ""
 	}
 
 	private _handleTextAreaChange = (event: Event) => {
@@ -114,16 +120,27 @@ export class QuestionsBoard extends
 		return {postable, message, angry}
 	}
 
+	private _getBoard() {
+		const {["board-name"]: boardName} = this
+		const {boards} = this.model.reader.state
+		const board = boards[boardName]
+		if (!board) throw new Error(`questions board "${boardName}" not found`)
+		return board
+	}
+
 	renderReady() {
 		const {
-			questions,
+			draftText,
 			_handlePostClick: handlePostClick,
 			_handleTextAreaChange: handleTextAreaChange,
+			_prepareHandleDeleteClick: prepareHandleDeleteClick,
 		} = this
+
+		const {questions} = this._getBoard()
 		const {user, profile} = this.model.reader.state
 		const me = authorFromUserAndProfile({user, profile})
 		const validation = this._validatePost(me)
-		const expand = this.draftText.length > 0
+		const expand = draftText.length > 0
 
 		return html`
 			<div>
@@ -132,6 +149,7 @@ export class QuestionsBoard extends
 				</slot>
 				${renderQuestionEditor({
 					expand,
+					draftText,
 					author: me,
 					validation,
 					handlePostClick,
@@ -145,7 +163,11 @@ export class QuestionsBoard extends
 				<ol class="questions">
 					${sortQuestions(me, questions).map(question => html`
 						<li>
-							${renderQuestion({me, question})}
+							${renderQuestion({
+								me,
+								question,
+								prepareHandleDeleteClick
+							})}
 						</li>
 					`)}
 				</ol>

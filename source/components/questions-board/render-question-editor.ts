@@ -10,6 +10,7 @@ import {renderAuthor} from "./render-author.js"
 
 export function renderQuestionEditor({
 	expand,
+	draftText,
 	validation,
 	handlePostClick,
 	handleTextAreaChange,
@@ -22,6 +23,7 @@ export function renderQuestionEditor({
 	},
 }: {
 	expand: boolean
+	draftText: string
 	validation: QuestionValidation
 	handlePostClick: (event: MouseEvent) => void
 	handleTextAreaChange: (event: Event) => void
@@ -44,6 +46,7 @@ export function renderQuestionEditor({
 					?data-expand=${expand}
 					@change=${handleTextAreaChange}
 					@keyup=${handleTextAreaChange}
+					.value=${draftText}
 				></textarea>
 				<div class="controls">
 					${message

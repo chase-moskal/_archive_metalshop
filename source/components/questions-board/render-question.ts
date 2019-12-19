@@ -9,9 +9,10 @@ import {
 import {renderAuthor} from "./render-author.js"
 import {ascertainOwnership} from "./helpers.js"
 
-export function renderQuestion({me, question}: {
+export function renderQuestion({me, question, prepareHandleDeleteClick}: {
 	me: QuestionAuthor
 	question: Question
+	prepareHandleDeleteClick: (questionId: string) => (event: MouseEvent) => void
 }) {
 	const {
 		questionId,
@@ -22,6 +23,7 @@ export function renderQuestion({me, question}: {
 	} = question
 
 	const {authority, mine} = ascertainOwnership(question, me)
+	const handleDeleteClick = prepareHandleDeleteClick(questionId)
 
 	return html`
 		<div class="question" ?data-mine=${mine}>
@@ -34,6 +36,7 @@ export function renderQuestion({me, question}: {
 						? html`
 							<button
 								class="deletebutton"
+								@click=${handleDeleteClick}
 								title="Delete question by ${author.nickname}">
 									Delete
 							</button>`
