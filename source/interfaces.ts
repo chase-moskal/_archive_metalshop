@@ -160,6 +160,12 @@ export interface LikeInfo {
 	likes: number
 }
 
+export interface QuestionValidation {
+	angry: boolean
+	message: string
+	postable: boolean
+}
+
 export interface QuestionDraft {
 	time: number
 	content: string
