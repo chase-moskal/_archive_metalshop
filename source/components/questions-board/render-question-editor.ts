@@ -11,6 +11,7 @@ import {renderAuthor} from "./render-author.js"
 export function renderQuestionEditor({
 	expand,
 	validation,
+	handlePostClick,
 	handleTextAreaChange,
 	author = {
 		userId: null,
@@ -22,6 +23,7 @@ export function renderQuestionEditor({
 }: {
 	expand: boolean
 	validation: QuestionValidation
+	handlePostClick: (event: MouseEvent) => void
 	handleTextAreaChange: (event: Event) => void
 	author?: QuestionAuthor
 }) {
@@ -56,6 +58,7 @@ export function renderQuestionEditor({
 						: null}
 					<button
 						?disabled=${!postable}
+						@click=${handlePostClick}
 						class="postbutton"
 						title="Post your question to the board">
 							Post

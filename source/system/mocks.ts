@@ -220,7 +220,7 @@ export class MockPaywallGuardian implements PaywallGuardianTopic {
 	}
 }
 
-const mockQuestions: Question[] = [
+export const mockQuestions: Question[] = [
 	{
 		questionId: "q123",
 		author: {
@@ -272,9 +272,15 @@ const mockQuestions: Question[] = [
 ]
 
 export class MockQuestionsBureau implements QuestionsBureauTopic {
+	private _questions: Question[] = []
+
+	constructor({questions = [...mockQuestions]}: {questions?: Question[]} = {}) {
+		this._questions = questions
+	}
+
 	async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
 		await nap()
-		return mockQuestions
+		return [...this._questions]
 	}
 
 	async postQuestion({question}: {
@@ -282,21 +288,30 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		question: QuestionDraft
 	}): Promise<Question> {
 		await nap()
-		return {
+		const legitQuestion: Question = {
 			...question,
 			likeInfo: {likes: 1, liked: true},
 			questionId: `q${Math.random()}`
 		}
+		this._questions.push(legitQuestion)
+		return legitQuestion
 	}
 
-	async deleteQuestion(o: {
+	async deleteQuestion({boardName, questionId}: {
 		boardName: string
 		questionId: string
 	}): Promise<void> {
 		await nap()
+		this._questions = this._questions
+			.filter(question => question.questionId === questionId)
 	}
 
-	async likeQuestion(o) {
+	async likeQuestion({like, boardName, questionId, accessToken}: {
+		like: boolean
+		boardName: string
+		questionId: string
+		accessToken: AccessToken
+	}) {
 		await nap()
 		return null
 	}

@@ -12,6 +12,14 @@ export const sortLikes = (a: Question, b: Question) => {
 	return aLikes > bLikes ? -1: 1
 }
 
+export const sortQuestions = (me: QuestionAuthor, questions: Question[]) =>
+	[...questions]
+		.sort(sortLikes)
+		.sort(
+			(a: Question, b: Question) =>
+				(a.author.userId === me.userId) ? -1 : 1
+		)
+
 export function ascertainOwnership(question: Question, me: QuestionAuthor) {
 	const admin = (me && me.admin) || false
 	const mine = me && (me.userId === question.author.userId)

@@ -10,10 +10,11 @@ import {
 	Question,
 	QuestionAuthor,
 	QuestionsModel,
+	QuestionDraft,
 } from "../../interfaces.js"
 
 import {
-	sortLikes,
+	sortQuestions,
 	authorFromUserAndProfile,
 } from "./helpers.js"
 import {styles} from "./questions-board-styles.js"
@@ -65,6 +66,24 @@ export class QuestionsBoard extends
 		}
 	}
 
+	private getQuestionDraft(): QuestionDraft {
+		const {draftText: content} = this
+		const {user, profile} = this.model.reader.state
+		const author = authorFromUserAndProfile({user, profile})
+		const time = Date.now()
+		const valid = (author && content)
+		return valid
+			? {time, author, content}
+			: null
+	}
+
+	private _handlePostClick = async(event: MouseEvent) => {
+		const {["board-name"]: boardName} = this
+		const {bureau} = this.model
+		const question = this.getQuestionDraft()
+		await bureau.postQuestion({boardName, question})
+	}
+
 	private _handleTextAreaChange = (event: Event) => {
 		const target = <HTMLTextAreaElement>event.target
 		this.draftText = target.value
@@ -98,7 +117,8 @@ export class QuestionsBoard extends
 	renderReady() {
 		const {
 			questions,
-			_handleTextAreaChange: handleTextAreaChange
+			_handlePostClick: handlePostClick,
+			_handleTextAreaChange: handleTextAreaChange,
 		} = this
 		const {user, profile} = this.model.reader.state
 		const me = authorFromUserAndProfile({user, profile})
@@ -114,6 +134,7 @@ export class QuestionsBoard extends
 					expand,
 					author: me,
 					validation,
+					handlePostClick,
 					handleTextAreaChange
 				})}
 			</div>
@@ -122,7 +143,7 @@ export class QuestionsBoard extends
 					<h2>Rate questions</h2>
 				</slot>
 				<ol class="questions">
-					${questions.sort(sortLikes).map(question => html`
+					${sortQuestions(me, questions).map(question => html`
 						<li>
 							${renderQuestion({me, question})}
 						</li>
