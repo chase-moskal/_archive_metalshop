@@ -296,14 +296,6 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		await nap()
 	}
 
-	async deleteComment(o: {
-		boardName: string
-		questionId: string
-		commentId: string
-	}): Promise<void> {
-		await nap()
-	}
-
 	async likeQuestion(o) {
 		await nap()
 		return null
