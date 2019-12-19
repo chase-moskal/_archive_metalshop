@@ -29,7 +29,7 @@ export const styles = css`
 		margin-top: 1em;
 	}
 
-	slot[name=edit],
+	slot[name=post],
 	slot[name=rate] {
 		display: block;
 		margin: 1.5em auto;
@@ -41,6 +41,10 @@ export const styles = css`
 		flex-direction: row;
 		background: var(--questions-board-background, transparent);
 		border-radius: var(--question-border-radius, 0.25em);
+	}
+
+	.question[data-mine] {
+		background: var(--question-mine-background, rgba(255,255,255, 0.1));
 	}
 
 	.question > * {
@@ -153,13 +157,14 @@ export const styles = css`
 		border: 1px dashed var(--question-background, rgba(255,255,255, 0.2));
 	}
 
-	textarea.content:focus {
+	textarea.content[data-expand] {
 		min-height: 12em;
 	}
 
 	.controls {
 		display: flex;
 		justify-content: flex-end;
+		align-items: center;
 		padding: 0.2em;
 	}
 
@@ -186,6 +191,25 @@ export const styles = css`
 	.controls button[disabled] {
 		background: rgba(255,255,255, 0.2);
 		opacity: 0.4;
+	}
+
+	.message {
+		flex: 1 1 auto;
+		font-size: 0.8em;
+		padding: 0.2em 0.6em;
+
+		opacity: var(--question-message-opacity, 0.8);
+		color: var(--question-message-color, white);
+		background: var(--question-message-background, rgba(255,255,255, 0.1));
+		border: var(--question-message-border, 1px solid);
+		text-shadow: var(--question-message-text-shadow, 1px 1px 2px rgba(0,0,0, 0.5));
+	}
+
+	.message[data-angry] {
+		color: var(--question-message-color-angry, red);
+		background: var(--question-message-background-angry, rgba(128,32,32, 0.1));
+		border: var(--question-message-border-angry, 1px solid);
+		text-shadow: var(--question-message-text-shadow-angry, 1px 1px 2px rgba(0,0,0, 0.5));
 	}
 
 	.question.editor {

@@ -149,6 +149,7 @@ export interface VideoViewerModel extends SimpleModel {
 
 export interface QuestionAuthor {
 	userId: string
+	admin: boolean
 	picture: string
 	premium: boolean
 	nickname: string

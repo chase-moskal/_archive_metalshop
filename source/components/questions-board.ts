@@ -14,6 +14,12 @@ import {
 
 import {styles} from "./styles/questions-board-styles.js"
 
+export interface QuestionValidation {
+	angry: boolean
+	message: string
+	postable: boolean
+}
+
 export class QuestionsBoard extends
 	mixinLoadable(
 		mixinModelSubscription<QuestionsModel, typeof LitElement>(
@@ -64,28 +70,47 @@ export class QuestionsBoard extends
 		this.draftText = target.value
 	}
 
-	get postable(): boolean {
-		const {length} = this.draftText
-		const {minCharacterLimit: min, maxCharacterLimit: max} = this
-		return (length > min) && (length < max)
+	private validatePost(author: QuestionAuthor) {
+		const {
+			draftText,
+			minCharacterLimit: min,
+			maxCharacterLimit: max
+		} = this
+		const {length} = draftText
+
+		const tooLittle = length < min
+		const tooBig = length > max
+
+		const {message, angry} = author.userId
+			? length > 0
+				? tooLittle
+					? {message: "Not enough characters to post", angry: true}
+					: tooBig
+						? {message: "Too many characters to post", angry: true}
+						: {message: "", angry: false}
+				: {message: "Nothing to post", angry: false}
+			: {message: "You must be logged in to post", angry: false}
+
+		const postable = !message
+		return {postable, message, angry}
 	}
 
 	renderReady() {
-		const {questions, handleTextAreaChange, postable} = this
+		const {questions, handleTextAreaChange} = this
 		const {user, profile} = this.model.reader.state
-		const {admin = false} = (user && user.public.claims) || {}
-		const isMine = (question: Question) => {
-			return admin || (user && (user.userId === question.author.userId))
-		}
-		const author = authorFromUserAndProfile({user, profile})
+		const me = authorFromUserAndProfile({user, profile})
+		const validation = this.validatePost(me)
+		const expand = this.draftText.length > 0
+
 		return html`
 			<div>
-				<slot name="edit">
+				<slot name="post">
 					<h2>Post your own question</h2>
 				</slot>
 				${renderQuestionEditor({
-					author,
-					postable,
+					expand,
+					author: me,
+					validation,
 					handleTextAreaChange
 				})}
 			</div>
@@ -96,10 +121,7 @@ export class QuestionsBoard extends
 				<ol class="questions">
 					${questions.sort(sortLikes).map(question => html`
 						<li>
-							${renderQuestion({
-								question,
-								mine: isMine(question)
-							})}
+							${renderQuestion({me, question})}
 						</li>
 					`)}
 				</ol>
@@ -112,6 +134,15 @@ const sortLikes = (a: Question, b: Question) => {
 	const aLikes = a.likeInfo ? a.likeInfo.likes : 0
 	const bLikes = b.likeInfo ? b.likeInfo.likes : 0
 	return aLikes > bLikes ? -1: 1
+}
+
+function ascertainOwnership(question: Question, me: QuestionAuthor) {
+	const admin = (me && me.admin) || false
+	const mine = me && (me.userId === question.author.userId)
+	return {
+		mine,
+		authority: admin || mine
+	}
 }
 
 function renderAuthor({author, time, likeInfo}: {
@@ -160,25 +191,31 @@ const authorFromUserAndProfile = ({user, profile}: {
 	profile: Profile
 }): QuestionAuthor => ({
 	userId: user ? user.userId : null,
+	admin: (user && user.public.claims.admin) || false,
 	picture: profile ? profile.public.picture : "",
 	nickname: profile? profile.public.nickname : "You",
 	premium: user? user.public.claims.premium : false,
 })
 
 function renderQuestionEditor({
-	postable,
+	expand,
+	validation,
 	handleTextAreaChange,
 	author = {
 		userId: null,
+		admin: false,
 		picture: "",
 		nickname: "",
 		premium: false,
 	},
 }: {
-	postable: boolean
+	expand: boolean
+	validation: QuestionValidation
 	handleTextAreaChange: (event: Event) => void
 	author?: QuestionAuthor
 }) {
+	const {message, postable, angry} = validation
+	const messageActive = !!message
 	return html`
 		<div class="question editor">
 			${renderAuthor({
@@ -189,12 +226,23 @@ function renderQuestionEditor({
 
 			<div class="body">
 				<textarea
-					@change=${handleTextAreaChange}
-					@keyup=${handleTextAreaChange}
 					class="content"
 					placeholder="type your question here"
-					></textarea>
+					?data-expand=${expand}
+					@change=${handleTextAreaChange}
+					@keyup=${handleTextAreaChange}
+				></textarea>
 				<div class="controls">
+					${message
+						? html`
+							<p
+								class="message"
+								?data-angry=${angry}
+								?data-active=${messageActive}>
+									${message}
+							</p>
+						`
+						: null}
 					<button
 						?disabled=${!postable}
 						class="postbutton"
@@ -207,8 +255,8 @@ function renderQuestionEditor({
 	`
 }
 
-function renderQuestion({mine, question}: {
-	mine: boolean
+function renderQuestion({me, question}: {
+	me: QuestionAuthor
 	question: Question
 }) {
 	const {
@@ -219,6 +267,8 @@ function renderQuestion({mine, question}: {
 		likeInfo,
 	} = question
 
+	const {authority, mine} = ascertainOwnership(question, me)
+
 	return html`
 		<div class="question" ?data-mine=${mine}>
 			${renderAuthor({author, time, likeInfo})}
@@ -226,7 +276,7 @@ function renderQuestion({mine, question}: {
 			<div class="body">
 				<div class="content">${content}</div>
 				<div class="controls">
-					${mine
+					${authority
 						? html`
 							<button
 								class="deletebutton"
