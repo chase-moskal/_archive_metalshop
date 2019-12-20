@@ -106,7 +106,8 @@ export class QuestionsBoard extends
 		const tooLittle = length < min
 		const tooBig = length > max
 
-		const {message, angry} = author.userId
+		const {premium} = author
+		const {message, angry} = premium
 			? length > 0
 				? tooLittle
 					? {message: "Not enough characters to post", angry: true}
@@ -114,7 +115,7 @@ export class QuestionsBoard extends
 						? {message: "Too many characters to post", angry: true}
 						: {message: "", angry: false}
 				: {message: "Nothing to post", angry: false}
-			: {message: "You must be logged in to post", angry: false}
+			: {message: "You must become premium to post", angry: false}
 
 		const postable = !message
 		return {postable, message, angry}
