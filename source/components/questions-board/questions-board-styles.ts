@@ -85,10 +85,6 @@ export const styles = css`
 
 	.author .time {
 		opacity: 0.5;
-	}
-
-	.author .likes,
-	.author .time {
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
@@ -96,7 +92,7 @@ export const styles = css`
 	}
 
 	.likebutton {
-		opacity: 0.6;
+		opacity: 0.8;
 		border: none;
 		display: flex;
 		align-items: center;
@@ -106,20 +102,34 @@ export const styles = css`
 		cursor: pointer;
 	}
 
+	.likebutton:hover,
+	.likebutton:focus {
+		opacity: 1;
+	}
+
 	.likebutton > * {
 		flex: 1 1 auto;
 	}
 
 	.likebutton .like-heart {
-		font-size: 1.5em;
+		font-size: 1.8em;
+	}
+	.likebutton .like-heart svg path {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1;
+	}
+
+	.likebutton[data-liked] {
+		color: var(--question-like-color, rgba(255, 167, 183, 0.64));
+	}
+
+	.likebutton[data-liked] .like-heart svg path {
+		fill: currentColor;
 	}
 
 	.likebutton .like-number {
 		padding-left: 0.2em;
-	}
-
-	.likebutton:hover {
-		opacity: 1;
 	}
 
 	.body {

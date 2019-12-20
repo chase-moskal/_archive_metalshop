@@ -163,6 +163,7 @@ user-panel > h2 {
 
 questions-board {
 	max-width: 800px;
+	--question-like-color: rgba(64,255,64, 0.8);
 }
 
 video-viewer {

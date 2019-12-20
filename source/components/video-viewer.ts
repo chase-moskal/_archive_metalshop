@@ -178,7 +178,6 @@ const styles = css`
 		width: 30%;
 		height: 30%;
 		max-width: 10em;
-		fill: var(--vimeo-ghostplayer-icon-fill, currentColor);
 	}
 
 	.ghostplayer p {

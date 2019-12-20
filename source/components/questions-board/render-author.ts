@@ -6,6 +6,8 @@ import {
 	QuestionAuthor,
 } from "../../interfaces.js"
 
+import {heart} from "../../system/icons.js"
+
 export function renderAuthor({author, time, likeInfo}: {
 	time: number
 	author: QuestionAuthor
@@ -15,6 +17,7 @@ export function renderAuthor({author, time, likeInfo}: {
 	const datestring = `${date.getFullYear()}-${date.getMonth() + 1}-`
 		+ `${date.getDate()}`
 	const timestring = date.toLocaleTimeString()
+
 	return html`
 		<div class="author">
 			<avatar-display
@@ -28,18 +31,17 @@ export function renderAuthor({author, time, likeInfo}: {
 						${datestring}
 					</p>
 					${likeInfo ? html`
-						<div class="likes">
-							<button
-								class="likebutton"
-								title="${likeInfo.liked ? "Unlike" : "Like"} question by ${author.nickname}">
-									<span class="like-heart">
-										${likeInfo.liked ? "♥" : "♡"}
-									</span>
-									<span class="like-number">
-										${likeInfo.likes}
-									</span>
-							</button>
-						</div>
+						<button
+							class="likebutton"
+							?data-liked=${likeInfo.liked}
+							title="${likeInfo.liked ? "Unlike" : "Like"} question by ${author.nickname}">
+								<span class="like-heart">
+									${heart}
+								</span>
+								<span class="like-number">
+									${likeInfo.likes}
+								</span>
+						</button>
 					` : null}
 				</div>
 			</div>

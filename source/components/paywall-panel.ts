@@ -87,13 +87,13 @@ const styles = css`
 
 	header .icon {
 		float: right;
+		color: var(--paywall-premium-star-color, yellow);
 	}
 
 	header .icon svg {
 		width: 4em;
 		height: 4em;
 		margin-right: 0.5em;
-		fill: var(--paywall-premium-star-fill, yellow);
 	}
 
 	section {
