@@ -5,10 +5,11 @@ import {makeReader} from "../toolbox/pubsub.js"
 
 import {
 	UserState,
-	QuestionDraft,
 	QuestionsState,
 	QuestionsModel,
+	GetAuthContext,
 	QuestionsBureauTopic,
+	QuestionsBureauUi,
 } from "../interfaces.js"
 
 import {UserMode} from "./user-model.js"
@@ -16,6 +17,8 @@ import {UserMode} from "./user-model.js"
 export function createQuestionsModel({questionsBureau}: {
 	questionsBureau: QuestionsBureauTopic
 }): QuestionsModel {
+
+	let getAuthContext: GetAuthContext
 
 	const state: QuestionsState = {
 		boards: {},
@@ -39,27 +42,33 @@ export function createQuestionsModel({questionsBureau}: {
 		)
 	}
 
-	const bureau: QuestionsBureauTopic = {
-		async fetchQuestions({boardName}: {boardName: string}) {
+	const addTokenToOptions = async<O extends {}>(options: O) => {
+		const {accessToken} = await getAuthContext()
+		return {...options, accessToken,}
+	}
+
+	const bureau: QuestionsBureauUi = {
+		async fetchQuestions({boardName}) {
 			const questions = await questionsBureau.fetchQuestions({boardName})
 			state.boards[boardName] = {questions}
 			update()
 			return questions
 		},
 
-		async postQuestion(options: {boardName: string; question: QuestionDraft}) {
-			const question = await questionsBureau.postQuestion(options)
+		async postQuestion(options) {
+			const question = await questionsBureau.postQuestion(
+				await addTokenToOptions(options)
+			)
 			const board = getOrCreateBoard(options.boardName)
 			board.questions.push(question)
 			update()
 			return question
 		},
 
-		async deleteQuestion(options: {
-			boardName: string
-			questionId: string
-		}) {
-			await questionsBureau.deleteQuestion(options)
+		async deleteQuestion(options) {
+			await questionsBureau.deleteQuestion(
+				await addTokenToOptions(options)
+			)
 			const board = getOrCreateBoard(options.boardName)
 			board.questions = board.questions.filter(
 				({questionId}) => questionId !== options.questionId
@@ -67,8 +76,15 @@ export function createQuestionsModel({questionsBureau}: {
 			update()
 		},
 
-		async likeQuestion(o) {
-			return null
+		async likeQuestion(options) {
+			const likes = await questionsBureau.likeQuestion(
+				await addTokenToOptions(options)
+			)
+			const question = getQuestion(options.boardName, options.questionId)
+			question.likeInfo.likes = likes
+			question.likeInfo.liked = options.like
+			update()
+			return likes
 		}
 	}
 
@@ -89,7 +105,8 @@ export function createQuestionsModel({questionsBureau}: {
 	return {
 		reader,
 		bureau,
-		async receiveUserUpdate({mode, getAuthContext}: UserState): Promise<void> {
+		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState): Promise<void> {
+			getAuthContext = getContext
 			if (mode === UserMode.LoggedIn) {
 				const {user} = await getAuthContext()
 				updateUser(user)

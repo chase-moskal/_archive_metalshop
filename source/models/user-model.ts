@@ -35,8 +35,8 @@ export function createUserModel({
 	let authContext: AuthContext
 
 	const state: UserState = {
+		getAuthContext: null,
 		mode: UserMode.Loading,
-		getAuthContext: null
 	}
 
 	const {reader, update} = makeReader<UserState>(state)

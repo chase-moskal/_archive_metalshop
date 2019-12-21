@@ -189,7 +189,7 @@ export interface QuestionsState {
 
 export interface QuestionsModel {
 	reader: Reader<QuestionsState>
-	bureau: QuestionsBureauTopic
+	bureau: QuestionsBureauUi
 	updateProfile(profile: Profile): void
 	receiveUserUpdate(state: UserState): Promise<void>
 }
@@ -197,6 +197,27 @@ export interface QuestionsModel {
 export interface QuestionsBureauTopic {
 	fetchQuestions(o: {boardName: string}): Promise<Question[]>
 
+	postQuestion(o: {
+		boardName: string
+		question: QuestionDraft
+		accessToken: AccessToken
+	}): Promise<Question>
+
+	deleteQuestion(o: {
+		boardName: string
+		questionId: string
+		accessToken: AccessToken
+	}): Promise<void>
+
+	likeQuestion(o: {
+		like: boolean
+		boardName: string
+		questionId: string
+		accessToken: AccessToken
+	}): Promise<number>
+}
+
+export interface QuestionsBureauUi extends QuestionsBureauTopic {
 	postQuestion(o: {
 		boardName: string
 		question: QuestionDraft
@@ -211,6 +232,10 @@ export interface QuestionsBureauTopic {
 		like: boolean
 		boardName: string
 		questionId: string
-		accessToken: AccessToken
 	}): Promise<number>
 }
+
+export type PrepareHandleLikeClick = (o: {
+	like: boolean
+	questionId: string
+}) => (event: MouseEvent) => void

@@ -37,6 +37,8 @@ export function renderQuestionEditor({
 				author,
 				likeInfo: null,
 				time: Date.now(),
+				handleLikeClick: () => {},
+				handleUnlikeClick: () => {},
 			})}
 
 			<div class="body">

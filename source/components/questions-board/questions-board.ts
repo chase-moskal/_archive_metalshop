@@ -7,10 +7,10 @@ import {
 } from "../../framework/mixin-model-subscription.js"
 
 import {
-	Question,
+	QuestionDraft,
 	QuestionAuthor,
 	QuestionsModel,
-	QuestionDraft,
+	PrepareHandleLikeClick,
 } from "../../interfaces.js"
 
 import {
@@ -39,6 +39,17 @@ export class QuestionsBoard extends
 	loadingMessage = "loading questions board..."
 	errorMessage = "questions board error"
 
+	firstUpdated() {
+		this["initially-hidden"] = false
+		this._downloadQuestions()
+	}
+
+	updated(changedProperties: PropertyValues) {
+		if (changedProperties.has("board-name")) {
+			this._downloadQuestions()
+		}
+	}
+
 	private async _downloadQuestions() {
 		try {
 			const {["board-name"]: boardName} = this
@@ -54,18 +65,7 @@ export class QuestionsBoard extends
 		}
 	}
 
-	firstUpdated() {
-		this["initially-hidden"] = false
-		this._downloadQuestions()
-	}
-
-	updated(changedProperties: PropertyValues) {
-		if (changedProperties.has("board-name")) {
-			this._downloadQuestions()
-		}
-	}
-
-	private getQuestionDraft(): QuestionDraft {
+	private _getQuestionDraft(): QuestionDraft {
 		const {draftText: content} = this
 		const {user, profile} = this.model.reader.state
 		const author = authorFromUserAndProfile({user, profile})
@@ -76,23 +76,48 @@ export class QuestionsBoard extends
 			: null
 	}
 
+	private _handleTextAreaChange = (event: Event) => {
+		const target = <HTMLTextAreaElement>event.target
+		this.draftText = target.value
+	}
+
+	private _warnUnauthenticatedUser = (): boolean => {
+		const {user} = this.model.reader.state
+		let warned = false
+		if (!user) {
+			alert("you must be logged in to complete that action")
+			warned = true
+		}
+		return warned
+	}
+
+	private _handlePostClick = async(event: MouseEvent) => {
+		if (this._warnUnauthenticatedUser()) return
+		const {["board-name"]: boardName} = this
+		const {bureau} = this.model
+		const question = this._getQuestionDraft()
+		await bureau.postQuestion({boardName, question})
+		this.draftText = ""
+	}
+
 	private _prepareHandleDeleteClick = (questionId: string) => async() => {
+		if (this._warnUnauthenticatedUser()) return
 		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
 		await bureau.deleteQuestion({boardName, questionId})
 	}
 
-	private _handlePostClick = async(event: MouseEvent) => {
+	private _prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
+		like: boolean
+		questionId: string
+	}) => async(event: MouseEvent) => {
+		if (this._warnUnauthenticatedUser()) return
 		const {["board-name"]: boardName} = this
-		const {bureau} = this.model
-		const question = this.getQuestionDraft()
-		await bureau.postQuestion({boardName, question})
-		this.draftText = ""
-	}
-
-	private _handleTextAreaChange = (event: Event) => {
-		const target = <HTMLTextAreaElement>event.target
-		this.draftText = target.value
+		await this.model.bureau.likeQuestion({
+			like,
+			boardName,
+			questionId,
+		})
 	}
 
 	private _validatePost(author: QuestionAuthor) {
@@ -134,6 +159,7 @@ export class QuestionsBoard extends
 			draftText,
 			_handlePostClick: handlePostClick,
 			_handleTextAreaChange: handleTextAreaChange,
+			_prepareHandleLikeClick: prepareHandleLikeClick,
 			_prepareHandleDeleteClick: prepareHandleDeleteClick,
 		} = this
 
@@ -167,7 +193,8 @@ export class QuestionsBoard extends
 							${renderQuestion({
 								me,
 								question,
-								prepareHandleDeleteClick
+								prepareHandleLikeClick,
+								prepareHandleDeleteClick,
 							})}
 						</li>
 					`)}

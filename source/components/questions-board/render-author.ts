@@ -8,9 +8,17 @@ import {
 
 import {heart} from "../../system/icons.js"
 
-export function renderAuthor({author, time, likeInfo}: {
+export function renderAuthor({
+	time,
+	author,
+	likeInfo,
+	handleLikeClick,
+	handleUnlikeClick,
+}: {
 	time: number
 	author: QuestionAuthor
+	handleLikeClick: (event: MouseEvent) => void
+	handleUnlikeClick: (event: MouseEvent) => void
 	likeInfo?: LikeInfo
 }) {
 	const date = new Date(time)
@@ -33,6 +41,7 @@ export function renderAuthor({author, time, likeInfo}: {
 					${likeInfo ? html`
 						<button
 							class="likebutton"
+							@click=${likeInfo.liked ? handleUnlikeClick : handleLikeClick}
 							?data-liked=${likeInfo.liked}
 							title="${likeInfo.liked ? "Unlike" : "Like"} question by ${author.nickname}">
 								<span class="like-heart">

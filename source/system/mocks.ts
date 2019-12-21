@@ -249,7 +249,7 @@ export const mockQuestions: Question[] = [
 		content: "lol this questions board is the bestest",
 		likeInfo: {
 			likes: 999,
-			liked: true,
+			liked: false,
 		},
 		time: Date.now() - (1000 * 1000 * 1000),
 	},
@@ -311,8 +311,17 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 		boardName: string
 		questionId: string
 		accessToken: AccessToken
-	}) {
+	}): Promise<number> {
 		await nap()
-		return null
+		const question = this._questions.find(q => q.questionId === questionId)
+		if (like) {
+			question.likeInfo.likes += 1
+			question.likeInfo.liked = true
+		}
+		else {
+			question.likeInfo.likes -= 1
+			question.likeInfo.liked = false
+		}
+		return question.likeInfo.likes
 	}
 }

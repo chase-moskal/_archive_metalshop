@@ -25,6 +25,7 @@ export function createVideoViewerModel({user, vimeoGovernor}: {
 	user: UserModel
 	vimeoGovernor: PrivateVimeoGovernorTopic
 }): VideoViewerModel {
+
 	let getAuthContext: GetAuthContext
 
 	const prepareVideoModel = ({videoName}: {videoName: string}): VideoModel => {
