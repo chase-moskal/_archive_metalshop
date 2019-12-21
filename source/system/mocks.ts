@@ -303,7 +303,7 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 	}): Promise<void> {
 		await nap()
 		this._questions = this._questions
-			.filter(question => question.questionId === questionId)
+			.filter(question => question.questionId !== questionId)
 	}
 
 	async likeQuestion({like, boardName, questionId, accessToken}: {
