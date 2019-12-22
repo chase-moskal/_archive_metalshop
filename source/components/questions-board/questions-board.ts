@@ -157,6 +157,7 @@ export class QuestionsBoard extends
 	renderReady() {
 		const {
 			draftText,
+			maxCharacterLimit,
 			_handlePostClick: handlePostClick,
 			_handleTextAreaChange: handleTextAreaChange,
 			_prepareHandleLikeClick: prepareHandleLikeClick,
@@ -180,6 +181,7 @@ export class QuestionsBoard extends
 					author: me,
 					validation,
 					handlePostClick,
+					maxCharacterLimit,
 					handleTextAreaChange
 				})}
 			</div>

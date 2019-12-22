@@ -13,6 +13,7 @@ export function renderQuestionEditor({
 	draftText,
 	validation,
 	handlePostClick,
+	maxCharacterLimit,
 	handleTextAreaChange,
 	author = {
 		userId: null,
@@ -24,6 +25,7 @@ export function renderQuestionEditor({
 }: {
 	expand: boolean
 	draftText: string
+	maxCharacterLimit: number
 	validation: QuestionValidation
 	handlePostClick: (event: MouseEvent) => void
 	handleTextAreaChange: (event: Event) => void
@@ -45,6 +47,7 @@ export function renderQuestionEditor({
 				<textarea
 					class="content"
 					placeholder="type your question here"
+					maxlength=${maxCharacterLimit}
 					?data-expand=${expand}
 					@change=${handleTextAreaChange}
 					@keyup=${handleTextAreaChange}
