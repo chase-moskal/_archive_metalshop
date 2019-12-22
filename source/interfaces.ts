@@ -250,6 +250,7 @@ export interface ScheduleSentryTopic {
 export interface CountdownState {
 	admin: boolean
 	eventTime: number
+	validationMessage: string
 }
 
 export interface CountdownModel {

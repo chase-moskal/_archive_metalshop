@@ -82,4 +82,16 @@ export const theme = css`
 	.coolbuttonarea button:active::before {
 		background: rgba(0,0,0, 0.1);
 	}
+
+	.coolbuttonarea button[disabled] {
+		background: var(--coolbutton-disabled-background, rgba(100,100,100, 0.5));
+		text-decoration: none;
+		color: rgba(255,255,255, 0.4);
+		text-shadow: 0 0 7px rgba(255,255,255, 0.2);
+		cursor: default;
+	}
+
+	.coolbuttonarea button[disabled]::before {
+		display: none !important;
+	}
 `

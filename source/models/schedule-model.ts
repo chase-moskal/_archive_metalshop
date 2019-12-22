@@ -23,6 +23,7 @@ export function createScheduleModel({user, scheduleSentry}: {
 		const state: CountdownState = {
 			admin: false,
 			eventTime: null,
+			validationMessage: "",
 		}
 
 		const {reader, update} = makeReader(state)

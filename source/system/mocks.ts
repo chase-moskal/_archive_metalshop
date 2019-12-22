@@ -331,7 +331,7 @@ export class MockScheduleSentry implements ScheduleSentryTopic {
 	private _data: {[key: string]: number} = {}
 
 	constructor({data = {
-		countdown1: Date.now() + 1000 * 60 * 60 * 32
+		countdown1: Date.now() + 1000 * 60 * 60 * 80
 	}}: {data?: {[key: string]: number}} = {}) {
 		this._data = data
 	}
