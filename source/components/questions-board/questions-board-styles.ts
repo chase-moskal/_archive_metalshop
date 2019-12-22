@@ -39,12 +39,12 @@ export const styles = css`
 	.question {
 		display: flex;
 		flex-direction: row;
-		background: var(--questions-board-background, transparent);
+		background: var(--question-background, transparent);
 		border-radius: var(--question-border-radius, 0.25em);
 	}
 
 	.question[data-mine] {
-		background: var(--question-mine-background, rgba(255,255,255, 0.1));
+		background: var(--question-base-mine-background, rgba(255,255,255, 0.1));
 	}
 
 	.question > * {
@@ -59,6 +59,7 @@ export const styles = css`
 		min-width: 16em;
 		text-align: center;
 		margin-top: 1.2em;
+		color: var(--question-author-color, inherit);
 	}
 
 	.author .card {
@@ -71,7 +72,8 @@ export const styles = css`
 
 	.author avatar-display {
 		flex: 0 0 auto;
-		--avatar-display-size: 5em;
+		--avatar-display-size: var(--question-avatar-size, 5em);
+		border-radius: var(--question-avatar-border-radius, unset);
 	}
 
 	.author .details {
@@ -139,7 +141,8 @@ export const styles = css`
 		flex-direction: column;
 		justify-content: space-between;
 		padding: 0em;
-		background: var(--question-background, rgba(255,255,255, 0.1));
+		background: var(--question-body-background, rgba(255,255,255, 0.1));
+		color: var(--question-body-color, inherit);
 		border-radius: inherit;
 	}
 
@@ -150,7 +153,7 @@ export const styles = css`
 		top: 1em;
 		right: 100%;
 		border: 0.5em solid transparent;
-		border-right-color: var(--question-background, rgba(255,255,255, 0.1));
+		border-right-color: var(--question-body-background, rgba(255,255,255, 0.1));
 	}
 	
 	.content {
@@ -164,7 +167,7 @@ export const styles = css`
 	textarea.content {
 		min-height: 6em;
 		transition: min-height 500ms ease;
-		border: 1px dashed var(--question-background, rgba(255,255,255, 0.2));
+		border: 1px dashed var(--question-body-background, rgba(255,255,255, 0.2));
 	}
 
 	textarea.content[data-expand] {
@@ -181,15 +184,15 @@ export const styles = css`
 	.controls button {
 		opacity: 0.7;
 		border: none;
-		color: inherit;
+		color: var(--question-button-color, inherit);
 		font: inherit;
 		font-size: 0.8em;
 		margin: 0 0.1em;
 		padding: 0.2em 0.6em;
-		background: rgba(0,0,0, 0.2);
-		border: 1px solid rgba(0,0,0, 0.2);
-		border-radius: 3px;
-		text-shadow: 1px 1px 2px rgba(0,0,0, 0.5);
+		background: var(--question-button-background, rgba(0,0,0, 0.2));
+		border: var(--question-button-border, 1px solid rgba(0,0,0, 0.2));
+		border-radius: var(--question-button-border-radius, 3px);
+		text-shadow: var(--question-button-text-shadow, 1px 1px 2px rgba(0,0,0, 0.5));
 		cursor: pointer;
 	}
 
@@ -224,7 +227,7 @@ export const styles = css`
 
 	.question.editor {
 		order: 1;
-		border: 1px dashed var(--question-background, rgba(255,255,255, 0.2));
+		border: 1px dashed var(--question-body-background, rgba(255,255,255, 0.2));
 	}
 
 	.question.editor .body textarea {
@@ -236,7 +239,8 @@ export const styles = css`
 	}
 
 	.controls .postbutton {
-		background: #00bb3a;
+		color: var(---question-postbutton-color, inherit);
+		background: var(--question-postbutton-background, #00bb3a);
 	}
 
 	@media (max-width: 700px) {
@@ -251,7 +255,7 @@ export const styles = css`
 		}
 		.body::before {
 			border-right-color: transparent;
-			border-bottom-color: var(--question-background, rgba(255,255,255, 0.1));
+			border-bottom-color: var(--question-body-background, rgba(255,255,255, 0.1));
 			top: unset;
 			right: unset;
 			bottom: 100%;

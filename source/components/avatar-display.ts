@@ -29,6 +29,11 @@ const styles = css`
 		width: var(--avatar-display-size, 3em);
 		height: var(--avatar-display-size, 3em);
 		max-width: 100%;
+		overflow: hidden;
+	}
+
+	:host([premium]) {
+		border: 2px solid yellow;
 	}
 
 	:host([hidden]) {
@@ -40,10 +45,5 @@ const styles = css`
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-	}
-
-	:host([premium]) img,
-	:host([premium]) svg {
-		border: 2px solid yellow;
 	}
 `
