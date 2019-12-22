@@ -18,6 +18,7 @@ import {
 	QuestionDraft,
 	LoginPopupRoutine,
 	QuestionsBureauTopic,
+	ScheduleSentryTopic,
 } from "../interfaces.js"
 
 import {privateKey} from "./mock-keys.js"
@@ -323,5 +324,28 @@ export class MockQuestionsBureau implements QuestionsBureauTopic {
 			question.likeInfo.liked = false
 		}
 		return question.likeInfo.likes
+	}
+}
+
+export class MockScheduleSentry implements ScheduleSentryTopic {
+	private _data: {[key: string]: number} = {}
+
+	constructor({data = {
+		countdown1: Date.now() + 1000 * 60 * 60 * 32
+	}}: {data?: {[key: string]: number}} = {}) {
+		this._data = data
+	}
+
+	async getEventTime(key: string): Promise<number> {
+		if (this._data.hasOwnProperty(key)) {
+			return this._data[key]
+		}
+		else {
+			return null
+		}
+	}
+
+	async setEventTime(key: string, time: number) {
+		this._data[key] = time
 	}
 }

@@ -8,6 +8,7 @@ import {
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
+	MockScheduleSentry,
 } from "../system/mocks.js"
 import {
 	accountPopupLogin,
@@ -56,6 +57,7 @@ export async function initialize(config: AuthoritarianConfig):
 					? new MockTokenStorage()
 					: new MockTokenStorageLoggedOut(),
 			loginPopupRoutine: mockLoginPopupRoutine,
+			scheduleSentry: new MockScheduleSentry(),
 			paywallGuardian: new MockPaywallGuardian(),
 			questionsBureau: new MockQuestionsBureau(),
 			vimeoGovernor: new MockPrivateVimeoGovernor(),
@@ -116,10 +118,11 @@ export async function initialize(config: AuthoritarianConfig):
 
 	return {
 		tokenStorage: progress.tokenStorage,
+		vimeoGovernor: progress.vimeoGovernor,
+		scheduleSentry: progress.scheduleSentry,
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,
 		profileMagistrate: progress.profileMagistrate,
-		vimeoGovernor: progress.vimeoGovernor,
 
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,

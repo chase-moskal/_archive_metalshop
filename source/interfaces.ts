@@ -21,11 +21,13 @@ export interface AuthoritarianConfig {
 	vimeoServer: string
 	profileServer: string
 	paywallServer: string
+	scheduleServer: string
 	questionsBoardServer: string
 }
 
 export interface AuthoritarianOptions {
 	tokenStorage: TokenStorageTopic
+	scheduleSentry: ScheduleSentryTopic
 	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
 	vimeoGovernor: PrivateVimeoGovernorTopic
@@ -239,3 +241,24 @@ export type PrepareHandleLikeClick = (o: {
 	like: boolean
 	questionId: string
 }) => (event: MouseEvent) => void
+
+export interface ScheduleSentryTopic {
+	getEventTime(key: string): Promise<number>
+	setEventTime(key: string, time: number): Promise<void>
+}
+
+export interface CountdownState {
+	admin: boolean
+	eventTime: number
+}
+
+export interface CountdownModel {
+	reader: Reader<CountdownState>
+	refreshEventTime(): Promise<void>
+	setEventTime(time: number): Promise<void>
+	receiveUserUpdate(options: UserState): Promise<void>
+}
+
+export interface ScheduleModel extends SimpleModel {
+	prepareCountdownModel(options: {key: string}): CountdownModel
+}

@@ -6,10 +6,14 @@ import {ProfilePanel} from "../components/profile-panel.js"
 import {PaywallPanel} from "../components/paywall-panel.js"
 import {AvatarDisplay} from "../components/avatar-display.js"
 import {QuestionsBoard} from "../components/questions-board/questions-board.js"
+import {
+	ScheduleCountdown
+} from "../components/schedule-countdown/schedule-countdown.js"
 
 import {createUserModel} from "../models/user-model.js"
 import {createProfileModel} from "../models/profile-model.js"
 import {createPaywallModel} from "../models/paywall-model.js"
+import {createScheduleModel} from "../models/schedule-model.js"
 import {createQuestionsModel} from "../models/questions-model.js"
 import {createVideoViewerModel} from "../models/video-viewer-model.js"
 
@@ -27,6 +31,7 @@ const validate = (condition: any, message: string) => {
 export function prepareComponents({
 	tokenStorage,
 	vimeoGovernor,
+	scheduleSentry,
 	paywallGuardian,
 	questionsBureau,
 	profileMagistrate,
@@ -68,6 +73,11 @@ export function prepareComponents({
 		vimeoGovernor,
 	})
 
+	const schedule = createScheduleModel({
+		user,
+		scheduleSentry,
+	})
+
 	//
 	// wire models to each other
 	//
@@ -96,6 +106,7 @@ export function prepareComponents({
 			ProfilePanel: provideModel(profile, ProfilePanel),
 			PaywallPanel: provideModel(paywall, PaywallPanel),
 			QuestionsBoard: provideModel(questions, QuestionsBoard),
+			ScheduleCountdown: provideModel(schedule, ScheduleCountdown),
 		},
 		async start() {
 			return user.start()

@@ -257,9 +257,6 @@ export const styles = css`
 			bottom: 100%;
 			left: 1.5em;
 		}
-		.controls {
-			order: -1;
-		}
 		.question.editor .controls {
 			order: unset;
 		}
