@@ -54,12 +54,6 @@
 		</header>
 		<main class="content">
 			<p>see <em><a href="https://github.com/chase-moskal/authoritarian-client">authoritarian-client on github</a></em></p>
-			<br/>
-
-			<br/>
-			<schedule-countdown key="countdown1">
-				<h2>Next stream scheduled</h2>
-			</schedule-countdown>
 
 			<!-- questions board -->
 			<questions-board
@@ -68,7 +62,11 @@
 					<h2 slot="post">Post your question!</h2>
 					<h2 slot="rate">Rate other submitted questions</h2>
 			</questions-board>
-			<br/>
+
+			<!-- countdown widget -->
+			<schedule-countdown key="countdown1" initially-hidden>
+				<h2>Next stream scheduled</h2>
+			</schedule-countdown>
 
 			<!-- video viewer: private livestream -->
 			<video-viewer video-name="livestream" initially-hidden>

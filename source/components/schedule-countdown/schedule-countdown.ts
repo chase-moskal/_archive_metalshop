@@ -21,6 +21,7 @@ export class ScheduleCountdown extends
 	)
 {
 	static get styles() { return [super.styles || css``, styles] }
+	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String}) key: string
 	@property({type: String}) adminValidationMessage: string = ""
 	@property({type: String}) adminDate: number = NaN
@@ -35,6 +36,7 @@ export class ScheduleCountdown extends
 	}
 
 	async firstUpdated() {
+		this["initially-hidden"] = false
 		const {key, model} = this
 		if (!key) throw new Error(`schedule-countdown requires [key] attribute`)
 		const countdownModel = this._countdownModel

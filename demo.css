@@ -58,7 +58,7 @@ main {
 }
 
 .content > * + * {
-	margin-top: 0.8em;
+	margin-top: 4em;
 }
 
 .content h1 {
@@ -164,6 +164,10 @@ user-panel > h2 {
 questions-board {
 	max-width: 800px;
 	--question-like-color: rgba(64,255,64, 0.8);
+}
+
+schedule-countdown[initially-hidden] {
+	display: none;
 }
 
 video-viewer {
