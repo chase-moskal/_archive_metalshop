@@ -34,6 +34,9 @@ export class VideoViewer extends
 		// weird specialized wiring
 		this._videoModel = this.model.prepareVideoModel({videoName})
 		this.subscribeToReader(this._videoModel.reader)
+
+		for (const style of Array.from(this.renderRoot.querySelectorAll("style")))
+			style.style.display = "none"
 	}
 
 	updated() {
