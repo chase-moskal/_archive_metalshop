@@ -239,7 +239,7 @@ export const styles = css`
 	}
 
 	.controls .postbutton {
-		color: var(---question-postbutton-color, inherit);
+		color: var(---question-postbutton-color, white);
 		background: var(--question-postbutton-background, #00bb3a);
 	}
 
