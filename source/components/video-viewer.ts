@@ -157,6 +157,7 @@ const styles = css`
 		position: relative;
 		display: block;
 		width: 100%;
+		color: var(--vimeo-ghostplayer-color, inherit);
 		background: var(--vimeo-ghostplayer-background, rgba(0,0,0, 0.2));
 		border: var(--vimeo-ghostplayer-border, 0.2em solid rgba(0,0,0, 0.1));
 	}
