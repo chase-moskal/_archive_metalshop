@@ -34,8 +34,8 @@ export const authorFromUserAndProfile = ({user, profile}: {
 	profile: Profile
 }): QuestionAuthor => ({
 	userId: user ? user.userId : null,
-	admin: (user && user.public.claims.admin) || false,
-	picture: profile ? profile.public.picture : "",
-	nickname: profile? profile.public.nickname : "You",
-	premium: user? user.public.claims.premium : false,
+	admin: (user && user.claims.admin) || false,
+	avatar: profile ? profile.avatar : "",
+	nickname: profile? profile.nickname : "You",
+	premium: user? user.claims.premium : false,
 })

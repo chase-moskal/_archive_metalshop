@@ -64,7 +64,7 @@ export class ProfilePanel extends
 			"input[name=nickname]",
 			this.shadowRoot
 		)
-		profile.public.nickname = input.value
+		profile.nickname = input.value
 		return profile
 	}
 
@@ -81,7 +81,7 @@ export class ProfilePanel extends
 		return html`
 			<div class="container formarea coolbuttonarea">
 				<avatar-display
-					src=${profile && profile.public.picture}
+					src=${profile && profile.avatar}
 					?premium=${premium}
 				></avatar-display>
 				<div>
@@ -89,7 +89,6 @@ export class ProfilePanel extends
 						${admin ? html`<li data-tag="admin">Admin</li>` : null}
 						${premium ? html`<li data-tag="premium">Premium</li>` : null}
 					</ul>
-					<h3>${profile.private.realname}</h3>
 					<input
 						type="text"
 						name="nickname"
@@ -98,7 +97,7 @@ export class ProfilePanel extends
 						placeholder="nickname"
 						@change=${_handleInputChange}
 						@keyup=${_inputDebouncer.queue}
-						.value=${profile.public.nickname}
+						.value=${profile.nickname}
 						/>
 					${showSaveButton
 						? html`

@@ -5,11 +5,11 @@ import {makeReader} from "../toolbox/pubsub.js"
 
 import {
 	UserState,
+	GetAuthContext,
 	QuestionsState,
 	QuestionsModel,
-	GetAuthContext,
-	QuestionsBureauTopic,
 	QuestionsBureauUi,
+	QuestionsBureauTopic,
 } from "../interfaces.js"
 
 import {UserMode} from "./user-model.js"
@@ -94,7 +94,7 @@ export function createQuestionsModel({questionsBureau}: {
 			for (const [, board] of Object.entries(state.boards)) {
 				for (const question of board.questions) {
 					if (question.author.userId === user.userId) {
-						question.author.premium = user.public.claims.premium
+						question.author.premium = user.claims.premium
 					}
 				}
 			}

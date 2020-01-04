@@ -18,7 +18,7 @@ export function renderQuestionEditor({
 	author = {
 		userId: null,
 		admin: false,
-		picture: "",
+		avatar: "",
 		nickname: "",
 		premium: false,
 	},

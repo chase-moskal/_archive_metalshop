@@ -40,8 +40,9 @@ export function createProfileModel({profileMagistrate}: {
 	} = pubsub()
 
 	async function loadProfile(): Promise<Profile> {
-		const {accessToken} = await getAuthContext()
-		const profile = await profileMagistrate.getFullProfile({accessToken})
+		const {accessToken, user} = await getAuthContext()
+		const {userId} = user
+		const profile = await profileMagistrate.getProfile({userId})
 		if (!profile) console.warn("failed to load profile")
 		return profile
 	}
@@ -55,7 +56,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.loading = true
 				update()
 				const {accessToken} = await getAuthContext()
-				await profileMagistrate.setFullProfile({accessToken, profile})
+				await profileMagistrate.setProfile({accessToken, profile})
 				state.profile = profile
 			}
 			catch (error) {
@@ -73,8 +74,8 @@ export function createProfileModel({profileMagistrate}: {
 				state.loading = true
 				update()
 				const {user} = await getAuthContext()
-				state.admin = !!user.public.claims.admin
-				state.premium = !!user.public.claims.premium
+				state.admin = !!user.claims.admin
+				state.premium = !!user.claims.premium
 				update()
 				try {
 					const profile = await loadProfile()

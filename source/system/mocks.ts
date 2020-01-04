@@ -6,9 +6,9 @@ import {
 	AccessPayload,
 	RefreshPayload,
 	TokenStorageTopic,
+	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
-	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 import {signToken} from "authoritarian/dist/crypto.js"
 
@@ -29,14 +29,12 @@ const nap = (multiplier: number = 1) =>
 	new Promise(resolve => setTimeout(resolve, multiplier * 250))
 
 async function createMockAccessToken({
+	claims = {cool: true},
 	expiresIn = "20m",
-	publicClaims = {cool: true},
-	privateClaims = {supercool: true},
 }: {
+	claims: Object
 	expiresIn?: string
-	publicClaims?: Object
-	privateClaims?: Object
-} = {}) {
+} = {claims: {}}) {
 	debug("createMockAccessToken")
 	return signToken<AccessPayload>({
 		expiresIn,
@@ -44,8 +42,7 @@ async function createMockAccessToken({
 		payload: {
 			user: {
 				userId: "u123",
-				public: {claims: publicClaims},
-				private: {claims: privateClaims}
+				claims,
 			}
 		}
 	})
@@ -79,13 +76,13 @@ function once<T extends any>(
 
 const getMockRefreshToken = once(() => createMockRefreshToken())
 const getMockAccessToken = once(() => createMockAccessToken({
-	publicClaims: {premium: false}
+	claims: {premium: false}
 }))
 const getMockPremiumAccessToken = once(() => createMockAccessToken({
-	publicClaims: {premium: true}
+	claims: {premium: true}
 }))
 const getMockAdminAccessToken = once(() => createMockAccessToken({
-	publicClaims: {admin: true, premium: true
+	claims: {admin: true, premium: true
 }}))
 
 export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
@@ -101,17 +98,16 @@ export const mockDecodeAccessToken = (accessToken: AccessToken):
  AuthContext => {
 	debug("mockDecodeAccessToken")
 	return ({
+		accessToken,
 		exp: (Date.now() / 1000) + 10,
 		user: {
 			userId: "u123",
-			public: {claims: {premium: true}},
-			private: {claims: {}}
+			claims: {premium: true},
 		},
-		accessToken
 	})
 }
 
-export class MockPrivateVimeoGovernor implements PrivateVimeoGovernorTopic {
+export class MockVimeoGovernor implements VimeoGovernorTopic {
 	private _vimeoId = "109943349"
 
 	async getVimeo(options: {
@@ -169,13 +165,8 @@ export class MockTokenStorageLoggedOut extends MockTokenStorage {
 
 export const mockProfile: Profile = {
 	userId: "fake-h31829h381273h",
-	public: {
-		nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-		picture: "https://picsum.photos/id/375/200/200",
-	},
-	private: {
-		realname: "Captain Branstock Dudley-Faddington",
-	}
+	nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+	avatar: "https://picsum.photos/id/375/200/200",
 }
 
 export class MockProfileMagistrate implements ProfileMagistrateTopic {
@@ -185,8 +176,8 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 		this._profile = profile
 	}
 
-	async getPublicProfile({userId}): Promise<Profile> {
-		debug("getPublicProfile")
+	async getProfile({userId}): Promise<Profile> {
+		debug("getProfile")
 		await nap()
 		return {
 			...this._profile,
@@ -194,13 +185,7 @@ export class MockProfileMagistrate implements ProfileMagistrateTopic {
 		}
 	}
 
-	async getFullProfile(options): Promise<Profile> {
-		debug("getFullProfile")
-		await nap()
-		return this._profile
-	}
-
-	async setFullProfile({profile}): Promise<void> {
+	async setProfile({profile}): Promise<void> {
 		debug("setFullProfile")
 		await nap()
 		this._profile = profile
@@ -227,7 +212,7 @@ export const mockQuestions: Question[] = [
 		author: {
 			userId: "u345",
 			nickname: "Johnny Texas",
-			picture: "",
+			avatar: "",
 			admin: false,
 			premium: false,
 		},
@@ -243,7 +228,7 @@ export const mockQuestions: Question[] = [
 		author: {
 			userId: "u123",
 			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-			picture: "https://picsum.photos/id/375/200/200",
+			avatar: "https://picsum.photos/id/375/200/200",
 			admin: true,
 			premium: true,
 		},
@@ -259,7 +244,7 @@ export const mockQuestions: Question[] = [
 		author: {
 			userId: "u456",
 			nickname: "Donald Trump",
-			picture: "",
+			avatar: "",
 			admin: false,
 			premium: false,
 		},

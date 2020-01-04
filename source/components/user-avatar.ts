@@ -12,7 +12,7 @@ export class UserAvatar extends
 
 	render() {
 		const {profile, premium = false} = this.model.reader.state
-		const src = (profile && profile.public.picture) || ""
+		const src = (profile && profile.avatar) || ""
 		return html`
 			<avatar-display
 				src=${src}

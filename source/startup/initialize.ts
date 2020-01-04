@@ -1,14 +1,15 @@
 
-import {
-	tokenStorageClient,
-	profileMagistrateCacheClient,
-} from "authoritarian/dist/clients.js"
+import {createTokenStorageClient}
+	from "authoritarian/dist/clients/create-token-storage-client.js"
+
+import {createProfileMagistrateClient}
+	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 
 import {
+	MockScheduleSentry,
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
-	MockScheduleSentry,
 } from "../system/mocks.js"
 import {
 	accountPopupLogin,
@@ -43,10 +44,10 @@ export async function initialize(config: AuthoritarianConfig):
 	if (config.mock !== null) {
 		const {
 			MockTokenStorage,
+			MockVimeoGovernor,
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
 			MockProfileMagistrate,
-			MockPrivateVimeoGovernor,
 		} = await import("../system/mocks.js")
 		progress = {
 			...progress,
@@ -56,11 +57,11 @@ export async function initialize(config: AuthoritarianConfig):
 				: config.mock === "loggedin"
 					? new MockTokenStorage()
 					: new MockTokenStorageLoggedOut(),
+			vimeoGovernor: new MockVimeoGovernor(),
 			loginPopupRoutine: mockLoginPopupRoutine,
 			scheduleSentry: new MockScheduleSentry(),
 			paywallGuardian: new MockPaywallGuardian(),
 			questionsBureau: new MockQuestionsBureau(),
-			vimeoGovernor: new MockPrivateVimeoGovernor(),
 		}
 	}
 
@@ -77,7 +78,7 @@ export async function initialize(config: AuthoritarianConfig):
 				config.authServer,
 				accountPopupLogin
 			)
-			progress.tokenStorage = await tokenStorageClient({
+			progress.tokenStorage = await createTokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
 			})
 		})
@@ -85,7 +86,7 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.profileServer) {
 		queue(async() => {
-			progress.profileMagistrate = await profileMagistrateCacheClient({
+			progress.profileMagistrate = createProfileMagistrateClient({
 				url: config.profileServer
 			})
 		})

@@ -29,7 +29,7 @@ export function renderAuthor({
 	return html`
 		<div class="author">
 			<avatar-display
-				src=${author.picture}
+				src=${author.avatar}
 				?premium=${author.premium}
 			></avatar-display>
 			<div class="card">

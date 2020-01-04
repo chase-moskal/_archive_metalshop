@@ -6,9 +6,9 @@ import {
 	UserState,
 	ScheduleModel,
 	CountdownState,
+	CountdownModel,
 	GetAuthContext,
 	ScheduleSentryTopic,
-	CountdownModel,
 } from "../interfaces.js"
 
 import {UserMode} from "./user-model.js"
@@ -43,7 +43,7 @@ export function createScheduleModel({user, scheduleSentry}: {
 			async receiveUserUpdate({mode}: UserState) {
 				if (mode === UserMode.LoggedIn) {
 					const {user} = await getAuthContext()
-					state.admin = user.public.claims.admin
+					state.admin = user.claims.admin
 				}
 				else {
 					state.admin = false

@@ -5,9 +5,9 @@ import {
 	AuthTokens,
 	AccessToken,
 	TokenStorageTopic,
+	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
-	PrivateVimeoGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
 
 import {UserMode} from "./models/user-model.js"
@@ -27,10 +27,10 @@ export interface AuthoritarianConfig {
 
 export interface AuthoritarianOptions {
 	tokenStorage: TokenStorageTopic
+	vimeoGovernor: VimeoGovernorTopic
 	scheduleSentry: ScheduleSentryTopic
 	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
-	vimeoGovernor: PrivateVimeoGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
 
 	loginPopupRoutine: LoginPopupRoutine
@@ -152,7 +152,7 @@ export interface VideoViewerModel extends SimpleModel {
 export interface QuestionAuthor {
 	userId: string
 	admin: boolean
-	picture: string
+	avatar: string
 	premium: boolean
 	nickname: string
 }

@@ -73,7 +73,7 @@ export function createPaywallModel({paywallGuardian}: {
 				state.mode = PaywallMode.Loading
 				update()
 				const context = await getAuthContext()
-				const premium = !!context.user.public.claims.premium
+				const premium = !!context.user.claims.premium
 				state.mode = premium
 					? PaywallMode.Premium
 					: PaywallMode.NotPremium
