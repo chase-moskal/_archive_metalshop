@@ -5,16 +5,15 @@ import {createTokenStorageClient}
 import {createProfileMagistrateClient}
 	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 
+import {accountPopupLogin}
+	from "authoritarian/dist/account-popup/account-popup-login.js"
+
 import {
 	MockScheduleSentry,
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
 } from "../system/mocks.js"
-import {
-	accountPopupLogin,
-	prepareLoginPopupRoutine,
-} from "../system/account-popup-login.js"
 import {AuthoritarianStartupError} from "../system/errors.js"
 import {decodeAccessToken} from "../system/decode-access-token.js"
 
@@ -74,9 +73,8 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.authServer) {
 		queue(async() => {
-			progress.loginPopupRoutine = prepareLoginPopupRoutine(
-				config.authServer,
-				accountPopupLogin
+			progress.loginPopupRoutine = async() => accountPopupLogin(
+				config.authServer
 			)
 			progress.tokenStorage = await createTokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
