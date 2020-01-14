@@ -1,14 +1,13 @@
 
 import {CSSResult, LitElement} from "lit-element"
 
-export function mixinCss(
+export function mixinCss<T extends typeof LitElement>(
 	styles: CSSResult | CSSResult[],
-	Class: typeof LitElement
-): typeof LitElement {
-
+	Component: T
+): T {
 	const css = Array.isArray(styles) ? styles : [styles]
-
-	return class ClassWithCss extends Class {
+	const C = <typeof LitElement><any>Component
+	return <any>class ComponentWithStyle extends C {
 		static get styles() {return [
 			...css,
 			super.styles || []
