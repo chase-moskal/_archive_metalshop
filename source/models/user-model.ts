@@ -121,12 +121,9 @@ export function createUserModel({
 
 		/** Trigger a user login routine */
 		async login() {
-			debugger
 			userLoading()
 			try {
-				debugger
 				const authTokens = await loginPopupRoutine()
-				debugger
 				await tokenStorage.writeTokens(authTokens)
 				userLogin(processAccessToken(authTokens.accessToken))
 			}
