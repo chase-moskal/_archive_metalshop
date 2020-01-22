@@ -105,7 +105,7 @@ export function createUserModel({
 				}
 			}
 			catch (error) {
-				error.message = `user-model error in start(): ${error.message}`
+				console.error("user-model error in start()")
 				console.error(error)
 				userError(error)
 			}
@@ -121,7 +121,8 @@ export function createUserModel({
 
 		/** Trigger a user login routine */
 		async login() {
-			userLoading()
+			userLogout()
+			// userLoading()
 			try {
 				const authTokens = await loginPopupRoutine()
 				await tokenStorage.writeTokens(authTokens)
@@ -129,7 +130,7 @@ export function createUserModel({
 			}
 			catch (error) {
 				console.error(error)
-				userError(error)
+				// userError(error)
 			}
 		},
 

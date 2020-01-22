@@ -5,8 +5,8 @@ import {createTokenStorageClient}
 import {createProfileMagistrateClient}
 	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
 
-import {accountPopupLogin}
-	from "authoritarian/dist/account-popup/account-popup-login.js"
+import {triggerLoginPopup}
+	from "authoritarian/dist/account-popup/trigger-login-popup.js"
 
 import {
 	MockScheduleSentry,
@@ -73,9 +73,9 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.authServer) {
 		queue(async() => {
-			progress.loginPopupRoutine = async() => accountPopupLogin(
-				config.authServer
-			)
+			progress.loginPopupRoutine = async() => triggerLoginPopup({
+				accountPopupUrl: `${config.authServer}/html/account-popup`
+			})
 			progress.tokenStorage = await createTokenStorageClient({
 				url: `${config.authServer}/html/token-storage`
 			})
