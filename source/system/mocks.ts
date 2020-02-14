@@ -3,87 +3,38 @@ import {
 	Profile,
 	AuthTokens,
 	AccessToken,
-	AccessPayload,
-	RefreshPayload,
 	TokenStorageTopic,
 	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
-import {signToken} from "authoritarian/dist/crypto.js"
+
+import {nap} from "../toolbox/nap.js"
+import {once} from "../toolbox/once.js"
 
 import {
 	Question,
 	AuthContext,
 	QuestionDraft,
 	LoginPopupRoutine,
-	QuestionsBureauTopic,
 	ScheduleSentryTopic,
+	QuestionsBureauTopic,
 } from "../interfaces.js"
 
-import {privateKey} from "./mock-keys.js"
+const dist = "./dist"
+const debugLogs = false
 
-const debug = (message: string) => null //console.debug(`mock: ${message}`)
+const debug = (message: string) => debugLogs
+	? console.debug(`mock: ${message}`)
+	: null
 
-const nap = (multiplier: number = 1) =>
-	new Promise(resolve => setTimeout(resolve, multiplier * 250))
-
-async function createMockAccessToken({
-	claims = {cool: true},
-	expiresIn = "20m",
-}: {
-	claims: Object
-	expiresIn?: string
-} = {claims: {}}) {
-	debug("createMockAccessToken")
-	return signToken<AccessPayload>({
-		expiresIn,
-		privateKey,
-		payload: {
-			user: {
-				userId: "u123",
-				claims,
-			}
-		}
-	})
-}
-
-async function createMockRefreshToken({expiresIn = "60d"}: {
-	expiresIn?: string
-} = {}) {
-	debug("createMockRefreshToken")
-	return signToken<RefreshPayload>({
-		payload: {userId: "u123"},
-		expiresIn,
-		privateKey
-	})
-}
-
-function once<T extends any>(
-	handler: () => Promise<T>
-): () => Promise<T> {
-	let done = false
-	let value: T
-	return async() => {
-		if (done) return value
-		else {
-			value = await handler()
-			done = true
-			return value
-		}
-	}
-}
-
-const getMockRefreshToken = once(() => createMockRefreshToken())
-const getMockAccessToken = once(() => createMockAccessToken({
-	claims: {premium: false}
-}))
-const getMockPremiumAccessToken = once(() => createMockAccessToken({
-	claims: {premium: true}
-}))
-const getMockAdminAccessToken = once(() => createMockAccessToken({
-	claims: {admin: true, premium: true
-}}))
+const getToken = async(name: string) => (await fetch(`${dist}/${name}`)).text()
+const getMockAccessToken = once(() => getToken("mock-access.token"))
+const getMockRefreshToken = once(() => getToken("mock-refresh.token"))
+const getMockAdminAccessToken = once(() => getToken("mock-access-admin.token"))
+const getMockPremiumAccessToken = once(
+	() => getToken("mock-access-premium.token")
+)
 
 export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
 	debug("mockLoginPopupRoutine")

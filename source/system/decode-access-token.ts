@@ -1,6 +1,6 @@
 
 import {DecodeAccessToken} from "../interfaces.js"
-import {bdecode} from "authoritarian/dist/bdecode.js"
+import {tokenDecode} from "redcrypto/dist/token-decode.js"
 import {AccessPayload} from "authoritarian/dist/interfaces.js"
 
 /**
@@ -8,7 +8,7 @@ import {AccessPayload} from "authoritarian/dist/interfaces.js"
  * - no logic to check expiration, or anything like that
  */
 export const decodeAccessToken: DecodeAccessToken = accessToken => {
-	const data = bdecode<AccessPayload>(accessToken)
+	const data = tokenDecode<AccessPayload>(accessToken)
 	const {payload, exp} = data
 	const {user} = payload
 	return {exp, user, accessToken}
