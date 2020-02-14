@@ -1,6 +1,6 @@
 
-import {AuthoritarianConfig} from "../interfaces.js"
-import {AuthoritarianStartupError} from "../system/errors.js"
+import {AuthoritarianConfig} from "../../interfaces.js"
+import {AuthoritarianStartupError} from "../../system/errors.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import {createMockRefreshToken, createMockAccessToken}
-	from "./tools/create-tokens.js"
+	from "./more/create-tokens.js"
 
-import {prepareWriteToken} from "./tools/write-token.js"
+import {prepareWriteToken} from "./more/write-token.js"
 
 ~async function() {
 	const writeToken = prepareWriteToken("./dist")

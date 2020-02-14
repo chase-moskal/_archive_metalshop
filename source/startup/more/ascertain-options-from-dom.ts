@@ -1,7 +1,7 @@
 
-import {select} from "../toolbox/selects.js"
+import {select} from "../../toolbox/selects.js"
 
-import {AuthoritarianOptions} from "../interfaces.js"
+import {AuthoritarianOptions} from "../../interfaces.js"
 
 import {parse} from "./parse.js"
 import {initialize} from "./initialize.js"

@@ -13,14 +13,14 @@ import {
 	MockQuestionsBureau,
 	MockTokenStorageAdmin,
 	MockTokenStorageLoggedOut,
-} from "../system/mocks.js"
-import {AuthoritarianStartupError} from "../system/errors.js"
-import {decodeAccessToken} from "../system/decode-access-token.js"
+} from "../../system/mocks.js"
+import {AuthoritarianStartupError} from "../../system/errors.js"
+import {decodeAccessToken} from "../../system/decode-access-token.js"
 
 import {
 	AuthoritarianConfig,
 	AuthoritarianOptions,
-} from "../interfaces.js"
+} from "../../interfaces.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
@@ -47,7 +47,7 @@ export async function initialize(config: AuthoritarianConfig):
 			MockPaywallGuardian,
 			mockLoginPopupRoutine,
 			MockProfileMagistrate,
-		} = await import("../system/mocks.js")
+		} = await import("../../system/mocks.js")
 		progress = {
 			...progress,
 			profileMagistrate: new MockProfileMagistrate(),
