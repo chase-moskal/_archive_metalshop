@@ -9,13 +9,13 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {VideoViewerModel, VideoModel} from "../interfaces.js"
 
-export class VideoViewer extends
-	mixinLoadable(
-		mixinModelSubscription<VideoViewerModel, typeof LitElement>(
-			LitElement
-		)
+const Component = mixinLoadable(
+	mixinModelSubscription<VideoViewerModel, typeof LitElement>(
+		LitElement
 	)
-{
+)
+
+export class VideoViewer extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean

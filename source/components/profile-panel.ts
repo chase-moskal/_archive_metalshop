@@ -10,13 +10,13 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {ProfileModel} from "../interfaces.js"
 
-export class ProfilePanel extends
-	mixinLoadable(
-		mixinModelSubscription<ProfileModel, typeof LitElement>(
-			LitElement
-		)
+const Component = mixinLoadable(
+	mixinModelSubscription<ProfileModel, typeof LitElement>(
+		LitElement
 	)
-{
+)
+
+export class ProfilePanel extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"

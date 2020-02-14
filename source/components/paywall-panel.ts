@@ -8,13 +8,13 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {PaywallModel} from "../interfaces.js"
 
-export class PaywallPanel extends
-	mixinLoadable(
-		mixinModelSubscription<PaywallModel, typeof LitElement>(
-			LitElement
-		)
+const Component = mixinLoadable(
+	mixinModelSubscription<PaywallModel, typeof LitElement>(
+		LitElement
 	)
-{
+)
+
+export class PaywallPanel extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading supporter panel"
 	onMakeUserPremium = this.model.makeUserPremium

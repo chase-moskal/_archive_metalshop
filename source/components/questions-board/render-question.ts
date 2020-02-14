@@ -1,11 +1,8 @@
 
 import {html} from "lit-element"
 
-import {
-	Question,
-	QuestionAuthor,
-	PrepareHandleLikeClick,
-} from "../../interfaces.js"
+import {Question, QuestionAuthor, PrepareHandleLikeClick}
+	from "../../interfaces.js"
 
 import {renderAuthor} from "./render-author.js"
 import {ascertainOwnership} from "./helpers.js"

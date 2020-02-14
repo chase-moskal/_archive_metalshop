@@ -1,10 +1,9 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
 
+import {mixinModelSubscription}
+	from "../../framework/mixin-model-subscription.js"
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
-import {
-	mixinModelSubscription
-} from "../../framework/mixin-model-subscription.js"
 
 import {
 	QuestionDraft,
@@ -13,21 +12,18 @@ import {
 	PrepareHandleLikeClick,
 } from "../../interfaces.js"
 
-import {
-	sortQuestions,
-	authorFromUserAndProfile,
-} from "./helpers.js"
 import {styles} from "./questions-board-styles.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
+import {sortQuestions, authorFromUserAndProfile} from "./helpers.js"
 
-export class QuestionsBoard extends
-	mixinLoadable(
-		mixinModelSubscription<QuestionsModel, typeof LitElement>(
-			LitElement
-		)
+const Component = mixinLoadable(
+	mixinModelSubscription<QuestionsModel, typeof LitElement>(
+		LitElement
 	)
-{
+)
+
+export class QuestionsBoard extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String, reflect: true}) ["board-name"]: string
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean

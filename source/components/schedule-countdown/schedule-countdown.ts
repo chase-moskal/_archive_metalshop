@@ -2,24 +2,20 @@
 import {LitElement, html, css, property} from "lit-element"
 
 import {clock} from "../../system/icons.js"
-import {
-	mixinModelSubscription
-} from "../../framework/mixin-model-subscription.js"
-import {
-	ScheduleModel,
-	CountdownModel,
-} from "../../interfaces.js"
+import {ScheduleModel, CountdownModel} from "../../interfaces.js"
+import {mixinModelSubscription}
+	from "../../framework/mixin-model-subscription.js"
 
 import {formatDate, formatDuration} from "./dates.js"
 import {styles} from "./schedule-countdown-styles.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
-export class ScheduleCountdown extends
-	mixinModelSubscription<ScheduleModel, typeof LitElement>(
-		LitElement
-	)
-{
+const Component = mixinModelSubscription<ScheduleModel, typeof LitElement>(
+	LitElement
+)
+
+export class ScheduleCountdown extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String}) key: string

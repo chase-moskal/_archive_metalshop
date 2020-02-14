@@ -1,12 +1,7 @@
 
 import {html} from "lit-element"
-
-import {
-	LikeInfo,
-	QuestionAuthor,
-} from "../../interfaces.js"
-
 import {heart} from "../../system/icons.js"
+import {LikeInfo, QuestionAuthor} from "../../interfaces.js"
 
 export function renderAuthor({
 	time,

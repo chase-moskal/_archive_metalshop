@@ -7,13 +7,13 @@ import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 import {UserModel} from "../interfaces.js"
 
-export class UserPanel extends
-	mixinLoadable(
-		mixinModelSubscription<UserModel, typeof LitElement>(
-			LitElement
-		)
+const Component = mixinLoadable(
+	mixinModelSubscription<UserModel, typeof LitElement>(
+		LitElement
 	)
-{
+)
+
+export class UserPanel extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"

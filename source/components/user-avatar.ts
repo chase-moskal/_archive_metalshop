@@ -3,11 +3,11 @@ import {ProfileModel} from "../interfaces.js"
 import {LitElement, html, css} from "lit-element"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
-export class UserAvatar extends
-	mixinModelSubscription<ProfileModel, typeof LitElement>(
-		LitElement
-	)
-{
+const Component = mixinModelSubscription<ProfileModel, typeof LitElement>(
+	LitElement
+)
+
+export class UserAvatar extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
