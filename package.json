@@ -1,7 +1,7 @@
 {
 	"name": "authoritarian-client",
 	"version": "0.0.0-dev.27",
-	"description": "browser ui library for login and user settings",
+	"description": "auth frontend and web components",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
 	"type": "module",
@@ -10,7 +10,12 @@
 	"files": [
 		"dist"
 	],
-	"keywords": [],
+	"keywords": [
+		"auth",
+		"authorization",
+		"authentication",
+		"web-components"
+	],
 	"scripts": {
 		"prepare": "run-s clean && run-p compile importmap && run-s mocks test",
 		"clean": "rimraf dist && mkdirp dist",
