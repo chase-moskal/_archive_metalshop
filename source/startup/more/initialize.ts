@@ -74,10 +74,10 @@ export async function initialize(config: AuthoritarianConfig):
 	if (config.authServer) {
 		queue(async() => {
 			progress.loginPopupRoutine = async() => triggerLoginPopup({
-				accountPopupUrl: `${config.authServer}/html/account-popup`
+				authServerOrigin: config.authServer
 			})
 			progress.tokenStorage = await createTokenStorageClient({
-				url: `${config.authServer}/html/token-storage`
+				authServerOrigin: config.authServer
 			})
 		})
 	}
@@ -85,7 +85,7 @@ export async function initialize(config: AuthoritarianConfig):
 	if (config.profileServer) {
 		queue(async() => {
 			progress.profileMagistrate = await createProfileMagistrateClient({
-				url: config.profileServer
+				authServerOrigin: config.profileServer
 			})
 		})
 	}
