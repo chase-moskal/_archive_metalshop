@@ -40,10 +40,15 @@ export function createProfileModel({profileMagistrate}: {
 	} = pubsub()
 
 	async function loadProfile(): Promise<Profile> {
-		const {accessToken, user} = await getAuthContext()
+		const {user} = await getAuthContext()
 		const {userId} = user
 		const profile = await profileMagistrate.getProfile({userId})
-		if (!profile) console.warn("failed to load profile")
+		if (!profile) {
+			const error = new AuthoritarianProfileError(`failed to load profile`)
+			console.error(error)
+			state.error = error
+			update()
+		}
 		return profile
 	}
 
