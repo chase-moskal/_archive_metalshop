@@ -1,6 +1,6 @@
 {
 	"name": "authoritarian-client",
-	"version": "0.0.0-dev.27",
+	"version": "0.0.0-dev.28",
 	"description": "auth frontend and web components",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
