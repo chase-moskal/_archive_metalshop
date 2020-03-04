@@ -85,7 +85,7 @@ export async function initialize(config: AuthoritarianConfig):
 	if (config.profileServer) {
 		queue(async() => {
 			progress.profileMagistrate = await createProfileMagistrateClient({
-				authServerOrigin: config.profileServer
+				profileServerOrigin: config.profileServer
 			})
 		})
 	}

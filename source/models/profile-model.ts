@@ -67,6 +67,7 @@ export function createProfileModel({profileMagistrate}: {
 			catch (error) {
 				state.error = error
 				state.profile = null
+				console.error(error)
 			}
 			state.loading = false
 			update()
