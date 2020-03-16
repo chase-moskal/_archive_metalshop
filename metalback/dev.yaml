@@ -1,0 +1,14 @@
+
+ingress:
+  domain: workdev.chasemoskal.com
+  tls: null
+
+microservices:
+  auth:
+    # image: chasemoskal/auth-server:latest
+    domain: auth.workdev.chasemoskal.com
+    replicas: 1
+  profile:
+    # image: chasemoskal/profile-server:latest
+    domain: profile.workdev.chasemoskal.com
+    replicas: 1

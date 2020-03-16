@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+helm upgrade workdev . --install -f dev.yaml

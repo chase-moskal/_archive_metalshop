@@ -1,0 +1,63 @@
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "workback.fullname" . }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: issuer
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+spec:
+  {{ if .Values.ingress.tls }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.domain }}
+    - {{ .Values.microservices.auth.domain }}
+    - {{ .Values.microservices.profile.domain }}
+    {{ if .Values.ingress.tls.production }}
+    secretName: tls-secret-production
+    {{ else }}
+    secretName: tls-secret-staging
+    {{ end }}
+  {{ end }}
+  rules:
+  - host: {{ .Values.microservices.auth.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: auth
+          servicePort: 8000
+  - host: {{ .Values.microservices.profile.domain }}
+    http:
+      paths:
+      - backend:
+          serviceName: profile
+          servicePort: 8001
+
+{{ if .Values.ingress.tls }}
+---
+
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: issuer
+spec:
+  acme:
+    email: {{ .Values.ingress.tls.email }}
+    {{ if .Values.ingress.tls.production }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    {{ else }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    {{ end }}
+    privateKeySecretRef:
+      {{ if .Values.ingress.tls.production }}
+      name: tls-secret-production
+      {{ else }}
+      name: tls-secret-staging
+      {{ end }}
+    solvers:
+    - selector: {}
+      http01:
+        ingress:
+          class: {{ .Values.ingress.class }}
+
+{{ end }}

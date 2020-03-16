@@ -1,0 +1,51 @@
+{
+	"port": 8000,
+	"debug": true,
+	"usersDatabase": {
+		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
+		"dbName": "authServer",
+		"collectionName": "users"
+	},
+	"google": {
+		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com"
+	},
+	"profileServerConnection": {
+		"profileServerOrigin": "http://profile:8001"
+	},
+	"authExchanger": {
+		"cors": {
+			"allowed": {
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
+	"tokenStorage": {
+		"cors": {
+			"allowed": {
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
+	"accountPopup": {
+		"cors": {
+			"allowed": {
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	},
+	"claimsDealer": {
+		"cors": {
+			"allowed": {
+				"pattern": "^https?://(.*)chasemoskal.com(|:8\\d{3})$",
+				"flags": "i"
+			},
+			"forbidden": null
+		}
+	}
+}

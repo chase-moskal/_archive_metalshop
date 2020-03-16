@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+helm upgrade wd2 . --install
