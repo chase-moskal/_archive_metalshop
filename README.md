@@ -23,7 +23,7 @@
 &nbsp; &nbsp; `<schedule-countdown>` — *countdown timer*  
 
 **🐋 "metalback" microservices**  
-&nbsp; &nbsp; ⭐ [metalback](https://github.com/chase-moskal/shopper/tree/master/source) — *metalshop's helm chart for kubernetes*  
+&nbsp; &nbsp; ⭐ [metalback](https://github.com/chase-moskal/metalshop/tree/master/metalback) — *metalshop's helm chart for kubernetes*  
 &nbsp; &nbsp; [auth-server](https://github.com/chase-moskal/auth-server) — *authentication and authorization*  
 &nbsp; &nbsp; [profile-server](https://github.com/chase-moskal/profile-server) — *save/load public profile info*  
 &nbsp; &nbsp; paywall-server — *paypal liaison*  
