@@ -1,7 +1,7 @@
 {
-	"name": "authoritarian-client",
-	"version": "0.0.0-dev.29",
-	"description": "auth frontend and web components",
+	"name": "metalshop",
+	"version": "0.0.0-dev.30",
+	"description": "app components for auth and more",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
 	"type": "module",
@@ -12,6 +12,7 @@
 	],
 	"keywords": [
 		"auth",
+		"components",
 		"authorization",
 		"authentication",
 		"web-components"

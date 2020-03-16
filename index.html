@@ -3,27 +3,27 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width,initial-scale=1"/>
-		<title>authoritarian-client demo</title>
+		<title>metalshop demo</title>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Big+Shoulders+Text|Dosis&display=swap"/>
 		<link rel="stylesheet" href="demo.css"/>
 		<script type="importmap-shim" src="dist/importmap.json"></script>
 		<script type="module-shim" src="dist/main.js"></script>
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
-		<!-- authoritarian config -->
-		<authoritarian-config
+		<!-- metalshop config -->
+		<metalshop-config
 			mock
-			auth-server="https://auth.workback.chasemoskal.com"
-			profile-server="https://profile.workback.chasemoskal.com"
-			Xvimeo-server="http://localhost:8003"
-			Xpaywall-server="http://localhost:8002"
-			Xquestions-board-server="http://localhost:8004"
-		></authoritarian-config>
+			auth-server="http://auth.metaldev.chasemoskal.com"
+			profile-server="http://profile.metaldev.chasemoskal.com"
+			Xvimeo-server="http://vimeo.metaldev.chasemoskal.com:8003"
+			Xpaywall-server="http://paywall.metaldev.chasemoskal.com:8002"
+			Xquestions-server="http://questions.metaldev.chasemoskal.com:8004"
+		></metalshop-config>
 
 		<script>
 			// demo ?mock modes
 			if (location.search.startsWith("?mock")) {
-				const config = document.querySelector("authoritarian-config")
+				const config = document.querySelector("metalshop-config")
 				config.setAttribute(
 					"mock",
 					location.search.startsWith("?mock=loggedin")
@@ -37,11 +37,11 @@
 	</head>
 	<body>
 		<header>
-			<h1>authoritarian-client demo</h1>
+			<h1>metalshop demo</h1>
 			<menu-system sticky initially-hidden>
 				<menu-display>
 
-					<!-- authoritarian ui components -->
+					<!-- metalshop ui components -->
 					<user-avatar slot="button" title="Your Account"></user-avatar>
 					<user-panel>
 						<h2 slot="top">Your account</h2>
@@ -53,7 +53,7 @@
 			</menu-system>
 		</header>
 		<main class="content">
-			<p>see <em><a href="https://github.com/chase-moskal/authoritarian-client">authoritarian-client on github</a></em></p>
+			<p>see <em><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></em></p>
 
 			<!-- questions board -->
 			<questions-board
