@@ -11,7 +11,7 @@
 &nbsp; &nbsp; 🖧 powered by microservices: orchestrated on kubernetes  
 
 **🎓 metalshop articles i need to write**  
-&nbsp; &nbsp; ⚜️ *"easily add user logins to your webpage with metalshop"*  
+&nbsp; &nbsp; *"easily add user logins to your webpage with metalshop"*  
 
 **🎁 metalshop frontend web components**  
 &nbsp; &nbsp; `<user-panel>` — *login, logout*  
