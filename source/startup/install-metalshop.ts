@@ -8,11 +8,11 @@ import {registerComponents} from "../toolbox/register-components.js"
 import {prepareComponents} from "./more/prepare-components.js"
 import {ascertainOptionsFromDom} from "./more/ascertain-options-from-dom.js"
 
-export async function installAuthoritarian(options?: AuthoritarianOptions) {
+export async function installMetalshop(options?: AuthoritarianOptions) {
 
 	// use the provided options, or parse them from the dom
 	options = options || await ascertainOptionsFromDom({
-		selector: "authoritarian-config"
+		selector: "metalshop-config"
 	})
 
 	// create the components all wired up with their models

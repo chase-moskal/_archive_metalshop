@@ -1,8 +1,8 @@
 
 import "menutown/dist/register-all.js"
-import {installAuthoritarian} from "./startup/install-authoritarian.js"
+import {installMetalshop} from "./startup/install-metalshop.js"
 
 ~async function() {
-	const {start} = await installAuthoritarian()
+	const {start} = await installMetalshop()
 	await start()
 }()

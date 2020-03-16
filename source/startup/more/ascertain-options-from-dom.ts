@@ -10,7 +10,7 @@ export async function ascertainOptionsFromDom({selector}: {
 	selector: string
 }): Promise<AuthoritarianOptions> {
 
-	// grab the <authoritarian-config> element
+	// grab the <metalshop-config> element
 	const element = select(selector)
 
 	// make sense of the config element's attributes

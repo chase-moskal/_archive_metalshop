@@ -5,7 +5,7 @@ import {AuthoritarianStartupError} from "../../system/errors.js"
 const err = (message: string) => new AuthoritarianStartupError(message)
 
 export function parse(element: HTMLElement): AuthoritarianConfig {
-	if (!element) throw err(`<authoritarian-config> required, missing`)
+	if (!element) throw err(`<metalshop-config> required, missing`)
 	return {
 		mock: element.getAttribute("mock"),
 		authServer: element.getAttribute("auth-server"),
@@ -13,6 +13,6 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 		profileServer: element.getAttribute("profile-server"),
 		paywallServer: element.getAttribute("paywall-server"),
 		scheduleServer: element.getAttribute("schedule-server"),
-		questionsBoardServer: element.getAttribute("questions-board-server"),
+		questionsBoardServer: element.getAttribute("questions-server"),
 	}
 }
