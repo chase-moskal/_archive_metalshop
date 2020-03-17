@@ -19,8 +19,7 @@ jobs:
     - name: production deployment
       shell: bash
       env:
-        AUTH_CONFIG: '${{ secrets.AUTH_CONFIG }}'
-        PROFILE_CONFIG: '${{ secrets.PROFILE_CONFIG }}'
+        METALBACK_CONFIG: '${{ secrets.METALBACK_CONFIG }}'
         AUTH_SERVER_PUBLIC_PEM: '${{ secrets.AUTH_SERVER_PUBLIC_PEM }}'
         AUTH_SERVER_PRIVATE_PEM: '${{ secrets.AUTH_SERVER_PRIVATE_PEM }}'
       run: |
