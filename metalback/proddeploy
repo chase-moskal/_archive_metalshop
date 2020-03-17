@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-helm upgrade wd2 . --install
+helm upgrade metalback-armadillo . --install

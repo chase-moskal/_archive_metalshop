@@ -1,7 +1,7 @@
 
 ingress:
   class: nginx
-  domain: workback.chasemoskal.com
+  domain: metalback.chasemoskal.com
   tls:
     production: true
     email: chasemoskal@gmail.com
@@ -9,9 +9,9 @@ ingress:
 microservices:
   auth:
     image: chasemoskal/auth-server:v0.0.0-dev.14
-    domain: auth.workback.chasemoskal.com
+    domain: auth.metalback.chasemoskal.com
     replicas: 2
   profile:
     image: chasemoskal/profile-server:v0.0.0-dev.9
-    domain: profile.workback.chasemoskal.com
+    domain: profile.metalback.chasemoskal.com
     replicas: 2
