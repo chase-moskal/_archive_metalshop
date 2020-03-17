@@ -2,15 +2,15 @@
 	"port": 8000,
 	"debug": true,
 	"usersDatabase": {
-		"uri": "mongodb+srv://admin:admin@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
-		"dbName": "authServer",
+		"uri": "mongodb+srv://developer:eAQiCvYa2nQLKVPZ@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority",
+		"dbName": "metaldev",
 		"collectionName": "users"
 	},
 	"google": {
 		"clientId": "501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com"
 	},
 	"profileServerConnection": {
-		"profileServerOrigin": "http://profile:8001"
+		"profileServerOrigin": "http://profile.metaldev.chasemoskal.com:8001"
 	},
 	"authExchanger": {
 		"cors": {

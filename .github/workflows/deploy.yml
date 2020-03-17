@@ -17,6 +17,21 @@ jobs:
           cluster-name: workback
       id: login
     - name: production deployment
+      shell: bash
+      env:
+        AUTH_CONFIG: '${{ secrets.AUTH_CONFIG }}'
+        PROFILE_CONFIG: '${{ secrets.PROFILE_CONFIG }}'
+        AUTH_SERVER_PUBLIC_PEM: '${{ secrets.AUTH_SERVER_PUBLIC_PEM }}'
+        AUTH_SERVER_PRIVATE_PEM: '${{ secrets.AUTH_SERVER_PRIVATE_PEM }}'
       run: |
         cd metalback
+        rm -rf config
+        mkdir config
+        mkdir config/auth
+        echo "$AUTH_CONFIG" > config/auth/config.json
+        echo "$AUTH_SERVER_PUBLIC_PEM" > config/auth/auth-server.public.pem
+        echo "$AUTH_SERVER_PRIVATE_PEM" > config/auth/auth-server.private.pem
+        mkdir config/profile
+        echo "$PROFILE_CONFIG" > config/profile/config.json
+        echo "$AUTH_SERVER_PUBLIC_PEM" > config/profile/auth-server.public.pem
         ./proddeploy
