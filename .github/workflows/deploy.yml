@@ -25,13 +25,8 @@ jobs:
         AUTH_SERVER_PRIVATE_PEM: '${{ secrets.AUTH_SERVER_PRIVATE_PEM }}'
       run: |
         cd metalback
-        rm -rf config
-        mkdir config
-        mkdir config/auth
-        echo "$AUTH_CONFIG" > config/auth/config.json
-        echo "$AUTH_SERVER_PUBLIC_PEM" > config/auth/auth-server.public.pem
-        echo "$AUTH_SERVER_PRIVATE_PEM" > config/auth/auth-server.private.pem
-        mkdir config/profile
-        echo "$PROFILE_CONFIG" > config/profile/config.json
-        echo "$AUTH_SERVER_PUBLIC_PEM" > config/profile/auth-server.public.pem
+        rm -rf config && mkdir config
+        echo "$METALBACK_CONFIG" > config/config.yaml
+        echo "$AUTH_SERVER_PUBLIC_PEM" > config/auth-server.public.pem
+        echo "$AUTH_SERVER_PRIVATE_PEM" > config/auth-server.private.pem
         ./proddeploy

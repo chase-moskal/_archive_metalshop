@@ -1,0 +1,19 @@
+
+authServer:
+  port: 8000
+  debug: true
+  profileServerOrigin: http://profile:8001
+  googleClientId: 501512445110-q3i6vl4ihfas2act2euehgppiats6gor.apps.googleusercontent.com
+
+profileServer:
+  port: 8001
+
+mongo:
+  link: mongodb+srv://developer:eAQiCvYa2nQLKVPZ@devcluster-g4uwh.mongodb.net/test?retryWrites=true&w=majority
+  database: metaldev
+
+cors:
+  allowed:
+    pattern: ^https?://(.*)metal(shop|back|dev|front)\.chasemoskal\.com(|:8\d{3})$
+    flags: i
+  forbidden: null

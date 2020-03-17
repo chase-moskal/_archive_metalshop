@@ -13,7 +13,7 @@ spec:
       labels:
         app: auth
       annotations:
-        checksum: {{ include (print $.Template.BasePath "/auth-config.yaml") . | sha256sum }}
+        checksum: {{ include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum }}
     spec:
       containers:
       - image: {{ .Values.microservices.auth.image }}
@@ -28,4 +28,4 @@ spec:
       volumes:
       - name: auth-config-volume
         secret:
-          secretName: {{ include "workback.fullname" . }}-auth-config
+          secretName: {{ include "workback.fullname" . }}-secret-config
