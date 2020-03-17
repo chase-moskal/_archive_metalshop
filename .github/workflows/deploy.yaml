@@ -1,0 +1,22 @@
+
+name: deploy to aks
+on:
+  create:
+    tags:
+      - v*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: set azure kubectl context
+      uses: azure/aks-set-context@v1
+      with:
+          creds: '${{ secrets.AKS_CREDENTIALS }}'
+          resource-group: workgroup
+          cluster-name: workback
+      id: login
+    - name: production deployment
+      run: |
+        cd metalback
+        ./proddeploy
