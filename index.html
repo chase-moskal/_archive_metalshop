@@ -34,7 +34,7 @@
 	</head>
 	<body>
 		<header>
-			<h1>metalshop demo</h1>
+			<h1>metalshop</h1>
 			<menu-system sticky initially-hidden>
 				<menu-display>
 
@@ -52,24 +52,28 @@
 		<main class="content">
 			<p>see <em><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></em></p>
 
-			<!-- questions board -->
-			<questions-board
-				board-name="qa1"
-				initially-hidden>
-					<h2 slot="post">Post your question!</h2>
-					<h2 slot="rate">Rate other submitted questions</h2>
-			</questions-board>
+			<details>
+				<summary>questions-board</summary>
+				<questions-board board-name="qa1" initially-hidden>
+						<h2 slot="post">Post your question!</h2>
+						<h2 slot="rate">Rate other submitted questions</h2>
+				</questions-board>
+			</details>
 
-			<!-- countdown widget -->
-			<schedule-countdown key="countdown1" initially-hidden>
-				<h2>Next stream scheduled</h2>
-			</schedule-countdown>
+			<details>
+				<summary>schedule-countdown</summary>
+				<schedule-countdown key="countdown1" initially-hidden>
+					<h2>Next stream scheduled</h2>
+				</schedule-countdown>
+			</details>
 
-			<!-- video viewer: private livestream -->
-			<video-viewer video-name="livestream" initially-hidden>
-				<h2>Welcome to the private livestream!</h2>
-				<p>You are logged in as a premium supporter</p>
-			</video-viewer>
+			<details>
+				<summary>video-viewer</summary>
+				<video-viewer video-name="livestream" initially-hidden>
+					<h2>Welcome to the private livestream!</h2>
+					<p>You are logged in as a premium supporter</p>
+				</video-viewer>
+			</details>
 
 		</main>
 	</body>
