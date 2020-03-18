@@ -100,12 +100,6 @@ menu-system {
 	--menu-margin: 0.67rem 0 0 0;
 }
 
-/* menu system will remove [initially-hidden] property when it has loaded */
-menu-system[initially-hidden] {
-	display: none;
-}
-
-/* setting the demo menu panel's aesthetic properties like colors and such */
 menu-display {
 	color: rgba(25, 71, 93, 0.6);
 	--menu-panel-width: 540px;
