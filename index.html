@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width,initial-scale=1"/>
-		<title>metalshop</title>
+		<title>🤘 metalshop</title>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium&display=swap"/>
 		<link rel="stylesheet" href="demo.css"/>
 		<script type="importmap-shim" src="dist/importmap.json"></script>
@@ -54,7 +54,7 @@
 	</head>
 	<body>
 		<header>
-			<h1>metalshop</h1>
+			<h1>🤘 metalshop</h1>
 			<menu-system sticky initially-hidden>
 				<menu-display>
 
@@ -70,56 +70,68 @@
 			</menu-system>
 		</header>
 		<main class="content">
-			<section>
-				<h2>ready-made app components and microservices</h2>
-				<p>see <em><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></em></p>
-
-				<br/>
-				<p>the default page supports real logins on the azure cluster</p>
-				<ul>
-					<li><a href="/">/</a> — connect to production servers</li>
-				</ul>
-
-				<br/>
-				<p>you can also play in mock mode, where no real connections or logins are made</p>
-				<ul>
-					<li><a href="/?mock">/?mock</a> — no connections</li>
-					<li><a href="/?mock=loggedin">/?mock=loggedin</a> — start logged in</li>
-					<li><a href="/?mock=premium">/?mock=premium</a> — be a premium user</li>
-					<li><a href="/?mock=admin">/?mock=admin</a> — be an administrator</li>
-				</ul>
-
-				<br/>
-				<p>developers, you can use dev mode to connect elsewhere</p>
-				<ul>
-					<li><a href="/?dev=node">/?dev=node</a> — local node microservices</li>
-					<li><a href="/?dev=k8s">/?dev=k8s</a> — local minikube cluster</li>
-				</ul>
+			<section class="twoside">
+				<section>
+					<h2>metalshop is open source love</h2>
+					<p>hi, i'm chase moskal, and metalshop is my open source journey into modern javascript app architecture and infrastructure</p>
+					<p></p>
+					<p><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></p>
+					<h3>app features as web components</h3>
+					<p>features like user logins and paywalls and stuff implemented as web components, whose pastable and customizable html snippets can be freely sprinked around your web apps</p>
+					<h3>authentication and authorization</h3>
+					<p>metalshop's plug-and-play token-based auth system works cross-domain and is built for node microservices</p>
+					<h3>microservices orchestrated on kubernetes</h3>
+					<p>metalshop comes with a bunch of node microservices, which are organized as a helm chart called "metalback", deployable to any cloud provider</p>
+				</section>
+				<section>
+					<h2>this is the demo/dev page</h2>
+					<p>so go ahead and play around, login at the top right!</p>
+					<p>remember, this stuff is work-in-progress, so some stuff doesn't work yet in various modes</p>
+					<h3>mock mode makes no connections</h3>
+					<ul>
+						<li><a href="/?mock">/?mock</a> ← no connections</li>
+						<li><a href="/?mock=loggedin">/?mock=loggedin</a> ← start logged in</li>
+						<li><a href="/?mock=premium">/?mock=premium</a> ← be a premium user</li>
+						<li><a href="/?mock=admin">/?mock=admin</a> ← be an administrator</li>
+					</ul>
+					<h3>choose your microservices</h3>
+					<ul>
+						<li><a href="/">/</a> ← production azure cluster</li>
+						<li><a href="/?dev=node">/?dev=node</a> ← local node microservices</li>
+						<li><a href="/?dev=k8s">/?dev=k8s</a> ← local minikube cluster</li>
+					</ul>
+				</section>
 			</section>
-
+			<h2>component demos</h2>
+			<br/>
 			<details>
 				<summary>questions-board</summary>
-				<questions-board board-name="qa1" initially-hidden>
-						<h2 slot="post">Post your question!</h2>
-						<h2 slot="rate">Rate other submitted questions</h2>
+				<questions-board board-name="qa1">
+					<h2 slot="post">Post your question!</h2>
+					<h2 slot="rate">Rate other submitted questions</h2>
 				</questions-board>
 			</details>
-
 			<details>
 				<summary>schedule-countdown</summary>
-				<schedule-countdown key="countdown1" initially-hidden>
+				<schedule-countdown key="countdown1">
 					<h2>Next stream scheduled</h2>
 				</schedule-countdown>
 			</details>
-
 			<details>
 				<summary>video-viewer</summary>
-				<video-viewer video-name="livestream" initially-hidden>
+				<video-viewer video-name="livestream">
 					<h2>Welcome to the private livestream!</h2>
 					<p>You are logged in as a premium supporter</p>
 				</video-viewer>
 			</details>
-
+			<details>
+				<summary>user-panel (same as top right menu)</summary>
+				<user-panel>
+					<h2 slot="top">Your account</h2>
+					<profile-panel></profile-panel>
+					<paywall-panel></paywall-panel>
+				</user-panel>
+			</details>
 		</main>
 	</body>
 </html>

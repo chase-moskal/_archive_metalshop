@@ -5,7 +5,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	--focus-outline: 2px solid cyan;
+	--focus-outline: 2px solid #ff4d17;
 }
 
 *:focus {
@@ -14,6 +14,21 @@
 
 [initially-hidden] {
 	display: none;
+}
+
+a {
+	color: #ff7f10;
+	text-decoration: none;
+}
+
+a:hover, a:focus {
+	color: #ffcf86;
+	text-shadow: 0 0 7px rgba(255, 129, 0, 0.5);
+	text-decoration: underline;
+}
+
+a:active {
+	color: #fb4a37;
 }
 
 html, body {
@@ -28,14 +43,22 @@ body {
 	max-width: 960px;
 	padding: 0 5%;
 	margin: 0 auto;
+	transition: padding 1s ease;
+}
+
+@media (max-width: 600px) {
+	body {
+		padding: 0;
+	}
 }
 
 body > header {
-	background: rgba(255,255,255, 0.2);
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	padding: 1rem;
+	background: rgba(255,255,255, 0.2);
+	box-shadow: 2px 4px 25px rgba(0,0,0, 0.1);
 }
 
 body > header h1 {
@@ -51,42 +74,72 @@ main {
 	padding: 1rem;
 	background: rgba(255,255,255, 0.1);
 	padding-bottom: 10rem;
+	box-shadow: 2px 4px 25px rgba(0,0,0, 0.3);
+}
+
+.content h2 {
+	color: white;
+	font-size: 1.3em;
+	text-transform: uppercase;
+	text-shadow: 0 0 10px rgba(255,255,255, 0.5);
+}
+
+.content h3 {
+	color: white;
+	font-size: 1.1em;
+	text-transform: uppercase;
+}
+
+.content h4 {
+	font-size: 1.1em;
+}
+
+.twoside {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	font-size: 0.8em;
+	margin-bottom: 4em;
+}
+
+.twoside > section {
+	flex: 0 0 48%;
+}
+
+.twoside * + p {
+	padding-top: 0.25em;
+}
+
+.twoside * + h2,
+.twoside * + h3,
+.twoside * + h4 {
+	padding-top: 0.5em;
+}
+
+.twoside ol, .twoside ul {
+	padding-left: 1.5em;
+}
+
+@media (max-width: 550px) {
+	.twoside {
+		flex-direction: column;
+	}
+	.twoside > section + section {
+		margin-top: 2em;
+	}
+}
+
+details {
+	margin-bottom: 1em;
+}
+
+details > summary {
+	margin-bottom: 1em;
+	padding: 0 1em;
 }
 
 details > * {
 	margin: auto;
-}
-
-.content > * + * {
-	margin-top: 1em;
-}
-
-.content h1 {
-	font-size: 1.3em;
-}
-
-.content h2 {
-	font-size: 1.2em;
-}
-
-.content ol, .content ul {
-	margin-top: 0.2em;
-	padding-left: 1.5em;
-}
-
-a {
-	color: #92efff;
-	text-decoration: none;
-}
-
-a:hover, a:focus {
-	color: #2effff;
-	text-shadow: 0 0 7px rgb(46, 239, 255);
-	text-decoration: underline;
-}
-
-a:active {
-	color: lime;
 }
 
 /******************************************************************************/
