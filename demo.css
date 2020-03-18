@@ -17,19 +17,16 @@
 }
 
 html, body {
-	font-family: Dosis, sans-serif;
-	background: fixed linear-gradient(to bottom right, #09534e, #01120d);
-	color: rgba(255,255,255, 0.8);
+	font-size: 16px;
+	font-family: Oxanium, sans-serif;
+	background: #212123;
+	color: rgba(255,255,255, 0.9);
 	min-height: 100%;
-}
-
-html {
-	font-size: 21px;
-	padding: 0 5%;
 }
 
 body {
 	max-width: 960px;
+	padding: 0 5%;
 	margin: 0 auto;
 }
 
@@ -42,7 +39,6 @@ body > header {
 }
 
 body > header h1 {
-	font-family: "Big Shoulders Text", sans-serif;
 	color: white;
 	text-shadow: 0 0 10px rgba(255,255,255, 0.5);
 }
@@ -62,17 +58,15 @@ details > * {
 }
 
 .content > * + * {
-	margin-top: 4em;
+	margin-top: 1em;
 }
 
 .content h1 {
-	font-family: "Big Shoulders Text", sans-serif;
-	font-size: 1.2em;
+	font-size: 1.3em;
 }
 
 .content h2 {
-	font-family: "Big Shoulders Text", sans-serif;
-	font-size: 1.1em;
+	font-size: 1.2em;
 }
 
 .content ol, .content ul {
@@ -81,7 +75,8 @@ details > * {
 }
 
 a {
-	color: cyan;
+	color: #92efff;
+	text-decoration: none;
 }
 
 a:hover, a:focus {
@@ -94,16 +89,6 @@ a:active {
 	color: lime;
 }
 
-@media (max-width: 600px) {
-	body > header {
-		flex-direction: column;
-		align-items: center;
-	}
-	body > header > h1 {
-		order: 1;
-	}
-}
-
 /******************************************************************************/
 
 /* make the menu system positioning relative to the header */
@@ -112,13 +97,7 @@ body > header {
 }
 
 menu-system {
-	--menu-margin: 1em 0 0 0;
-}
-
-@media (max-width: 500px) {
-	body > header {
-		padding-top: 4rem;
-	}
+	--menu-margin: 0.67rem 0 0 0;
 }
 
 /* menu system will remove [initially-hidden] property when it has loaded */
@@ -129,7 +108,7 @@ menu-system[initially-hidden] {
 /* setting the demo menu panel's aesthetic properties like colors and such */
 menu-display {
 	color: rgba(25, 71, 93, 0.6);
-	--menu-panel-width: 720px;
+	--menu-panel-width: 540px;
 	--menu-panel-padding: 1rem;
 	--menu-panel-box-shadow: none;
 	--menu-panel-background: rgba(215, 255, 239, 0.8);
@@ -142,24 +121,21 @@ user-avatar {
 
 user-panel {
 	text-align: left;
-	font-family: "Big Shoulders Text", sans-serif;
 	--user-panel-login-justify: center;
 	--user-panel-logout-justify: flex-end;
 }
 
 user-panel > * {
-	font-family: sans-serif;
 	background: rgba(255,255,255, 0.5);
 	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
-	padding: 0.5em;
-	--coolbutton-font-family: "Big Shoulders Text", sans-serif;
+	padding: 2em;
 	--coolbutton-background: #00a464;
 }
 
 user-panel > h2 {
+	opacity: 0.4;
 	padding: 0;
 	text-align: center;
-	font-family: "Big Shoulders Text", sans-serif;
 	background: transparent;
 	text-transform: uppercase;
 	box-shadow: none;

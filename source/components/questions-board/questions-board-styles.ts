@@ -72,7 +72,7 @@ export const styles = css`
 
 	.author avatar-display {
 		flex: 0 0 auto;
-		--avatar-display-size: var(--question-avatar-size, 5em);
+		--avatar-size: var(--question-avatar-size, 5em);
 		border-radius: var(--question-avatar-border-radius, unset);
 	}
 

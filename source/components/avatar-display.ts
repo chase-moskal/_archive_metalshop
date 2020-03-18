@@ -26,9 +26,10 @@ const styles = css`
 
 	:host {
 		display: block;
-		width: var(--avatar-display-size, 3em);
-		height: var(--avatar-display-size, 3em);
-		max-width: 100%;
+		width: var(--avatar-size, 3em);
+		height: var(--avatar-size, 3em);
+		max-width: var(--avatar-max-width, 100%);
+		max-height: var(--avatar-max-height, 100%);
 		overflow: hidden;
 	}
 

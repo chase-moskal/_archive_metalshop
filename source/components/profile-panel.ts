@@ -127,7 +127,7 @@ const styles = css`
 
 	avatar-display {
 		flex: 0 0 auto;
-		--avatar-display-size: 25%;
+		--avatar-size: 6em;
 		border: 5px solid rgba(255,255,255, 0.5);
 	}
 
@@ -165,15 +165,10 @@ const styles = css`
 		font-size: 1.1em;
 	}
 
-	@media (max-width: 600px) {
+	@media (max-width: 450px) {
 		.container {
 			flex-direction: column;
 			align-items: flex-start;
-		}
-
-		avatar-display {
-			--avatar-display-size: 5em;
-			margin: auto;
 		}
 	}
 `
