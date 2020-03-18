@@ -57,6 +57,10 @@ main {
 	padding-bottom: 10rem;
 }
 
+details > * {
+	margin: auto;
+}
+
 .content > * + * {
 	margin-top: 4em;
 }

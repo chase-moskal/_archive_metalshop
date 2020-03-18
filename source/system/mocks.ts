@@ -7,14 +7,13 @@ import {
 	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
+	RefreshToken,
 } from "authoritarian/dist/interfaces.js"
 
 import {nap} from "../toolbox/nap.js"
-import {once} from "../toolbox/once.js"
 
 import {
 	Question,
-	AuthContext,
 	QuestionDraft,
 	LoginPopupRoutine,
 	ScheduleSentryTopic,
@@ -22,138 +21,229 @@ import {
 } from "../interfaces.js"
 
 const dist = "./dist"
-const debugLogs = false
+const debugLogs = true
 
 const debug = (message: string) => debugLogs
 	? console.debug(`mock: ${message}`)
 	: null
 
 const getToken = async(name: string) => (await fetch(`${dist}/${name}`)).text()
-const getMockAccessToken = once(() => getToken("mock-access.token"))
-const getMockRefreshToken = once(() => getToken("mock-refresh.token"))
-const getMockAdminAccessToken = once(() => getToken("mock-access-admin.token"))
-const getMockPremiumAccessToken = once(
-	() => getToken("mock-access-premium.token")
-)
 
-export const mockLoginPopupRoutine: LoginPopupRoutine = async() => {
-	debug("mockLoginPopupRoutine")
-	await nap()
-	return {
-		accessToken: await getMockAccessToken(),
-		refreshToken: await getMockRefreshToken()
-	}
+export interface MockTokens {
+	accessToken: AccessToken
+	refreshToken: RefreshToken
+	adminAccessToken: AccessToken
+	premiumAccessToken: AccessToken
 }
 
-export const mockDecodeAccessToken = (accessToken: AccessToken):
- AuthContext => {
-	debug("mockDecodeAccessToken")
-	return ({
-		accessToken,
-		exp: (Date.now() / 1000) + 10,
-		user: {
-			userId: "u123",
-			claims: {premium: true},
+export const getMockTokens = async(): Promise<MockTokens> => ({
+	accessToken: await getToken("mock-access.token"),
+	refreshToken: await getToken("mock-refresh.token"),
+	adminAccessToken: await getToken("mock-access-admin.token"),
+	premiumAccessToken: await getToken("mock-access-premium.token"),
+})
+
+export const prepareAllMocks = ({
+	admin,
+	premium,
+	mockTokens,
+	startLoggedIn,
+}: {
+	admin: boolean
+	premium: boolean
+	mockTokens: MockTokens
+	startLoggedIn: boolean
+}) => {
+
+	const state = {
+		loggedIn: startLoggedIn,
+		profile: <Profile>{
+			userId: "fake-h31829h381273h",
+			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+			avatar: "https://picsum.photos/id/375/200/200",
 		},
-	})
-}
-
-export class MockVimeoGovernor implements VimeoGovernorTopic {
-	private _vimeoId = "109943349"
-
-	async getVimeo(options: {
-		accessToken: AccessToken
-		videoName: string
-	}): Promise<{vimeoId: string}> {
-		const {_vimeoId: vimeoId} = this
-		return {vimeoId}
-	}
-
-	async setVimeo({vimeoId}: {
-		accessToken: AccessToken
-		vimeoId: string
-		videoName: string
-	}) {
-		this._vimeoId = vimeoId
-	}
-}
-
-export class MockTokenStorage implements TokenStorageTopic {
-	async passiveCheck() {
-		debug("passiveCheck")
-		await nap()
-		return getMockAccessToken()
-	}
-	async writeTokens(tokens: AuthTokens) {
-		debug("writeTokens")
-		await nap()
-	}
-	async writeAccessToken(accessToken: AccessToken) {
-		debug("writeAccessToken")
-		await nap()
-	}
-	async clearTokens() {
-		debug("clearTokens")
-		await nap()
-	}
-}
-
-export class MockTokenStorageAdmin extends MockTokenStorage {
-	async passiveCheck() {
-		debug("passiveCheck admin")
-		await nap()
-		return getMockAdminAccessToken()
-	}
-}
-
-export class MockTokenStorageLoggedOut extends MockTokenStorage {
-	async passiveCheck() {
-		debug("passiveCheck loggedout")
-		await nap()
-		return null
-	}
-}
-
-export const mockProfile: Profile = {
-	userId: "fake-h31829h381273h",
-	nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-	avatar: "https://picsum.photos/id/375/200/200",
-}
-
-export class MockProfileMagistrate implements ProfileMagistrateTopic {
-	private _profile: Profile
-
-	constructor({profile = mockProfile}: {profile?: Profile} = {}) {
-		this._profile = profile
-	}
-
-	async getProfile({userId}): Promise<Profile> {
-		debug("getProfile")
-		await nap()
-		return {
-			...this._profile,
-			userId,
+		tokens: <AuthTokens>{
+			get accessToken() {
+				return state.loggedIn
+					? admin
+						? mockTokens.adminAccessToken
+						: premium
+							? mockTokens.premiumAccessToken
+							: mockTokens.accessToken
+					: null
+			},
+			get refreshToken() {
+				return state.loggedIn
+					? mockTokens.refreshToken
+					: null
+			},
 		}
 	}
 
-	async setProfile({profile}): Promise<void> {
-		debug("setFullProfile")
+	const loginPopupRoutine: LoginPopupRoutine = async() => {
+		debug("loginPopupRoutine")
 		await nap()
-		this._profile = profile
-		return undefined
+		state.loggedIn = true
+		const {accessToken, refreshToken} = state.tokens
+		return {accessToken, refreshToken}
 	}
-}
 
-export class MockPaywallGuardian implements PaywallGuardianTopic {
-	async grantUserPremium(options: {accessToken: AccessToken}) {
-		debug("grantUserPremium")
-		await nap()
-		return getMockPremiumAccessToken()
+	let vimeoId = "109943349"
+	const vimeoGovernor: VimeoGovernorTopic = {
+		async getVimeo(options: {
+			accessToken: AccessToken
+			videoName: string
+		}): Promise<{vimeoId: string}> {
+			return {vimeoId}
+		},
+		async setVimeo({vimeoId}: {
+			accessToken: AccessToken
+			vimeoId: string
+			videoName: string
+		}) {
+			this._vimeoId = vimeoId
+		}
 	}
-	async revokeUserPremium(options: {accessToken: AccessToken}) {
-		debug("revokeUserPremium")
-		await nap()
-		return getMockAccessToken()
+
+	const tokenStorage: TokenStorageTopic = {
+		async passiveCheck() {
+			debug("passiveCheck")
+			await nap()
+			return state.tokens.accessToken
+		},
+		async writeTokens(tokens: AuthTokens) {
+			debug("writeTokens")
+			await nap()
+		},
+		async writeAccessToken(accessToken: AccessToken) {
+			debug("writeAccessToken")
+			await nap()
+		},
+		async clearTokens() {
+			debug("clearTokens")
+			await nap()
+		},
+	}
+
+	const profileMagistrate: ProfileMagistrateTopic = {
+		async getProfile({userId}): Promise<Profile> {
+			debug("getProfile")
+			await nap()
+			return {
+				...state.profile,
+				userId,
+			}
+		},
+		async setProfile({profile}): Promise<void> {
+			debug("setFullProfile")
+			await nap()
+			state.profile = profile
+		},
+	}
+
+	const paywallGuardian: PaywallGuardianTopic = {
+		async grantUserPremium(options: {accessToken: AccessToken}) {
+			debug("grantUserPremium")
+			await nap()
+			state.premium = true
+			return state.tokens.accessToken
+		},
+		async revokeUserPremium(options: {accessToken: AccessToken}) {
+			debug("revokeUserPremium")
+			await nap()
+			state.premium = false
+			return state.tokens.accessToken
+		},
+	}
+
+	const questionsBureau = new class MockQuestionsBureau implements QuestionsBureauTopic {
+		_questions: Question[] = []
+
+		constructor({questions = [...mockQuestions]}: {questions?: Question[]} = {}) {
+			this._questions = questions
+		}
+
+		async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
+			await nap()
+			return [...this._questions]
+		}
+	
+		async postQuestion({question}: {
+			boardName: string
+			question: QuestionDraft
+		}): Promise<Question> {
+			await nap()
+			const legitQuestion: Question = {
+				...question,
+				likeInfo: {likes: 1, liked: true},
+				questionId: `q${Math.random()}`
+			}
+			this._questions.push(legitQuestion)
+			return legitQuestion
+		}
+
+		async deleteQuestion({boardName, questionId}: {
+			boardName: string
+			questionId: string
+		}): Promise<void> {
+			await nap()
+			this._questions = this._questions
+				.filter(question => question.questionId !== questionId)
+		}
+
+		async likeQuestion({like, boardName, questionId, accessToken}: {
+			like: boolean
+			boardName: string
+			questionId: string
+			accessToken: AccessToken
+		}): Promise<number> {
+			await nap()
+			const question = this._questions.find(q => q.questionId === questionId)
+			if (like) {
+				question.likeInfo.likes += 1
+				question.likeInfo.liked = true
+			}
+			else {
+				question.likeInfo.likes -= 1
+				question.likeInfo.liked = false
+			}
+			return question.likeInfo.likes
+		}
+	}
+
+	const scheduleSentry = new class MockScheduleSentry
+		implements ScheduleSentryTopic {
+
+		_data: {[key: string]: number} = {}
+
+		constructor({data = {
+			countdown1: Date.now() + 1000 * 60 * 60 * 80
+		}}: {data?: {[key: string]: number}} = {}) {
+			this._data = data
+		}
+
+		async getEventTime(key: string): Promise<number> {
+			if (this._data.hasOwnProperty(key)) {
+				return this._data[key]
+			}
+			else {
+				return null
+			}
+		}
+
+		async setEventTime(key: string, time: number) {
+			this._data[key] = time
+		}
+	}
+
+	return {
+		tokenStorage,
+		vimeoGovernor,
+		scheduleSentry,
+		questionsBureau,
+		paywallGuardian,
+		loginPopupRoutine,
+		profileMagistrate,
 	}
 }
 
@@ -207,81 +297,3 @@ export const mockQuestions: Question[] = [
 		time: Date.now() - (500 * 1000),
 	},
 ]
-
-export class MockQuestionsBureau implements QuestionsBureauTopic {
-	private _questions: Question[] = []
-
-	constructor({questions = [...mockQuestions]}: {questions?: Question[]} = {}) {
-		this._questions = questions
-	}
-
-	async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
-		await nap()
-		return [...this._questions]
-	}
-
-	async postQuestion({question}: {
-		boardName: string
-		question: QuestionDraft
-	}): Promise<Question> {
-		await nap()
-		const legitQuestion: Question = {
-			...question,
-			likeInfo: {likes: 1, liked: true},
-			questionId: `q${Math.random()}`
-		}
-		this._questions.push(legitQuestion)
-		return legitQuestion
-	}
-
-	async deleteQuestion({boardName, questionId}: {
-		boardName: string
-		questionId: string
-	}): Promise<void> {
-		await nap()
-		this._questions = this._questions
-			.filter(question => question.questionId !== questionId)
-	}
-
-	async likeQuestion({like, boardName, questionId, accessToken}: {
-		like: boolean
-		boardName: string
-		questionId: string
-		accessToken: AccessToken
-	}): Promise<number> {
-		await nap()
-		const question = this._questions.find(q => q.questionId === questionId)
-		if (like) {
-			question.likeInfo.likes += 1
-			question.likeInfo.liked = true
-		}
-		else {
-			question.likeInfo.likes -= 1
-			question.likeInfo.liked = false
-		}
-		return question.likeInfo.likes
-	}
-}
-
-export class MockScheduleSentry implements ScheduleSentryTopic {
-	private _data: {[key: string]: number} = {}
-
-	constructor({data = {
-		countdown1: Date.now() + 1000 * 60 * 60 * 80
-	}}: {data?: {[key: string]: number}} = {}) {
-		this._data = data
-	}
-
-	async getEventTime(key: string): Promise<number> {
-		if (this._data.hasOwnProperty(key)) {
-			return this._data[key]
-		}
-		else {
-			return null
-		}
-	}
-
-	async setEventTime(key: string, time: number) {
-		this._data[key] = time
-	}
-}

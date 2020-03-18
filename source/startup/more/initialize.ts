@@ -8,12 +8,6 @@ import {createProfileMagistrateClient}
 import {triggerLoginPopup}
 	from "authoritarian/dist/account-popup/trigger-login-popup.js"
 
-import {
-	MockScheduleSentry,
-	MockQuestionsBureau,
-	MockTokenStorageAdmin,
-	MockTokenStorageLoggedOut,
-} from "../../system/mocks.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
 
@@ -41,26 +35,33 @@ export async function initialize(config: AuthoritarianConfig):
 	//
 
 	if (config.mock !== null) {
+		const {prepareAllMocks, getMockTokens} =
+			await import("../../system/mocks.js")
 		const {
-			MockTokenStorage,
-			MockVimeoGovernor,
-			MockPaywallGuardian,
-			mockLoginPopupRoutine,
-			MockProfileMagistrate,
-		} = await import("../../system/mocks.js")
+			tokenStorage,
+			vimeoGovernor,
+			scheduleSentry,
+			paywallGuardian,
+			questionsBureau,
+			loginPopupRoutine,
+			profileMagistrate,
+		} = prepareAllMocks({
+			mockTokens: await getMockTokens(),
+			admin: config.mock === "admin",
+			premium: config.mock === "premium",
+			startLoggedIn: config.mock === "loggedin"
+				|| config.mock === "admin"
+				|| config.mock === "premium",
+		})
 		progress = {
 			...progress,
-			profileMagistrate: new MockProfileMagistrate(),
-			tokenStorage: config.mock === "admin"
-				? new MockTokenStorageAdmin()
-				: config.mock === "loggedin"
-					? new MockTokenStorage()
-					: new MockTokenStorageLoggedOut(),
-			vimeoGovernor: new MockVimeoGovernor(),
-			loginPopupRoutine: mockLoginPopupRoutine,
-			scheduleSentry: new MockScheduleSentry(),
-			paywallGuardian: new MockPaywallGuardian(),
-			questionsBureau: new MockQuestionsBureau(),
+			tokenStorage,
+			vimeoGovernor,
+			scheduleSentry,
+			paywallGuardian,
+			questionsBureau,
+			loginPopupRoutine,
+			profileMagistrate,
 		}
 	}
 

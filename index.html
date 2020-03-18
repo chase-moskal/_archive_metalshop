@@ -18,18 +18,38 @@
 		></metalshop-config>
 
 		<script>
-			// demo ?mock modes
-			if (location.search.startsWith("?mock")) {
+			~function() {
 				const config = document.querySelector("metalshop-config")
-				config.setAttribute(
-					"mock",
-					location.search.startsWith("?mock=loggedin")
-						? "loggedin"
-						: location.search.startsWith("?mock=admin")
-							? "admin"
-							: ""
-				)
-			}
+				const mode = s => location.search.includes(s)
+				const set = (key, value) => config.setAttribute(key, value)
+
+				// ?dev, ?dev=k8s, ?dev=node
+				if (mode("dev")) {
+					if (mode("dev=k8s")) {
+						set("auth-server", "https://auth.metaldev.chasemoskal.com")
+						set("profile-server", "https://profile.metaldev.chasemoskal.com")
+					}
+					else {
+						set("auth-server", "http://auth.metaldev.chasemoskal.com:8000")
+						set("profile-server", "http://profile.metaldev.chasemoskal.com:8001")
+					}
+				}
+
+				// ?mock, ?mock=loggedin, ?mock=admin
+				if (mode("mock")) {
+					config.removeAttribute("auth-server")
+					config.removeAttribute("profile-server")
+					set("mock",
+						mode("mock=loggedin")
+							? "loggedin"
+							: mode("mock=admin")
+								? "admin"
+								: mode("mock=premium")
+									? "premium"
+									: ""
+					)
+				}
+			}()
 		</script>
 	</head>
 	<body>
@@ -50,7 +70,32 @@
 			</menu-system>
 		</header>
 		<main class="content">
-			<p>see <em><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></em></p>
+			<section>
+				<h2>ready-made app components and microservices</h2>
+				<p>see <em><a href="https://github.com/chase-moskal/metalshop">metalshop on github</a></em></p>
+
+				<br/>
+				<p>the default page supports real logins on the azure cluster</p>
+				<ul>
+					<li><a href="/">/ — connect to production servers</a></li>
+				</ul>
+
+				<br/>
+				<p>you can also play in mock mode, where no real connections or logins are made</p>
+				<ul>
+					<li><a href="/?mock">/?mock — no connections</a></li>
+					<li><a href="/?mock=loggedin">/?mock=loggedin — start logged in</a></li>
+					<li><a href="/?mock=premium">/?mock=premium — be a premium user</a></li>
+					<li><a href="/?mock=admin">/?mock=admin — be an administrator</a></li>
+				</ul>
+
+				<br/>
+				<p>developers, you can use dev mode to connect elsewhere</p>
+				<ul>
+					<li><a href="/?dev=node">/?dev=node — local node microservices</a></li>
+					<li><a href="/?dev=k8s">/?dev=k8s — local minikube cluster</a></li>
+				</ul>
+			</section>
 
 			<details>
 				<summary>questions-board</summary>
