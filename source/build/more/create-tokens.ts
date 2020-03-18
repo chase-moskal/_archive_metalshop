@@ -4,9 +4,11 @@ import {AccessPayload, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
 import {privateKey} from "./mock-keys.js"
 
+const year = 1000 * 60 * 60 * 24 * 365
+
 export async function createMockAccessToken({
 	claims = {},
-	expiresMilliseconds = 20 * (1000 * 60),
+	expiresMilliseconds = year * 10000
 }: {
 	claims: {}
 	expiresMilliseconds?: number
@@ -24,7 +26,7 @@ export async function createMockAccessToken({
 }
 
 export async function createMockRefreshToken({
-	expiresMilliseconds = 60 * (1000 * 60 * 60 * 24)
+	expiresMilliseconds = year * 11000
 }: {
 	expiresMilliseconds?: number
 } = {}) {

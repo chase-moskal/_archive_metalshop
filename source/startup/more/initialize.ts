@@ -47,8 +47,8 @@ export async function initialize(config: AuthoritarianConfig):
 			profileMagistrate,
 		} = prepareAllMocks({
 			mockTokens: await getMockTokens(),
-			admin: config.mock === "admin",
-			premium: config.mock === "premium",
+			startAdmin: config.mock === "admin",
+			startPremium: config.mock === "premium",
 			startLoggedIn: config.mock === "loggedin"
 				|| config.mock === "admin"
 				|| config.mock === "premium",

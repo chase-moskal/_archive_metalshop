@@ -44,18 +44,20 @@ export const getMockTokens = async(): Promise<MockTokens> => ({
 })
 
 export const prepareAllMocks = ({
-	admin,
-	premium,
 	mockTokens,
+	startAdmin,
+	startPremium,
 	startLoggedIn,
 }: {
-	admin: boolean
-	premium: boolean
 	mockTokens: MockTokens
+	startAdmin: boolean
+	startPremium: boolean
 	startLoggedIn: boolean
 }) => {
 
 	const state = {
+		admin: startAdmin,
+		premium: startPremium,
 		loggedIn: startLoggedIn,
 		profile: <Profile>{
 			userId: "fake-h31829h381273h",
@@ -65,9 +67,9 @@ export const prepareAllMocks = ({
 		tokens: <AuthTokens>{
 			get accessToken() {
 				return state.loggedIn
-					? admin
+					? state.admin
 						? mockTokens.adminAccessToken
-						: premium
+						: state.premium
 							? mockTokens.premiumAccessToken
 							: mockTokens.accessToken
 					: null
@@ -151,6 +153,7 @@ export const prepareAllMocks = ({
 		async revokeUserPremium(options: {accessToken: AccessToken}) {
 			debug("revokeUserPremium")
 			await nap()
+			state.admin = false
 			state.premium = false
 			return state.tokens.accessToken
 		},
