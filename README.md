@@ -8,9 +8,7 @@
 &nbsp; &nbsp; 💳 paywall subscriptions: for collecting the big bucks  
 &nbsp; &nbsp; ⛲ web components: ready-made frontend ui for various features  
 &nbsp; &nbsp; 🖧 powered by microservices: orchestrated on kubernetes  
-
-**🎓 metalshop articles i need to write**  
-&nbsp; &nbsp; *"easily add user logins to your webpage with metalshop"*  
+&nbsp; &nbsp; 🎓 documentation coming soon  
 
 **🎁 metalshop web components**  
 &nbsp; &nbsp; `<metal-account>` — *login, logout*  
