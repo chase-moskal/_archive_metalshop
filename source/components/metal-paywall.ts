@@ -14,7 +14,7 @@ const Component = mixinLoadable(
 	)
 )
 
-export class PaywallPanel extends Component {
+export class MetalPaywall extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading supporter panel"
 	onMakeUserPremium = this.model.makeUserPremium

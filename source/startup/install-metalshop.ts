@@ -12,7 +12,7 @@ export async function installMetalshop(options?: AuthoritarianOptions) {
 
 	// use the provided options, or parse them from the dom
 	options = options || await ascertainOptionsFromDom({
-		selector: "metalshop-config"
+		selector: "metal-config"
 	})
 
 	// create the components all wired up with their models

@@ -6,8 +6,8 @@ import {ScheduleModel, CountdownModel} from "../../interfaces.js"
 import {mixinModelSubscription}
 	from "../../framework/mixin-model-subscription.js"
 
+import {styles} from "./metal-countdown-styles.js"
 import {formatDate, formatDuration} from "./dates.js"
-import {styles} from "./schedule-countdown-styles.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
@@ -15,7 +15,7 @@ const Component = mixinModelSubscription<ScheduleModel, typeof LitElement>(
 	LitElement
 )
 
-export class ScheduleCountdown extends Component {
+export class MetalCountdown extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String}) key: string
@@ -41,6 +41,14 @@ export class ScheduleCountdown extends Component {
 		await countdownModel.refreshEventTime()
 		this._timer = setInterval(() => this.requestUpdate(), 1000)
 		this._updateValidation()
+	}
+
+	disconnectedCallback() {
+		if (this._timer !== undefined) {
+			clearInterval(this._timer)
+			this._timer = undefined
+		}
+		super.disconnectedCallback()
 	}
 
 	private _handleUpdateDate = (event: Event) => {

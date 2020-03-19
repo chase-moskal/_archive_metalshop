@@ -73,7 +73,7 @@ body > header > * {
 main {
 	padding: 1rem;
 	background: rgba(255,255,255, 0.1);
-	padding-bottom: 10rem;
+	padding-bottom: 50rem;
 	box-shadow: 2px 4px 25px rgba(0,0,0, 0.3);
 }
 
@@ -130,16 +130,45 @@ main {
 }
 
 details {
+	display: block;
+	padding: 0 1em 1em 1em;
 	margin-bottom: 1em;
+	overflow: hidden;
+	background: rgba(0,0,0, 0.2);
+	border-radius: 5px;
+	box-shadow: inset 2px 6px 24px rgba(0,0,0, 0.2);
 }
 
 details > summary {
 	margin-bottom: 1em;
 	padding: 0 1em;
+	outline-offset: -2px;
+	background: rgba(0,0,0, 0.2);
 }
 
 details > * {
 	margin: auto;
+}
+
+details[open] summary ~ * {
+	animation: sweep 1s ease-out;
+}
+
+@keyframes sweep {
+	0% {
+		opacity: 0;
+		transform: translateY(-10em);
+	}
+	80% {
+		transform: translateY(-0.2em);
+	}
+	90% {
+		transform: translateY(-0.3em);
+	}
+	100% {
+		opacity: 1;
+		transform: none;
+	}
 }
 
 /******************************************************************************/
@@ -162,43 +191,54 @@ menu-display {
 	--menu-panel-background: rgba(255, 247, 215, 0.36);
 }
 
-user-avatar {
+metal-my-avatar {
 	color: white;
 }
 
-user-panel {
+menu-display metal-account > * {
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
+}
+
+metal-account {
+	--coolbutton-background: #463b35;
+}
+
+metal-paywall {
+	--coolbutton-background: #00a464;
+}
+
+metal-account {
 	text-align: left;
 	--user-panel-login-justify: center;
 	--user-panel-logout-justify: flex-end;
 }
 
-user-panel > * {
+metal-account > * {
 	padding: 2em;
-	background: rgba(255, 255, 255, 0.4);
-	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
-	--coolbutton-background: #00a464;
 }
 
-user-panel > h2 {
-	opacity: 0.6;
+metal-account > h2 {
+	opacity: 0.3;
 	padding: 0;
 	text-align: center;
-	background: transparent;
 	text-transform: uppercase;
+	color: white;
+	background: transparent;
 	box-shadow: none;
 }
 
-questions-board {
+metal-questions {
 	max-width: 800px;
 	--question-like-color: rgba(64,255,64, 0.8);
 	--question-avatar-border-radius: 5em;
 }
 
-schedule-countdown[initially-hidden] {
+metal-countdown[initially-hidden] {
 	display: none;
 }
 
-video-viewer {
+metal-liveshow {
 	padding: 0.5em;
 	max-width: 640px;
 	border: 1px solid rgba(255,255,255, 0.1);

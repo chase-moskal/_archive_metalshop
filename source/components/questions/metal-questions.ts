@@ -12,7 +12,7 @@ import {
 	PrepareHandleLikeClick,
 } from "../../interfaces.js"
 
-import {styles} from "./questions-board-styles.js"
+import {styles} from "./metal-questions-styles.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
 import {sortQuestions, authorFromUserAndProfile} from "./helpers.js"
@@ -23,7 +23,7 @@ const Component = mixinLoadable(
 	)
 )
 
-export class QuestionsBoard extends Component {
+export class MetalQuestions extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String, reflect: true}) ["board-name"]: string
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean

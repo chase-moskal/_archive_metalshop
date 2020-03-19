@@ -7,17 +7,17 @@ const Component = mixinModelSubscription<ProfileModel, typeof LitElement>(
 	LitElement
 )
 
-export class UserAvatar extends Component {
+export class MetalMyAvatar extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
 		const {profile, premium = false} = this.model.reader.state
 		const src = (profile && profile.avatar) || ""
 		return html`
-			<avatar-display
+			<metal-avatar
 				src=${src}
 				?premium=${premium}
-			></avatar-display>
+			></metal-avatar>
 		`
 	}
 }

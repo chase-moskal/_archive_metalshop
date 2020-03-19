@@ -70,7 +70,7 @@ export const styles = css`
 		padding-left: 0.5em;
 	}
 
-	.author avatar-display {
+	.author metal-avatar {
 		flex: 0 0 auto;
 		--avatar-size: var(--question-avatar-size, 5em);
 		border-radius: var(--question-avatar-border-radius, unset);

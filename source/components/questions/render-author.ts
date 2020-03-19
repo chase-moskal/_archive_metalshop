@@ -23,10 +23,10 @@ export function renderAuthor({
 
 	return html`
 		<div class="author">
-			<avatar-display
+			<metal-avatar
 				src=${author.avatar}
 				?premium=${author.premium}
-			></avatar-display>
+			></metal-avatar>
 			<div class="card">
 				<p class="nickname">${author.nickname}</p>
 				<div class="details">

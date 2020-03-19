@@ -1,14 +1,14 @@
 
-import {UserPanel} from "../../components/user-panel.js"
-import {UserAvatar} from "../../components/user-avatar.js"
-import {VideoViewer} from "../../components/video-viewer.js"
-import {ProfilePanel} from "../../components/profile-panel.js"
-import {PaywallPanel} from "../../components/paywall-panel.js"
-import {AvatarDisplay} from "../../components/avatar-display.js"
-import {QuestionsBoard} from "../../components/questions-board/questions-board.js"
+import {MetalAccount} from "../../components/metal-account.js"
+import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
+import {MetalLiveshow} from "../../components/metal-liveshow.js"
+import {MetalProfile} from "../../components/metal-profile.js"
+import {MetalPaywall} from "../../components/metal-paywall.js"
+import {MetalAvatar} from "../../components/metal-avatar.js"
+import {MetalQuestions} from "../../components/questions/metal-questions.js"
 import {
-	ScheduleCountdown
-} from "../../components/schedule-countdown/schedule-countdown.js"
+	MetalCountdown
+} from "../../components/countdown/metal-countdown.js"
 
 import {createUserModel} from "../../models/user-model.js"
 import {createProfileModel} from "../../models/profile-model.js"
@@ -99,14 +99,14 @@ export function prepareComponents({
 
 	return {
 		components: {
-			AvatarDisplay,
-			UserPanel: provideModel(user, UserPanel),
-			UserAvatar: provideModel(profile, UserAvatar),
-			VideoViewer: provideModel(viewer, VideoViewer),
-			ProfilePanel: provideModel(profile, ProfilePanel),
-			PaywallPanel: provideModel(paywall, PaywallPanel),
-			QuestionsBoard: provideModel(questions, QuestionsBoard),
-			ScheduleCountdown: provideModel(schedule, ScheduleCountdown),
+			MetalAvatar,
+			MetalAccount: provideModel(user, MetalAccount),
+			MetalMyAvatar: provideModel(profile, MetalMyAvatar),
+			MetalLiveshow: provideModel(viewer, MetalLiveshow),
+			MetalProfile: provideModel(profile, MetalProfile),
+			MetalPaywall: provideModel(paywall, MetalPaywall),
+			MetalQuestions: provideModel(questions, MetalQuestions),
+			MetalCountdown: provideModel(schedule, MetalCountdown),
 		},
 		async start() {
 			return user.start()

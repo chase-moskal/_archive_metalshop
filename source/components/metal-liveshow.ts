@@ -15,7 +15,7 @@ const Component = mixinLoadable(
 	)
 )
 
-export class VideoViewer extends Component {
+export class MetalLiveshow extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean

@@ -13,13 +13,13 @@
 &nbsp; &nbsp; *"easily add user logins to your webpage with metalshop"*  
 
 **🎁 metalshop web components**  
-&nbsp; &nbsp; `<user-panel>` — *login, logout*  
-&nbsp; &nbsp; `<user-avatar>` — *display picture*  
-&nbsp; &nbsp; `<profile-panel>` — *public profile*  
-&nbsp; &nbsp; `<paywall-panel>` — *premium subscription*  
-&nbsp; &nbsp; `<video-viewer>` — *access to privileged videos*  
-&nbsp; &nbsp; `<questions-board>` — *forum to post questions*  
-&nbsp; &nbsp; `<schedule-countdown>` — *countdown timer*  
+&nbsp; &nbsp; `<metal-account>` — *login, logout*  
+&nbsp; &nbsp; `<metal-avatar>` — *display picture*  
+&nbsp; &nbsp; `<metal-profile>` — *public profile*  
+&nbsp; &nbsp; `<metal-paywall>` — *premium subscription*  
+&nbsp; &nbsp; `<metal-liveshow>` — *access to privileged videos*  
+&nbsp; &nbsp; `<metal-questions>` — *forum to post questions*  
+&nbsp; &nbsp; `<metal-countdown>` — *countdown timer*  
 
 **🐋 "metalback" microservices**  
 &nbsp; &nbsp; ⭐ [metalback](https://github.com/chase-moskal/metalshop/tree/master/metalback) — *metalshop's helm chart for kubernetes*  

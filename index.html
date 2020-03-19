@@ -11,15 +11,15 @@
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
 		<!-- metalshop config -->
-		<metalshop-config
+		<metal-config
 			mock
 			auth-server="https://auth.metalback.chasemoskal.com"
 			profile-server="https://profile.metalback.chasemoskal.com"
-		></metalshop-config>
+		></metal-config>
 
 		<script>
 			~function() {
-				const config = document.querySelector("metalshop-config")
+				const config = document.querySelector("metal-config")
 				const mode = s => location.search.includes(s)
 				const set = (key, value) => config.setAttribute(key, value)
 
@@ -59,12 +59,12 @@
 				<menu-display>
 
 					<!-- metalshop ui components -->
-					<user-avatar slot="button" title="Your Account"></user-avatar>
-					<user-panel>
+					<metal-my-avatar slot="button" title="Your Account"></metal-my-avatar>
+					<metal-account>
 						<h2 slot="top">Your account</h2>
-						<profile-panel></profile-panel>
-						<paywall-panel></paywall-panel>
-					</user-panel>
+						<metal-profile></metal-profile>
+						<metal-paywall></metal-paywall>
+					</metal-account>
 
 				</menu-display>
 			</menu-system>
@@ -105,32 +105,32 @@
 			<h2>component demos</h2>
 			<br/>
 			<details>
-				<summary>questions-board</summary>
-				<questions-board board-name="qa1">
+				<summary>metal-questions</summary>
+				<metal-questions board-name="qa1" initially-hidden>
 					<h2 slot="post">Post your question!</h2>
 					<h2 slot="rate">Rate other submitted questions</h2>
-				</questions-board>
+				</metal-questions>
 			</details>
 			<details>
-				<summary>schedule-countdown</summary>
-				<schedule-countdown key="countdown1">
-					<h2>Next stream scheduled</h2>
-				</schedule-countdown>
+				<summary>metal-countdown</summary>
+				<metal-countdown key="countdown1" initially-hidden>
+					<h2>Countdown to next stream</h2>
+				</metal-countdown>
 			</details>
 			<details>
-				<summary>video-viewer</summary>
-				<video-viewer video-name="livestream">
+				<summary>metal-liveshow</summary>
+				<metal-liveshow video-name="livestream" initially-hidden>
 					<h2>Welcome to the private livestream!</h2>
 					<p>You are logged in as a premium supporter</p>
-				</video-viewer>
+				</metal-liveshow>
 			</details>
 			<details>
-				<summary>user-panel (same as top right menu)</summary>
-				<user-panel>
+				<summary>metal-account</summary>
+				<metal-account initially-hidden>
 					<h2 slot="top">Your account</h2>
-					<profile-panel></profile-panel>
-					<paywall-panel></paywall-panel>
-				</user-panel>
+					<metal-profile></metal-profile>
+					<metal-paywall></metal-paywall>
+				</metal-account>
 			</details>
 		</main>
 	</body>

@@ -5,7 +5,7 @@ import {AuthoritarianStartupError} from "../../system/errors.js"
 const err = (message: string) => new AuthoritarianStartupError(message)
 
 export function parse(element: HTMLElement): AuthoritarianConfig {
-	if (!element) throw err(`<metalshop-config> required, missing`)
+	if (!element) throw err(`<metal-config> required, missing`)
 	return {
 		mock: element.getAttribute("mock"),
 		authServer: element.getAttribute("auth-server"),

@@ -16,7 +16,7 @@ const Component = mixinLoadable(
 	)
 )
 
-export class ProfilePanel extends Component {
+export class MetalProfile extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
@@ -80,10 +80,10 @@ export class ProfilePanel extends Component {
 		if (!profile) return null
 		return html`
 			<div class="container formarea coolbuttonarea">
-				<avatar-display
+				<metal-avatar
 					src=${profile && profile.avatar}
 					?premium=${premium}
-				></avatar-display>
+				></metal-avatar>
 				<div>
 					<ul>
 						${admin ? html`<li data-tag="admin">Admin</li>` : null}
@@ -125,7 +125,7 @@ const styles = css`
 		flex-direction: row;
 	}
 
-	avatar-display {
+	metal-avatar {
 		flex: 0 0 auto;
 		--avatar-size: 6em;
 		border: 5px solid rgba(255,255,255, 0.5);

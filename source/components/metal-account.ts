@@ -13,10 +13,11 @@ const Component = mixinLoadable(
 	)
 )
 
-export class UserPanel extends Component {
+export class MetalAccount extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"
+	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 
 	@property({type: Boolean, reflect: true}) get ["logged-in"]() {
 		return this.model.reader.state.mode === UserMode.LoggedIn
@@ -28,6 +29,10 @@ export class UserPanel extends Component {
 
 	onLogoutClick: (event: MouseEvent) => void = () => {
 		this.model.logout()
+	}
+
+	firstUpdated() {
+		this["initially-hidden"] = false
 	}
 
 	updated() {
