@@ -154,12 +154,12 @@ menu-system {
 }
 
 menu-display {
-	color: rgba(25, 71, 93, 0.6);
+	color: rgba(49, 33, 4, 0.72);
 	--menu-panel-width: 540px;
 	--menu-panel-padding: 1rem;
 	--menu-panel-box-shadow: none;
-	--menu-panel-background: rgba(215, 255, 239, 0.8);
 	--menu-panel-border-radius: none;
+	--menu-panel-background: rgba(255, 247, 215, 0.36);
 }
 
 user-avatar {
@@ -173,14 +173,14 @@ user-panel {
 }
 
 user-panel > * {
-	background: rgba(255,255,255, 0.5);
-	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
 	padding: 2em;
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
 	--coolbutton-background: #00a464;
 }
 
 user-panel > h2 {
-	opacity: 0.4;
+	opacity: 0.6;
 	padding: 0;
 	text-align: center;
 	background: transparent;
