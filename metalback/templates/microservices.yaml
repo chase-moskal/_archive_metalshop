@@ -1,0 +1,48 @@
+
+{{- $checksum := include (print $.Template.BasePath "/secret-config.yaml") . | sha256sum -}}
+{{- $rname := include "metalback.fullname" . -}}
+{{- range $mname, $microservice := .Values.microservices -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $rname }}-{{ $mname }}
+spec:
+  replicas: {{ $microservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $rname }}-{{ $mname }}
+  template:
+    metadata:
+      labels:
+        app: {{ $rname }}-{{ $mname }}
+      annotations:
+        checksum: {{ $checksum }}
+    spec:
+      containers:
+      - image: {{ $microservice.image }}
+        imagePullPolicy: IfNotPresent
+        name: {{ $mname }}
+        ports:
+        - containerPort: {{ $microservice.port }}
+        volumeMounts:
+        - name: {{ $rname }}-{{ $mname }}-config-volume
+          mountPath: /app/config
+          readOnly: true
+      volumes:
+      - name: {{ $rname }}-{{ $mname }}-config-volume
+        secret:
+          secretName: {{ $rname }}-secret-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $mname }}
+spec:
+  selector:
+    app: {{ $rname }}-{{ $mname }}
+  ports:
+  - protocol: TCP
+    port: {{ $microservice.port }}
+    targetPort: {{ $microservice.port }}
+---
+{{- end -}}

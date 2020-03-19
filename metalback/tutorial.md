@@ -33,10 +33,10 @@ prerequisites to install on your dev machine:
 1. create the "Kubernetes Service" cluster resource
 	- create new resource, search "kubernetes" in the marketplace
 	- assign it to your resource group
-	- assign a unique name for your kubernetes cluster, i chose `workback`
+	- assign a unique name for your kubernetes cluster, i chose `metalback`
 	- assign the same region as the resource group, `uswest` for me
 	- choose the kubernetes version, i chose `1.17.0 (preview)`
-	- i left the default dns name prefix, `workback-dns`
+	- i left the default dns name prefix, `metalback-dns`
 	- i chose the smallest node available, `Standard B2s`, 4gb ram, 2vcpus
 	- i set node count down to `1`
 	- disable `RBAC` in the "authentication" tab
@@ -46,7 +46,7 @@ prerequisites to install on your dev machine:
 1. connect your `kubectl` to the cluster with the azure cli
 	- of course, replace the resource group and cluster names in comands like these
 	```sh
-	az aks get-credentials --resource-group workgroup --name workback
+	az aks get-credentials --resource-group workgroup --name metalback
 	```
 
 &nbsp; **(b) configure static ip's and link your domain**
@@ -59,24 +59,24 @@ prerequisites to install on your dev machine:
 1. create a new static ip for ingress
 	- first, you need to get the "full" group name
 		```sh
-		az aks show --resource-group workgroup --name workback --query nodeResourceGroup -o tsv
+		az aks show --resource-group workgroup --name metalback --query nodeResourceGroup -o tsv
 		```
-		- it gave me `MC_workgroup_workback_westus`
+		- it gave me `MC_workgroup_metalback_westus`
 	- now create the static ip, but use the name returned by the above command
 		```sh
 		az network public-ip create \
-			--name workback-ingress-ip \
-			--resource-group MC_workgroup_workback_westus \
+			--name metalback-ingress-ip \
+			--resource-group MC_workgroup_metalback_westus \
 			--sku Standard \
 			--allocation-method static
 		```
-		- i made up the name `workback-ingress-ip`
+		- i made up the name `metalback-ingress-ip`
 		- take note of the ipAddress in the json it returns, i got `13.83.71.184`
 1. set `A` records on your domain pointing to the ingress ip
 	- login to your registrar and go into your domain's dns settings
 	- set `A` records pointing to your static ingress ip for all domains and subdomains, for example i set:
-		- `workback` .chasemoskal.com → `13.83.71.184`
-		- `*.workback` .chasemoskal.com → `13.83.71.184`
+		- `metalback` .chasemoskal.com → `13.83.71.184`
+		- `*.metalback` .chasemoskal.com → `13.83.71.184`
 
 &nbsp; **(c) install necessary infrastructure into the cluster**
 1. install nginx-ingress into the cluster

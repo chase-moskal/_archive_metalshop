@@ -6,9 +6,7 @@ ingress:
 microservices:
   auth:
     # image: chasemoskal/auth-server:latest
-    domain: auth.metaldev.chasemoskal.com
     replicas: 1
   profile:
     # image: chasemoskal/profile-server:latest
-    domain: profile.metaldev.chasemoskal.com
     replicas: 1

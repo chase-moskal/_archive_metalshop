@@ -8,10 +8,10 @@ ingress:
 
 microservices:
   auth:
+    port: 8000
+    replicas: 2
     image: chasemoskal/auth-server:v0.0.0-dev.16
-    domain: auth.metalback.chasemoskal.com
-    replicas: 2
   profile:
-    image: chasemoskal/profile-server:v0.0.0-dev.11
-    domain: profile.metalback.chasemoskal.com
+    port: 8001
     replicas: 2
+    image: chasemoskal/profile-server:v0.0.0-dev.11
