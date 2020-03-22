@@ -10,8 +10,8 @@ microservices:
   auth:
     port: 8000
     replicas: 2
-    image: chasemoskal/auth-server:v0.0.0-dev.16
+    image: chasemoskal/auth-server:v0.0.0-dev.17
   profile:
     port: 8001
     replicas: 2
-    image: chasemoskal/profile-server:v0.0.0-dev.11
+    image: chasemoskal/profile-server:v0.0.0-dev.12
