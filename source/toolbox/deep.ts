@@ -23,5 +23,11 @@ export function deepEqual<T extends {}>(a: T, b: T): boolean {
 					return false
 		}
 	}
+	for (const [key] of Object.entries(a))
+		if (!b.hasOwnProperty(key))
+			return false
+	for (const [key] of Object.entries(b))
+		if (!a.hasOwnProperty(key))
+			return false
 	return true
 }

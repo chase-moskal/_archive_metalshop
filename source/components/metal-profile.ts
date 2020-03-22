@@ -20,7 +20,7 @@ export class MetalProfile extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
-	
+
 	@property({type: Object}) private _changedProfile: Profile = null
 	private _inputDebouncer = new Debouncer({
 		delay: 1000,
@@ -74,40 +74,43 @@ export class MetalProfile extends Component {
 			_handleSaveClick,
 			_handleInputChange,
 		} = this
-		const {profile, admin, premium} = this.model.reader.state
+		const {profile, adminClaim, premium} = this.model.reader.state
 		const showSaveButton = !!this._changedProfile
 
 		if (!profile) return null
 		return html`
-			<div class="container formarea coolbuttonarea">
-				<metal-avatar
-					src=${profile && profile.avatar}
-					?premium=${premium}
-				></metal-avatar>
-				<div>
-					<ul>
-						${admin ? html`<li data-tag="admin">Admin</li>` : null}
-						${premium ? html`<li data-tag="premium">Premium</li>` : null}
-					</ul>
-					<input
-						type="text"
-						name="nickname"
-						spellcheck="false"
-						autocomplete="off"
-						placeholder="nickname"
-						@change=${_handleInputChange}
-						@keyup=${_inputDebouncer.queue}
-						.value=${profile.nickname}
-						/>
-					${showSaveButton
-						? html`
-							<button
-								class="save"
-								@click=${_handleSaveClick}>
-									Save
-							</button>`
-						: null}
+			<div class="panel">
+				<div class="container formarea coolbuttonarea">
+					<metal-avatar
+						src=${profile && profile.avatar}
+						?premium=${premium}
+					></metal-avatar>
+					<div>
+						<ul>
+							${adminClaim ? html`<li data-tag="admin">Admin</li>` : null}
+							${premium ? html`<li data-tag="premium">Premium</li>` : null}
+						</ul>
+						<input
+							type="text"
+							name="nickname"
+							spellcheck="false"
+							autocomplete="off"
+							placeholder="nickname"
+							@change=${_handleInputChange}
+							@keyup=${_inputDebouncer.queue}
+							.value=${profile.nickname}
+							/>
+						${showSaveButton
+							? html`
+								<button
+									class="save"
+									@click=${_handleSaveClick}>
+										Save
+								</button>`
+							: null}
+					</div>
 				</div>
+				<metal-admin-mode>Admin mode</metal-admin-mode>
 			</div>
 		`
 	}
@@ -118,6 +121,10 @@ const styles = css`
 		margin: 0;
 		padding: 0;
 		box-sizing: border-box;
+	}
+
+	.panel > * + * {
+		margin-top: 0.5em;
 	}
 
 	.container {
@@ -170,5 +177,11 @@ const styles = css`
 			flex-direction: column;
 			align-items: flex-start;
 		}
+	}
+
+	metal-admin-mode {
+		display: block;
+		padding-left: 1em;
+		padding-right: 1em;
 	}
 `

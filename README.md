@@ -12,12 +12,13 @@
 
 **🎁 metalshop web components**  
 &nbsp; &nbsp; `<metal-account>` — *login, logout*  
-&nbsp; &nbsp; `<metal-avatar>` — *display picture*  
+&nbsp; &nbsp; `<metal-avatar>` — *a user's display picture*  
+&nbsp; &nbsp; `<metal-my-avatar>` — *your own display picture*  
 &nbsp; &nbsp; `<metal-profile>` — *public profile*  
 &nbsp; &nbsp; `<metal-paywall>` — *premium subscription*  
 &nbsp; &nbsp; `<metal-liveshow>` — *access to privileged videos*  
-&nbsp; &nbsp; `<metal-questions>` — *forum to post questions*  
 &nbsp; &nbsp; `<metal-countdown>` — *countdown timer*  
+&nbsp; &nbsp; `<metal-questions>` — *forum to post questions*  
 
 **🐋 "metalback" microservices**  
 &nbsp; &nbsp; ⭐ [metalback](https://github.com/chase-moskal/metalshop/tree/master/metalback) — *metalshop's helm chart for kubernetes*  
@@ -26,7 +27,7 @@
 &nbsp; &nbsp; paywall-server — *payments and subscriptions*  
 &nbsp; &nbsp; schedule-server — *save/load timestamps*  
 &nbsp; &nbsp; questions-server — *interact with questions forum*  
-&nbsp; &nbsp; video-server — *privileged access to vimeo videos*  
+&nbsp; &nbsp; liveshow-server — *privileged access to a video livestream*  
 
 **🛠️ metalshop libraries and tools**  
 &nbsp; &nbsp; [authoritarian](https://github.com/chase-moskal/authoritarian) — *metalshop common interfaces*  

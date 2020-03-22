@@ -30,6 +30,11 @@ export function createProfileModel({profileMagistrate}: {
 		loading: true,
 		profile: null,
 		premium: false,
+		adminClaim: false,
+	}
+
+	const computeAdmin = () => {
+		state.admin = state.adminClaim && state.profile && state.profile.adminMode
 	}
 
 	const {reader, update} = makeReader<ProfileState>(state)
@@ -47,8 +52,9 @@ export function createProfileModel({profileMagistrate}: {
 			const error = new AuthoritarianProfileError(`failed to load profile`)
 			console.error(error)
 			state.error = error
-			update()
 		}
+		computeAdmin()
+		update()
 		return profile
 	}
 
@@ -70,6 +76,7 @@ export function createProfileModel({profileMagistrate}: {
 				console.error(error)
 			}
 			state.loading = false
+			computeAdmin()
 			update()
 		},
 		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
@@ -80,7 +87,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.loading = true
 				update()
 				const {user} = await getAuthContext()
-				state.admin = !!user.claims.admin
+				state.adminClaim = !!user.claims.admin
 				state.premium = !!user.claims.premium
 				update()
 				try {
@@ -113,6 +120,7 @@ export function createProfileModel({profileMagistrate}: {
 				state.profile = null
 				state.premium = false
 			}
+			computeAdmin()
 			update()
 		},
 	}

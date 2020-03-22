@@ -21,7 +21,7 @@ export const sortQuestions = (me: QuestionAuthor, questions: Question[]) =>
 		)
 
 export function ascertainOwnership(question: Question, me: QuestionAuthor) {
-	const admin = (me && me.admin) || false
+	const admin = (me && me.admin)
 	const mine = me && (me.userId === question.author.userId)
 	return {
 		mine,
@@ -34,7 +34,7 @@ export const authorFromUserAndProfile = ({user, profile}: {
 	profile: Profile
 }): QuestionAuthor => ({
 	userId: user ? user.userId : null,
-	admin: (user && user.claims.admin) || false,
+	admin: (user && user.claims.admin),
 	avatar: profile ? profile.avatar : "",
 	nickname: profile? profile.nickname : "You",
 	premium: user? user.claims.premium : false,

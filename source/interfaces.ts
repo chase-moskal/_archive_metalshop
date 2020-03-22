@@ -112,6 +112,7 @@ export interface ProfileState {
 	premium: boolean
 	loading: boolean
 	profile: Profile
+	adminClaim: boolean
 }
 
 export interface AvatarWiring {

@@ -32,6 +32,8 @@ export class MetalQuestions extends Component {
 	@property({type: Number}) minCharacterLimit: number = 10
 	@property({type: Number}) maxCharacterLimit: number = 240
 
+	@property({type: Boolean}) adminMode: boolean = false
+
 	loadingMessage = "loading questions board..."
 	errorMessage = "questions board error"
 

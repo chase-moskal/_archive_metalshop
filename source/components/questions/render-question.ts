@@ -44,15 +44,24 @@ export function renderQuestion({
 			<div class="body">
 				<div class="content">${content}</div>
 				<div class="controls">
-					${authority
-						? html`
+
+					${mine ? html`
+						<button
+							class="deletebutton"
+							@click=${handleDeleteClick}
+							title="Delete question by ${author.nickname}">
+								Delete
+						</button>
+					` : authority ? html`
+						<metal-admin-only>
 							<button
 								class="deletebutton"
 								@click=${handleDeleteClick}
 								title="Delete question by ${author.nickname}">
 									Delete
-							</button>`
-						: null}
+							</button>
+						</metal-admin-only>
+					` : null}
 				</div>
 			</div>
 		</div>

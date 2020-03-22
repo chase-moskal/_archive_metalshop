@@ -1,14 +1,14 @@
 
+import {MetalAvatar} from "../../components/metal-avatar.js"
 import {MetalAccount} from "../../components/metal-account.js"
-import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
-import {MetalLiveshow} from "../../components/metal-liveshow.js"
 import {MetalProfile} from "../../components/metal-profile.js"
 import {MetalPaywall} from "../../components/metal-paywall.js"
-import {MetalAvatar} from "../../components/metal-avatar.js"
+import {MetalLiveshow} from "../../components/metal-liveshow.js"
+import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
+import {MetalAdminMode} from "../../components/metal-admin-mode.js"
+import {MetalAdminOnly} from "../../components/metal-admin-only.js"
+import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
-import {
-	MetalCountdown
-} from "../../components/countdown/metal-countdown.js"
 
 import {createUserModel} from "../../models/user-model.js"
 import {createProfileModel} from "../../models/profile-model.js"
@@ -101,12 +101,14 @@ export function prepareComponents({
 		components: {
 			MetalAvatar,
 			MetalAccount: provideModel(user, MetalAccount),
-			MetalMyAvatar: provideModel(profile, MetalMyAvatar),
-			MetalLiveshow: provideModel(viewer, MetalLiveshow),
-			MetalProfile: provideModel(profile, MetalProfile),
 			MetalPaywall: provideModel(paywall, MetalPaywall),
-			MetalQuestions: provideModel(questions, MetalQuestions),
+			MetalProfile: provideModel(profile, MetalProfile),
+			MetalLiveshow: provideModel(viewer, MetalLiveshow),
+			MetalMyAvatar: provideModel(profile, MetalMyAvatar),
+			MetalAdminMode: provideModel(profile, MetalAdminMode),
+			MetalAdminOnly: provideModel(profile, MetalAdminOnly),
 			MetalCountdown: provideModel(schedule, MetalCountdown),
+			MetalQuestions: provideModel(questions, MetalQuestions),
 		},
 		async start() {
 			return user.start()
