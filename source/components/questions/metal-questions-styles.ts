@@ -259,7 +259,6 @@ export const styles = css`
 		.author {
 			width: unset;
 			min-width: unset;
-			margin-top: unset;
 			margin-bottom: 0.5em;
 		}
 		.body::before {

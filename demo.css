@@ -131,6 +131,10 @@ main {
 	}
 }
 
+.component-demos h2 {
+	margin-bottom: 1em;
+}
+
 details {
 	display: block;
 	padding: 0 1em 1em 1em;
@@ -211,9 +215,13 @@ metal-my-avatar {
 	color: white;
 }
 
-menu-display metal-account > * {
+menu-system metal-account > * {
 	background: rgba(255, 255, 255, 0.4);
 	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
+}
+
+menu-system metal-profile {
+	--metal-admin-color: #316f31;
 }
 
 metal-account {
@@ -252,10 +260,6 @@ metal-questions {
 
 metal-countdown[initially-hidden] {
 	display: none;
-}
-
-metal-profile {
-	--metal-admin-color: #316f31;
 }
 
 metal-liveshow {
