@@ -21,10 +21,12 @@ export const styles = css`
 		display: none;
 	}
 
-	metal-admin-only > div {
-		border: 1px solid;
-		padding: 1em;
-		border-radius: 5px;
+	:host > metal-admin-only {
+		flex: 1 1 auto;
+		align-self: center;
+		width: 100%;
+		max-width: 420px;
+		text-align: center;
 	}
 
 	.questions {
@@ -234,6 +236,7 @@ export const styles = css`
 	.question.editor {
 		order: 1;
 		border: 1px dashed var(--question-body-background, rgba(255,255,255, 0.2));
+		padding: 1em 0.5em;
 	}
 
 	.question.editor .body textarea {

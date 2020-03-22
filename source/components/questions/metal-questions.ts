@@ -169,13 +169,10 @@ export class MetalQuestions extends Component {
 		const expand = draftText.length > 0
 
 		return html`
+			<metal-admin-only class="coolbuttonarea" block header>
+				<button>Purge all questions</button>
+			</metal-admin-only>
 			<div>
-				<metal-admin-only class="coolbuttonarea">
-					<div>
-						<p><strong>Admin controls</strong></p>
-						<button>purge all questions</button>
-					</div>
-				</metal-admin-only>
 				<slot name="post">
 					<h2>Post your own question</h2>
 				</slot>

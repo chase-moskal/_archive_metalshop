@@ -129,33 +129,28 @@ export class MetalCountdown extends Component {
 						</slot>
 					</div>
 				`}
-				<metal-admin-only>
-					<div class="admin">
-						<p>Admin controls</p>
-						<div class="controls coolbuttonarea">
-							<input
-								type="date"
-								@keyUp=${this._handleUpdateDate}
-								@change=${this._handleUpdateDate}
-								@mouseUp=${this._handleUpdateDate}
-							/>
-							<input
-								type="time"
-								@keyUp=${this._handleUpdateTime}
-								@change=${this._handleUpdateTime}
-								@mouseUp=${this._handleUpdateTime}
-							/>
-							<button
-								@click=${this._handleScheduleClick}
-								?disabled=${!!adminValidationMessage}
-								class="coolbutton schedule-button">
-									Schedule
-							</button>
-							${adminValidationMessage ? html`
-								<p class="validation">${adminValidationMessage}</p>
-							` : null}
-						</div>
-					</div>
+				<metal-admin-only class="controls coolbuttonarea" block header>
+					<input
+						type="date"
+						@keyUp=${this._handleUpdateDate}
+						@change=${this._handleUpdateDate}
+						@mouseUp=${this._handleUpdateDate}
+					/>
+					<input
+						type="time"
+						@keyUp=${this._handleUpdateTime}
+						@change=${this._handleUpdateTime}
+						@mouseUp=${this._handleUpdateTime}
+					/>
+					<button
+						@click=${this._handleScheduleClick}
+						?disabled=${!!adminValidationMessage}
+						class="coolbutton schedule-button">
+							Schedule
+					</button>
+					${adminValidationMessage ? html`
+						<p class="validation">${adminValidationMessage}</p>
+					` : null}
 				</metal-admin-only>
 			</div>
 		`

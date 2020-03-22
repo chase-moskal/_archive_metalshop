@@ -95,23 +95,21 @@ export class MetalLiveshow extends Component {
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
-			<metal-admin-only>
-				<div class="adminpanel coolbuttonarea formarea">
-					<h3>Admin Controls</h3>
-					<div class="inputarea">
-						<input
-							type="text"
-							name="vimeostring"
-							placeholder="vimeo link or id"
-							/>
-						<button @click=${this._handleClickUpdateLivestream}>
-							update
-						</button>
-					</div>
-					${validationMessage
-						? html`<p class="error">${validationMessage}</p>`
-						: null}
+			<metal-admin-only class="adminpanel coolbuttonarea formarea" block title>
+				<h3>Admin Controls</h3>
+				<div class="inputarea">
+					<input
+						type="text"
+						name="vimeostring"
+						placeholder="vimeo link or id"
+						/>
+					<button @click=${this._handleClickUpdateLivestream}>
+						update
+					</button>
 				</div>
+				${validationMessage
+					? html`<p class="error">${validationMessage}</p>`
+					: null}
 			</metal-admin-only>
 		`
 	}
@@ -212,38 +210,37 @@ const styles = css`
 		height: 100%;
 	}
 
-	.adminpanel {
-		padding: 0.5em;
-		max-width: 640px;
+	metal-admin-only {
+		display: block;
+		max-width: 420px;
+		margin-top: 0.5em;
 		margin-left: auto;
 		margin-right: auto;
 		text-align: center;
-		border: 1px solid;
-		border-radius: 3px;
 	}
 
-	.adminpanel p,
-	.adminpanel h3 {
+	metal-admin-only p,
+	metal-admin-only h3 {
 		margin: 0.1em 0.5em;
 	}
 
-	.adminpanel h3 {
+	metal-admin-only h3 {
 		text-transform: uppercase;
 	}
 
-	.adminpanel .inputarea {
+	metal-admin-only .inputarea {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
 	}
 
-	.adminpanel .inputarea > * {
+	metal-admin-only .inputarea > * {
 		flex: 1 1 auto;
 		margin: 0.5em;
 		max-width: 100%;
 	}
 
-	.adminpanel .inputarea > button {
+	metal-admin-only .inputarea > button {
 		flex: 0 1 auto;
 		margin-left: auto;
 	}

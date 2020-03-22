@@ -31,6 +31,15 @@ export function renderQuestion({
 	const handleLikeClick = prepareHandleLikeClick({like: true, questionId})
 	const handleUnlikeClick = prepareHandleLikeClick({like: false, questionId})
 
+	const renderDeleteButton = () => html`
+		<button
+			class="deletebutton"
+			@click=${handleDeleteClick}
+			title="Delete question by ${author.nickname}">
+				Delete
+		</button>
+	`
+
 	return html`
 		<div class="question" ?data-mine=${mine}>
 			${renderAuthor({
@@ -45,21 +54,9 @@ export function renderQuestion({
 				<div class="content">${content}</div>
 				<div class="controls">
 
-					${mine ? html`
-						<button
-							class="deletebutton"
-							@click=${handleDeleteClick}
-							title="Delete question by ${author.nickname}">
-								Delete
-						</button>
-					` : authority ? html`
+					${mine ? renderDeleteButton() : authority ? html`
 						<metal-admin-only>
-							<button
-								class="deletebutton"
-								@click=${handleDeleteClick}
-								title="Delete question by ${author.nickname}">
-									Delete
-							</button>
+							${renderDeleteButton()}
 						</metal-admin-only>
 					` : null}
 				</div>

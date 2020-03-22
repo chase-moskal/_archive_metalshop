@@ -31,9 +31,7 @@ export const styles = css`
 		opacity: 0.5;
 	}
 
-	.admin {
-		outline: 1px solid;
-		padding: 0.5em;
+	metal-admin-only {
 		margin-top: 0.5em;
 	}
 

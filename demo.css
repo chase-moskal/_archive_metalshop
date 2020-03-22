@@ -37,6 +37,7 @@ html, body {
 	background: #212123;
 	color: rgba(255,255,255, 0.9);
 	--metal-admin-color: #5cff60;
+	/* --metal-admin-color: #fd34e2; */
 	--focus-outline: 2px solid #ff4d17;
 }
 
@@ -146,6 +147,7 @@ details > summary {
 	outline-offset: -2px;
 	background: rgba(0,0,0, 0.2);
 	cursor: pointer;
+	user-select: none;
 }
 
 details > summary:hover {

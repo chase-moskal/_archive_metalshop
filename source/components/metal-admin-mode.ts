@@ -58,6 +58,6 @@ export class MetalAdminMode extends Component {
 
 const styles = css`
 	:host {
-		color: var(--metal-admin-color, #ff5c98);
+		color: var(--metal-admin-color, #fd34e2);
 	}
 `
