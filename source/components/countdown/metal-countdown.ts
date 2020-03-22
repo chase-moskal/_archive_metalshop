@@ -87,7 +87,7 @@ export class MetalCountdown extends Component {
 
 	render() {
 		if (!this._countdownModel) return html``
-		const {eventTime, admin} = this._countdownModel.reader.state
+		const {eventTime} = this._countdownModel.reader.state
 		const eventSchedule = formatDate(eventTime)
 		const timeUntilEvent = eventTime - Date.now()
 		const countdownDuration = formatDuration(timeUntilEvent)
@@ -129,7 +129,7 @@ export class MetalCountdown extends Component {
 						</slot>
 					</div>
 				`}
-				${admin ? html`
+				<metal-admin-only>
 					<div class="admin">
 						<p>Admin controls</p>
 						<div class="controls coolbuttonarea">
@@ -156,7 +156,7 @@ export class MetalCountdown extends Component {
 							` : null}
 						</div>
 					</div>
-				` : null}
+				</metal-admin-only>
 			</div>
 		`
 	}

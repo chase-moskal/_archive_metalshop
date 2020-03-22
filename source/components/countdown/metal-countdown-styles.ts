@@ -32,7 +32,7 @@ export const styles = css`
 	}
 
 	.admin {
-		outline: 1px solid white;
+		outline: 1px solid;
 		padding: 0.5em;
 		margin-top: 0.5em;
 	}

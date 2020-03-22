@@ -51,19 +51,13 @@ export class MetalAdminMode extends Component {
 				@change=${this._handleAdminModeChange}
 				@keyup=${this._handleAdminModeChange}
 				/>
-			<label><slot>administrator features</slot></label>
+			<label><slot>Admin mode</slot></label>
 		`
 	}
 }
 
 const styles = css`
 	:host {
-		opacity: 0.8;
-		font-size: 0.8em;
-		font-style: italic;
 		color: var(--metal-admin-color, #ff5c98);
-	}
-	:host:hover {
-		opacity: 1;
 	}
 `

@@ -91,9 +91,28 @@ export class MetalLiveshow extends Component {
 	}
 
 	private _renderPrivileged() {
+		const {validationMessage} = this._videoModel.reader.state
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
+			<metal-admin-only>
+				<div class="adminpanel coolbuttonarea formarea">
+					<h3>Admin Controls</h3>
+					<div class="inputarea">
+						<input
+							type="text"
+							name="vimeostring"
+							placeholder="vimeo link or id"
+							/>
+						<button @click=${this._handleClickUpdateLivestream}>
+							update
+						</button>
+					</div>
+					${validationMessage
+						? html`<p class="error">${validationMessage}</p>`
+						: null}
+				</div>
+			</metal-admin-only>
 		`
 	}
 
@@ -106,37 +125,12 @@ export class MetalLiveshow extends Component {
 		input.value = ""
 	}
 
-	private _renderAdmin() {
-		const {validationMessage} = this._videoModel.reader.state
-		return html`
-			<slot></slot>
-			${this._renderViewer()}
-			<div class="adminpanel coolbuttonarea formarea">
-				<h3>Admin Controls</h3>
-				<div class="inputarea">
-					<input
-						type="text"
-						name="vimeostring"
-						placeholder="vimeo link or id"
-						/>
-					<button @click=${this._handleClickUpdateLivestream}>
-						update
-					</button>
-				</div>
-				${validationMessage
-					? html`<p class="error">${validationMessage}</p>`
-					: null}
-			</div>
-		`
-	}
-
 	renderReady() {
 		const {mode} = this._videoModel.reader.state
 		switch (mode) {
 			case PrivilegeMode.LoggedOut: return this._renderLoggedOut()
 			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()
 			case PrivilegeMode.Privileged: return this._renderPrivileged()
-			case PrivilegeMode.Admin: return this._renderAdmin()
 		}
 	}
 }
@@ -152,7 +146,7 @@ const styles = css`
 
 	* + .ghostplayer,
 	* + .viewer,
-	* + .adminpanel {
+	* + metal-admin-only > .adminpanel {
 		margin-top: 1em;
 	}
 

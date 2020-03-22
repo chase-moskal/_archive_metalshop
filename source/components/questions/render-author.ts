@@ -17,8 +17,8 @@ export function renderAuthor({
 	likeInfo?: LikeInfo
 }) {
 	const date = new Date(time)
-	const datestring = `${date.getFullYear()}-${date.getMonth() + 1}-`
-		+ `${date.getDate()}`
+	const datestring = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-`
+		+ `${date.getDate().toString().padStart(2, "0")}`
 	const timestring = date.toLocaleTimeString()
 
 	return html`

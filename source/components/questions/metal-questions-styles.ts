@@ -21,6 +21,12 @@ export const styles = css`
 		display: none;
 	}
 
+	metal-admin-only > div {
+		border: 1px solid;
+		padding: 1em;
+		border-radius: 5px;
+	}
+
 	.questions {
 		list-style: none;
 	}

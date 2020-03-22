@@ -170,6 +170,12 @@ export class MetalQuestions extends Component {
 
 		return html`
 			<div>
+				<metal-admin-only class="coolbuttonarea">
+					<div>
+						<p><strong>Admin controls</strong></p>
+						<button>purge all questions</button>
+					</div>
+				</metal-admin-only>
 				<slot name="post">
 					<h2>Post your own question</h2>
 				</slot>

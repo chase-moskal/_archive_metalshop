@@ -18,7 +18,6 @@ export enum PrivilegeMode {
 	LoggedOut,
 	Unprivileged,
 	Privileged,
-	Admin,
 }
 
 export function createVideoViewerModel({user, vimeoGovernor}: {
@@ -87,7 +86,7 @@ export function createVideoViewerModel({user, vimeoGovernor}: {
 					update()
 					const {user, accessToken} = await getAuthContext()
 					state.mode = user.claims.admin
-						? PrivilegeMode.Admin
+						? PrivilegeMode.Privileged
 						: user.claims.premium
 							? PrivilegeMode.Privileged
 							: PrivilegeMode.Unprivileged
