@@ -102,6 +102,7 @@ export class MetalQuestions extends Component {
 		if (this._warnUnauthenticatedUser()) return
 		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
+		if (confirm(`Really delete question ${questionId}?`))
 		await bureau.deleteQuestion({boardName, questionId})
 	}
 

@@ -8,12 +8,13 @@ export function formatDate(milliseconds: number) {
 	const month = twoDigit(date.getMonth() + 1)
 	const day = twoDigit(date.getDate())
 
+	const hours24 = date.getHours()
 	let hours = date.getHours()
 	hours %= 12
 	hours = hours ? hours : 12
 	const minutes = twoDigit(date.getMinutes())
 
-	const ampm = hours >= 12 ? "pm" : "am"
+	const ampm = hours24 >= 12 ? "pm" : "am"
 	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
 	return {
