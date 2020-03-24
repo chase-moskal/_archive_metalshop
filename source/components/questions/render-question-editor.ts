@@ -1,7 +1,8 @@
 
 import {html} from "lit-element"
 import {renderAuthor} from "./render-author.js"
-import {QuestionAuthor, QuestionValidation} from "../../interfaces.js"
+import {QuestionValidation} from "../../interfaces.js"
+import {Question, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 export function renderQuestionEditor({
 	expand,
@@ -11,11 +12,16 @@ export function renderQuestionEditor({
 	maxCharacterLimit,
 	handleTextAreaChange,
 	author = {
-		userId: null,
-		admin: false,
-		avatar: "",
-		nickname: "",
-		premium: false,
+		profile: {
+			avatar: null,
+			adminMode: false,
+			userId: "FAKE_USER_ID",
+			nickname: "FAKE_NICKNAME",
+		},
+		user: {
+			userId: "FAKE_USER_UD",
+			claims: {}
+		},
 	},
 }: {
 	expand: boolean

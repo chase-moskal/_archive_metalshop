@@ -1,7 +1,8 @@
 
 import {html} from "lit-element"
+import {Question, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
-import {Question, QuestionAuthor, PrepareHandleLikeClick}
+import {PrepareHandleLikeClick}
 	from "../../interfaces.js"
 
 import {renderAuthor} from "./render-author.js"
@@ -35,7 +36,7 @@ export function renderQuestion({
 		<button
 			class="deletebutton"
 			@click=${handleDeleteClick}
-			title="Delete question by ${author.nickname}">
+			title="Delete question by ${author.profile.nickname}">
 				Delete
 		</button>
 	`

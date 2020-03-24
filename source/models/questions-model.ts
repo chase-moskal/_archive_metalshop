@@ -1,5 +1,9 @@
 
-import {Profile, User} from "authoritarian/dist/interfaces.js"
+import {
+	User,
+	Profile,
+	QuestionsBureauTopic,
+} from "authoritarian/dist/interfaces.js"
 
 import {makeReader} from "../toolbox/pubsub.js"
 
@@ -9,7 +13,6 @@ import {
 	QuestionsState,
 	QuestionsModel,
 	QuestionsBureauUi,
-	QuestionsBureauTopic,
 } from "../interfaces.js"
 
 import {UserMode} from "./user-model.js"
@@ -21,23 +24,19 @@ export function createQuestionsModel({questionsBureau}: {
 	let getAuthContext: GetAuthContext
 
 	const state: QuestionsState = {
-		boards: {},
 		user: null,
 		profile: null,
+		questions: [],
 	}
 
 	const {reader, update} = makeReader(state)
 
-	const getOrCreateBoard = (boardName: string) => {
-		const existing = state.boards[boardName]
-		const board = existing || {questions: []}
-		if (!existing) state.boards[boardName] = board
-		return board
-	}
+	const fetchLocalQuestions = (board: string) => state.questions.filter(
+		question => question.board === board
+	)
 
-	const getQuestion = (boardName: string, questionId: string) => {
-		const board = getOrCreateBoard(boardName)
-		return board.questions.find(
+	const getLocalQuestion = (questionId: string) => {
+		return state.questions.find(
 			question => question.questionId === questionId
 		)
 	}
@@ -48,9 +47,13 @@ export function createQuestionsModel({questionsBureau}: {
 	}
 
 	const bureau: QuestionsBureauUi = {
-		async fetchQuestions({boardName}) {
-			const questions = await questionsBureau.fetchQuestions({boardName})
-			state.boards[boardName] = {questions}
+		async fetchQuestions({board}) {
+			const questions = await questionsBureau.fetchQuestions({board})
+			for (const question of questions) {
+				const existing = getLocalQuestion(question.questionId)
+				if (existing) Object.assign(existing, question)
+				else state.questions.push(question)
+			}
 			update()
 			return questions
 		},
@@ -59,8 +62,7 @@ export function createQuestionsModel({questionsBureau}: {
 			const question = await questionsBureau.postQuestion(
 				await addTokenToOptions(options)
 			)
-			const board = getOrCreateBoard(options.boardName)
-			board.questions.push(question)
+			state.questions.push(question)
 			update()
 			return question
 		},
@@ -69,33 +71,31 @@ export function createQuestionsModel({questionsBureau}: {
 			await questionsBureau.deleteQuestion(
 				await addTokenToOptions(options)
 			)
-			const board = getOrCreateBoard(options.boardName)
-			board.questions = board.questions.filter(
-				({questionId}) => questionId !== options.questionId
+			state.questions = state.questions.filter(
+				question => question.questionId === options.questionId
 			)
 			update()
 		},
 
 		async likeQuestion(options) {
-			const likes = await questionsBureau.likeQuestion(
+			const result = await questionsBureau.likeQuestion(
 				await addTokenToOptions(options)
 			)
-			const question = getQuestion(options.boardName, options.questionId)
+			const likes = result.likeInfo.likes
+			const question = getLocalQuestion(options.questionId)
 			question.likeInfo.likes = likes
 			question.likeInfo.liked = options.like
 			update()
-			return likes
+			return result
 		}
 	}
 
 	const updateUser = (user: User) => {
 		state.user = user
 		if (user) {
-			for (const [, board] of Object.entries(state.boards)) {
-				for (const question of board.questions) {
-					if (question.author.userId === user.userId) {
-						question.author.premium = user.claims.premium
-					}
+			for (const question of state.questions) {
+				if (question.author.user.userId === user.userId) {
+					Object.assign(question.author.user, user)
 				}
 			}
 		}
@@ -105,6 +105,7 @@ export function createQuestionsModel({questionsBureau}: {
 	return {
 		reader,
 		bureau,
+		fetchLocalQuestions,
 		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState): Promise<void> {
 			getAuthContext = getContext
 			if (mode === UserMode.LoggedIn) {

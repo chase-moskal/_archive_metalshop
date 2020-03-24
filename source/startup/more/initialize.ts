@@ -1,12 +1,12 @@
 
 import {createTokenStorageClient}
-	from "authoritarian/dist/clients/create-token-storage-client.js"
+	from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
 
 import {createProfileMagistrateClient}
-	from "authoritarian/dist/clients/create-profile-magistrate-client.js"
+	from "authoritarian/dist/business/profile-magistrate/create-profile-magistrate-client.js"
 
 import {triggerLoginPopup}
-	from "authoritarian/dist/account-popup/trigger-login-popup.js"
+	from "authoritarian/dist/business/account-popup/trigger-login-popup.js"
 
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
@@ -39,10 +39,10 @@ export async function initialize(config: AuthoritarianConfig):
 			await import("../../system/mocks.js")
 		const {
 			tokenStorage,
-			vimeoGovernor,
 			scheduleSentry,
 			paywallGuardian,
 			questionsBureau,
+			liveshowGovernor,
 			loginPopupRoutine,
 			profileMagistrate,
 		} = prepareAllMocks({
@@ -56,10 +56,10 @@ export async function initialize(config: AuthoritarianConfig):
 		progress = {
 			...progress,
 			tokenStorage,
-			vimeoGovernor,
 			scheduleSentry,
 			paywallGuardian,
 			questionsBureau,
+			liveshowGovernor,
 			loginPopupRoutine,
 			profileMagistrate,
 		}
@@ -93,15 +93,15 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.paywallServer) {
 		queue(async() => {
-			console.log("coming soon: paywall guardian initialization")
+			console.log("coming soon: paywall initialization")
 			progress.paywallGuardian = null
 		})
 	}
 
-	if (config.vimeoServer) {
+	if (config.liveshowServer) {
 		queue(async() => {
-			console.log("coming soon: paywall guardian initialization")
-			progress.vimeoGovernor = null
+			console.log("coming soon: liveshow initialization")
+			progress.liveshowGovernor = null
 		})
 	}
 
@@ -118,7 +118,7 @@ export async function initialize(config: AuthoritarianConfig):
 
 	return {
 		tokenStorage: progress.tokenStorage,
-		vimeoGovernor: progress.vimeoGovernor,
+		liveshowGovernor: progress.liveshowGovernor,
 		scheduleSentry: progress.scheduleSentry,
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,

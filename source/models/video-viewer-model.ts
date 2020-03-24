@@ -1,5 +1,5 @@
 
-import {VimeoGovernorTopic} from "authoritarian/dist/interfaces.js"
+import {LiveshowGovernorTopic} from "authoritarian/dist/interfaces.js"
 
 import {makeReader} from "../toolbox/pubsub.js"
 
@@ -20,9 +20,9 @@ export enum PrivilegeMode {
 	Privileged,
 }
 
-export function createVideoViewerModel({user, vimeoGovernor}: {
+export function createVideoViewerModel({user, liveshowGovernor}: {
 	user: UserModel
-	vimeoGovernor: VimeoGovernorTopic
+	liveshowGovernor: LiveshowGovernorTopic
 }): VideoViewerModel {
 
 	let getAuthContext: GetAuthContext
@@ -62,10 +62,10 @@ export function createVideoViewerModel({user, vimeoGovernor}: {
 
 				if (vimeoId || vimeostring === "") {
 					const {accessToken} = await getAuthContext()
-					await vimeoGovernor.setVimeo({
-						accessToken,
+					await liveshowGovernor.setShow({
+						vimeoId,
 						videoName,
-						vimeoId
+						accessToken,
 					})
 					state.vimeoId = vimeoId
 				}
@@ -91,7 +91,7 @@ export function createVideoViewerModel({user, vimeoGovernor}: {
 							? PrivilegeMode.Privileged
 							: PrivilegeMode.Unprivileged
 					update()
-					const {vimeoId} = await vimeoGovernor.getVimeo({
+					const {vimeoId} = await liveshowGovernor.getShow({
 						accessToken,
 						videoName
 					})

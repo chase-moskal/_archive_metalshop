@@ -3,32 +3,19 @@ import {
 	Profile,
 	AuthTokens,
 	AccessToken,
+	RefreshToken,
 	TokenStorageTopic,
-	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
-	AccessPayload,
-	RefreshToken,
-	User,
-	ClaimsDealerTopic,
+	LiveshowGovernorTopic,
 } from "authoritarian/dist/interfaces.js"
-
-import {TokenData} from "redcrypto/dist/interfaces.js"
-import {tokenDecode} from "redcrypto/dist/token-decode.js"
 
 import {nap} from "../toolbox/nap.js"
 
 import {
-	Question,
-	QuestionDraft,
 	LoginPopupRoutine,
 	ScheduleSentryTopic,
-	QuestionsBureauTopic,
-	LikeInfo,
-	QuestionsBureauActions,
-	QuestionRecord,
 } from "../interfaces.js"
-import { generateId } from "source/toolbox/generate-id.js"
 
 const dist = "./dist"
 const debugLogs = true
@@ -101,14 +88,14 @@ export const prepareAllMocks = ({
 	}
 
 	let vimeoId = "109943349"
-	const vimeoGovernor: VimeoGovernorTopic = {
-		async getVimeo(options: {
+	const liveshowGovernor: LiveshowGovernorTopic = {
+		async getShow(options: {
 			accessToken: AccessToken
 			videoName: string
 		}): Promise<{vimeoId: string}> {
 			return {vimeoId}
 		},
-		async setVimeo({vimeoId}: {
+		async setShow({vimeoId}: {
 			accessToken: AccessToken
 			vimeoId: string
 			videoName: string
@@ -169,173 +156,6 @@ export const prepareAllMocks = ({
 		},
 	}
 
-	function createMockQuestionsActions(): QuestionsBureauActions {
-		const data: {
-			records: QuestionRecord[]
-		} = {records: []}
-
-		async function getRecordById(questionId: string): Promise<QuestionRecord> {
-			return data.records.find(record => (
-				record.questionId === questionId
-			))
-		}
-
-		async function fetchRecords(boardName: string): Promise<QuestionRecord[]> {
-			return [...data.records.filter(record => (
-				!record.archive &&
-				record.boardName === boardName
-			))]
-		}
-
-		async function saveRecord(
-			record: QuestionRecord
-		): Promise<void> {
-			const already = await getRecordById(record.questionId)
-			if (already) throw new Error(`cannot overwrite existing question`)
-			else data.records.push(record)
-		}
-
-		async function likeRecord({like, userId, questionId}: {
-			like: boolean
-			userId: string
-			questionId: string
-		}): Promise<QuestionRecord> {
-			const record = await getRecordById(questionId)
-			if (like) {
-				const alreadyLike = !!record.likes.find(like => like.userId === userId)
-				if (!alreadyLike)
-					record.likes.push({userId})
-			}
-			else {
-				record.likes = record.likes.filter(like => like.userId !== userId)
-			}
-			await saveRecord(record)
-			return record
-		}
-
-		async function trashRecord(questionId: string): Promise<void> {
-			const record = await getRecordById(questionId)
-			record.archive = true
-			await saveRecord(record)
-		}
-
-		return {
-			getRecordById,
-			fetchRecords,
-			likeRecord,
-			saveRecord,
-			trashRecord,
-		}
-	}
-
-	async function mockTokenVerify(
-		token: AccessToken
-	): Promise<TokenData<AccessPayload>> {
-		return tokenDecode(token)
-	}
-
-	function createQuestionsBureau({
-		actions,
-		verifyToken,
-		claimsDealer,
-		profileMagistrate,
-	}: {
-		actions: QuestionsBureauActions
-		claimsDealer: ClaimsDealerTopic
-		profileMagistrate: ProfileMagistrateTopic
-		verifyToken: (token: AccessToken) => Promise<TokenData<AccessPayload>>
-	}) {
-
-		async function resolveQuestion(
-			record: QuestionRecord
-		): Promise<Question> {
-			const {authorUserId: userId} = record
-			const author = {
-				user: await claimsDealer.getUser({userId}),
-				profile: await profileMagistrate.getProfile({userId}),
-			}
-			const likeInfo: LikeInfo = {
-				likes: record.likes.length,
-				liked: !!record.likes.find(like => like.userId === userId),
-			}
-			return {
-				author,
-				likeInfo,
-				time: record.time,
-				content: record.content,
-				questionId: record.questionId,
-			}
-		}
-
-		async function fetchQuestions({boardName}: {
-			boardName: string
-		}): Promise<Question[]> {
-			const records = await actions.fetchRecords(boardName)
-			return await Promise.all(
-				records.map(record => resolveQuestion(record))
-			)
-		}
-
-		async function postQuestion({boardName, draft, accessToken}: {
-			boardName: string
-			draft: QuestionDraft
-			accessToken: AccessToken
-		}): Promise<Question> {
-			const {user} = (await verifyToken(accessToken)).payload
-			const {userId: authorUserId} = user
-			if (!user.claims.premium)
-				throw new Error(`must be premium to post question`)
-			const record: QuestionRecord = {
-				boardName,
-				authorUserId,
-				likes: [],
-				archive: false,
-				time: Date.now(),
-				content: draft.content,
-				questionId: generateId(),
-			}
-			await actions.saveRecord(record)
-			return await resolveQuestion(record)
-		}
-
-		async function deleteQuestion({questionId, accessToken}: {
-			questionId: string
-			accessToken: AccessToken
-		}): Promise<void> {
-			const {user} = (await verifyToken(accessToken)).payload
-			const record = await actions.getRecordById(questionId)
-
-			const owner = user.userId === record.authorUserId
-			const admin = !!user.claims.admin
-
-			if (owner || admin)
-				await actions.trashRecord(questionId)
-			else
-				throw new Error(`must own the question to trash it`)
-		}
-
-		async function likeQuestion({like, questionId, accessToken}: {
-			like: boolean
-			questionId: string
-			accessToken: AccessToken
-		}): Promise<Question> {
-			const {user} = (await verifyToken(accessToken)).payload
-			const record = await actions.likeRecord({
-				like,
-				questionId,
-				userId: user.userId,
-			})
-			return await resolveQuestion(record)
-		}
-
-		return {
-			fetchQuestions,
-			postQuestion,
-			deleteQuestion,
-			likeQuestion,
-		}
-	}
-
 	const scheduleSentry = new class MockScheduleSentry
 		implements ScheduleSentryTopic {
 
@@ -361,19 +181,12 @@ export const prepareAllMocks = ({
 		}
 	}
 
-	const questionsBureau = createQuestionsBureau({
-		claimsDealer,
-		profileMagistrate,
-		verifyToken: mockTokenVerify,
-		actions: createMockQuestionsActions(),
-	})
-
 	return {
 		tokenStorage,
-		vimeoGovernor,
 		scheduleSentry,
-		questionsBureau,
+		questionsBureau: null,
 		paywallGuardian,
+		liveshowGovernor,
 		loginPopupRoutine,
 		profileMagistrate,
 	}

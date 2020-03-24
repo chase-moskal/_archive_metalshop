@@ -2,11 +2,14 @@
 import {
 	User,
 	Profile,
+	Question,
 	AuthTokens,
 	AccessToken,
+	QuestionDraft,
 	TokenStorageTopic,
-	VimeoGovernorTopic,
+	QuestionsBureauTopic,
 	PaywallGuardianTopic,
+	LiveshowGovernorTopic,
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
 
@@ -18,19 +21,19 @@ import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
 export interface AuthoritarianConfig {
 	mock: string
 	authServer: string
-	vimeoServer: string
 	profileServer: string
 	paywallServer: string
 	scheduleServer: string
+	liveshowServer: string
 	questionsBoardServer: string
 }
 
 export interface AuthoritarianOptions {
 	tokenStorage: TokenStorageTopic
-	vimeoGovernor: VimeoGovernorTopic
 	scheduleSentry: ScheduleSentryTopic
 	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
+	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
 
 	loginPopupRoutine: LoginPopupRoutine
@@ -150,14 +153,18 @@ export interface VideoViewerModel extends SimpleModel {
 	prepareVideoModel: (options: {videoName: string}) => VideoModel
 }
 
-export interface QuestionAuthor {
+export interface QuestionsState {
 	user: User
 	profile: Profile
+	questions: Question[]
 }
 
-export interface LikeInfo {
-	liked: boolean
-	likes: number
+export interface QuestionsModel {
+	reader: Reader<QuestionsState>
+	bureau: QuestionsBureauUi
+	fetchLocalQuestions: (board: string) => Question[]
+	updateProfile(profile: Profile): void
+	receiveUserUpdate(state: UserState): Promise<void>
 }
 
 export interface QuestionValidation {
@@ -166,104 +173,24 @@ export interface QuestionValidation {
 	postable: boolean
 }
 
-export interface QuestionDraft {
-	time: number
-	content: string
-}
-
-export interface Question extends QuestionDraft {
-	questionId: string
-	likeInfo: LikeInfo
-	author: QuestionAuthor
-}
-
-export interface QuestionsState {
-	user: User
-	profile: Profile
-	boards: {
-		[boardName: string]: {
-			questions: Question[]
-		}
-	}
-}
-
-export interface QuestionsModel {
-	reader: Reader<QuestionsState>
-	bureau: QuestionsBureauUi
-	updateProfile(profile: Profile): void
-	receiveUserUpdate(state: UserState): Promise<void>
-}
-
-export interface QuestionRecord {
-	time: number
-	content: string
-	archive: boolean
-	boardName: string
-	questionId: string
-	authorUserId: string
-	likes: {userId: string}[]
-}
-
-export interface QuestionsBureauActions {
-	fetchRecords(boardName: string): Promise<QuestionRecord[]>
-
-	getRecordById(
-		questionId: string
-	): Promise<QuestionRecord>
-
-	saveRecord(
-		record: QuestionRecord
-	): Promise<void>
-
-	likeRecord(options: {
-		like: boolean
-		userId: string
-		questionId: string
-	}): Promise<QuestionRecord>
-
-	trashRecord(
-		questionId: string
-	): Promise<void>
-}
-
-export interface QuestionsBureauTopic {
-	fetchQuestions(o: {boardName: string}): Promise<Question[]>
-
-	postQuestion(o: {
-		boardName: string
-		draft: QuestionDraft
-		accessToken: AccessToken
-	}): Promise<Question>
-
-	deleteQuestion(o: {
-		boardName: string
-		questionId: string
-		accessToken: AccessToken
-	}): Promise<void>
-
-	likeQuestion(o: {
-		like: boolean
-		questionId: string
-		accessToken: AccessToken
-	}): Promise<Question>
-}
-
 export interface QuestionsBureauUi extends QuestionsBureauTopic {
+
+	fetchQuestions(o: {
+		board: string
+	}): Promise<Question[]>
+
 	postQuestion(o: {
-		boardName: string
 		draft: QuestionDraft
 	}): Promise<Question>
 
 	deleteQuestion(o: {
-		boardName: string
 		questionId: string
 	}): Promise<void>
 
 	likeQuestion(o: {
 		like: boolean
-		boardName: string
 		questionId: string
-	}): Promise<number>
+	}): Promise<Question>
 }
 
 export type PrepareHandleLikeClick = (o: {

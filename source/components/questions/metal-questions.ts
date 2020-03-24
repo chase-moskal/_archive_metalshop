@@ -6,17 +6,21 @@ import {mixinModelSubscription}
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
 
 import {
-	QuestionDraft,
-	QuestionAuthor,
 	QuestionsModel,
 	PrepareHandleLikeClick,
 } from "../../interfaces.js"
+
+import {
+	QuestionDraft,
+	QuestionAuthor,
+} from "authoritarian/dist/interfaces.js"
+
 import {wait} from "../../toolbox/wait.js"
 
+import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
-import {sortQuestions, authorFromUserAndProfile} from "./helpers.js"
 
 const Component = mixinLoadable(
 	mixinModelSubscription<QuestionsModel, typeof LitElement>(
@@ -26,7 +30,7 @@ const Component = mixinLoadable(
 
 export class MetalQuestions extends Component {
 	static get styles() { return [super.styles || css``, styles] }
-	@property({type: String, reflect: true}) ["board-name"]: string
+	@property({type: String, reflect: true}) ["board"]: string
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 
 	@property({type: String}) draftText: string = ""
@@ -44,18 +48,18 @@ export class MetalQuestions extends Component {
 	}
 
 	updated(changedProperties: PropertyValues) {
-		if (changedProperties.has("board-name")) {
+		if (changedProperties.has("board")) {
 			this._downloadQuestions()
 		}
 	}
 
 	private async _downloadQuestions() {
 		try {
-			const {["board-name"]: boardName} = this
+			const {board} = this
 			this.loadableState = LoadableState.Loading
-			if (!boardName)
-				throw new Error(`questions-board requires attribute [board-name]`)
-			await this.model.bureau.fetchQuestions({boardName})
+			if (!board)
+				throw new Error(`questions-board requires attribute [board]`)
+			await this.model.bureau.fetchQuestions({board})
 			this.loadableState = LoadableState.Ready
 		}
 		catch (error) {
@@ -65,13 +69,11 @@ export class MetalQuestions extends Component {
 	}
 
 	private _getQuestionDraft(): QuestionDraft {
-		const {draftText: content} = this
-		const {user, profile} = this.model.reader.state
-		const author = authorFromUserAndProfile({user, profile})
+		const {board, draftText: content} = this
 		const time = Date.now()
-		const valid = (author && content)
+		const valid = !!content
 		return valid
-			? {time, author, content}
+			? {time, board, content}
 			: null
 	}
 
@@ -92,12 +94,11 @@ export class MetalQuestions extends Component {
 
 	private _handlePostClick = async(event: MouseEvent) => {
 		if (this._warnUnauthenticatedUser()) return
-		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
-		const question = this._getQuestionDraft()
+		const draft = this._getQuestionDraft()
 		try {
 			this.loadableState = LoadableState.Loading
-			await bureau.postQuestion({boardName, question})
+			await bureau.postQuestion({draft})
 			this.draftText = ""
 			this.loadableState = LoadableState.Ready
 		}
@@ -113,10 +114,9 @@ export class MetalQuestions extends Component {
 
 	private _prepareHandleDeleteClick = (questionId: string) => async() => {
 		if (this._warnUnauthenticatedUser()) return
-		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
 		if (confirm(`Really delete question ${questionId}?`))
-		await bureau.deleteQuestion({boardName, questionId})
+		await bureau.deleteQuestion({questionId})
 	}
 
 	private _prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
@@ -124,10 +124,8 @@ export class MetalQuestions extends Component {
 		questionId: string
 	}) => async(event: MouseEvent) => {
 		if (this._warnUnauthenticatedUser()) return
-		const {["board-name"]: boardName} = this
 		await this.model.bureau.likeQuestion({
 			like,
-			boardName,
 			questionId,
 		})
 	}
@@ -143,7 +141,7 @@ export class MetalQuestions extends Component {
 		const tooLittle = length < min
 		const tooBig = length > max
 
-		const {premium} = author
+		const {premium} = author.user.claims
 		const {message, angry} = premium
 			? length > 0
 				? tooLittle
@@ -158,16 +156,9 @@ export class MetalQuestions extends Component {
 		return {postable, message, angry}
 	}
 
-	private _getBoard() {
-		const {["board-name"]: boardName} = this
-		const {boards} = this.model.reader.state
-		const board = boards[boardName]
-		if (!board) throw new Error(`questions board "${boardName}" not found`)
-		return board
-	}
-
 	renderReady() {
 		const {
+			board,
 			draftText,
 			maxCharacterLimit,
 			_handlePostClick: handlePostClick,
@@ -176,9 +167,9 @@ export class MetalQuestions extends Component {
 			_prepareHandleDeleteClick: prepareHandleDeleteClick,
 		} = this
 
-		const {questions} = this._getBoard()
+		const questions = this.model.fetchLocalQuestions(board)
 		const {user, profile} = this.model.reader.state
-		const me = authorFromUserAndProfile({user, profile})
+		const me: QuestionAuthor = {user, profile}
 		const validation = this._validatePost(me)
 		const expand = draftText.length > 0
 

@@ -30,7 +30,7 @@ const validate = (condition: any, message: string) => {
 
 export function prepareComponents({
 	tokenStorage,
-	vimeoGovernor,
+	liveshowGovernor,
 	scheduleSentry,
 	paywallGuardian,
 	questionsBureau,
@@ -70,7 +70,7 @@ export function prepareComponents({
 
 	const viewer = createVideoViewerModel({
 		user,
-		vimeoGovernor,
+		liveshowGovernor,
 	})
 
 	const schedule = createScheduleModel({
