@@ -7,8 +7,14 @@ import {
 	VimeoGovernorTopic,
 	PaywallGuardianTopic,
 	ProfileMagistrateTopic,
+	AccessPayload,
 	RefreshToken,
+	User,
+	ClaimsDealerTopic,
 } from "authoritarian/dist/interfaces.js"
+
+import {TokenData} from "redcrypto/dist/interfaces.js"
+import {tokenDecode} from "redcrypto/dist/token-decode.js"
 
 import {nap} from "../toolbox/nap.js"
 
@@ -18,7 +24,11 @@ import {
 	LoginPopupRoutine,
 	ScheduleSentryTopic,
 	QuestionsBureauTopic,
+	LikeInfo,
+	QuestionsBureauActions,
+	QuestionRecord,
 } from "../interfaces.js"
+import { generateId } from "source/toolbox/generate-id.js"
 
 const dist = "./dist"
 const debugLogs = true
@@ -159,58 +169,170 @@ export const prepareAllMocks = ({
 		},
 	}
 
-	const questionsBureau = new class MockQuestionsBureau implements QuestionsBureauTopic {
-		_questions: Question[] = []
+	function createMockQuestionsActions(): QuestionsBureauActions {
+		const data: {
+			records: QuestionRecord[]
+		} = {records: []}
 
-		constructor({questions = [...mockQuestions]}: {questions?: Question[]} = {}) {
-			this._questions = questions
+		async function getRecordById(questionId: string): Promise<QuestionRecord> {
+			return data.records.find(record => (
+				record.questionId === questionId
+			))
 		}
 
-		async fetchQuestions(o: {boardName: string}): Promise<Question[]> {
-			await nap()
-			return [...this._questions]
-		}
-	
-		async postQuestion({question}: {
-			boardName: string
-			question: QuestionDraft
-		}): Promise<Question> {
-			await nap()
-			const legitQuestion: Question = {
-				...question,
-				likeInfo: {likes: 1, liked: true},
-				questionId: `q${Math.random()}`
-			}
-			this._questions.push(legitQuestion)
-			return legitQuestion
+		async function fetchRecords(boardName: string): Promise<QuestionRecord[]> {
+			return [...data.records.filter(record => (
+				!record.archive &&
+				record.boardName === boardName
+			))]
 		}
 
-		async deleteQuestion({boardName, questionId}: {
-			boardName: string
-			questionId: string
-		}): Promise<void> {
-			await nap()
-			this._questions = this._questions
-				.filter(question => question.questionId !== questionId)
+		async function saveRecord(
+			record: QuestionRecord
+		): Promise<void> {
+			const already = await getRecordById(record.questionId)
+			if (already) throw new Error(`cannot overwrite existing question`)
+			else data.records.push(record)
 		}
 
-		async likeQuestion({like, boardName, questionId, accessToken}: {
+		async function likeRecord({like, userId, questionId}: {
 			like: boolean
-			boardName: string
+			userId: string
 			questionId: string
-			accessToken: AccessToken
-		}): Promise<number> {
-			await nap()
-			const question = this._questions.find(q => q.questionId === questionId)
+		}): Promise<QuestionRecord> {
+			const record = await getRecordById(questionId)
 			if (like) {
-				question.likeInfo.likes += 1
-				question.likeInfo.liked = true
+				const alreadyLike = !!record.likes.find(like => like.userId === userId)
+				if (!alreadyLike)
+					record.likes.push({userId})
 			}
 			else {
-				question.likeInfo.likes -= 1
-				question.likeInfo.liked = false
+				record.likes = record.likes.filter(like => like.userId !== userId)
 			}
-			return question.likeInfo.likes
+			await saveRecord(record)
+			return record
+		}
+
+		async function trashRecord(questionId: string): Promise<void> {
+			const record = await getRecordById(questionId)
+			record.archive = true
+			await saveRecord(record)
+		}
+
+		return {
+			getRecordById,
+			fetchRecords,
+			likeRecord,
+			saveRecord,
+			trashRecord,
+		}
+	}
+
+	async function mockTokenVerify(
+		token: AccessToken
+	): Promise<TokenData<AccessPayload>> {
+		return tokenDecode(token)
+	}
+
+	function createQuestionsBureau({
+		actions,
+		verifyToken,
+		claimsDealer,
+		profileMagistrate,
+	}: {
+		actions: QuestionsBureauActions
+		claimsDealer: ClaimsDealerTopic
+		profileMagistrate: ProfileMagistrateTopic
+		verifyToken: (token: AccessToken) => Promise<TokenData<AccessPayload>>
+	}) {
+
+		async function resolveQuestion(
+			record: QuestionRecord
+		): Promise<Question> {
+			const {authorUserId: userId} = record
+			const author = {
+				user: await claimsDealer.getUser({userId}),
+				profile: await profileMagistrate.getProfile({userId}),
+			}
+			const likeInfo: LikeInfo = {
+				likes: record.likes.length,
+				liked: !!record.likes.find(like => like.userId === userId),
+			}
+			return {
+				author,
+				likeInfo,
+				time: record.time,
+				content: record.content,
+				questionId: record.questionId,
+			}
+		}
+
+		async function fetchQuestions({boardName}: {
+			boardName: string
+		}): Promise<Question[]> {
+			const records = await actions.fetchRecords(boardName)
+			return await Promise.all(
+				records.map(record => resolveQuestion(record))
+			)
+		}
+
+		async function postQuestion({boardName, draft, accessToken}: {
+			boardName: string
+			draft: QuestionDraft
+			accessToken: AccessToken
+		}): Promise<Question> {
+			const {user} = (await verifyToken(accessToken)).payload
+			const {userId: authorUserId} = user
+			if (!user.claims.premium)
+				throw new Error(`must be premium to post question`)
+			const record: QuestionRecord = {
+				boardName,
+				authorUserId,
+				likes: [],
+				archive: false,
+				time: Date.now(),
+				content: draft.content,
+				questionId: generateId(),
+			}
+			await actions.saveRecord(record)
+			return await resolveQuestion(record)
+		}
+
+		async function deleteQuestion({questionId, accessToken}: {
+			questionId: string
+			accessToken: AccessToken
+		}): Promise<void> {
+			const {user} = (await verifyToken(accessToken)).payload
+			const record = await actions.getRecordById(questionId)
+
+			const owner = user.userId === record.authorUserId
+			const admin = !!user.claims.admin
+
+			if (owner || admin)
+				await actions.trashRecord(questionId)
+			else
+				throw new Error(`must own the question to trash it`)
+		}
+
+		async function likeQuestion({like, questionId, accessToken}: {
+			like: boolean
+			questionId: string
+			accessToken: AccessToken
+		}): Promise<Question> {
+			const {user} = (await verifyToken(accessToken)).payload
+			const record = await actions.likeRecord({
+				like,
+				questionId,
+				userId: user.userId,
+			})
+			return await resolveQuestion(record)
+		}
+
+		return {
+			fetchQuestions,
+			postQuestion,
+			deleteQuestion,
+			likeQuestion,
 		}
 	}
 
@@ -239,6 +361,13 @@ export const prepareAllMocks = ({
 		}
 	}
 
+	const questionsBureau = createQuestionsBureau({
+		claimsDealer,
+		profileMagistrate,
+		verifyToken: mockTokenVerify,
+		actions: createMockQuestionsActions(),
+	})
+
 	return {
 		tokenStorage,
 		vimeoGovernor,
@@ -250,53 +379,53 @@ export const prepareAllMocks = ({
 	}
 }
 
-export const mockQuestions: Question[] = [
-	{
-		questionId: "q123",
-		author: {
-			userId: "u345",
-			nickname: "Johnny Texas",
-			avatar: "",
-			admin: false,
-			premium: false,
-		},
-		content: "how is lord brim so cool?",
-		likeInfo: {
-			likes: 2,
-			liked: false,
-		},
-		time: Date.now() - (100 * 1000),
-	},
-	{
-		questionId: "q981",
-		author: {
-			userId: "u123",
-			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-			avatar: "https://picsum.photos/id/375/200/200",
-			admin: true,
-			premium: true,
-		},
-		content: "lol this questions board is the bestest",
-		likeInfo: {
-			likes: 999,
-			liked: false,
-		},
-		time: Date.now() - (1000 * 1000 * 1000),
-	},
-	{
-		questionId: "q678",
-		author: {
-			userId: "u456",
-			nickname: "Donald Trump",
-			avatar: "",
-			admin: false,
-			premium: false,
-		},
-		content: "Everybody needs a friend. Just think about these things in your mind - then bring them into your world. We'll have a super time. Play with the angles. Think about a cloud. Just float around and be there.\n\nI sincerely wish for you every possible joy life could bring. We're trying to teach you a technique here and how to use it. Nice little clouds playing around in the sky.\n\nMaking all those little fluffies that live in the clouds. You better get your coat out, this is going to be a cold painting. Everything's not great in life, but we can still find beauty in it. If these lines aren't straight, your water's going to run right out of your painting and get your floor wet. Every highlight needs it's own personal shadow.",
-		likeInfo: {
-			likes: 420,
-			liked: false,
-		},
-		time: Date.now() - (500 * 1000),
-	},
-]
+// export const mockQuestions: Question[] = [
+// 	{
+// 		questionId: "q123",
+// 		author: {
+// 			userId: "u345",
+// 			nickname: "Johnny Texas",
+// 			avatar: "",
+// 			admin: false,
+// 			premium: false,
+// 		},
+// 		content: "how is lord brim so cool?",
+// 		likeInfo: {
+// 			likes: 2,
+// 			liked: false,
+// 		},
+// 		time: Date.now() - (100 * 1000),
+// 	},
+// 	{
+// 		questionId: "q981",
+// 		author: {
+// 			userId: "u123",
+// 			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
+// 			avatar: "https://picsum.photos/id/375/200/200",
+// 			admin: true,
+// 			premium: true,
+// 		},
+// 		content: "lol this questions board is the bestest",
+// 		likeInfo: {
+// 			likes: 999,
+// 			liked: false,
+// 		},
+// 		time: Date.now() - (1000 * 1000 * 1000),
+// 	},
+// 	{
+// 		questionId: "q678",
+// 		author: {
+// 			userId: "u456",
+// 			nickname: "Donald Trump",
+// 			avatar: "",
+// 			admin: false,
+// 			premium: false,
+// 		},
+// 		content: "Everybody needs a friend. Just think about these things in your mind - then bring them into your world. We'll have a super time. Play with the angles. Think about a cloud. Just float around and be there.\n\nI sincerely wish for you every possible joy life could bring. We're trying to teach you a technique here and how to use it. Nice little clouds playing around in the sky.\n\nMaking all those little fluffies that live in the clouds. You better get your coat out, this is going to be a cold painting. Everything's not great in life, but we can still find beauty in it. If these lines aren't straight, your water's going to run right out of your painting and get your floor wet. Every highlight needs it's own personal shadow.",
+// 		likeInfo: {
+// 			likes: 420,
+// 			liked: false,
+// 		},
+// 		time: Date.now() - (500 * 1000),
+// 	},
+// ]

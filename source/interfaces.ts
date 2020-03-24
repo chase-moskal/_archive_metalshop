@@ -151,11 +151,8 @@ export interface VideoViewerModel extends SimpleModel {
 }
 
 export interface QuestionAuthor {
-	userId: string
-	admin: boolean
-	avatar: string
-	premium: boolean
-	nickname: string
+	user: User
+	profile: Profile
 }
 
 export interface LikeInfo {
@@ -172,12 +169,12 @@ export interface QuestionValidation {
 export interface QuestionDraft {
 	time: number
 	content: string
-	author: QuestionAuthor
 }
 
 export interface Question extends QuestionDraft {
 	questionId: string
 	likeInfo: LikeInfo
+	author: QuestionAuthor
 }
 
 export interface QuestionsState {
@@ -197,12 +194,44 @@ export interface QuestionsModel {
 	receiveUserUpdate(state: UserState): Promise<void>
 }
 
+export interface QuestionRecord {
+	time: number
+	content: string
+	archive: boolean
+	boardName: string
+	questionId: string
+	authorUserId: string
+	likes: {userId: string}[]
+}
+
+export interface QuestionsBureauActions {
+	fetchRecords(boardName: string): Promise<QuestionRecord[]>
+
+	getRecordById(
+		questionId: string
+	): Promise<QuestionRecord>
+
+	saveRecord(
+		record: QuestionRecord
+	): Promise<void>
+
+	likeRecord(options: {
+		like: boolean
+		userId: string
+		questionId: string
+	}): Promise<QuestionRecord>
+
+	trashRecord(
+		questionId: string
+	): Promise<void>
+}
+
 export interface QuestionsBureauTopic {
 	fetchQuestions(o: {boardName: string}): Promise<Question[]>
 
 	postQuestion(o: {
 		boardName: string
-		question: QuestionDraft
+		draft: QuestionDraft
 		accessToken: AccessToken
 	}): Promise<Question>
 
@@ -214,16 +243,15 @@ export interface QuestionsBureauTopic {
 
 	likeQuestion(o: {
 		like: boolean
-		boardName: string
 		questionId: string
 		accessToken: AccessToken
-	}): Promise<number>
+	}): Promise<Question>
 }
 
 export interface QuestionsBureauUi extends QuestionsBureauTopic {
 	postQuestion(o: {
 		boardName: string
-		question: QuestionDraft
+		draft: QuestionDraft
 	}): Promise<Question>
 
 	deleteQuestion(o: {

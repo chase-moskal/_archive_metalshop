@@ -11,6 +11,7 @@ import {
 	QuestionsModel,
 	PrepareHandleLikeClick,
 } from "../../interfaces.js"
+import {wait} from "../../toolbox/wait.js"
 
 import {styles} from "./metal-questions-styles.js"
 import {renderQuestion} from "./render-question.js"
@@ -94,8 +95,20 @@ export class MetalQuestions extends Component {
 		const {["board-name"]: boardName} = this
 		const {bureau} = this.model
 		const question = this._getQuestionDraft()
-		await bureau.postQuestion({boardName, question})
-		this.draftText = ""
+		try {
+			this.loadableState = LoadableState.Loading
+			await bureau.postQuestion({boardName, question})
+			this.draftText = ""
+			this.loadableState = LoadableState.Ready
+		}
+		catch (error) {
+			this.errorMessage = "error posting question"
+			this.loadableState = LoadableState.Error
+			console.error(error)
+			await wait(5 * 1000)
+			console.log("LMAO WAT")
+			// this.loadableState = LoadableState.Ready
+		}
 	}
 
 	private _prepareHandleDeleteClick = (questionId: string) => async() => {
