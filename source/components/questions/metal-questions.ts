@@ -1,5 +1,9 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
+import {
+	QuestionDraft,
+	QuestionAuthor,
+} from "authoritarian/dist/interfaces.js"
 
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
 import {mixinModelSubscription} from "../../framework/mixin-model-subscription.js"
@@ -8,11 +12,6 @@ import {
 	QuestionsModel,
 	PrepareHandleLikeClick,
 } from "../../interfaces.js"
-
-import {
-	QuestionDraft,
-	QuestionAuthor,
-} from "authoritarian/dist/interfaces.js"
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"

@@ -1,9 +1,6 @@
 
 import {makeAuthClients} from "authoritarian/dist/business/auth-api/auth-clients.js"
-import {mockVerifyToken} from "authoritarian/dist/toolbox/tokens/mock-verify-token.js"
-import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
 import {triggerLoginPopup} from "authoritarian/dist/business/account-popup/trigger-login-popup.js"
-import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
 
@@ -34,7 +31,7 @@ export async function initialize(config: AuthoritarianConfig):
 	//
 
 	if (config.mock !== null) {
-		const {prepareAllMocks, getMockTokens} =
+		const {prepareAllMocks} =
 			await import("../../system/mocks.js")
 		const {
 			authDealer,
@@ -45,8 +42,7 @@ export async function initialize(config: AuthoritarianConfig):
 			liveshowGovernor,
 			loginPopupRoutine,
 			profileMagistrate,
-		} = prepareAllMocks({
-			mockTokens: await getMockTokens(),
+		} = await prepareAllMocks({
 			startAdmin: config.mock === "admin",
 			startPremium: config.mock === "premium",
 			startLoggedIn: config.mock === "loggedin"
@@ -117,27 +113,16 @@ export async function initialize(config: AuthoritarianConfig):
 	}
 
 	//
-	// TODO hacks here for testing questions bureau
-	//
-
-	progress.questionsBureau = makeQuestionsBureau({
-		verifyToken: mockVerifyToken(),
-		authDealer: progress.authDealer,
-		questionsDatalayer: mockQuestionsDatalayer(),
-		profileMagistrate: progress.profileMagistrate,
-	})
-
-	//
 	// return options
 	//
 
 	return {
 		authDealer: progress.authDealer,
 		tokenStorage: progress.tokenStorage,
-		liveshowGovernor: progress.liveshowGovernor,
 		scheduleSentry: progress.scheduleSentry,
 		paywallGuardian: progress.paywallGuardian,
 		questionsBureau: progress.questionsBureau,
+		liveshowGovernor: progress.liveshowGovernor,
 		profileMagistrate: progress.profileMagistrate,
 
 		decodeAccessToken: progress.decodeAccessToken,

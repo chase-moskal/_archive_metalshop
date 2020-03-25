@@ -1,100 +1,88 @@
 
-import {
-	Profile,
-	AuthTokens,
-	AccessToken,
-	RefreshToken,
-	TokenStorageTopic,
-	PaywallGuardianTopic,
-	LiveshowGovernorTopic,
-	ProfileMagistrateTopic,
-} from "authoritarian/dist/interfaces.js"
+import {tokenDecode} from "redcrypto/dist/token-decode.js"
+import {mockSignToken} from "redcrypto/dist/curries/mock-sign-token.js"
+import {mockVerifyToken} from "redcrypto/dist/curries/mock-verify-token.js"
+
+import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
+import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
+
+import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
+import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
+
+import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
 
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
+import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
-
-import {nap} from "../toolbox/nap.js"
+import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-verify-google-token.js"
+import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
 
 import {
-	LoginPopupRoutine,
-	ScheduleSentryTopic,
-} from "../interfaces.js"
+	AccessToken,
+	AccessPayload,
+	PaywallGuardianTopic,
+	LiveshowGovernorTopic,
+} from "authoritarian/dist/interfaces.js"
 
-const dist = "./dist"
-const debugLogs = true
+import {LoginPopupRoutine, ScheduleSentryTopic} from "../interfaces.js"
 
-const debug = (message: string) => debugLogs
-	? console.debug(`mock: ${message}`)
-	: null
-
-const getToken = async(name: string) => (await fetch(`${dist}/${name}`)).text()
-
-export interface MockTokens {
-	accessToken: AccessToken
-	refreshToken: RefreshToken
-	adminAccessToken: AccessToken
-	premiumAccessToken: AccessToken
-}
-
-export const getMockTokens = async(): Promise<MockTokens> => ({
-	accessToken: await getToken("mock-access.token"),
-	refreshToken: await getToken("mock-refresh.token"),
-	adminAccessToken: await getToken("mock-access-admin.token"),
-	premiumAccessToken: await getToken("mock-access-premium.token"),
-})
-
-export const prepareAllMocks = ({
-	mockTokens,
+export const prepareAllMocks = async({
 	startAdmin,
 	startPremium,
 	startLoggedIn,
 }: {
-	mockTokens: MockTokens
 	startAdmin: boolean
 	startPremium: boolean
 	startLoggedIn: boolean
 }) => {
-	const state = {
-		admin: startAdmin,
-		premium: startPremium,
-		loggedIn: startLoggedIn,
-		profile: <Profile>{
-			userId: "fake-h31829h381273h",
-			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-			avatar: "https://picsum.photos/id/375/200/200",
-		},
-		tokens: <AuthTokens>{
-			get accessToken() {
-				return state.loggedIn
-					? state.admin
-						? mockTokens.adminAccessToken
-						: state.premium
-							? mockTokens.premiumAccessToken
-							: mockTokens.accessToken
-					: null
-			},
-			get refreshToken() {
-				return state.loggedIn
-					? mockTokens.refreshToken
-					: null
-			},
-		}
-	}
-
+	const signToken = mockSignToken()
+	const verifyToken = mockVerifyToken()
 	const userDatalayer = mockUserDatalayer()
-	userDatalayer.insertRecord({
-		claims: {},
-		googleId: "g12345",
+	const profileDatalayer = mockProfileDatalayer()
+	const verifyGoogleToken = mockVerifyGoogleToken()
+
+	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
+	const profileMagistrate = makeProfileMagistrate({
+		profileDatalayer,
+		verifyToken
 	})
-	const {authDealer} = makeAuthVanguard({userDatalayer})
+
+	let count = 0
+	const generateRandomNickname = () => `user-${++count}`
+
+	const year = 1000 * 60 * 60 * 24 * 365
+	const accessTokenExpiresMilliseconds = 1000 * year
+	const refreshTokenExpiresMilliseconds = 1001 * year
+
+	const authExchanger = makeAuthExchanger({
+		signToken,
+		verifyToken,
+		authVanguard,
+		profileMagistrate,
+		verifyGoogleToken,
+		generateRandomNickname,
+		accessTokenExpiresMilliseconds,
+		refreshTokenExpiresMilliseconds,
+	})
 
 	const loginPopupRoutine: LoginPopupRoutine = async() => {
-		debug("loginPopupRoutine")
-		await nap()
-		state.loggedIn = true
-		const {accessToken, refreshToken} = state.tokens
-		return {accessToken, refreshToken}
+		return authExchanger.authenticateViaGoogle({
+			googleToken: "fakeGoogleToken123"
+		})
 	}
+
+	const tokenStorage = new TokenStorage({
+		authExchanger,
+		storage: mockStorage(),
+	})
+
+	const questionsDatalayer = mockQuestionsDatalayer()
+	const questionsBureau = makeQuestionsBureau({
+		authDealer,
+		verifyToken,
+		profileMagistrate,
+		questionsDatalayer,
+	})
 
 	let vimeoId = "109943349"
 	const liveshowGovernor: LiveshowGovernorTopic = {
@@ -113,55 +101,16 @@ export const prepareAllMocks = ({
 		}
 	}
 
-	const tokenStorage: TokenStorageTopic = {
-		async passiveCheck() {
-			debug("passiveCheck")
-			await nap()
-			return state.tokens.accessToken
-		},
-		async writeTokens(tokens: AuthTokens) {
-			debug("writeTokens")
-			await nap()
-		},
-		async writeAccessToken(accessToken: AccessToken) {
-			debug("writeAccessToken")
-			await nap()
-		},
-		async clearTokens() {
-			debug("clearTokens")
-			await nap()
-		},
-	}
-
-	const profileMagistrate: ProfileMagistrateTopic = {
-		async getProfile({userId}): Promise<Profile> {
-			debug("getProfile")
-			await nap()
-			return {
-				...state.profile,
-				userId,
-			}
-		},
-		async setProfile({profile}): Promise<void> {
-			debug("setFullProfile")
-			await nap()
-			state.profile = profile
-		},
-	}
-
 	const paywallGuardian: PaywallGuardianTopic = {
-		async grantUserPremium(options: {accessToken: AccessToken}) {
-			debug("grantUserPremium")
-			await nap()
-			state.premium = true
-			return state.tokens.accessToken
+		async grantUserPremium({accessToken}: {accessToken: AccessToken}) {
+			const {payload} = tokenDecode<AccessPayload>(accessToken)
+			payload.user.claims.premium = true
+			return signToken(payload, accessTokenExpiresMilliseconds)
 		},
-		async revokeUserPremium(options: {accessToken: AccessToken}) {
-			debug("revokeUserPremium")
-			await nap()
-			state.admin = false
-			state.premium = false
-			return state.tokens.accessToken
+		async revokeUserPremium({accessToken}: {accessToken: AccessToken}) {
+			const {payload} = tokenDecode<AccessPayload>(accessToken)
+			payload.user.claims.premium = false
+			return signToken(payload, accessTokenExpiresMilliseconds)
 		},
 	}
 
@@ -194,61 +143,10 @@ export const prepareAllMocks = ({
 		authDealer,
 		tokenStorage,
 		scheduleSentry,
-		questionsBureau: null,
+		questionsBureau,
 		paywallGuardian,
 		liveshowGovernor,
 		loginPopupRoutine,
 		profileMagistrate,
 	}
 }
-
-// export const mockQuestions: Question[] = [
-// 	{
-// 		questionId: "q123",
-// 		author: {
-// 			userId: "u345",
-// 			nickname: "Johnny Texas",
-// 			avatar: "",
-// 			admin: false,
-// 			premium: false,
-// 		},
-// 		content: "how is lord brim so cool?",
-// 		likeInfo: {
-// 			likes: 2,
-// 			liked: false,
-// 		},
-// 		time: Date.now() - (100 * 1000),
-// 	},
-// 	{
-// 		questionId: "q981",
-// 		author: {
-// 			userId: "u123",
-// 			nickname: "ℒord ℬrimshaw Đuke-Ŵellington",
-// 			avatar: "https://picsum.photos/id/375/200/200",
-// 			admin: true,
-// 			premium: true,
-// 		},
-// 		content: "lol this questions board is the bestest",
-// 		likeInfo: {
-// 			likes: 999,
-// 			liked: false,
-// 		},
-// 		time: Date.now() - (1000 * 1000 * 1000),
-// 	},
-// 	{
-// 		questionId: "q678",
-// 		author: {
-// 			userId: "u456",
-// 			nickname: "Donald Trump",
-// 			avatar: "",
-// 			admin: false,
-// 			premium: false,
-// 		},
-// 		content: "Everybody needs a friend. Just think about these things in your mind - then bring them into your world. We'll have a super time. Play with the angles. Think about a cloud. Just float around and be there.\n\nI sincerely wish for you every possible joy life could bring. We're trying to teach you a technique here and how to use it. Nice little clouds playing around in the sky.\n\nMaking all those little fluffies that live in the clouds. You better get your coat out, this is going to be a cold painting. Everything's not great in life, but we can still find beauty in it. If these lines aren't straight, your water's going to run right out of your painting and get your floor wet. Every highlight needs it's own personal shadow.",
-// 		likeInfo: {
-// 			likes: 420,
-// 			liked: false,
-// 		},
-// 		time: Date.now() - (500 * 1000),
-// 	},
-// ]
