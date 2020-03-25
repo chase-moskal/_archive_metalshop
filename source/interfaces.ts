@@ -6,6 +6,7 @@ import {
 	AuthTokens,
 	AccessToken,
 	QuestionDraft,
+	AuthDealerTopic,
 	TokenStorageTopic,
 	QuestionsBureauTopic,
 	PaywallGuardianTopic,
@@ -29,6 +30,7 @@ export interface AuthoritarianConfig {
 }
 
 export interface AuthoritarianOptions {
+	authDealer: AuthDealerTopic
 	tokenStorage: TokenStorageTopic
 	scheduleSentry: ScheduleSentryTopic
 	paywallGuardian: PaywallGuardianTopic

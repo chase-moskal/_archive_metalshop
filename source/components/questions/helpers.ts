@@ -7,13 +7,18 @@ export const sortLikes = (a: Question, b: Question) => {
 	return aLikes > bLikes ? -1: 1
 }
 
-export const sortQuestions = (me: QuestionAuthor, questions: Question[]) =>
-	[...questions]
-		.sort(sortLikes)
-		.sort(
-			(a: Question, b: Question) =>
-				(a.author.user.userId === me.user.userId) ? -1 : 1
-		)
+export const sortQuestions = (me: QuestionAuthor, questions: Question[]) => {
+
+	const myQuestions = questions.filter(
+		question => question.author.user.userId === me.user.userId
+	).sort(sortLikes)
+
+	const theirQuestions = questions.filter(
+		question => question.author.user.userId !== me.user.userId
+	).sort(sortLikes)
+
+	return [...myQuestions, ...theirQuestions]
+}
 
 export function ascertainOwnership(question: Question, me: QuestionAuthor) {
 	const admin = (me && me.user.claims.admin)

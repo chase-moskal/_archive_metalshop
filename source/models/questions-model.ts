@@ -47,6 +47,7 @@ export function createQuestionsModel({questionsBureau}: {
 	}
 
 	const bureau: QuestionsBureauUi = {
+
 		async fetchQuestions({board}) {
 			const questions = await questionsBureau.fetchQuestions({board})
 			for (const question of questions) {
@@ -72,7 +73,7 @@ export function createQuestionsModel({questionsBureau}: {
 				await addTokenToOptions(options)
 			)
 			state.questions = state.questions.filter(
-				question => question.questionId === options.questionId
+				question => question.questionId !== options.questionId
 			)
 			update()
 		},
@@ -119,6 +120,18 @@ export function createQuestionsModel({questionsBureau}: {
 		updateProfile(profile: Profile) {
 			state.profile = profile
 			update()
+
+			// update your own existing cached questions
+			if (getAuthContext) {
+				getAuthContext().then(({user}) => {
+					for (const question of state.questions) {
+						if (question.author.user.userId === user.userId) {
+							question.author.profile = profile
+						}
+					}
+					update()
+				})
+			}
 		},
 	}
 }

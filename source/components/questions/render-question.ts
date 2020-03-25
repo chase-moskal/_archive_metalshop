@@ -42,7 +42,10 @@ export function renderQuestion({
 	`
 
 	return html`
-		<div class="question" ?data-mine=${mine}>
+		<div
+		 class="question"
+		 ?data-mine=${mine}
+		 data-question-id=${question.questionId}>
 			${renderAuthor({
 				time,
 				author,

@@ -6,9 +6,12 @@ import {
 	RefreshToken,
 	TokenStorageTopic,
 	PaywallGuardianTopic,
-	ProfileMagistrateTopic,
 	LiveshowGovernorTopic,
+	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
+
+import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
+import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
 
 import {nap} from "../toolbox/nap.js"
 
@@ -51,7 +54,6 @@ export const prepareAllMocks = ({
 	startPremium: boolean
 	startLoggedIn: boolean
 }) => {
-
 	const state = {
 		admin: startAdmin,
 		premium: startPremium,
@@ -78,6 +80,13 @@ export const prepareAllMocks = ({
 			},
 		}
 	}
+
+	const userDatalayer = mockUserDatalayer()
+	userDatalayer.insertRecord({
+		claims: {},
+		googleId: "g12345",
+	})
+	const {authDealer} = makeAuthVanguard({userDatalayer})
 
 	const loginPopupRoutine: LoginPopupRoutine = async() => {
 		debug("loginPopupRoutine")
@@ -182,6 +191,7 @@ export const prepareAllMocks = ({
 	}
 
 	return {
+		authDealer,
 		tokenStorage,
 		scheduleSentry,
 		questionsBureau: null,

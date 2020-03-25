@@ -22,7 +22,7 @@ export function renderAuthor({
 		+ `-${date.getDate().toString().padStart(2, "0")}`
 	const timestring = date.toLocaleTimeString()
 	const {user, profile} = author
-	return html`
+	return (user && profile) ? html`
 		<div class="author">
 			<metal-avatar
 				src=${profile.avatar}
@@ -51,5 +51,5 @@ export function renderAuthor({
 				</div>
 			</div>
 		</div>
-	`
+	` : null
 }

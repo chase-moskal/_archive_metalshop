@@ -38,7 +38,7 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"authoritarian": "0.0.0-dev.44",
+		"authoritarian": "0.0.0-dev.45",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",
 		"lit-element": "^2.3.1",

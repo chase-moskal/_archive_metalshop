@@ -1,9 +1,8 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
 
-import {mixinModelSubscription}
-	from "../../framework/mixin-model-subscription.js"
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
+import {mixinModelSubscription} from "../../framework/mixin-model-subscription.js"
 
 import {
 	QuestionsModel,
@@ -14,8 +13,6 @@ import {
 	QuestionDraft,
 	QuestionAuthor,
 } from "authoritarian/dist/interfaces.js"
-
-import {wait} from "../../toolbox/wait.js"
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
@@ -106,9 +103,6 @@ export class MetalQuestions extends Component {
 			this.errorMessage = "error posting question"
 			this.loadableState = LoadableState.Error
 			console.error(error)
-			await wait(5 * 1000)
-			console.log("LMAO WAT")
-			// this.loadableState = LoadableState.Ready
 		}
 	}
 
@@ -128,6 +122,8 @@ export class MetalQuestions extends Component {
 			like,
 			questionId,
 		})
+		const active = <HTMLElement>document.activeElement
+		if (active) active.blur()
 	}
 
 	private _validatePost(author: QuestionAuthor) {
@@ -141,7 +137,7 @@ export class MetalQuestions extends Component {
 		const tooLittle = length < min
 		const tooBig = length > max
 
-		const {premium} = author.user.claims
+		const premium = author.user && author.user.claims.premium
 		const {message, angry} = premium
 			? length > 0
 				? tooLittle

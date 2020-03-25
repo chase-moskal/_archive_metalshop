@@ -1,12 +1,11 @@
 
-import {createTokenStorageClient}
-	from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
-
-import {createProfileMagistrateClient}
-	from "authoritarian/dist/business/profile-magistrate/create-profile-magistrate-client.js"
-
-import {triggerLoginPopup}
-	from "authoritarian/dist/business/account-popup/trigger-login-popup.js"
+import {makeAuthClients} from "authoritarian/dist/business/auth-api/auth-clients.js"
+import {mockVerifyToken} from "authoritarian/dist/toolbox/tokens/mock-verify-token.js"
+import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
+import {triggerLoginPopup} from "authoritarian/dist/business/account-popup/trigger-login-popup.js"
+import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
+import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
+import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
 
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
@@ -38,6 +37,7 @@ export async function initialize(config: AuthoritarianConfig):
 		const {prepareAllMocks, getMockTokens} =
 			await import("../../system/mocks.js")
 		const {
+			authDealer,
 			tokenStorage,
 			scheduleSentry,
 			paywallGuardian,
@@ -55,6 +55,7 @@ export async function initialize(config: AuthoritarianConfig):
 		})
 		progress = {
 			...progress,
+			authDealer,
 			tokenStorage,
 			scheduleSentry,
 			paywallGuardian,
@@ -74,6 +75,9 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.authServer) {
 		queue(async() => {
+			progress.authDealer = (await makeAuthClients({
+				authServerOrigin: config.authServer
+			})).authDealer
 			progress.loginPopupRoutine = async() => triggerLoginPopup({
 				authServerOrigin: config.authServer
 			})
@@ -85,7 +89,7 @@ export async function initialize(config: AuthoritarianConfig):
 
 	if (config.profileServer) {
 		queue(async() => {
-			progress.profileMagistrate = await createProfileMagistrateClient({
+			progress.profileMagistrate = await makeProfileMagistrateClient({
 				profileServerOrigin: config.profileServer
 			})
 		})
@@ -113,10 +117,22 @@ export async function initialize(config: AuthoritarianConfig):
 	}
 
 	//
+	// TODO hacks here for testing questions bureau
+	//
+
+	progress.questionsBureau = makeQuestionsBureau({
+		verifyToken: mockVerifyToken(),
+		authDealer: progress.authDealer,
+		questionsDatalayer: mockQuestionsDatalayer(),
+		profileMagistrate: progress.profileMagistrate,
+	})
+
+	//
 	// return options
 	//
 
 	return {
+		authDealer: progress.authDealer,
 		tokenStorage: progress.tokenStorage,
 		liveshowGovernor: progress.liveshowGovernor,
 		scheduleSentry: progress.scheduleSentry,
