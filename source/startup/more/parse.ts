@@ -13,6 +13,6 @@ export function parse(element: HTMLElement): AuthoritarianConfig {
 		profileServer: element.getAttribute("profile-server"),
 		paywallServer: element.getAttribute("paywall-server"),
 		scheduleServer: element.getAttribute("schedule-server"),
-		questionsBoardServer: element.getAttribute("questions-server"),
+		questionsServer: element.getAttribute("questions-server"),
 	}
 }

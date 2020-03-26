@@ -26,7 +26,7 @@ export interface AuthoritarianConfig {
 	paywallServer: string
 	scheduleServer: string
 	liveshowServer: string
-	questionsBoardServer: string
+	questionsServer: string
 }
 
 export interface AuthoritarianOptions {
