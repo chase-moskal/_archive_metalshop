@@ -43,6 +43,9 @@
 		"lit-element": "^2.3.1",
 		"lit-html": "^1.2.1",
 		"menutown": "0.0.1",
+		"mobx": "^5.15.4",
+		"mobx-lit-element": "^0.1.2",
+		"overmind": "^23.0.1",
 		"redcrypto": "0.0.0-dev.5",
 		"renraku": "0.0.0-dev.25"
 	},

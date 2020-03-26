@@ -1,11 +1,11 @@
 
+import {observer} from "mobx-lit-element"
 import {LitElement, property, html, css} from "lit-element"
 
+import {UserModel} from "../interfaces.js"
 import {UserMode} from "../models/user-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
-
-import {UserModel} from "../interfaces.js"
 
 const Component = mixinLoadable(
 	mixinModelSubscription<UserModel, typeof LitElement>(
@@ -13,6 +13,7 @@ const Component = mixinLoadable(
 	)
 )
 
+@observer
 export class MetalAccount extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
