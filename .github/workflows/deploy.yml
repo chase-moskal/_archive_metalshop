@@ -3,7 +3,7 @@ name: deploy
 on:
   create:
     tags:
-      - v*
+    - v*
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -7,7 +7,7 @@ import {objectMap} from "../toolbox/object-map.js"
 export const actionelize =
 	<T extends {}>(o: T) => objectMap(o, v => action(v))
 
-export const computelate =
+export const computelize =
 	<T extends {}>(o: T) => objectMap(o, v => computed(v))
 
 export const observelize =

@@ -10,6 +10,9 @@ import {MetalAdminOnly} from "../../components/metal-admin-only.js"
 import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
 
+import {objectMap} from "../../toolbox/object-map.js"
+import {actionelize, observelize, computelize} from "../../framework/mobb.js"
+
 import {createUserModel} from "../../models/user-model.js"
 import {createProfileModel} from "../../models/profile-model.js"
 import {createPaywallModel} from "../../models/paywall-model.js"
@@ -47,51 +50,119 @@ export function prepareComponents({
 	)
 
 	//
-	// instance the models
+	// create mobx super state
 	//
 
-	const user = createUserModel({
-		tokenStorage,
-		decodeAccessToken,
-		loginPopupRoutine,
+	const expiryGraceSeconds = 60
+
+	enum AuthMode {
+		Error,
+		Loading,
+		LoggedIn,
+		LoggedOut,
+	}
+
+	const state = observelize({
+		auth: {
+			getAuthContext: null,
+			mode: AuthMode.Loading,
+		},
+		profile: {},
+		paywall: {},
+		questions: {},
+		schedule: {},
+		videoViewer: {},
 	})
 
-	const paywall = createPaywallModel({
-		paywallGuardian,
-	})
+	const computed = objectMap({
 
-	const profile = createProfileModel({
-		profileMagistrate
-	})
+	}, item => computelize(item))
 
-	const questions = createQuestionsModel({
-		questionsBureau
-	})
+	const actions = objectMap({
+		auth: {
+			modeError(error: Error) {
+				state.mode = AuthMode.Error
+				state.getAuthContext = null
+				console.error(error)
+			},
+			modeLoading() {
+				state.mode = AuthMode.Loading
+				state.getAuthContext = null
+			},
+			modeLoggedIn({getAuthContext}: LoginDetail) {
+				state.mode = AuthMode.LoggedIn
+				state.getAuthContext = getAuthContext
+			},
+			modeLoggedOut() {
+				state.mode = AuthMode.LoggedOut
+				state.getAuthContext = null
+			},
+		},
+		profile: {
 
-	const viewer = createVideoViewerModel({
-		user,
-		liveshowGovernor,
-	})
+		},
+		paywall: {
 
-	const schedule = createScheduleModel({
-		user,
-		scheduleSentry,
-	})
+		},
+		questions: {
 
-	//
-	// wire models to each other
-	//
+		},
+		schedule: {
 
-	user.reader.subscribe(paywall.receiveUserUpdate)
-	user.reader.subscribe(profile.receiveUserUpdate)
-	user.reader.subscribe(questions.receiveUserUpdate)
-	profile.reader.subscribe(state => questions.updateProfile(state.profile))
-	paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
+		},
+		videoViewer: {
 
-	paywall.receiveUserUpdate(user.reader.state)
-	profile.receiveUserUpdate(user.reader.state)
-	questions.receiveUserUpdate(user.reader.state)
-	questions.updateProfile(profile.reader.state.profile)
+		},
+	}, item => actionelize(item))
+
+	
+
+	// //
+	// // instance the models
+	// //
+
+	// const user = createUserModel({
+	// 	tokenStorage,
+	// 	decodeAccessToken,
+	// 	loginPopupRoutine,
+	// })
+
+	// const paywall = createPaywallModel({
+	// 	paywallGuardian,
+	// })
+
+	// const profile = createProfileModel({
+	// 	profileMagistrate
+	// })
+
+	// const questions = createQuestionsModel({
+	// 	questionsBureau
+	// })
+
+	// const viewer = createVideoViewerModel({
+	// 	user,
+	// 	liveshowGovernor,
+	// })
+
+	// const schedule = createScheduleModel({
+	// 	user,
+	// 	scheduleSentry,
+	// })
+
+	// //
+	// // wire models to each other
+	// //
+
+	// user.reader.subscribe(paywall.receiveUserUpdate)
+	// user.reader.subscribe(profile.receiveUserUpdate)
+	// user.reader.subscribe(questions.receiveUserUpdate)
+	// profile.reader.subscribe(state => questions.updateProfile(state.profile))
+	// paywall.subscribeLoginWithAccessToken(user.receiveLoginWithAccessToken)
+
+	// paywall.receiveUserUpdate(user.reader.state)
+	// profile.receiveUserUpdate(user.reader.state)
+	// questions.receiveUserUpdate(user.reader.state)
+	// questions.updateProfile(profile.reader.state.profile)
 
 	//
 	// give back components and high level start function
