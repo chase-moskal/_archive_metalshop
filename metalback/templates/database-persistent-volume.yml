@@ -1,3 +1,5 @@
+# The path saved is in dbdata, and this volume is used on the pod for the files
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
