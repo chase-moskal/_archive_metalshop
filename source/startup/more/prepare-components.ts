@@ -62,12 +62,24 @@ export function prepareComponents({
 		LoggedOut,
 	}
 
+	enum ProfileMode {
+		Error,
+		Loading,
+		Loaded,
+		None,
+	}
+
 	const state = observelize({
 		auth: {
 			getAuthContext: null,
 			mode: AuthMode.Loading,
+			user: null
 		},
-		profile: {},
+		profile: {
+			mode: ProfileMode.Loading,
+			displayAdminFeatures: false,
+			profile: null,
+		},
 		paywall: {},
 		questions: {},
 		schedule: {},
@@ -81,25 +93,25 @@ export function prepareComponents({
 	const actions = objectMap({
 		auth: {
 			modeError(error: Error) {
-				state.mode = AuthMode.Error
-				state.getAuthContext = null
+				state.auth.mode = AuthMode.Error
+				state.auth.getAuthContext = null
 				console.error(error)
 			},
 			modeLoading() {
-				state.mode = AuthMode.Loading
-				state.getAuthContext = null
+				state.auth.mode = AuthMode.Loading
+				state.auth.getAuthContext = null
 			},
 			modeLoggedIn({getAuthContext}: LoginDetail) {
-				state.mode = AuthMode.LoggedIn
-				state.getAuthContext = getAuthContext
+				state.auth.mode = AuthMode.LoggedIn
+				state.auth.getAuthContext = getAuthContext
 			},
 			modeLoggedOut() {
-				state.mode = AuthMode.LoggedOut
-				state.getAuthContext = null
+				state.auth.mode = AuthMode.LoggedOut
+				state.auth.getAuthContext = null
 			},
 		},
 		profile: {
-
+			saveProfile() {},
 		},
 		paywall: {
 

@@ -1,10 +1,9 @@
 
-import {observable, computed, action} from "mobx"
+import {observable, action} from "mobx"
 
-import {AccessToken, ProfileMagistrateTopic} from "authoritarian/dist/interfaces.js"
-import {actionelize, observelize} from "../framework/mobb.js"
-import {LoginDetail, AuthContext, GetAuthContext} from "../interfaces.js"
-import { ascertainOptionsFromDom } from "source/startup/more/ascertain-options-from-dom.js"
+import {AuthoritarianProfileError} from "../system/errors.js"
+import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
+import {LoginDetail, GetAuthContext, UserState} from "../interfaces.js"
 
 export enum AuthMode {
 	Error,
@@ -47,39 +46,95 @@ export enum ProfileMode {
 }
 
 export class ProfileModel {
-	#auth: AuthModel
-	#profileMagistrate: ProfileMagistrateTopic
+	private auth: AuthModel
+	private profileMagistrate: ProfileMagistrateTopic
+
+	private cancel: boolean = false
+	private getAuthContext: GetAuthContext
 
 	constructor({auth, profileMagistrate}: {
 		auth: AuthModel
 		profileMagistrate: ProfileMagistrateTopic
 	}) {
-		this.#auth = auth
-		#profileMagistrate = profileMagistrate
+		this.auth = auth
+		this.profileMagistrate = profileMagistrate
 	}
 
-	@observable profile: null
-	@observable mode: ProfileMode.Loading
-	@observable displayAdminFeatures: false
+	@observable profile: Profile = null
+	@observable displayAdminFeatures: boolean = false
+	@observable mode: ProfileMode = ProfileMode.Loading
+
+	@action.bound async handleAuthUpdate({
+		mode,
+		getAuthContext,
+	}: {
+		mode: AuthMode
+		getAuthContext: GetAuthContext
+	}) {
+		this.getAuthContext = getAuthContext
+
+		if (mode === AuthMode.LoggedIn) {
+			this.cancel = false
+			this.setMode(ProfileMode.Loading)
+			const {user} = await this.getAuthContext()
+			try {
+				const profile = await this.loadProfile()
+				this.setProfile(profile)
+				this.setMode(ProfileMode.Loaded)
+			}
+			catch (error) {
+				console.error(error)
+				this.setProfile(null)
+				this.setMode(ProfileMode.Error)
+			}
+		}
+		else if (mode === AuthMode.Loading) {
+			this.cancel = true
+			this.setProfile(null)
+			this.setMode(ProfileMode.Loading)
+		}
+		else if (mode === AuthMode.Error) {
+			this.cancel = true
+			this.setProfile(null)
+			this.setMode(ProfileMode.Error)
+		}
+		else {
+			this.setProfile(null)
+			this.setMode(ProfileMode.None)
+		}
+	}
 
 	@action.bound async saveProfile(profile: Profile): Promise<void> {
 		try {
 			this.mode = ProfileMode.Loading
-			const {accessToken} = await getAuthContext()
+			const {accessToken} = await this.getAuthContext()
 			await this.profileMagistrate.setProfile({accessToken, profile})
-			this.profile = profile
+			this.setProfile(profile)
+			this.setMode(ProfileMode.Loaded)
 		}
 		catch (error) {
-			state.error = error
-			state.profile = null
 			console.error(error)
+			this.setProfile(null)
+			this.setMode(ProfileMode.Error)
 		}
-		state.loading = false
-		computeAdmin()
-		update()
 	}
 
-	@action.bound async handleAuthUpdate() {}
+	@action.bound private async loadProfile() {
+		const {user} = await this.getAuthContext()
+		const {userId} = user
+		const profile = await this.profileMagistrate.getProfile({userId})
+		if (!profile) {
+			const error = new AuthoritarianProfileError(`failed to load profile`)
+			console.error(error)
+		}
+		return profile
+	}
 
-	@action.bound #setProfile() {}
+	@action.bound private setProfile(profile: Profile) {
+		this.profile = profile
+	}
+
+	@action.bound private setMode(mode: ProfileMode) {
+		this.mode = mode
+	}
 }
