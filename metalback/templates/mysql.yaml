@@ -1,3 +1,8 @@
+# This is a container that is for a mysql container, published on port 3306 and accessible
+# through the labels app: database tier: mysql. The volume is mounted into the database
+# storage.
+# note in the spec the volume is given, a perstitentvolumeclaim is requested, and the same
+# identifier is used in the volumeMounts.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,7 +22,7 @@ spec:
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
-            claimName: database-persistent-volume-claim-3
+            claimName: database-persistent-volume-claim
       containers:
       - name: mysql
         image: mysql:5.7
@@ -27,9 +32,3 @@ spec:
         volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: wordpress-secrets
-                key: db-password
