@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metalwork-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: database
+        tier: mysql
+    spec:
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim-3
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+            - containerPort: 3306
+              name: mysql
+        volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: wordpress-secrets
+                key: db-password
