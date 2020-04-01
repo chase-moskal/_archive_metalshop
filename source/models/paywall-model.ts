@@ -34,7 +34,7 @@ export class PaywallModel {
 		this.setMode(paywallMode)
 	}
 
-	@action.bound async makeUserPremium() {
+	@action.bound async grantUserPremium() {
 		this.setMode(PaywallMode.Loading)
 		const {accessToken} = await this.getAuthContext()
 		const newAccessToken = await this.paywallGuardian.grantUserPremium({

@@ -262,3 +262,11 @@ export interface ProfileShare {
 	loadProfile: () => Promise<Profile>
 	saveProfile: (profile: Profile) => Promise<void>
 }
+
+export interface PaywallShare {
+	user: User
+	profile: Profile
+	mode: PaywallMode
+	grantUserPremium: () => Promise<void>
+	revokeUserPremium: () => Promise<void>
+}
