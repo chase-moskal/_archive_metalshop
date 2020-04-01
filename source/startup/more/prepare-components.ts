@@ -15,11 +15,16 @@ import {MetalProfile} from "../../components/metal-profile.js"
 
 export const prepareComponents = (supermodel: Supermodel) => ({
 	MetalAvatar,
-	MetalAccount: share(MetalAccount, () => <AccountShare>({
+	MetalAccount: share(MetalAccount, () => (<AccountShare>{
+		user: supermodel.auth.user,
 		mode: supermodel.auth.mode,
 		getAuthContext: supermodel.auth.getAuthContext,
+		login: supermodel.auth.login,
+		logout: supermodel.auth.logout,
 	})),
-	MetalProfile: share(MetalProfile, () => <ProfileShare>({
+	MetalProfile: share(MetalProfile, () => (<ProfileShare>{
+		user: supermodel.auth.user,
+		getAuthContext: supermodel.auth.getAuthContext,
 		mode: supermodel.profile.mode,
 		profile: supermodel.profile.profile,
 		displayAdminFeatures: supermodel.profile.displayAdminFeatures,

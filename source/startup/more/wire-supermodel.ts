@@ -1,9 +1,10 @@
 
 import {autorun} from "mobx"
 
-import {AuthModel} from "../../supermodels/auth-model.js"
-import {MetalOptions, Supermodel} from "../../interfaces.js"
-import {ProfileModel} from "../../supermodels/profile-model.js"
+import {AuthModel} from "../../models/auth-model.js"
+import {ProfileModel} from "../../models/profile-model.js"
+import {PaywallModel} from "../../models/paywall-model.js"
+import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
 export function wireSupermodel({
 	tokenStorage,
@@ -24,13 +25,22 @@ export function wireSupermodel({
 			decodeAccessToken,
 			expiryGraceSeconds: 60
 		}),
-		profile: new ProfileModel({profileMagistrate})
+		profile: new ProfileModel({profileMagistrate}),
+		paywall: new PaywallModel({paywallGuardian}),
 	}
 
 	// auth updates
 	autorun(() => {
-		const {mode, getAuthContext} = supermodel.auth
-		supermodel.profile.handleAuthUpdate({mode, getAuthContext})
+		const {user, mode, getAuthContext} = supermodel.auth
+		const update: AuthUpdate = {user, mode, getAuthContext}
+		supermodel.profile.handleAuthUpdate(update)
+		supermodel.paywall.handleAuthUpdate(update)
+	})
+
+	// paywall updates
+	autorun(() => {
+		const {newAccessToken} = supermodel.paywall
+		supermodel.auth.loginWithAccessToken(newAccessToken)
 	})
 
 	// // TODO more updates

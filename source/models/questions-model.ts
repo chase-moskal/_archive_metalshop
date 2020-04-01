@@ -1,137 +1,106 @@
 
-import {
-	User,
-	Profile,
-	QuestionsBureauTopic,
-} from "authoritarian/dist/interfaces.js"
+import {observable, action} from "mobx"
+import {AuthMode, GetAuthContext, AuthUpdate, QuestionsBureauUi} from "../interfaces.js"
+import {Profile, User, Question, QuestionsBureauTopic} from "authoritarian/dist/interfaces.js"
 
-import {makeReader} from "../toolbox/pubsub.js"
+export class QuestionsModel {
+	@observable user: User
+	@observable profile: Profile
+	@observable questions: Question[] = []
+	private getAuthContext: GetAuthContext
+	private questionsBureau: QuestionsBureauTopic
 
-import {
-	UserState,
-	GetAuthContext,
-	QuestionsState,
-	QuestionsModel,
-	QuestionsBureauUi,
-} from "../interfaces.js"
-
-import {UserMode} from "./user-model.js"
-
-export function createQuestionsModel({questionsBureau}: {
-	questionsBureau: QuestionsBureauTopic
-}): QuestionsModel {
-
-	let getAuthContext: GetAuthContext
-
-	const state: QuestionsState = {
-		user: null,
-		profile: null,
-		questions: [],
+	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
+		this.getAuthContext = getAuthContext
+		if (mode === AuthMode.LoggedIn) {
+			const {user} = await this.getAuthContext()
+			this.setUser(user)
+		}
+		else this.setUser(null)
 	}
 
-	const {reader, update} = makeReader(state)
+	@action.bound handleProfileUpdate(profile: Profile) {
+		this.profile = profile
+		for (const question of this.questions) {
+			if (question.author.profile.userId === profile.userId) {
+				question.author.profile = profile
+			}
+		}
+	}
 
-	const fetchLocalQuestions = (board: string) => state.questions.filter(
+	getLocalQuestions = (board: string) => this.questions.filter(
 		question => question.board === board
 	)
 
-	const getLocalQuestion = (questionId: string) => {
-		return state.questions.find(
-			question => question.questionId === questionId
-		)
-	}
-
-	const addTokenToOptions = async<O extends {}>(options: O) => {
-		const {accessToken} = await getAuthContext()
-		return {...options, accessToken,}
-	}
-
-	const bureau: QuestionsBureauUi = {
-
-		async fetchQuestions({board}) {
-			const questions = await questionsBureau.fetchQuestions({board})
-			for (const question of questions) {
-				const existing = getLocalQuestion(question.questionId)
-				if (existing) Object.assign(existing, question)
-				else state.questions.push(question)
-			}
-			update()
+	uiBureau: QuestionsBureauUi = {
+		fetchQuestions: async({board}) => {
+			const questions = await this.questionsBureau.fetchQuestions({board})
+			for (const question of questions) this.cacheQuestion(question)
 			return questions
 		},
-
-		async postQuestion(options) {
-			const question = await questionsBureau.postQuestion(
-				await addTokenToOptions(options)
+		postQuestion: async(options) => {
+			const question = await this.questionsBureau.postQuestion(
+				await this.addTokenToOptions(options)
 			)
-			state.questions.push(question)
-			update()
+			this.cacheQuestion(question)
 			return question
 		},
-
-		async deleteQuestion(options) {
-			await questionsBureau.deleteQuestion(
-				await addTokenToOptions(options)
+		deleteQuestion: async(options) => {
+			await this.questionsBureau.deleteQuestion(
+				await this.addTokenToOptions(options)
 			)
-			state.questions = state.questions.filter(
-				question => question.questionId !== options.questionId
-			)
-			update()
+			this.deleteLocalQuestion(options.questionId)
 		},
-
-		async likeQuestion(options) {
-			const result = await questionsBureau.likeQuestion(
-				await addTokenToOptions(options)
+		likeQuestion: async(options) => {
+			const result = await this.questionsBureau.likeQuestion(
+				await this.addTokenToOptions(options)
 			)
-			const likes = result.likeInfo.likes
-			const question = getLocalQuestion(options.questionId)
-			question.likeInfo.likes = likes
-			question.likeInfo.liked = options.like
-			update()
+			const {liked, likes} = result.likeInfo
+			const {questionId} = options
+			this.likeLocalQuestion(questionId, liked, likes)
 			return result
 		}
 	}
 
-	const updateUser = (user: User) => {
-		state.user = user
+	@action.bound private setUser(user: User) {
+		this.user = user
 		if (user) {
-			for (const question of state.questions) {
+			for (const question of this.questions) {
 				if (question.author.user.userId === user.userId) {
 					Object.assign(question.author.user, user)
 				}
 			}
 		}
-		update()
 	}
 
-	return {
-		reader,
-		bureau,
-		fetchLocalQuestions,
-		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState): Promise<void> {
-			getAuthContext = getContext
-			if (mode === UserMode.LoggedIn) {
-				const {user} = await getAuthContext()
-				updateUser(user)
-			}
-			else {
-				updateUser(null)
-			}
-		},
-		updateProfile(profile: Profile) {
-			state.profile = profile
-			update()
+	@action.bound private cacheQuestion(question: Question) {
+		const existing = this.getLocalQuestion(question.questionId)
+		if (existing) Object.assign(existing, question)
+		else this.questions.push(question)
+	}
 
-			// update your own existing cached questions
-			if (getAuthContext) {
-				getAuthContext().then(({user}) => {
-					for (const question of state.questions) {
-						if (question.author.user.userId === user.userId) {
-							question.author.profile = profile
-						}
-					}
-					update()
-				})
-			}
-		},
+	@action.bound private deleteLocalQuestion(questionId: string) {
+		this.questions = this.questions.filter(
+			question => question.questionId !== questionId
+		)
+	}
+
+	@action.bound private likeLocalQuestion(
+		questionId: string,
+		liked: boolean,
+		likes: number,
+	) {
+		const question = this.getLocalQuestion(questionId)
+		question.likeInfo.liked = liked
+		question.likeInfo.likes = likes
+	}
+
+	private getLocalQuestion = (questionId: string) => this.questions.find(
+		question => question.questionId === questionId
+	)
+
+	private addTokenToOptions = async<O extends {}>(options: O) => {
+		const {accessToken} = await this.getAuthContext()
+		return {...options, accessToken}
 	}
 }

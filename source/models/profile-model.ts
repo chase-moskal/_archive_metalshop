@@ -1,127 +1,79 @@
 
-import {
-	Profile,
-	ProfileMagistrateTopic,
-} from "authoritarian/dist/interfaces.js"
+import {observable, action} from "mobx"
+import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
 
-import {pubsub} from "../toolbox/pubsub.js"
-import {makeReader} from "../toolbox/pubsub.js"
 import {AuthoritarianProfileError} from "../system/errors.js"
+import {AuthMode, ProfileMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
 
-import {
-	UserState,
-	ProfileModel,
-	ProfileState,
-	GetAuthContext,
-} from "../interfaces.js"
+export class ProfileModel {
+	@observable profile: Profile = null
+	@observable displayAdminFeatures: boolean = false
+	@observable mode: ProfileMode = ProfileMode.Loading
+	private cancel: boolean = false
+	private getAuthContext: GetAuthContext
+	private profileMagistrate: ProfileMagistrateTopic
 
-import {UserMode} from "./user-model.js"
+	constructor(options: {
+		profileMagistrate: ProfileMagistrateTopic
+	}) { Object.assign(this, options) }
 
-export function createProfileModel({profileMagistrate}: {
-	profileMagistrate: ProfileMagistrateTopic
-}): ProfileModel {
-
-	let getAuthContext: GetAuthContext
-	let cancel: boolean = false
-
-	const state: ProfileState = {
-		error: null,
-		admin: false,
-		loading: true,
-		profile: null,
-		premium: false,
-		adminClaim: false,
+	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
+		this.getAuthContext = getAuthContext
+		if (mode === AuthMode.LoggedIn) {
+			this.cancel = false
+			this.setProfileAndMode(null, ProfileMode.Loading)
+			try {
+				const loaded = await this.loadProfile()
+				const profile = this.cancel ? null : loaded
+				this.setProfileAndMode(profile, ProfileMode.Loaded)
+			}
+			catch (error) {
+				console.error(error)
+				this.setProfileAndMode(null, ProfileMode.Error)
+			}
+		}
+		else if (mode === AuthMode.Loading) {
+			this.cancel = true
+			this.setProfileAndMode(null, ProfileMode.Loading)
+		}
+		else if (mode === AuthMode.Error) {
+			this.cancel = true
+			this.setProfileAndMode(null, ProfileMode.Error)
+		}
+		else {
+			this.setProfileAndMode(null, ProfileMode.None)
+		}
 	}
 
-	const computeAdmin = () => {
-		state.admin = state.adminClaim && state.profile && state.profile.adminMode
+	@action.bound async saveProfile(profile: Profile): Promise<void> {
+		try {
+			this.mode = ProfileMode.Loading
+			const {accessToken} = await this.getAuthContext()
+			await this.profileMagistrate.setProfile({accessToken, profile})
+			this.setProfileAndMode(profile, ProfileMode.Loaded)
+		}
+		catch (error) {
+			console.error(error)
+			this.setProfileAndMode(null, ProfileMode.Error)
+		}
 	}
 
-	const {reader, update} = makeReader<ProfileState>(state)
-
-	const {
-		publish: publishReset,
-		subscribe: subscribeReset,
-	} = pubsub()
-
-	async function loadProfile(): Promise<Profile> {
-		const {user} = await getAuthContext()
+	@action.bound async loadProfile() {
+		const {user} = await this.getAuthContext()
 		const {userId} = user
-		const profile = await profileMagistrate.getProfile({userId})
+		const profile = await this.profileMagistrate.getProfile({userId})
 		if (!profile) {
 			const error = new AuthoritarianProfileError(`failed to load profile`)
 			console.error(error)
-			state.error = error
 		}
-		computeAdmin()
-		update()
 		return profile
 	}
 
-	return {
-		reader,
-		update,
-		subscribeReset,
-		async saveProfile(profile: Profile): Promise<void> {
-			try {
-				state.loading = true
-				update()
-				const {accessToken} = await getAuthContext()
-				await profileMagistrate.setProfile({accessToken, profile})
-				state.profile = profile
-			}
-			catch (error) {
-				state.error = error
-				state.profile = null
-				console.error(error)
-			}
-			state.loading = false
-			computeAdmin()
-			update()
-		},
-		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
-			getAuthContext = getContext
-			if (mode === UserMode.LoggedIn) {
-				publishReset()
-				cancel = false
-				state.loading = true
-				update()
-				const {user} = await getAuthContext()
-				state.adminClaim = !!user.claims.admin
-				state.premium = !!user.claims.premium
-				update()
-				try {
-					const profile = await loadProfile()
-					state.profile = cancel ? null : profile
-				}
-				catch (error) {
-					console.error(error)
-					state.error = error
-				}
-				state.loading = false
-			}
-			else if (mode === UserMode.Loading) {
-				cancel = true
-				state.error = null
-				state.loading = true
-				state.profile = null
-				state.premium = false
-			}
-			else if (mode === UserMode.Error) {
-				cancel = true
-				state.error = new AuthoritarianProfileError("profile error")
-				state.loading = true
-				state.profile = null
-				state.premium = false
-			}
-			else {
-				state.error = null
-				state.loading = false
-				state.profile = null
-				state.premium = false
-			}
-			computeAdmin()
-			update()
-		},
+	@action.bound private setProfileAndMode(
+		profile: Profile,
+		mode: ProfileMode,
+	) {
+		this.profile = profile
+		this.mode = mode
 	}
 }

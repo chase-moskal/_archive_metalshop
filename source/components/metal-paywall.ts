@@ -2,7 +2,7 @@
 import {html, css, LitElement} from "lit-element"
 
 import {star} from "../system/icons.js"
-import {PaywallMode} from "../models/paywall-model.js"
+import {PaywallMode} from "../old-models/paywall-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 

@@ -1,87 +1,64 @@
 
-import {PaywallGuardianTopic} from "authoritarian/dist/interfaces.js"
+import {observable, action} from "mobx"
+import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
+import {PaywallGuardianTopic, AccessToken} from "authoritarian/dist/interfaces.js"
 
-import {pubsub, makeReader} from "../toolbox/pubsub.js"
+const fakePaypalToken = "fake-paypal-token"
 
-import {
-	UserState,
-	PaywallModel,
-	PaywallState,
-	GetAuthContext,
-	LoginWithAccessToken,
-} from "../interfaces.js"
+export class PaywallModel {
+	@observable mode: PaywallMode
+	@observable newAccessToken: AccessToken
+	private getAuthContext: GetAuthContext
+	private paywallGuardian: PaywallGuardianTopic
 
-import {UserMode} from "./user-model.js"
+	constructor(options: {
+		paywallGuardian: PaywallGuardianTopic
+	}) { Object.assign(this, options) }
 
-export enum PaywallMode {
-	Loading,
-	Error,
-	LoggedOut,
-	NotPremium,
-	Premium,
-}
-
-export function createPaywallModel({paywallGuardian}: {
-	paywallGuardian: PaywallGuardianTopic
-}): PaywallModel {
-
-	let getAuthContext: GetAuthContext
-
-	const state: PaywallState = {
-		mode: PaywallMode.LoggedOut
+	@action.bound async handleAuthUpdate({
+		user,
+		mode: authMode,
+		getAuthContext,
+	}: AuthUpdate) {
+		this.getAuthContext = getAuthContext
+		let paywallMode: PaywallMode = PaywallMode.LoggedOut
+		if (authMode === AuthMode.LoggedIn) {
+			this.setMode(PaywallMode.Loading)
+			paywallMode = !!user.claims.premium
+				? PaywallMode.Premium
+				: PaywallMode.NotPremium
+		}
+		else {
+			paywallMode = PaywallMode.LoggedOut
+		}
+		this.setMode(paywallMode)
 	}
 
-	const {reader, update} = makeReader<PaywallState>(state)
+	@action.bound async makeUserPremium() {
+		this.setMode(PaywallMode.Loading)
+		const {accessToken} = await this.getAuthContext()
+		const newAccessToken = await this.paywallGuardian.grantUserPremium({
+			accessToken,
+			paypalToken: fakePaypalToken,
+		})
+		this.setNewAccessToken(newAccessToken)
+	}
 
-	const {
-		publish: publishLoginWithAccessToken,
-		subscribe: subscribeLoginWithAccessToken,
-	} = pubsub<LoginWithAccessToken>()
+	@action.bound async revokeUserPremium() {
+		this.setMode(PaywallMode.Loading)
+		const {accessToken} = await this.getAuthContext()
+		const newAccessToken = await this.paywallGuardian.revokeUserPremium({
+			accessToken,
+			paypalToken: fakePaypalToken,
+		})
+		this.setNewAccessToken(newAccessToken)
+	}
 
-	// TODO paypal
-	const paypalToken = `paypal-lol-fake-token`
+	@action.bound private setMode(mode: PaywallMode) {
+		this.mode = mode
+	}
 
-	return {
-		reader,
-		update,
-		subscribeLoginWithAccessToken,
-		async makeUserPremium() {
-			state.mode = PaywallMode.Loading
-			update()
-			const {accessToken} = await getAuthContext()
-			const newAccessToken = await paywallGuardian.grantUserPremium({
-				paypalToken,
-				accessToken
-			})
-			await publishLoginWithAccessToken(newAccessToken)
-			update()
-		},
-		async revokeUserPremium() {
-			state.mode = PaywallMode.Loading
-			update()
-			const {accessToken} = await getAuthContext()
-			const newAccessToken = await paywallGuardian.revokeUserPremium({
-				paypalToken,
-				accessToken
-			})
-			await publishLoginWithAccessToken(newAccessToken)
-			update()
-		},
-		async receiveUserUpdate({mode, getAuthContext: getContext}: UserState) {
-			getAuthContext = getContext
-			if (mode === UserMode.LoggedIn) {
-				state.mode = PaywallMode.Loading
-				update()
-				const context = await getAuthContext()
-				const premium = !!context.user.claims.premium
-				state.mode = premium
-					? PaywallMode.Premium
-					: PaywallMode.NotPremium
-			}
-			else {
-				state.mode = PaywallMode.LoggedOut
-			}
-			update()
-		},
+	@action.bound private setNewAccessToken(accessToken: AccessToken) {
+		this.newAccessToken = accessToken
 	}
 }

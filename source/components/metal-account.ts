@@ -2,13 +2,12 @@
 import {observer} from "mobx-lit-element"
 import {LitElement, property, html, css} from "lit-element"
 
-import {UserModel} from "../interfaces.js"
-import {UserMode} from "../models/user-model.js"
+import {mixinShare} from "../framework/share.js"
+import {AccountShare, AuthMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<UserModel, typeof LitElement>(
+	mixinShare<AccountShare, typeof LitElement>(
 		LitElement
 	)
 )
@@ -21,15 +20,15 @@ export class MetalAccount extends Component {
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 
 	@property({type: Boolean, reflect: true}) get ["logged-in"]() {
-		return this.model.reader.state.mode === UserMode.LoggedIn
+		return this.share.mode === AuthMode.LoggedIn
 	}
 
 	onLoginClick: (event: MouseEvent) => void = () => {
-		this.model.login()
+		this.share.login()
 	}
 
 	onLogoutClick: (event: MouseEvent) => void = () => {
-		this.model.logout()
+		this.share.logout()
 	}
 
 	firstUpdated() {
@@ -37,10 +36,10 @@ export class MetalAccount extends Component {
 	}
 
 	updated() {
-		const {mode} = this.model.reader.state
-		this.loadableState = (mode === UserMode.Error)
+		const {mode} = this.share
+		this.loadableState = (mode === AuthMode.Error)
 			? LoadableState.Error
-			: (mode === UserMode.Loading)
+			: (mode === AuthMode.Loading)
 				? LoadableState.Loading
 				: LoadableState.Ready
 	}

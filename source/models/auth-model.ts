@@ -1,9 +1,10 @@
 
 import {observable, action} from "mobx"
-import {AccessToken, TokenStorageTopic} from "authoritarian/dist/interfaces.js"
+import {AccessToken, TokenStorageTopic, User} from "authoritarian/dist/interfaces.js"
 import {AuthMode, LoginDetail, GetAuthContext, LoginPopupRoutine, DecodeAccessToken, AuthContext, AccountShare} from "../interfaces.js"
 
 export class AuthModel {
+	@observable user: User
 	@observable getAuthContext: GetAuthContext
 	@observable mode: AuthMode = AuthMode.Loading
 	private authContext: AuthContext
@@ -25,7 +26,8 @@ export class AuthModel {
 			const accessToken = await this.tokenStorage.passiveCheck()
 			if (accessToken) {
 				const detail = this.processAccessToken(accessToken)
-				this.setLoggedIn(detail)
+				const {user} = await this.getAuthContext()
+				this.setLoggedIn(detail, user)
 			}
 			else this.setLoggedOut()
 		}
@@ -37,7 +39,8 @@ export class AuthModel {
 	@action.bound async loginWithAccessToken(accessToken: AccessToken) {
 		const detail = this.processAccessToken(accessToken)
 		await this.tokenStorage.writeAccessToken(accessToken)
-		this.setLoggedIn(detail)
+		const {user} = await detail.getAuthContext()
+		this.setLoggedIn(detail, user)
 	}
 
 	@action.bound async login() {
@@ -46,7 +49,8 @@ export class AuthModel {
 			const authTokens = await this.loginPopupRoutine()
 			await this.tokenStorage.writeTokens(authTokens)
 			const detail = this.processAccessToken(authTokens.accessToken)
-			this.setLoggedIn(detail)
+			const {user} = await detail.getAuthContext()
+			this.setLoggedIn(detail, user)
 		}
 		catch (error) {
 			console.error(error)
@@ -83,23 +87,27 @@ export class AuthModel {
 	}
 
 	@action.bound private setError(error: Error) {
+		this.user = null
 		this.mode = AuthMode.Error
 		this.getAuthContext = null
 		console.error(error)
 	}
 
 	@action.bound private setLoading() {
-		this.mode = AuthMode.Loading
+		this.user = null
 		this.getAuthContext = null
+		this.mode = AuthMode.Loading
 	}
 
-	@action.bound private setLoggedIn({getAuthContext}: LoginDetail) {
+	@action.bound private setLoggedIn({getAuthContext}: LoginDetail, user: User) {
+		this.user = user
 		this.mode = AuthMode.LoggedIn
 		this.getAuthContext = getAuthContext
 	}
 
 	@action.bound private setLoggedOut() {
-		this.mode = AuthMode.LoggedOut
+		this.user = null
 		this.getAuthContext = null
+		this.mode = AuthMode.LoggedOut
 	}
 }

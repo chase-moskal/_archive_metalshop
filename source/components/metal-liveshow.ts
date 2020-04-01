@@ -3,7 +3,7 @@ import {LitElement, html, css, property} from "lit-element"
 
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
-import {PrivilegeMode} from "../models/video-viewer-model.js"
+import {PrivilegeMode} from "../old-models/video-viewer-model.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 

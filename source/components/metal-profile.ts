@@ -3,15 +3,14 @@ import {Profile} from "authoritarian/dist/interfaces.js"
 import {property, html, css, LitElement} from "lit-element"
 
 import {select} from "../toolbox/selects.js"
+import {mixinShare} from "../framework/share.js"
 import {Debouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
+import {ProfileShare, ProfileMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
-
-import {ProfileModel} from "../interfaces.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<ProfileModel, typeof LitElement>(
+	mixinShare<ProfileShare, typeof LitElement>(
 		LitElement
 	)
 )
@@ -28,7 +27,7 @@ export class MetalProfile extends Component {
 	})
 
 	onProfileSave = async(profile: Profile) => {
-		this.model.saveProfile(profile)
+		this.share.saveProfile(profile)
 	}
 
 	reset() {
@@ -36,16 +35,16 @@ export class MetalProfile extends Component {
 	}
 
 	updated() {
-		const {error, loading} = this.model.reader.state
-		this.loadableState = error
+		const {mode} = this.share
+		this.loadableState = mode === ProfileMode.Error
 			? LoadableState.Error
-			: loading
+			: mode === ProfileMode.Loading
 				? LoadableState.Loading
 				: LoadableState.Ready
 	}
 
 	private _handleInputChange = () => {
-		const {profile} = this.model.reader.state
+		const {profile} = this.share
 		if (!profile) return
 		const newProfile = this._generateNewProfileFromInputs()
 		const changes = !deepEqual(profile, newProfile)
@@ -59,7 +58,7 @@ export class MetalProfile extends Component {
 	}
 
 	private _generateNewProfileFromInputs(): Profile {
-		const profile = deepClone(this.model.reader.state.profile)
+		const profile = deepClone(this.share.profile)
 		const input = select<HTMLInputElement>(
 			"input[name=nickname]",
 			this.shadowRoot
@@ -74,7 +73,7 @@ export class MetalProfile extends Component {
 			_handleSaveClick,
 			_handleInputChange,
 		} = this
-		const {profile, adminClaim, premium} = this.model.reader.state
+		const {profile, user} = this.share
 		const showSaveButton = !!this._changedProfile
 
 		if (!profile) return null
@@ -83,12 +82,16 @@ export class MetalProfile extends Component {
 				<div class="container formarea coolbuttonarea">
 					<metal-avatar
 						src=${profile && profile.avatar}
-						?premium=${premium}
+						?premium=${user.claims.premium}
 					></metal-avatar>
 					<div>
 						<ul>
-							${adminClaim ? html`<li data-tag="admin">Admin</li>` : null}
-							${premium ? html`<li data-tag="premium">Premium</li>` : null}
+							${user.claims.admin
+								? html`<li data-tag="admin">Admin</li>`
+								: null}
+							${user.claims.premium
+								? html`<li data-tag="premium">Premium</li>`
+								: null}
 						</ul>
 						<input
 							type="text"

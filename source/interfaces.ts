@@ -14,12 +14,11 @@ import {
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
 
-import {UserMode} from "./models/user-model.js"
-import {PaywallMode} from "./models/paywall-model.js"
-import {AuthModel} from "./supermodels/auth-model.js"
-import {PrivilegeMode} from "./models/video-viewer-model.js"
-import {ProfileModel} from "./supermodels/profile-model.js"
-import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
+import {AuthModel} from "./models/auth-model.js"
+import {ProfileModel} from "./models/profile-model.js"
+import {PaywallModel} from "./models/paywall-model.js"
+import {PrivilegeMode} from "./old-models/video-viewer-model.js"
+import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
 
 export interface MetalConfig {
 	mock: string
@@ -61,22 +60,22 @@ export interface SimpleModel {
 	reader?: Reader
 }
 
-export interface UserState {
-	mode: UserMode
-	getAuthContext: GetAuthContext
-}
+// export interface UserState {
+// 	mode: UserMode
+// 	getAuthContext: GetAuthContext
+// }
 
-export type UserUpdate = (state: UserState) => void
+// export type UserUpdate = (state: UserState) => void
 
-export type UserReader = Reader<UserState>
+// export type UserReader = Reader<UserState>
 
-export interface UserModel {
-	reader: UserReader
-	start: () => Promise<void>
-	login: () => Promise<void>
-	logout: () => Promise<void>
-	receiveLoginWithAccessToken: (accessToken: AccessToken) => Promise<void>
-}
+// export interface UserModel {
+// 	reader: UserReader
+// 	start: () => Promise<void>
+// 	login: () => Promise<void>
+// 	logout: () => Promise<void>
+// 	receiveLoginWithAccessToken: (accessToken: AccessToken) => Promise<void>
+// }
 
 export interface PaywallState {
 	mode: PaywallMode
@@ -86,17 +85,6 @@ export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
 }
 
-export interface PaywallReader extends Reader<PaywallState> {}
-
-export interface PaywallModel {
-	reader: Reader<PaywallState>
-	update(): void
-	makeUserPremium(): Promise<void>
-	revokeUserPremium(): Promise<void>
-	receiveUserUpdate(state: UserState): Promise<void>
-	subscribeLoginWithAccessToken: Subscribe<LoginWithAccessToken>
-}
-
 export interface LoginDetail {
 	getAuthContext: GetAuthContext
 }
@@ -104,14 +92,6 @@ export interface LoginDetail {
 export interface ProfileEvents extends Pubsubs {
 	stateUpdate: Pubsub
 }
-
-// export interface ProfileModel {
-// 	reader: Reader<ProfileState>
-// 	update(): void
-// 	subscribeReset: Subscribe
-// 	saveProfile(profile: Profile): Promise<void>
-// 	receiveUserUpdate(state: UserState): Promise<void>
-// }
 
 export interface ProfileState {
 	error: Error
@@ -147,29 +127,29 @@ export interface VimeoState {
 	validationMessage: string
 }
 
-export interface VideoModel extends SimpleModel {
-	reader: Reader<VimeoState>
-	updateVideo(vimeostring: string): Promise<void>
-	receiveUserUpdate(state: UserState): Promise<void>
-}
+// export interface VideoModel extends SimpleModel {
+// 	reader: Reader<VimeoState>
+// 	updateVideo(vimeostring: string): Promise<void>
+// 	receiveUserUpdate(state: UserState): Promise<void>
+// }
 
-export interface VideoViewerModel extends SimpleModel {
-	prepareVideoModel: (options: {videoName: string}) => VideoModel
-}
+// export interface VideoViewerModel extends SimpleModel {
+// 	prepareVideoModel: (options: {videoName: string}) => VideoModel
+// }
 
-export interface QuestionsState {
-	user: User
-	profile: Profile
-	questions: Question[]
-}
+// export interface QuestionsState {
+// 	user: User
+// 	profile: Profile
+// 	questions: Question[]
+// }
 
-export interface QuestionsModel {
-	reader: Reader<QuestionsState>
-	bureau: QuestionsBureauUi
-	fetchLocalQuestions: (board: string) => Question[]
-	updateProfile(profile: Profile): void
-	receiveUserUpdate(state: UserState): Promise<void>
-}
+// export interface QuestionsModel {
+// 	reader: Reader<QuestionsState>
+// 	bureau: QuestionsBureauUi
+// 	fetchLocalQuestions: (board: string) => Question[]
+// 	updateProfile(profile: Profile): void
+// 	receiveUserUpdate(state: UserState): Promise<void>
+// }
 
 export interface QuestionValidation {
 	angry: boolean
@@ -207,22 +187,22 @@ export interface ScheduleSentryTopic {
 	setEventTime(key: string, time: number): Promise<void>
 }
 
-export interface CountdownState {
-	admin: boolean
-	eventTime: number
-	validationMessage: string
-}
+// export interface CountdownState {
+// 	admin: boolean
+// 	eventTime: number
+// 	validationMessage: string
+// }
 
-export interface CountdownModel {
-	reader: Reader<CountdownState>
-	refreshEventTime(): Promise<void>
-	setEventTime(time: number): Promise<void>
-	receiveUserUpdate(options: UserState): Promise<void>
-}
+// export interface CountdownModel {
+// 	reader: Reader<CountdownState>
+// 	refreshEventTime(): Promise<void>
+// 	setEventTime(time: number): Promise<void>
+// 	receiveUserUpdate(options: UserState): Promise<void>
+// }
 
-export interface ScheduleModel extends SimpleModel {
-	prepareCountdownModel(options: {key: string}): CountdownModel
-}
+// export interface ScheduleModel extends SimpleModel {
+// 	prepareCountdownModel(options: {key: string}): CountdownModel
+// }
 
 //
 // supermodel
@@ -231,13 +211,7 @@ export interface ScheduleModel extends SimpleModel {
 export interface Supermodel {
 	auth: AuthModel
 	profile: ProfileModel
-}
-
-export enum ProfileMode {
-	Error,
-	Loading,
-	Loaded,
-	None,
+	paywall: PaywallModel
 }
 
 export enum AuthMode {
@@ -248,8 +222,24 @@ export enum AuthMode {
 }
 
 export interface AuthUpdate {
+	user: User
 	mode: AuthMode
 	getAuthContext: GetAuthContext
+}
+
+export enum ProfileMode {
+	Error,
+	Loading,
+	Loaded,
+	None,
+}
+
+export enum PaywallMode {
+	Error,
+	Loading,
+	LoggedOut,
+	NotPremium,
+	Premium,
 }
 
 //
@@ -257,11 +247,15 @@ export interface AuthUpdate {
 //
 
 export interface AccountShare {
+	user: User
 	mode: AuthMode
 	getAuthContext: GetAuthContext
+	login: () => Promise<void>
+	logout: () => Promise<void>
 }
 
 export interface ProfileShare {
+	user: User
 	profile: Profile
 	mode: ProfileMode
 	displayAdminFeatures: boolean
