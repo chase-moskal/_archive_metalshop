@@ -4,26 +4,14 @@ import {triggerLoginPopup} from "authoritarian/dist/business/account-popup/trigg
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
 
+import {MetalConfig, MetalOptions} from "../../interfaces.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
 
-import {
-	AuthoritarianConfig,
-	AuthoritarianOptions,
-} from "../../interfaces.js"
-
 const err = (message: string) => new AuthoritarianStartupError(message)
 
-/**
- * Prepare all of the options for the start routine
- * - use the simpler config to decide how to start
- * - create microservice instances
- * - otherwise provide mock instances
- */
-export async function initialize(config: AuthoritarianConfig):
- Promise<AuthoritarianOptions> {
-
-	let progress: Partial<AuthoritarianOptions> = {}
+export async function initialize(config: MetalConfig): Promise<MetalOptions> {
+	let progress: Partial<MetalOptions> = {}
 	progress.decodeAccessToken = decodeAccessToken
 
 	//
@@ -124,7 +112,7 @@ export async function initialize(config: AuthoritarianConfig):
 		questionsBureau: progress.questionsBureau,
 		liveshowGovernor: progress.liveshowGovernor,
 		profileMagistrate: progress.profileMagistrate,
-
+		//—
 		decodeAccessToken: progress.decodeAccessToken,
 		loginPopupRoutine: progress.loginPopupRoutine,
 	}

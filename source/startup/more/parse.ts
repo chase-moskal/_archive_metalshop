@@ -1,10 +1,10 @@
 
-import {AuthoritarianConfig} from "../../interfaces.js"
+import {MetalConfig} from "../../interfaces.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
-export function parse(element: HTMLElement): AuthoritarianConfig {
+export function parse(element: HTMLElement): MetalConfig {
 	if (!element) throw err(`<metal-config> required, missing`)
 	return {
 		mock: element.getAttribute("mock"),

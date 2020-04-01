@@ -16,10 +16,12 @@ import {
 
 import {UserMode} from "./models/user-model.js"
 import {PaywallMode} from "./models/paywall-model.js"
+import {AuthModel} from "./supermodels/auth-model.js"
 import {PrivilegeMode} from "./models/video-viewer-model.js"
+import {ProfileModel} from "./supermodels/profile-model.js"
 import {Reader, Pubsubs, Pubsub, Subscribe} from "./toolbox/pubsub.js"
 
-export interface AuthoritarianConfig {
+export interface MetalConfig {
 	mock: string
 	authServer: string
 	profileServer: string
@@ -29,7 +31,7 @@ export interface AuthoritarianConfig {
 	questionsServer: string
 }
 
-export interface AuthoritarianOptions {
+export interface MetalOptions {
 	authDealer: AuthDealerTopic
 	tokenStorage: TokenStorageTopic
 	scheduleSentry: ScheduleSentryTopic
@@ -37,7 +39,7 @@ export interface AuthoritarianOptions {
 	questionsBureau: QuestionsBureauTopic
 	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
-
+	//—
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
 }
@@ -103,13 +105,13 @@ export interface ProfileEvents extends Pubsubs {
 	stateUpdate: Pubsub
 }
 
-export interface ProfileModel {
-	reader: Reader<ProfileState>
-	update(): void
-	subscribeReset: Subscribe
-	saveProfile(profile: Profile): Promise<void>
-	receiveUserUpdate(state: UserState): Promise<void>
-}
+// export interface ProfileModel {
+// 	reader: Reader<ProfileState>
+// 	update(): void
+// 	subscribeReset: Subscribe
+// 	saveProfile(profile: Profile): Promise<void>
+// 	receiveUserUpdate(state: UserState): Promise<void>
+// }
 
 export interface ProfileState {
 	error: Error
@@ -220,4 +222,49 @@ export interface CountdownModel {
 
 export interface ScheduleModel extends SimpleModel {
 	prepareCountdownModel(options: {key: string}): CountdownModel
+}
+
+//
+// supermodel
+//
+
+export interface Supermodel {
+	auth: AuthModel
+	profile: ProfileModel
+}
+
+export enum ProfileMode {
+	Error,
+	Loading,
+	Loaded,
+	None,
+}
+
+export enum AuthMode {
+	Error,
+	Loading,
+	LoggedIn,
+	LoggedOut,
+}
+
+export interface AuthUpdate {
+	mode: AuthMode
+	getAuthContext: GetAuthContext
+}
+
+//
+// component shares
+//
+
+export interface AccountShare {
+	mode: AuthMode
+	getAuthContext: GetAuthContext
+}
+
+export interface ProfileShare {
+	profile: Profile
+	mode: ProfileMode
+	displayAdminFeatures: boolean
+	loadProfile: () => Promise<Profile>
+	saveProfile: (profile: Profile) => Promise<void>
 }
