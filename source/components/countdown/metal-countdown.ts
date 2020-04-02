@@ -2,16 +2,14 @@
 import {LitElement, html, css, property} from "lit-element"
 
 import {clock} from "../../system/icons.js"
-import {ScheduleModel, CountdownModel} from "../../interfaces.js"
-import {mixinModelSubscription}
-	from "../../framework/mixin-model-subscription.js"
-
 import {styles} from "./metal-countdown-styles.js"
+import {mixinShare} from "../../framework/share.js"
 import {formatDate, formatDuration} from "./dates.js"
+import { CountdownShare } from "source/interfaces.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
-const Component = mixinModelSubscription<ScheduleModel, typeof LitElement>(
+const Component = mixinShare<CountdownShare, typeof LitElement>(
 	LitElement
 )
 
@@ -22,8 +20,7 @@ export class MetalCountdown extends Component {
 	@property({type: String}) adminValidationMessage: string = ""
 	@property({type: String}) adminDate: number = NaN
 	@property({type: String}) adminTime: number = NaN
-	private _countdownModel: CountdownModel
-	private _timer: any
+	private _interval: any
 
 	private get adminDateTime() {
 		const {adminDate, adminTime} = this
@@ -33,20 +30,17 @@ export class MetalCountdown extends Component {
 
 	async firstUpdated() {
 		this["initially-hidden"] = false
-		const {key, model} = this
+		const {key} = this
 		if (!key) throw new Error(`schedule-countdown requires [key] attribute`)
-		const countdownModel = this._countdownModel
-			= model.prepareCountdownModel({key})
-		this.subscribeToReader(countdownModel.reader)
-		await countdownModel.refreshEventTime()
-		this._timer = setInterval(() => this.requestUpdate(), 1000)
+		await this.share.loadEvent(key)
+		this._interval = setInterval(() => this.requestUpdate(), 1000)
 		this._updateValidation()
 	}
 
 	disconnectedCallback() {
-		if (this._timer !== undefined) {
-			clearInterval(this._timer)
-			this._timer = undefined
+		if (this._interval !== undefined) {
+			clearInterval(this._interval)
+			this._interval = undefined
 		}
 		super.disconnectedCallback()
 	}
@@ -81,13 +75,14 @@ export class MetalCountdown extends Component {
 
 	private _handleScheduleClick = async() => {
 		const {adminDateTime} = this
-		const time = adminDateTime
-		await this._countdownModel.setEventTime(time)
+		const eventTime = adminDateTime
+		await this.share.saveEvent(this.key, eventTime)
 	}
 
 	render() {
-		if (!this._countdownModel) return html``
-		const {eventTime} = this._countdownModel.reader.state
+		const {key} = this
+		if (!key) return null
+		const {eventTime} = this.share.events[key]
 		const eventSchedule = formatDate(eventTime)
 		const timeUntilEvent = eventTime - Date.now()
 		const countdownDuration = formatDuration(timeUntilEvent)

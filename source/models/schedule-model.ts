@@ -1,21 +1,34 @@
 
 import {observable, action} from "mobx"
-import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
-
-import {AuthoritarianProfileError} from "../system/errors.js"
-import {AuthMode, ProfileMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
+import {ScheduleSentryTopic, ScheduleEvent} from "../interfaces.js"
 
 export class ScheduleModel {
-	@observable events: {[key: string]: {
+	@observable events: {[key: string]: ScheduleEvent} = {}
+	private scheduleSentry: ScheduleSentryTopic
+
+	constructor(options: {
+		scheduleSentry: ScheduleSentryTopic
+	}) { Object.assign(this, options) }
+
+	@action.bound async loadEvent(key: string): Promise<ScheduleEvent> {
+		const eventTime = await this.scheduleSentry.getEventTime(key)
+		return this.cacheEvent(key, eventTime)
+	}
+
+	@action.bound async saveEvent(
+		key: string,
 		eventTime: number
-		validationMessage: string
-	}} = {}
+	): Promise<ScheduleEvent> {
+		await this.scheduleSentry.setEventTime(key, eventTime)
+		return this.cacheEvent(key, eventTime)
+	}
 
-
-	@observable eventTime: number
-	@observable validationMessage: string = ""
-
-	@action handleAuthUpdate({user, mode, getAuthContext}: AuthUpdate) {
-		
+	private cacheEvent(key: string, eventTime: number) {
+		const existing = this.events[key]
+		const event: ScheduleEvent = existing
+			? {...existing, eventTime}
+			: {eventTime}
+		this.events[key] = event
+		return event
 	}
 }

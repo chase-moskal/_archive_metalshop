@@ -17,7 +17,7 @@ import {
 import {AuthModel} from "./models/auth-model.js"
 import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
-import {PrivilegeMode} from "./old-models/video-viewer-model.js"
+import {ScheduleModel} from "./models/schedule-model.js"
 import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
 
 export interface MetalConfig {
@@ -93,14 +93,14 @@ export interface ProfileEvents extends Pubsubs {
 	stateUpdate: Pubsub
 }
 
-export interface ProfileState {
-	error: Error
-	admin: boolean
-	premium: boolean
-	loading: boolean
-	profile: Profile
-	adminClaim: boolean
-}
+// export interface ProfileState {
+// 	error: Error
+// 	admin: boolean
+// 	premium: boolean
+// 	loading: boolean
+// 	profile: Profile
+// 	adminClaim: boolean
+// }
 
 export interface AvatarWiring {
 	update: () => void
@@ -119,13 +119,13 @@ export interface WebComponent extends HTMLElement {
 	): void
 }
 
-export interface VimeoState {
-	vimeoId: string
-	loading: boolean
-	mode: PrivilegeMode
-	errorMessage: string
-	validationMessage: string
-}
+// export interface VimeoState {
+// 	vimeoId: string
+// 	loading: boolean
+// 	mode: PrivilegeMode
+// 	errorMessage: string
+// 	validationMessage: string
+// }
 
 // export interface VideoModel extends SimpleModel {
 // 	reader: Reader<VimeoState>
@@ -212,6 +212,7 @@ export interface Supermodel {
 	auth: AuthModel
 	profile: ProfileModel
 	paywall: PaywallModel
+	schedule: ScheduleModel
 }
 
 export enum AuthMode {
@@ -242,6 +243,23 @@ export enum PaywallMode {
 	Premium,
 }
 
+export interface ScheduleEvent {
+	eventTime: number
+}
+
+export enum PrivilegeMode {
+	Unknown,
+	Unprivileged,
+	Privileged,
+}
+
+export type ReceiveGetAuthContext = (getAuthContext: GetAuthContext) => void
+
+// export interface VideoViewModel {
+// 	updateVideo(vimeostring: string): Promise<void>
+// 	handleAuthUpdate(update: AuthUpdate): Promise<void>
+// }
+
 //
 // component shares
 //
@@ -269,4 +287,18 @@ export interface PaywallShare {
 	mode: PaywallMode
 	grantUserPremium: () => Promise<void>
 	revokeUserPremium: () => Promise<void>
+}
+
+export interface CountdownShare {
+	user: User
+	profile: Profile
+	events: {[key: string]: ScheduleEvent}
+	loadEvent: (key: string) => Promise<ScheduleEvent>
+	saveEvent: (key: string, eventTime: number) => Promise<ScheduleEvent>
+}
+
+export interface LiveshowShare {
+	user: User
+	authMode: AuthMode
+	getAuthContext: GetAuthContext
 }

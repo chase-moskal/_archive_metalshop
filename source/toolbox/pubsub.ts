@@ -11,6 +11,7 @@ export interface Subscribe<Listener extends AnyListener = AnyListener> {
 
 export interface Pubsub<Listener extends AnyListener = AnyListener> {
 	publish: Listener
+	dispose: () => void
 	subscribe: Subscribe<Listener>
 }
 
@@ -40,7 +41,7 @@ export interface ReaderContext<S extends {} = {}> {
  * create a pub/sub context
  */
 export function pubsub<Listener extends AnyListener = AnyListener>():
-	Pubsub<Listener> {
+		Pubsub<Listener> {
 	let listeners: Listener[] = []
 	return {
 		publish: <Listener>(async(...args: any) => {
@@ -52,7 +53,10 @@ export function pubsub<Listener extends AnyListener = AnyListener>():
 			return () => {
 				listeners = listeners.filter(listener => listener !== func)
 			}
-		}
+		},
+		dispose: () => {
+			listeners = []
+		},
 	}
 }
 

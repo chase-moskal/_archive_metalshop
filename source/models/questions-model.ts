@@ -10,6 +10,10 @@ export class QuestionsModel {
 	private getAuthContext: GetAuthContext
 	private questionsBureau: QuestionsBureauTopic
 
+	constructor(options: {
+		questionsBureau: QuestionsBureauTopic
+	}) { Object.assign(this, options) }
+
 	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
 		this.getAuthContext = getAuthContext
 		if (mode === AuthMode.LoggedIn) {
