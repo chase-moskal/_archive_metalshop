@@ -1,25 +1,17 @@
 
 import {LitElement, property, html, css, PropertyValues} from "lit-element"
-import {
-	QuestionDraft,
-	QuestionAuthor,
-} from "authoritarian/dist/interfaces.js"
-
-import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../../framework/mixin-model-subscription.js"
-
-import {
-	QuestionsModel,
-	PrepareHandleLikeClick,
-} from "../../interfaces.js"
+import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
+import {mixinShare} from "../../framework/share.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
+import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
+import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<QuestionsModel, typeof LitElement>(
+	mixinShare<QuestionsShare, typeof LitElement>(
 		LitElement
 	)
 )
@@ -55,7 +47,7 @@ export class MetalQuestions extends Component {
 			this.loadableState = LoadableState.Loading
 			if (!board)
 				throw new Error(`questions-board requires attribute [board]`)
-			await this.model.bureau.fetchQuestions({board})
+			await this.share.uiBureau.fetchQuestions({board})
 			this.loadableState = LoadableState.Ready
 		}
 		catch (error) {
@@ -79,7 +71,7 @@ export class MetalQuestions extends Component {
 	}
 
 	private _warnUnauthenticatedUser = (): boolean => {
-		const {user} = this.model.reader.state
+		const {user} = this.share
 		let warned = false
 		if (!user) {
 			alert("you must be logged in to complete that action")
@@ -90,11 +82,10 @@ export class MetalQuestions extends Component {
 
 	private _handlePostClick = async(event: MouseEvent) => {
 		if (this._warnUnauthenticatedUser()) return
-		const {bureau} = this.model
 		const draft = this._getQuestionDraft()
 		try {
 			this.loadableState = LoadableState.Loading
-			await bureau.postQuestion({draft})
+			await this.share.uiBureau.postQuestion({draft})
 			this.draftText = ""
 			this.loadableState = LoadableState.Ready
 		}
@@ -107,9 +98,8 @@ export class MetalQuestions extends Component {
 
 	private _prepareHandleDeleteClick = (questionId: string) => async() => {
 		if (this._warnUnauthenticatedUser()) return
-		const {bureau} = this.model
 		if (confirm(`Really delete question ${questionId}?`))
-		await bureau.deleteQuestion({questionId})
+		await this.share.uiBureau.deleteQuestion({questionId})
 	}
 
 	private _prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
@@ -117,7 +107,7 @@ export class MetalQuestions extends Component {
 		questionId: string
 	}) => async(event: MouseEvent) => {
 		if (this._warnUnauthenticatedUser()) return
-		await this.model.bureau.likeQuestion({
+		await this.share.uiBureau.likeQuestion({
 			like,
 			questionId,
 		})
@@ -162,8 +152,8 @@ export class MetalQuestions extends Component {
 			_prepareHandleDeleteClick: prepareHandleDeleteClick,
 		} = this
 
-		const questions = this.model.fetchLocalQuestions(board)
-		const {user, profile} = this.model.reader.state
+		const questions = this.share.fetchCachedQuestions(board)
+		const {user, profile} = this.share
 		const me: QuestionAuthor = {user, profile}
 		const validation = this._validatePost(me)
 		const expand = draftText.length > 0

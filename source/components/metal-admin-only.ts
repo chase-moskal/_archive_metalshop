@@ -1,14 +1,12 @@
 
-
 import {html, css, LitElement, property} from "lit-element"
 
-import {deepEqual} from "../toolbox/deep.js"
-import {ProfileModel} from "../interfaces.js"
+import {mixinShare} from "../framework/share.js"
+import {ProfileShare, ProfileMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<ProfileModel, typeof LitElement>(
+	mixinShare<ProfileShare, typeof LitElement>(
 		LitElement
 	)
 )
@@ -28,14 +26,26 @@ export class MetalAdminOnly extends Component {
 	}
 
 	updated() {
-		const {error, loading, admin} = this.model.reader.state
-		this["admin"] = admin
-		this["not-admin"] = !admin
-		this.loadableState = error
-			? LoadableState.Error
-			: loading
-				? LoadableState.Loading
-				: LoadableState.Ready
+		const {mode, user} = this.share
+
+		this["admin"] = !!user?.claims?.admin
+		this["not-admin"] = !this["admin"]
+
+		const loadingState = (mode: LoadableState) => this.loadableState = mode
+		switch (mode) {
+			case ProfileMode.Error:
+				loadingState(LoadableState.Error)
+				break
+			case ProfileMode.Loading:
+				loadingState(LoadableState.Loading)
+				break
+			case ProfileMode.None:
+			case ProfileMode.Loaded:
+				loadingState(LoadableState.Ready)
+				break
+			default:
+				loadingState(LoadableState.Error)
+		}
 	}
 
 	renderReady() {

@@ -19,6 +19,7 @@ import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
+import {LiveshowViewModel} from "./models/liveshow-model.js"
 
 export interface MetalConfig {
 	mock: string
@@ -289,6 +290,13 @@ export interface PaywallShare {
 	revokeUserPremium: () => Promise<void>
 }
 
+export interface QuestionsShare {
+	user: User
+	profile: Profile
+	uiBureau: QuestionsBureauUi
+	fetchCachedQuestions(board: string): Question[]
+}
+
 export interface CountdownShare {
 	user: User
 	profile: Profile
@@ -301,4 +309,5 @@ export interface LiveshowShare {
 	user: User
 	authMode: AuthMode
 	getAuthContext: GetAuthContext
+	makeViewModel(options: {videoName: string}): LiveshowViewModel
 }

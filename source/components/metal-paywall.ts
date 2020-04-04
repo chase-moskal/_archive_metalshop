@@ -3,9 +3,8 @@ import {html, css, LitElement} from "lit-element"
 
 import {star} from "../system/icons.js"
 import {mixinShare} from "../framework/share.js"
-import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-
 import {PaywallShare, PaywallMode} from "../interfaces.js"
+import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 
 const Component = mixinLoadable(
 	mixinShare<PaywallShare, typeof LitElement>(

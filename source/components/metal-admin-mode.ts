@@ -2,12 +2,12 @@
 import {html, css, LitElement, property} from "lit-element"
 
 import {deepEqual} from "../toolbox/deep.js"
-import {ProfileModel} from "../interfaces.js"
+import {ProfileShare, ProfileMode} from "../interfaces.js"
+import {mixinShare} from "../framework/share.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<ProfileModel, typeof LitElement>(
+	mixinShare<ProfileShare, typeof LitElement>(
 		LitElement
 	)
 )
@@ -23,27 +23,39 @@ export class MetalAdminMode extends Component {
 	}
 
 	updated() {
-		const {error, loading} = this.model.reader.state
-		this.loadableState = error
-			? LoadableState.Error
-			: loading
-				? LoadableState.Loading
-				: LoadableState.Ready
+		const {mode} = this.share
+		const loadingState = (mode: LoadableState) => this.loadableState = mode
+		switch (mode) {
+			case ProfileMode.Error:
+				loadingState(LoadableState.Error)
+				break
+			case ProfileMode.Loading:
+				loadingState(LoadableState.Loading)
+				break
+			case ProfileMode.None:
+			case ProfileMode.Loaded:
+				loadingState(LoadableState.Ready)
+				break
+			default:
+				loadingState(LoadableState.Error)
+		}
 	}
 
 	private _handleAdminModeChange = (event: InputEvent) => {
 		const adminMode = !!(<HTMLInputElement>event.currentTarget).checked
-		const {profile} = this.model.reader.state
+		const {profile} = this.share
 		if (!profile) return
 		const newProfile = {...profile, adminMode}
 		const changes = !deepEqual(profile, newProfile)
 
 		// save the new profile with admin mode
-		if (changes) this.model.saveProfile(newProfile)
+		if (changes) this.share.saveProfile(newProfile)
 	}
 
 	renderReady() {
-		const {adminClaim, profile} = this.model.reader.state
+		const {user, profile} = this.share
+		const adminClaim = user?.claims?.admin
+
 		return !profile || !adminClaim ? null : html`
 			<input
 				type="checkbox"

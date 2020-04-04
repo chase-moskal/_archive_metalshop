@@ -3,50 +3,77 @@ import {LitElement, html, css, property} from "lit-element"
 
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
-import {PrivilegeMode} from "../old-models/video-viewer-model.js"
+import {mixinShare} from "../framework/share.js"
+import {LiveshowViewModel} from "../models/liveshow-model.js"
+import {LiveshowShare, AuthMode, PrivilegeMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
-
-import {VideoViewerModel, VideoModel} from "../interfaces.js"
 
 const Component = mixinLoadable(
-	mixinModelSubscription<VideoViewerModel, typeof LitElement>(
+	mixinShare<LiveshowShare, typeof LitElement>(
 		LitElement
 	)
 )
 
 export class MetalLiveshow extends Component {
 	static get styles() { return [super.styles || css``, styles] }
-
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String, reflect: true}) ["video-name"]: string
-
-	private _videoModel: VideoModel
-
-	onUpdateVideo = (vimeostring: string) => {
-		this._videoModel.updateVideo(vimeostring)
-	}
+	private _viewModel: LiveshowViewModel
 
 	firstUpdated() {
 		this["initially-hidden"] = false
 		const {["video-name"]: videoName} = this
+		this._viewModel = this.share.makeViewModel({videoName})
 
-		// weird specialized wiring
-		this._videoModel = this.model.prepareVideoModel({videoName})
-		this.subscribeToReader(this._videoModel.reader)
-
-		for (const style of Array.from(this.renderRoot.querySelectorAll("style")))
-			style.style.display = "none"
+		// // TODO what even is this?
+		// for (const style of Array.from(this.renderRoot.querySelectorAll("style")))
+		// 	style.style.display = "none"
 	}
 
 	updated() {
-		const {errorMessage = null, loading = true} = this._videoModel.reader.state
-		this.errorMessage = errorMessage
-		this.loadableState = errorMessage
-			? LoadableState.Error
-			: loading
-				? LoadableState.Loading
-				: LoadableState.Ready
+		const {authMode} = this.share
+		const loadingState = (mode: LoadableState) => this.loadableState = mode
+		this.errorMessage = "error"
+		switch (authMode) {
+			case AuthMode.Error:
+				loadingState(LoadableState.Error)
+				break
+			case AuthMode.Loading:
+				loadingState(LoadableState.Loading)
+				break
+			case AuthMode.LoggedIn:
+			case AuthMode.LoggedOut:
+			default: {
+				if (this._viewModel.errorMessage) {
+					loadingState(LoadableState.Error)
+					this.errorMessage = this._viewModel.errorMessage
+				}
+				else if (this._viewModel.loading) {
+					loadingState(LoadableState.Loading)
+				}
+				else {
+					loadingState(LoadableState.Ready)
+				}
+			}
+		}
+	}
+
+	renderReady() {
+		const {mode} = this._viewModel
+		switch (mode) {
+			case PrivilegeMode.Unknown: return this._renderLoggedOut()
+			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()
+			case PrivilegeMode.Privileged: return this._renderPrivileged()
+		}
+	}
+
+	private _handleClickUpdateLivestream = () => {
+		const input = select<HTMLInputElement>(
+			"input[name=vimeostring]",
+			this.shadowRoot
+		)
+		this._viewModel.updateVideo(input.value)
+		input.value = ""
 	}
 
 	private _renderLoggedOut() {
@@ -70,9 +97,9 @@ export class MetalLiveshow extends Component {
 	}
 
 	private _renderViewer() {
-		const {vimeoId} = this._videoModel.reader.state
+		const {vimeoId} = this._viewModel
 		const query = "?color=00a651&title=0&byline=0&portrait=0&badge=0"
-		const viewer = html`
+		return vimeoId ? html`
 			<div class="viewer">
 				<iframe
 					frameborder="0"
@@ -81,21 +108,19 @@ export class MetalLiveshow extends Component {
 					src="https://player.vimeo.com/video/${vimeoId}${query}"
 				></iframe>
 			</div>
-		`
-		const nothing = html`
+		` : html`
 			<div class="missing ghostplayer">
 				<p>video missing</p>
 			</div>
 		`
-		return vimeoId ? viewer : nothing
 	}
 
 	private _renderPrivileged() {
-		const {validationMessage} = this._videoModel.reader.state
+		const {validationMessage} = this._viewModel
 		return html`
 			<slot></slot>
 			${this._renderViewer()}
-			<metal-admin-only class="adminpanel coolbuttonarea formarea" block title>
+			<metal-admin-only class="adminpanel coolbuttonarea formarea" block header>
 				<h3>Admin Controls</h3>
 				<div class="inputarea">
 					<input
@@ -112,24 +137,6 @@ export class MetalLiveshow extends Component {
 					: null}
 			</metal-admin-only>
 		`
-	}
-
-	private _handleClickUpdateLivestream = () => {
-		const input = select<HTMLInputElement>(
-			"input[name=vimeostring]",
-			this.shadowRoot
-		)
-		this.onUpdateVideo(input.value)
-		input.value = ""
-	}
-
-	renderReady() {
-		const {mode} = this._videoModel.reader.state
-		switch (mode) {
-			case PrivilegeMode.LoggedOut: return this._renderLoggedOut()
-			case PrivilegeMode.Unprivileged: return this._renderUnprivileged()
-			case PrivilegeMode.Privileged: return this._renderPrivileged()
-		}
 	}
 }
 

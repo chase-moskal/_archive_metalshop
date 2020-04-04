@@ -1,9 +1,10 @@
 
-import {ProfileModel} from "../interfaces.js"
 import {LitElement, html, css} from "lit-element"
-import {mixinModelSubscription} from "../framework/mixin-model-subscription.js"
 
-const Component = mixinModelSubscription<ProfileModel, typeof LitElement>(
+import {PaywallShare, PaywallMode} from "../interfaces.js"
+import {mixinShare} from "../framework/share.js"
+
+const Component = mixinShare<PaywallShare, typeof LitElement>(
 	LitElement
 )
 
@@ -11,12 +12,12 @@ export class MetalMyAvatar extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
-		const {profile, premium = false} = this.model.reader.state
-		const src = (profile && profile.avatar) || ""
+		const {profile, mode} = this.share
+		const src = profile?.avatar || ""
 		return html`
 			<metal-avatar
 				src=${src}
-				?premium=${premium}
+				?premium=${mode === PaywallMode.Premium}
 			></metal-avatar>
 		`
 	}

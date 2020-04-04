@@ -32,7 +32,7 @@ export class QuestionsModel {
 		}
 	}
 
-	getLocalQuestions = (board: string) => this.questions.filter(
+	fetchCachedQuestions = (board: string) => this.questions.filter(
 		question => question.board === board
 	)
 
