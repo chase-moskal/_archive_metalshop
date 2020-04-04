@@ -23,9 +23,12 @@ export class LiveshowModel {
 		liveshowGovernor: LiveshowGovernorTopic
 	}) { Object.assign(this, options) }
 
-	makeViewModel({videoName}: {videoName: string}): LiveshowViewModel {
+	makeViewModel = ({videoName}: {videoName: string}): {
+		dispose: () => void,
+		viewModel: LiveshowViewModel,
+	} => {
 		const {liveshowGovernor} = this
-		return new LiveshowViewModel({
+		const viewModel = new LiveshowViewModel({
 			videoName,
 			liveshowGovernor,
 			getAuthContext: () => this.getAuthContext(),
@@ -33,6 +36,11 @@ export class LiveshowModel {
 				this.getAuthContext = getAuthContext
 			},
 		})
+		const dispose = this.authUpdate.subscribe(viewModel.handleAuthUpdate)
+		return {
+			dispose,
+			viewModel,
+		}
 	}
 }
 

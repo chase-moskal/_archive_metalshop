@@ -329,5 +329,8 @@ export interface LiveshowShare {
 	user: User
 	authMode: AuthMode
 	getAuthContext: GetAuthContext
-	makeViewModel(options: {videoName: string}): LiveshowViewModel
+	makeViewModel(options: {videoName: string}): {
+		dispose: () => void
+		viewModel: LiveshowViewModel
+	}
 }

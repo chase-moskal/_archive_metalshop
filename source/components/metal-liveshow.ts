@@ -17,21 +17,30 @@ export class MetalLiveshow extends Component {
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String, reflect: true}) ["video-name"]: string
 	private _viewModel: LiveshowViewModel
+	private _viewModelDispose: () => void
 
 	firstUpdated() {
 		this["initially-hidden"] = false
 		const {["video-name"]: videoName} = this
-		this._viewModel = this.share.makeViewModel({videoName})
+		const {viewModel, dispose} = this.share.makeViewModel({videoName})
+		this._viewModel = viewModel
+		this._viewModelDispose = dispose
 
 		// // TODO what even is this?
 		// for (const style of Array.from(this.renderRoot.querySelectorAll("style")))
 		// 	style.style.display = "none"
 	}
 
+	disconnectedCallback() {
+		super.disconnectedCallback()
+		if (this._viewModelDispose) this._viewModelDispose()
+	}
+
 	updated() {
 		const {authMode} = this.share
 		const loadingState = (mode: LoadableState) => this.loadableState = mode
 		this.errorMessage = "error"
+		console.log("AUTHMODE", authMode)
 		switch (authMode) {
 			case AuthMode.Error:
 				loadingState(LoadableState.Error)
@@ -42,6 +51,7 @@ export class MetalLiveshow extends Component {
 			case AuthMode.LoggedIn:
 			case AuthMode.LoggedOut:
 			default: {
+				console.log("DEFAULT", this._viewModel)
 				if (this._viewModel.errorMessage) {
 					loadingState(LoadableState.Error)
 					this.errorMessage = this._viewModel.errorMessage
