@@ -1,9 +1,8 @@
 
-import {LitElement, property, html, css} from "lit-element"
-
 import {silhouette} from "../system/icons.js"
+import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
-export class MetalAvatar extends LitElement {
+export class MetalAvatar extends MobxLitElement {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String}) src: string = ""
 	@property({type: Boolean}) premium: boolean = false

@@ -1,16 +1,15 @@
 
-import {LitElement, html, css, property} from "lit-element"
-
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
 import {mixinShare} from "../framework/share.js"
 import {LiveshowViewModel} from "../models/liveshow-model.js"
 import {LiveshowShare, AuthMode, PrivilegeMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<LiveshowShare, typeof LitElement>(
-		LitElement
+	mixinShare<LiveshowShare, typeof MobxLitElement>(
+		MobxLitElement
 	)
 )
 

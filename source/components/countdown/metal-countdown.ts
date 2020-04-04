@@ -1,16 +1,15 @@
 
-import {LitElement, html, css, property} from "lit-element"
-
 import {clock} from "../../system/icons.js"
 import {styles} from "./metal-countdown-styles.js"
 import {CountdownShare} from "../../interfaces.js"
 import {mixinShare} from "../../framework/share.js"
 import {formatDate, formatDuration} from "./dates.js"
+import {MobxLitElement, property, html, css} from "../../framework/mobx-lit-element.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
-const Component = mixinShare<CountdownShare, typeof LitElement>(
-	LitElement
+const Component = mixinShare<CountdownShare, typeof MobxLitElement>(
+	MobxLitElement
 )
 
 export class MetalCountdown extends Component {

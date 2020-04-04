@@ -1,5 +1,4 @@
 
-import {LitElement, property, html, css, PropertyValues} from "lit-element"
 import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 import {sortQuestions} from "./helpers.js"
@@ -9,10 +8,11 @@ import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
 import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
+import {MobxLitElement, property, html, css, PropertyValues} from "../../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<QuestionsShare, typeof LitElement>(
-		LitElement
+	mixinShare<QuestionsShare, typeof MobxLitElement>(
+		MobxLitElement
 	)
 )
 

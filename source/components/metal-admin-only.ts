@@ -1,13 +1,13 @@
 
-import {html, css, LitElement, property} from "lit-element"
 
 import {mixinShare} from "../framework/share.js"
 import {ProfileShare, ProfileMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<ProfileShare, typeof LitElement>(
-		LitElement
+	mixinShare<ProfileShare, typeof MobxLitElement>(
+		MobxLitElement
 	)
 )
 

@@ -1,11 +1,10 @@
 
-import {LitElement, html, css} from "lit-element"
-
-import {PaywallShare, PaywallMode} from "../interfaces.js"
 import {mixinShare} from "../framework/share.js"
+import {PaywallShare, PaywallMode} from "../interfaces.js"
+import {MobxLitElement, html, css} from "../framework/mobx-lit-element.js"
 
-const Component = mixinShare<PaywallShare, typeof LitElement>(
-	LitElement
+const Component = mixinShare<PaywallShare, typeof MobxLitElement>(
+	MobxLitElement
 )
 
 export class MetalMyAvatar extends Component {

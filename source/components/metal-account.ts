@@ -1,18 +1,15 @@
 
-import {observer} from "mobx-lit-element"
-import {LitElement, property, html, css} from "lit-element"
-
 import {mixinShare} from "../framework/share.js"
 import {AccountShare, AuthMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<AccountShare, typeof LitElement>(
-		LitElement
+	mixinShare<AccountShare, typeof MobxLitElement>(
+		MobxLitElement
 	)
 )
 
-@observer
 export class MetalAccount extends Component {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
