@@ -11,37 +11,32 @@
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
 		<!-- metalshop config -->
-		<metal-config
-			mock
-			auth-server="https://auth.metalback.chasemoskal.com"
-			profile-server="https://profile.metalback.chasemoskal.com"
-		></metal-config>
+		<metal-config mock></metal-config>
 
 		<script type="module">
 			import {parseQuery} from "./dist/toolbox/parse-query.js"
 			~function() {
-				const config = document.querySelector("metal-config")
-				const mode = s => location.search.includes(s)
-				const set = (key, value) => config.setAttribute(key, value)
 				const query = parseQuery()
+				const config = document.querySelector("metal-config")
+				const set = (key, value) => config.setAttribute(key, value)
 
-				// ?dev, ?dev=k8s, ?dev=node
+				if (query.mock !== undefined) {
+					set("mock", query.mock)
+				}
+
 				if (query.dev !== undefined) {
-					if (query.dev === "k8s") {
+					if (query.dev === "minikube") {
 						set("auth-server", "http://auth.metaldev.chasemoskal.com")
 						set("profile-server", "http://profile.metaldev.chasemoskal.com")
 					}
-					else {
+					else if (query.dev === "node") {
 						set("auth-server", "http://auth.metaldev.chasemoskal.com:8000")
 						set("profile-server", "http://profile.metaldev.chasemoskal.com:8001")
 					}
-				}
-
-				// ?mock, ?mock=loggedin, ?mock=admin
-				if (query.mock !== undefined) {
-					config.removeAttribute("auth-server")
-					config.removeAttribute("profile-server")
-					set("mock", query.mock)
+					else {
+						set("auth-server", "https://auth.metalback.chasemoskal.com")
+						set("profile-server", "https://profile.metalback.chasemoskal.com")
+					}
 				}
 			}()
 		</script>
@@ -83,16 +78,16 @@
 					<p>remember, this stuff is work-in-progress, so some stuff doesn't work yet in various modes</p>
 					<h3>mock mode is fake mode</h3>
 					<ul>
-						<li><a href="/?mock">/?mock</a> ← no connections are made</li>
 						<li><a href="/?mock=loggedin">/?mock=loggedin</a> ← start logged in</li>
 						<li><a href="/?mock=premium">/?mock=premium</a> ← be a premium user</li>
 						<li><a href="/?mock=admin">/?mock=admin</a> ← be an administrator</li>
 					</ul>
 					<h3>choose your microservices</h3>
 					<ul>
-						<li><a href="/">/</a> ← production azure cluster</li>
+						<li><a href="/">/</a> ← mock mode by default for now</li>
 						<li><a href="/?dev=node">/?dev=node</a> ← local node microservices</li>
-						<li><a href="/?dev=k8s">/?dev=k8s</a> ← local minikube cluster</li>
+						<li><a href="/?dev=minikube">/?dev=minikube</a> ← local kubernetes cluster</li>
+						<li><a href="/?dev=prod">/?dev=prod</a> ← production cluster</li>
 					</ul>
 				</section>
 			</section>
