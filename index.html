@@ -17,15 +17,17 @@
 			profile-server="https://profile.metalback.chasemoskal.com"
 		></metal-config>
 
-		<script>
+		<script type="module">
+			import {parseQuery} from "./dist/toolbox/parse-query.js"
 			~function() {
 				const config = document.querySelector("metal-config")
 				const mode = s => location.search.includes(s)
 				const set = (key, value) => config.setAttribute(key, value)
+				const query = parseQuery()
 
 				// ?dev, ?dev=k8s, ?dev=node
-				if (mode("dev")) {
-					if (mode("dev=k8s")) {
+				if (query.dev !== undefined) {
+					if (query.dev === "k8s") {
 						set("auth-server", "http://auth.metaldev.chasemoskal.com")
 						set("profile-server", "http://profile.metaldev.chasemoskal.com")
 					}
@@ -36,18 +38,10 @@
 				}
 
 				// ?mock, ?mock=loggedin, ?mock=admin
-				if (mode("mock")) {
+				if (query.mock !== undefined) {
 					config.removeAttribute("auth-server")
 					config.removeAttribute("profile-server")
-					set("mock",
-						mode("mock=loggedin")
-							? "loggedin"
-							: mode("mock=admin")
-								? "admin"
-								: mode("mock=premium")
-									? "premium"
-									: ""
-					)
+					set("mock", query.mock)
 				}
 			}()
 		</script>

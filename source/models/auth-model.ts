@@ -26,7 +26,7 @@ export class AuthModel {
 			const accessToken = await this.tokenStorage.passiveCheck()
 			if (accessToken) {
 				const detail = this.processAccessToken(accessToken)
-				const {user} = await this.getAuthContext()
+				const {user} = await detail.getAuthContext()
 				this.setLoggedIn(detail, user)
 			}
 			else this.setLoggedOut()

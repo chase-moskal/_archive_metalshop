@@ -3,26 +3,17 @@ import {tokenDecode} from "redcrypto/dist/token-decode.js"
 import {mockSignToken} from "redcrypto/dist/curries/mock-sign-token.js"
 import {mockVerifyToken} from "redcrypto/dist/curries/mock-verify-token.js"
 
-import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
-import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
-
-import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
-import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
-
-import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
-
 import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
+import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
+import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
+import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
+import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
 import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-verify-google-token.js"
+import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
-
-import {
-	AccessToken,
-	AccessPayload,
-	PaywallGuardianTopic,
-	LiveshowGovernorTopic,
-} from "authoritarian/dist/interfaces.js"
+import {AccessToken, AccessPayload, PaywallGuardianTopic, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
 import {LoginPopupRoutine, ScheduleSentryTopic} from "../interfaces.js"
 
@@ -35,11 +26,18 @@ export const prepareAllMocks = async({
 	startPremium: boolean
 	startLoggedIn: boolean
 }) => {
+	const googleId = "g123456"
 	const signToken = mockSignToken()
 	const verifyToken = mockVerifyToken()
 	const userDatalayer = mockUserDatalayer()
 	const profileDatalayer = mockProfileDatalayer()
-	const verifyGoogleToken = mockVerifyGoogleToken()
+	const verifyGoogleToken = mockVerifyGoogleToken({
+		googleResult: {
+			googleId,
+			name: `Faker McFakerson`,
+			avatar: "https://picsum.photos/id/375/200/200",
+		}
+	})
 
 	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
 	const profileMagistrate = makeProfileMagistrate({
@@ -138,6 +136,20 @@ export const prepareAllMocks = async({
 			this._data[key] = time
 		}
 	}
+
+	// starting conditions
+	const authTokens = await authExchanger.authenticateViaGoogle({
+		googleToken: "fakeGoogleToken123"
+	})
+	const {userId} = await verifyToken<RefreshPayload>(authTokens.refreshToken)
+	if (startLoggedIn) await tokenStorage.writeTokens(authTokens)
+	await authVanguard.setClaims({
+		userId,
+		claims: {
+			admin: !!startAdmin,
+			premium: !!startPremium,
+		}
+	})
 
 	return {
 		authDealer,

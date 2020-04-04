@@ -9,7 +9,7 @@ import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
-export function wireSupermodel({
+export function prepareSupermodel({
 	tokenStorage,
 	scheduleSentry,
 	paywallGuardian,

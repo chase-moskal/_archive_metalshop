@@ -13,7 +13,7 @@ import {MetalAdminOnly} from "../../components/metal-admin-only.js"
 import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
 
-export const prepareComponents = (supermodel: Supermodel) => ({
+export const wireComponents = (supermodel: Supermodel) => ({
 	MetalAvatar,
 	MetalAccount: share(MetalAccount, () => (<AccountShare>{
 		user: supermodel.auth.user,

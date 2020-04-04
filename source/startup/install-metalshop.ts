@@ -4,14 +4,14 @@ import {MetalOptions} from "../interfaces.js"
 import {themeComponents} from "../framework/theme-components.js"
 import {registerComponents} from "../toolbox/register-components.js"
 
-import {wireSupermodel} from "./more/wire-supermodel.js"
+import {wireComponents} from "./more/wire-components.js"
 import {optionsFromDom} from "./more/options-from-dom.js"
-import {prepareComponents} from "./more/prepare-components.js"
+import {prepareSupermodel} from "./more/prepare-supermodel.js"
 
 export async function installMetalshop(options?: MetalOptions) {
 	options = options || await optionsFromDom("metal-config")
-	const supermodel = wireSupermodel(options)
-	const components = prepareComponents(supermodel)
+	const supermodel = prepareSupermodel(options)
+	const components = wireComponents(supermodel)
 	registerComponents(themeComponents(theme, components))
 	return {
 		supermodel,

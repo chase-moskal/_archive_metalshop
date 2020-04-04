@@ -31,11 +31,9 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			loginPopupRoutine,
 			profileMagistrate,
 		} = await prepareAllMocks({
-			startAdmin: config.mock === "admin",
-			startPremium: config.mock === "premium",
-			startLoggedIn: config.mock === "loggedin"
-				|| config.mock === "admin"
-				|| config.mock === "premium",
+			startAdmin: config.mock?.includes("admin"),
+			startPremium: config.mock?.includes("premium"),
+			startLoggedIn: config.mock?.includes("loggedin"),
 		})
 		progress = {
 			...progress,
