@@ -51,8 +51,11 @@ export function wireSupermodel({
 		supermodel.auth.loginWithAccessToken(newAccessToken)
 	})
 
-	// // TODO more updates
-	// profile.reader.subscribe(state => questions.updateProfile(state.profile))
+	// profile updates
+	autorun(() => {
+		const {profile} = supermodel.profile
+		supermodel.questions.handleProfileUpdate(profile)
+	})
 
 	return supermodel
 }

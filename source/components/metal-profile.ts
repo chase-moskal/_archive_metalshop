@@ -2,7 +2,7 @@
 import {Profile} from "authoritarian/dist/interfaces.js"
 
 import {select} from "../toolbox/selects.js"
-import {mixinShare} from "../framework/share.js"
+import {WithShare} from "../framework/share.js"
 import {Debouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {ProfileShare, ProfileMode} from "../interfaces.js"
@@ -10,9 +10,7 @@ import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<ProfileShare, typeof MobxLitElement>(
-		MobxLitElement
-	)
+	<WithShare<ProfileShare, typeof MobxLitElement>>MobxLitElement
 )
 
 export class MetalProfile extends Component {
@@ -25,10 +23,6 @@ export class MetalProfile extends Component {
 		delay: 1000,
 		action: () => this._handleInputChange()
 	})
-
-	onProfileSave = async(profile: Profile) => {
-		this.share.saveProfile(profile)
-	}
 
 	reset() {
 		this._changedProfile = null
@@ -54,7 +48,7 @@ export class MetalProfile extends Component {
 	private _handleSaveClick = async() => {
 		const {_changedProfile} = this
 		this._changedProfile = null
-		await this.onProfileSave(_changedProfile)
+		await this.share.saveProfile(_changedProfile)
 	}
 
 	private _generateNewProfileFromInputs(): Profile {

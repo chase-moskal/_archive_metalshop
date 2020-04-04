@@ -2,15 +2,14 @@
 import {clock} from "../../system/icons.js"
 import {styles} from "./metal-countdown-styles.js"
 import {CountdownShare} from "../../interfaces.js"
-import {mixinShare} from "../../framework/share.js"
+import {WithShare} from "../../framework/share.js"
 import {formatDate, formatDuration} from "./dates.js"
 import {MobxLitElement, property, html, css} from "../../framework/mobx-lit-element.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
-const Component = mixinShare<CountdownShare, typeof MobxLitElement>(
+const Component = <WithShare<CountdownShare, typeof MobxLitElement>>
 	MobxLitElement
-)
 
 export class MetalCountdown extends Component {
 	static get styles() { return [super.styles || css``, styles] }
@@ -81,7 +80,11 @@ export class MetalCountdown extends Component {
 	render() {
 		const {key} = this
 		if (!key) return null
-		const {eventTime} = this.share.events[key]
+		const eventTime = this.share.events[key]?.eventTime
+		if (!eventTime) return html`
+			<p>unknown event "${key}"</p>
+		`
+
 		const eventSchedule = formatDate(eventTime)
 		const timeUntilEvent = eventTime - Date.now()
 		const countdownDuration = formatDuration(timeUntilEvent)

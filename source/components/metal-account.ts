@@ -1,13 +1,12 @@
 
-import {mixinShare} from "../framework/share.js"
+import {WithShare} from "../framework/share.js"
 import {AccountShare, AuthMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<AccountShare, typeof MobxLitElement>(
+	<WithShare<AccountShare, typeof MobxLitElement>>
 		MobxLitElement
-	)
 )
 
 export class MetalAccount extends Component {

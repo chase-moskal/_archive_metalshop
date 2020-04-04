@@ -3,7 +3,7 @@ import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
-import {mixinShare} from "../../framework/share.js"
+import {WithShare} from "../../framework/share.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
 import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
@@ -11,9 +11,8 @@ import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
 import {MobxLitElement, property, html, css, PropertyValues} from "../../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<QuestionsShare, typeof MobxLitElement>(
+	<WithShare<QuestionsShare, typeof MobxLitElement>>
 		MobxLitElement
-	)
 )
 
 export class MetalQuestions extends Component {

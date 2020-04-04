@@ -19,7 +19,8 @@ import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
-import {LiveshowViewModel} from "./models/liveshow-model.js"
+import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
+import { QuestionsModel } from "./models/questions-model.js"
 
 export interface MetalConfig {
 	mock: string
@@ -214,6 +215,8 @@ export interface Supermodel {
 	profile: ProfileModel
 	paywall: PaywallModel
 	schedule: ScheduleModel
+	liveshow: LiveshowModel
+	questions: QuestionsModel
 }
 
 export enum AuthMode {
@@ -271,6 +274,23 @@ export interface AccountShare {
 	getAuthContext: GetAuthContext
 	login: () => Promise<void>
 	logout: () => Promise<void>
+}
+
+export interface MyAvatarShare {
+	profile: Profile
+	paywallMode: PaywallMode
+}
+
+export interface AdminModeShare {
+	user: User
+	profile: Profile
+	profileMode: ProfileMode
+	saveProfile(newProfile: Profile): Promise<void>
+}
+
+export interface AdminOnlyShare {
+	user: User
+	profileMode: ProfileMode
 }
 
 export interface ProfileShare {

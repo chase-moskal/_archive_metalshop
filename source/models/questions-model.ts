@@ -5,7 +5,6 @@ import {Profile, User, Question, QuestionsBureauTopic} from "authoritarian/dist/
 
 export class QuestionsModel {
 	@observable user: User
-	@observable profile: Profile
 	@observable questions: Question[] = []
 	private getAuthContext: GetAuthContext
 	private questionsBureau: QuestionsBureauTopic
@@ -24,7 +23,6 @@ export class QuestionsModel {
 	}
 
 	@action.bound handleProfileUpdate(profile: Profile) {
-		this.profile = profile
 		for (const question of this.questions) {
 			if (question.author.profile.userId === profile.userId) {
 				question.author.profile = profile

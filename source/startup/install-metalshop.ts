@@ -14,6 +14,7 @@ export async function installMetalshop(options?: MetalOptions) {
 	const components = prepareComponents(supermodel)
 	registerComponents(themeComponents(theme, components))
 	return {
+		supermodel,
 		async start() {
 			await supermodel.auth.useExistingLogin()
 		}

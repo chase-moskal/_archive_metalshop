@@ -37,10 +37,15 @@ export class AuthModel {
 	}
 
 	@action.bound async loginWithAccessToken(accessToken: AccessToken) {
-		const detail = this.processAccessToken(accessToken)
 		await this.tokenStorage.writeAccessToken(accessToken)
-		const {user} = await detail.getAuthContext()
-		this.setLoggedIn(detail, user)
+		if (accessToken) {
+			const detail = this.processAccessToken(accessToken)
+			const {user} = await detail.getAuthContext()
+			this.setLoggedIn(detail, user)
+		}
+		else {
+			this.setLoggedOut()
+		}
 	}
 
 	@action.bound async login() {

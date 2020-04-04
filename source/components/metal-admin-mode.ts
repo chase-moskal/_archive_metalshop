@@ -1,14 +1,13 @@
 
 import {deepEqual} from "../toolbox/deep.js"
-import {mixinShare} from "../framework/share.js"
-import {ProfileShare, ProfileMode} from "../interfaces.js"
+import {WithShare} from "../framework/share.js"
+import {AdminModeShare, ProfileMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	mixinShare<ProfileShare, typeof MobxLitElement>(
+	<WithShare<AdminModeShare, typeof MobxLitElement>>
 		MobxLitElement
-	)
 )
 
 export class MetalAdminMode extends Component {
@@ -22,9 +21,9 @@ export class MetalAdminMode extends Component {
 	}
 
 	updated() {
-		const {mode} = this.share
+		const {profileMode} = this.share
 		const loadingState = (mode: LoadableState) => this.loadableState = mode
-		switch (mode) {
+		switch (profileMode) {
 			case ProfileMode.Error:
 				loadingState(LoadableState.Error)
 				break

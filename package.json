@@ -37,6 +37,7 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
+		"@adobe/lit-mobx": "0.0.3",
 		"authoritarian": "0.0.0-dev.46",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",

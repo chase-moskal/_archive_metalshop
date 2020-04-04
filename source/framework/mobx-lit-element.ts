@@ -1,8 +1,3 @@
 
-import {observer} from "mobx-lit-element"
-import {LitElement} from "lit-element"
-
+export {MobxLitElement} from "@adobe/lit-mobx"
 export {property, html, css, PropertyValues} from "lit-element"
-
-@observer
-export class MobxLitElement extends LitElement {}
