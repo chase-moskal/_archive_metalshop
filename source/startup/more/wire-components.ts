@@ -63,6 +63,7 @@ export const wireComponents = (supermodel: Supermodel) => ({
 	})),
 	MetalAdminOnly: share(MetalAdminOnly, () => (<AdminOnlyShare>{
 		user: supermodel.auth.user,
+		profile: supermodel.profile.profile,
 		profileMode: supermodel.profile.mode,
 	})),
 	MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{

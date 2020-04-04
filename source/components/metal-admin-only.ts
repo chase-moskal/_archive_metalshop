@@ -1,11 +1,11 @@
 
 import {WithShare} from "../framework/share.js"
-import {ProfileShare, ProfileMode} from "../interfaces.js"
+import {ProfileMode, AdminOnlyShare} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
 
 const Component = mixinLoadable(
-	<WithShare<ProfileShare, typeof MobxLitElement>>
+	<WithShare<AdminOnlyShare, typeof MobxLitElement>>
 		MobxLitElement
 )
 
@@ -24,13 +24,13 @@ export class MetalAdminOnly extends Component {
 	}
 
 	updated() {
-		const {mode, user} = this.share
+		const {profileMode, user, profile} = this.share
 
-		this["admin"] = !!user?.claims?.admin
+		this["admin"] = !!user?.claims?.admin && !!profile?.adminMode
 		this["not-admin"] = !this["admin"]
 
 		const loadingState = (mode: LoadableState) => this.loadableState = mode
-		switch (mode) {
+		switch (profileMode) {
 			case ProfileMode.Error:
 				loadingState(LoadableState.Error)
 				break

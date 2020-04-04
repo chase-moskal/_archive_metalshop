@@ -290,6 +290,7 @@ export interface AdminModeShare {
 
 export interface AdminOnlyShare {
 	user: User
+	profile: Profile
 	profileMode: ProfileMode
 }
 

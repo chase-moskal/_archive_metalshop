@@ -25,10 +25,6 @@ export class MetalLiveshow extends Component {
 		const {viewModel, dispose} = this.share.makeViewModel({videoName})
 		this._viewModel = viewModel
 		this._viewModelDispose = dispose
-
-		// // TODO what even is this?
-		// for (const style of Array.from(this.renderRoot.querySelectorAll("style")))
-		// 	style.style.display = "none"
 	}
 
 	disconnectedCallback() {
@@ -51,7 +47,6 @@ export class MetalLiveshow extends Component {
 			case AuthMode.LoggedIn:
 			case AuthMode.LoggedOut:
 			default: {
-				console.log("DEFAULT", this._viewModel)
 				if (this._viewModel.errorMessage) {
 					loadingState(LoadableState.Error)
 					this.errorMessage = this._viewModel.errorMessage
@@ -129,7 +124,6 @@ export class MetalLiveshow extends Component {
 			<slot></slot>
 			${this._renderViewer()}
 			<metal-admin-only class="adminpanel coolbuttonarea formarea" block header>
-				<h3>Admin Controls</h3>
 				<div class="inputarea">
 					<input
 						type="text"
