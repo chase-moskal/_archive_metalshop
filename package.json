@@ -1,6 +1,6 @@
 {
 	"name": "metalshop",
-	"version": "0.0.0-dev.44",
+	"version": "0.0.0-dev.45",
 	"description": "ready-made app components and microservices",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
@@ -20,25 +20,25 @@
 	"scripts": {
 		"prepare": "run-s clean && run-p compile importmap && run-s test",
 		"clean": "rimraf dist && mkdirp dist",
-		"importmap": "importly --host=node_modules < package.json > dist/importmap.json",
+		"importmap": "importly --host=jsdelivr < package.json > dist/importmap.json",
 		"compile": "tsc",
 		"watch": "tsc -w",
 		"test": "exit 0",
-		"start": "http-server"
+		"start": "serve -l 8080"
 	},
 	"devDependencies": {
-		"feather-icons": "^4.26.0",
-		"http-server": "^0.12.1",
+		"feather-icons": "^4.28.0",
 		"importly": "0.1.0-dev.0",
-		"mkdirp": "^1.0.3",
+		"mkdirp": "^1.0.4",
 		"npm-run-all": "4.1.5",
 		"octicons": "^8.5.0",
 		"rimraf": "^3.0.2",
+		"serve": "^11.3.0",
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
 		"@adobe/lit-mobx": "0.0.3",
-		"authoritarian": "0.0.0-dev.46",
+		"authoritarian": "0.0.0-dev.47",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",
 		"lit-element": "^2.3.1",
@@ -46,7 +46,6 @@
 		"menutown": "0.0.1",
 		"mobx": "^5.15.4",
 		"mobx-lit-element": "^0.1.2",
-		"overmind": "^23.0.1",
 		"redcrypto": "0.0.0-dev.5",
 		"renraku": "0.0.0-dev.25"
 	},
