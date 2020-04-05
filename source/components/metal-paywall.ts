@@ -1,15 +1,13 @@
 
 import {star} from "../system/icons.js"
-import {WithShare} from "../framework/share.js"
-import {PaywallShare, PaywallMode} from "../interfaces.js"
+import {PaywallShare, PaywallMode, ConstructorFor} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, html, css} from "../framework/mobx-lit-element.js"
+import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<PaywallShare, typeof MobxLitElement>>MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<PaywallShare>> =
+	MetalshopComponent
 
-export class MetalPaywall extends Component {
+export class MetalPaywall extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading supporter panel"
 

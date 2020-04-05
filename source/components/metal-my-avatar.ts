@@ -1,12 +1,8 @@
 
-import {WithShare} from "../framework/share.js"
 import {PaywallMode, MyAvatarShare} from "../interfaces.js"
-import {MobxLitElement, html, css} from "../framework/mobx-lit-element.js"
+import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
 
-const Component = <WithShare<MyAvatarShare, typeof MobxLitElement>>
-	MobxLitElement
-
-export class MetalMyAvatar extends Component {
+export class MetalMyAvatar extends MetalshopComponent<MyAvatarShare> {
 	static get styles() { return [super.styles || css``, styles] }
 
 	render() {

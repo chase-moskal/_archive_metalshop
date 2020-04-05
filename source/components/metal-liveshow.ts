@@ -1,18 +1,15 @@
 
 import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
-import {WithShare} from "../framework/share.js"
 import {LiveshowViewModel} from "../models/liveshow-model.js"
-import {LiveshowShare, AuthMode, PrivilegeMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {LiveshowShare, AuthMode, PrivilegeMode, ConstructorFor} from "../interfaces.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<LiveshowShare, typeof MobxLitElement>>
-		MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<LiveshowShare>> =
+	MetalshopComponent
 
-export class MetalLiveshow extends Component {
+export class MetalLiveshow extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String, reflect: true}) ["video-name"]: string

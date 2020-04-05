@@ -1,15 +1,12 @@
 
-import {WithShare} from "../framework/share.js"
-import {AccountShare, AuthMode} from "../interfaces.js"
+import {AccountShare, AuthMode, ConstructorFor} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<AccountShare, typeof MobxLitElement>>
-		MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<AccountShare>> =
+	MetalshopComponent
 
-export class MetalAccount extends Component {
+export class MetalAccount extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	loadingMessage = "loading user panel"
 	errorMessage = "user account system error"

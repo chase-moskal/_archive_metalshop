@@ -3,19 +3,16 @@ import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
-import {WithShare} from "../../framework/share.js"
 import {renderQuestion} from "./render-question.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
-import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
 import {mixinLoadable, LoadableState} from "../../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css, PropertyValues} from "../../framework/mobx-lit-element.js"
+import {QuestionsShare, PrepareHandleLikeClick, ConstructorFor} from "../../interfaces.js"
+import {MetalshopComponent, property, html, css, PropertyValues} from "../../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<QuestionsShare, typeof MobxLitElement>>
-		MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<QuestionsShare>> =
+	MetalshopComponent
 
-export class MetalQuestions extends Component {
+export class MetalQuestions extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String, reflect: true}) ["board"]: string
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean

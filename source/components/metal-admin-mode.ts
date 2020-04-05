@@ -1,16 +1,13 @@
 
 import {deepEqual} from "../toolbox/deep.js"
-import {WithShare} from "../framework/share.js"
-import {AdminModeShare, ProfileMode} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {AdminModeShare, ProfileMode, ConstructorFor} from "../interfaces.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<AdminModeShare, typeof MobxLitElement>>
-		MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<AdminModeShare>> =
+	MetalshopComponent
 
-export class MetalAdminMode extends Component {
+export class MetalAdminMode extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in admin controls"
 	loadingMessage = "loading admin controls"

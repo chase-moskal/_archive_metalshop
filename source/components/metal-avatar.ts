@@ -1,8 +1,8 @@
 
 import {silhouette} from "../system/icons.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-export class MetalAvatar extends MobxLitElement {
+export class MetalAvatar extends MetalshopComponent<{}> {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: String}) src: string = ""
 	@property({type: Boolean}) premium: boolean = false

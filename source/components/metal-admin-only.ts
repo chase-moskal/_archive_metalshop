@@ -1,15 +1,12 @@
 
-import {WithShare} from "../framework/share.js"
-import {ProfileMode, AdminOnlyShare} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {ProfileMode, AdminOnlyShare, ConstructorFor} from "../interfaces.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<AdminOnlyShare, typeof MobxLitElement>>
-		MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<AdminOnlyShare>> =
+	MetalshopComponent
 
-export class MetalAdminOnly extends Component {
+export class MetalAdminOnly extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in admin area"
 	loadingMessage = "loading admin area"

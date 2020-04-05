@@ -2,18 +2,16 @@
 import {Profile} from "authoritarian/dist/interfaces.js"
 
 import {select} from "../toolbox/selects.js"
-import {WithShare} from "../framework/share.js"
 import {Debouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
-import {ProfileShare, ProfileMode} from "../interfaces.js"
+import {ProfileShare, ProfileMode, ConstructorFor} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MobxLitElement, property, html, css} from "../framework/mobx-lit-element.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component = mixinLoadable(
-	<WithShare<ProfileShare, typeof MobxLitElement>>MobxLitElement
-)
+const Component: ConstructorFor<MetalshopComponent<ProfileShare>> =
+	MetalshopComponent
 
-export class MetalProfile extends Component {
+export class MetalProfile extends mixinLoadable(Component) {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in profile panel"
 	loadingMessage = "loading profile panel"
