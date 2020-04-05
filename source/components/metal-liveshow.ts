@@ -36,7 +36,6 @@ export class MetalLiveshow extends Component {
 		const {authMode} = this.share
 		const loadingState = (mode: LoadableState) => this.loadableState = mode
 		this.errorMessage = "error"
-		console.log("AUTHMODE", authMode)
 		switch (authMode) {
 			case AuthMode.Error:
 				loadingState(LoadableState.Error)
