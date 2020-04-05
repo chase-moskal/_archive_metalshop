@@ -159,24 +159,21 @@ export interface QuestionValidation {
 	postable: boolean
 }
 
-export interface QuestionsBureauUi extends QuestionsBureauTopic {
-
+export interface QuestionsBureauUi {
 	fetchQuestions(o: {
 		board: string
 	}): Promise<Question[]>
-
 	postQuestion(o: {
 		draft: QuestionDraft
 	}): Promise<Question>
-
 	deleteQuestion(o: {
 		questionId: string
 	}): Promise<void>
-
 	likeQuestion(o: {
 		like: boolean
 		questionId: string
 	}): Promise<Question>
+	purgeQuestions(): Promise<void>
 }
 
 export type PrepareHandleLikeClick = (o: {

@@ -96,9 +96,10 @@ export class MetalQuestions extends Component {
 	}
 
 	private _prepareHandleDeleteClick = (questionId: string) => async() => {
-		if (this._warnUnauthenticatedUser()) return
+		if (this._warnUnauthenticatedUser())
+			return
 		if (confirm(`Really delete question ${questionId}?`))
-		await this.share.uiBureau.deleteQuestion({questionId})
+			await this.share.uiBureau.deleteQuestion({questionId})
 	}
 
 	private _prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
@@ -140,12 +141,18 @@ export class MetalQuestions extends Component {
 		return {postable, message, angry}
 	}
 
+	private _handlePurgeClick = async() => {
+		if (confirm("Really purge ALL questions from the board?"))
+			await this.share.uiBureau.purgeQuestions()
+	}
+
 	renderReady() {
 		const {
 			board,
 			draftText,
 			maxCharacterLimit,
 			_handlePostClick: handlePostClick,
+			_handlePurgeClick: _handlePurgeClick,
 			_handleTextAreaChange: handleTextAreaChange,
 			_prepareHandleLikeClick: prepareHandleLikeClick,
 			_prepareHandleDeleteClick: prepareHandleDeleteClick,
@@ -159,7 +166,7 @@ export class MetalQuestions extends Component {
 
 		return html`
 			<metal-admin-only class="coolbuttonarea" block header>
-				<button>Purge all questions</button>
+				<button @click=${_handlePurgeClick}>Purge all questions</button>
 			</metal-admin-only>
 			<div>
 				<slot name="post">

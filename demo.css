@@ -131,7 +131,7 @@ main {
 	}
 }
 
-.component-demos h2 {
+.component-demos > h2 {
 	margin-bottom: 1em;
 }
 

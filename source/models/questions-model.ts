@@ -61,7 +61,12 @@ export class QuestionsModel {
 			const {questionId} = options
 			this.likeLocalQuestion(questionId, liked, likes)
 			return result
-		}
+		},
+		purgeQuestions: async() => {
+			const options = await this.addTokenToOptions({})
+			await this.questionsBureau.purgeQuestions(options)
+			this.deleteAllCachedQuestions()
+		},
 	}
 
 	@action.bound private setUser(user: User) {
@@ -95,6 +100,10 @@ export class QuestionsModel {
 		const question = this.getLocalQuestion(questionId)
 		question.likeInfo.liked = liked
 		question.likeInfo.likes = likes
+	}
+
+	@action.bound private deleteAllCachedQuestions() {
+		this.questions = []
 	}
 
 	private getLocalQuestion = (questionId: string) => this.questions.find(
