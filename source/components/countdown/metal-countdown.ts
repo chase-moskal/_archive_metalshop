@@ -2,35 +2,25 @@
 import {clock} from "../../system/icons.js"
 import {styles} from "./metal-countdown-styles.js"
 import {CountdownShare} from "../../interfaces.js"
-import {WithShare} from "../../framework/share.js"
 import {formatDate, formatDuration} from "./dates.js"
-import {MobxLitElement, property, html, css} from "../../framework/mobx-lit-element.js"
+import {MetalshopComponent, property, html, css} from "../../framework/metalshop-component.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
-const Component = <WithShare<CountdownShare, typeof MobxLitElement>>
-	MobxLitElement
-
-export class MetalCountdown extends Component {
+export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	@property({type: String}) key: string
-	@property({type: String}) adminValidationMessage: string = ""
+	@property({type: String}) ["event-name"]: string
 	@property({type: String}) adminDate: number = NaN
 	@property({type: String}) adminTime: number = NaN
+	@property({type: String}) adminValidationMessage: string = ""
 	private _interval: any
-
-	private get adminDateTime() {
-		const {adminDate, adminTime} = this
-		const dateTime = timeOffset + adminDate + adminTime
-		return dateTime
-	}
 
 	async firstUpdated() {
 		this["initially-hidden"] = false
-		const {key} = this
-		if (!key) throw new Error(`schedule-countdown requires [key] attribute`)
-		await this.share.loadEvent(key)
+		const {["event-name"]: eventName} = this
+		if (!eventName) throw new Error(`schedule-countdown requires [event-name] attribute`)
+		await this.share.loadEvent(eventName)
 		this._interval = setInterval(() => this.requestUpdate(), 1000)
 		this._updateValidation()
 	}
@@ -41,6 +31,103 @@ export class MetalCountdown extends Component {
 			this._interval = undefined
 		}
 		super.disconnectedCallback()
+	}
+
+	render() {
+		const {["event-name"]: eventName} = this
+		if (!eventName) return null
+		const time = this.share.events[eventName]?.time
+		const isScheduled: boolean = time !== undefined
+			&& ((time - Date.now()) > 0)
+		return html`
+			<div class="icon-area">
+				${clock}
+			</div>
+			<div class="content-area">
+				${isScheduled
+					? this.renderScheduled({time, timeUntilEvent: time - Date.now()})
+					: this.renderUnscheduled()}
+				${this.renderAdminPanel()}
+			</div>
+		`
+	}
+
+	private renderScheduled({time, timeUntilEvent}: {
+		time: number
+		timeUntilEvent: number
+	}) {
+		const eventSchedule = formatDate(time)
+		const countdownDuration = formatDuration(timeUntilEvent)
+		return html`
+			<div class="countdown">
+				<slot>
+					<h2>Next event</h2>
+				</slot>
+				<p class="start-time">
+					<strong>Scheduled start:</strong>
+					<span>
+						<span>${eventSchedule.datestring}</span>, at
+						<span>${eventSchedule.timestring}</span>
+						<span>(${eventSchedule.zonestring})</span>
+					</span>
+				</p>
+				<p class="countdown-time">
+					<strong>Countdown:</strong>
+					<span>
+						<span>${countdownDuration.days}</span>
+						<span>${countdownDuration.hours}</span>
+						<span>${countdownDuration.minutes}</span>
+						<span>${countdownDuration.seconds}</span>
+					</span>
+				</p>
+			</div>
+		`
+	}
+
+	private renderUnscheduled() {
+		return html`
+			<div>
+				<slot name="expired">
+					<h2>Next event: To Be Determined</h2>
+					<p>Check back soon!</p>
+				</slot>
+			</div>
+		`
+	}
+
+	private renderAdminPanel() {
+		const {adminValidationMessage} = this
+		return html`
+			<metal-admin-only class="controls coolbuttonarea" block header>
+				<input
+					type="date"
+					@keyUp=${this._handleUpdateDate}
+					@change=${this._handleUpdateDate}
+					@mouseUp=${this._handleUpdateDate}
+				/>
+				<input
+					type="time"
+					@keyUp=${this._handleUpdateTime}
+					@change=${this._handleUpdateTime}
+					@mouseUp=${this._handleUpdateTime}
+				/>
+				<button
+					@click=${this._handleScheduleClick}
+					?disabled=${!!adminValidationMessage}
+					class="coolbutton schedule-button">
+						Schedule
+				</button>
+				${adminValidationMessage ? html`
+					<p class="validation">${adminValidationMessage}</p>
+				` : null}
+			</metal-admin-only>
+		`
+	}
+
+	private get adminDateTime() {
+		const {adminDate, adminTime} = this
+		const dateTime = timeOffset + adminDate + adminTime
+		return dateTime
 	}
 
 	private _handleUpdateDate = (event: Event) => {
@@ -58,7 +145,6 @@ export class MetalCountdown extends Component {
 	private _updateValidation = () => {
 		const {adminDateTime} = this
 		let message = "enter a valid date and time to schedule"
-
 		if (!isNaN(adminDateTime)) {
 			if ((adminDateTime) > Date.now()) {
 				message = ""
@@ -67,89 +153,11 @@ export class MetalCountdown extends Component {
 				message = "cannot schedule the past"
 			}
 		}
-
 		this.adminValidationMessage = message
 	}
 
 	private _handleScheduleClick = async() => {
-		const {adminDateTime} = this
-		const eventTime = adminDateTime
-		await this.share.saveEvent(this.key, eventTime)
-	}
-
-	render() {
-		const {key} = this
-		if (!key) return null
-		const eventTime = this.share.events[key]?.eventTime
-		if (!eventTime) return html`
-			<p>unknown event "${key}"</p>
-		`
-
-		const eventSchedule = formatDate(eventTime)
-		const timeUntilEvent = eventTime - Date.now()
-		const countdownDuration = formatDuration(timeUntilEvent)
-		const {adminValidationMessage} = this
-
-		return html`
-			<div class="icon-area">
-				${clock}
-			</div>
-			<div class="content-area">
-				${timeUntilEvent > 0 ? html`
-					<div class="countdown">
-						<slot>
-							<h2>Next event</h2>
-						</slot>
-						<p class="start-time">
-							<strong>Scheduled start:</strong>
-							<span>
-								<span>${eventSchedule.datestring}</span>, at
-								<span>${eventSchedule.timestring}</span>
-								<span>(${eventSchedule.zonestring})</span>
-							</span>
-						</p>
-						<p class="countdown-time">
-							<strong>Countdown:</strong>
-							<span>
-								<span>${countdownDuration.days}</span>
-								<span>${countdownDuration.hours}</span>
-								<span>${countdownDuration.minutes}</span>
-								<span>${countdownDuration.seconds}</span>
-							</span>
-						</p>
-					</div>
-				` : html`
-					<div>
-						<slot name="expired">
-							<h2>Next event: To Be Determined</h2>
-							<p>Check back soon!</p>
-						</slot>
-					</div>
-				`}
-				<metal-admin-only class="controls coolbuttonarea" block header>
-					<input
-						type="date"
-						@keyUp=${this._handleUpdateDate}
-						@change=${this._handleUpdateDate}
-						@mouseUp=${this._handleUpdateDate}
-					/>
-					<input
-						type="time"
-						@keyUp=${this._handleUpdateTime}
-						@change=${this._handleUpdateTime}
-						@mouseUp=${this._handleUpdateTime}
-					/>
-					<button
-						@click=${this._handleScheduleClick}
-						?disabled=${!!adminValidationMessage}
-						class="coolbutton schedule-button">
-							Schedule
-					</button>
-					${adminValidationMessage ? html`
-						<p class="validation">${adminValidationMessage}</p>
-					` : null}
-				</metal-admin-only>
-			</div>
-		`
+		const {adminDateTime: time, ["event-name"]: eventName} = this
+		await this.share.saveEvent(eventName, {time})
 	}
 }

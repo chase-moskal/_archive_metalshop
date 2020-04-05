@@ -42,6 +42,7 @@ export function prepareSupermodel({
 		supermodel.profile.handleAuthUpdate(update)
 		supermodel.paywall.handleAuthUpdate(update)
 		supermodel.liveshow.handleAuthUpdate(update)
+		supermodel.schedule.handleAuthUpdate(update)
 		supermodel.questions.handleAuthUpdate(update)
 	})
 

@@ -7,15 +7,17 @@ import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
 import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
+import {makeScheduleSentry} from "authoritarian/dist/business/schedule-sentry/sentry.js"
 import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
 import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-verify-google-token.js"
+import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule-sentry/mock-schedule-datalayer.js"
 import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
 import {AccessToken, AccessPayload, PaywallGuardianTopic, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
-import {LoginPopupRoutine, ScheduleSentryTopic} from "../interfaces.js"
+import {LoginPopupRoutine} from "../interfaces.js"
 
 export const prepareAllMocks = async({
 	startAdmin,
@@ -112,30 +114,8 @@ export const prepareAllMocks = async({
 		},
 	}
 
-	const scheduleSentry = new class MockScheduleSentry
-		implements ScheduleSentryTopic {
-
-		_data: {[key: string]: number} = {}
-
-		constructor({data = {
-			countdown1: Date.now() + 1000 * 60 * 60 * 80
-		}}: {data?: {[key: string]: number}} = {}) {
-			this._data = data
-		}
-
-		async getEventTime(key: string): Promise<number> {
-			if (this._data.hasOwnProperty(key)) {
-				return this._data[key]
-			}
-			else {
-				return null
-			}
-		}
-
-		async setEventTime(key: string, time: number) {
-			this._data[key] = time
-		}
-	}
+	const scheduleDatalayer = mockScheduleDatalayer()
+	const scheduleSentry = makeScheduleSentry({verifyToken, scheduleDatalayer})
 
 	// starting conditions
 	const authTokens = await authExchanger.authenticateViaGoogle({

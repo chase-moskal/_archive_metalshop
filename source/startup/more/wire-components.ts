@@ -33,8 +33,8 @@ export const wireComponents = (supermodel: Supermodel) => ({
 	})),
 	MetalCountdown: share(MetalCountdown, () => (<CountdownShare>{
 		user: supermodel.auth.user,
-		profile: supermodel.profile.profile,
 		events: supermodel.schedule.events,
+		profile: supermodel.profile.profile,
 		loadEvent: supermodel.schedule.loadEvent,
 		saveEvent: supermodel.schedule.saveEvent,
 	})),

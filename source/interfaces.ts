@@ -5,9 +5,11 @@ import {
 	Question,
 	AuthTokens,
 	AccessToken,
+	ScheduleEvent,
 	QuestionDraft,
 	AuthDealerTopic,
 	TokenStorageTopic,
+	ScheduleSentryTopic,
 	QuestionsBureauTopic,
 	PaywallGuardianTopic,
 	LiveshowGovernorTopic,
@@ -18,9 +20,9 @@ import {AuthModel} from "./models/auth-model.js"
 import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
+import {QuestionsModel} from "./models/questions-model.js"
 import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
-import { QuestionsModel } from "./models/questions-model.js"
 
 export interface MetalConfig {
 	mock: string
@@ -176,15 +178,20 @@ export interface QuestionsBureauUi {
 	purgeQuestions(): Promise<void>
 }
 
+export interface ScheduleSentryUi {
+	getEventTime(options: {
+		eventName: string
+	}): Promise<number>
+	setEventTime(options: {
+		time: number
+		eventName: string
+	}): Promise<void>
+}
+
 export type PrepareHandleLikeClick = (o: {
 	like: boolean
 	questionId: string
 }) => (event: MouseEvent) => void
-
-export interface ScheduleSentryTopic {
-	getEventTime(key: string): Promise<number>
-	setEventTime(key: string, time: number): Promise<void>
-}
 
 // export interface CountdownState {
 // 	admin: boolean
@@ -242,10 +249,6 @@ export enum PaywallMode {
 	LoggedOut,
 	NotPremium,
 	Premium,
-}
-
-export interface ScheduleEvent {
-	eventTime: number
 }
 
 export enum PrivilegeMode {
@@ -319,8 +322,8 @@ export interface CountdownShare {
 	user: User
 	profile: Profile
 	events: {[key: string]: ScheduleEvent}
-	loadEvent: (key: string) => Promise<ScheduleEvent>
-	saveEvent: (key: string, eventTime: number) => Promise<ScheduleEvent>
+	loadEvent: (name: string) => Promise<ScheduleEvent>
+	saveEvent: (name: string, event: ScheduleEvent) => Promise<void>
 }
 
 export interface LiveshowShare {

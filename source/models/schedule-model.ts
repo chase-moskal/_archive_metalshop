@@ -1,34 +1,34 @@
 
 import {observable, action} from "mobx"
-import {ScheduleSentryTopic, ScheduleEvent} from "../interfaces.js"
+import {GetAuthContext, AuthUpdate} from "../interfaces.js"
+import {ScheduleSentryTopic, ScheduleEvent} from "authoritarian/dist/interfaces.js"
 
 export class ScheduleModel {
-	@observable events: {[key: string]: ScheduleEvent} = {}
+	@observable events: {[name: string]: ScheduleEvent} = {}
+	private getAuthContext: GetAuthContext
 	private scheduleSentry: ScheduleSentryTopic
 
 	constructor(options: {
 		scheduleSentry: ScheduleSentryTopic
 	}) { Object.assign(this, options) }
 
-	@action.bound async loadEvent(key: string): Promise<ScheduleEvent> {
-		const eventTime = await this.scheduleSentry.getEventTime(key)
-		return this.cacheEvent(key, eventTime)
+	@action.bound async handleAuthUpdate({getAuthContext}: AuthUpdate) {
+		this.getAuthContext = getAuthContext
 	}
 
-	@action.bound async saveEvent(
-		key: string,
-		eventTime: number
-	): Promise<ScheduleEvent> {
-		await this.scheduleSentry.setEventTime(key, eventTime)
-		return this.cacheEvent(key, eventTime)
-	}
-
-	private cacheEvent(key: string, eventTime: number) {
-		const existing = this.events[key]
-		const event: ScheduleEvent = existing
-			? {...existing, eventTime}
-			: {eventTime}
-		this.events[key] = event
+	@action.bound async loadEvent(name: string): Promise<ScheduleEvent> {
+		const event = await this.scheduleSentry.getEvent({name})
+		if (event) this.cacheEvent(name, event)
 		return event
+	}
+
+	@action.bound async saveEvent(name: string, event: ScheduleEvent): Promise<void> {
+		const {accessToken} = await this.getAuthContext()
+		await this.scheduleSentry.setEvent({accessToken, name, event})
+		this.cacheEvent(name, event)
+	}
+
+	private cacheEvent(name: string, event: ScheduleEvent) {
+		this.events[name] = event
 	}
 }
