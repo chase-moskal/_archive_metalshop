@@ -37,17 +37,17 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 		const {["event-name"]: eventName} = this
 		if (!eventName) return null
 		const time = this.share.events[eventName]?.time
-		const isScheduled: boolean = time !== undefined
+		const scheduled: boolean = time !== undefined
 			&& ((time - Date.now()) > 0)
 		return html`
 			<div class="icon-area">
 				${clock}
 			</div>
 			<div class="content-area">
-				${isScheduled
+				${scheduled
 					? this.renderScheduled({time, timeUntilEvent: time - Date.now()})
 					: this.renderUnscheduled()}
-				${this.renderAdminPanel()}
+				${this.renderAdminPanel({scheduled})}
 			</div>
 		`
 	}
@@ -87,7 +87,7 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 	private renderUnscheduled() {
 		return html`
 			<div>
-				<slot name="expired">
+				<slot name="unscheduled">
 					<h2>Next event: To Be Determined</h2>
 					<p>Check back soon!</p>
 				</slot>
@@ -95,7 +95,7 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 		`
 	}
 
-	private renderAdminPanel() {
+	private renderAdminPanel({scheduled}: {scheduled: boolean}) {
 		const {adminValidationMessage} = this
 		return html`
 			<metal-admin-only class="controls coolbuttonarea" block header>
@@ -112,10 +112,16 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 					@mouseUp=${this._handleUpdateTime}
 				/>
 				<button
+					class="coolbutton schedule-button"
 					@click=${this._handleScheduleClick}
-					?disabled=${!!adminValidationMessage}
-					class="coolbutton schedule-button">
+					?disabled=${!!adminValidationMessage}>
 						Schedule
+				</button>
+				<button
+					class="coolbutton unschedule-button"
+					?disabled=${!scheduled}
+					@click=${this._handleUnscheduleClick}>
+						Unschedule
 				</button>
 				${adminValidationMessage ? html`
 					<p class="validation">${adminValidationMessage}</p>
@@ -159,5 +165,10 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 	private _handleScheduleClick = async() => {
 		const {adminDateTime: time, ["event-name"]: eventName} = this
 		await this.share.saveEvent(eventName, {time})
+	}
+
+	private _handleUnscheduleClick = async() => {
+		const {["event-name"]: eventName} = this
+		await this.share.saveEvent(eventName, undefined)
 	}
 }
