@@ -1,6 +1,6 @@
 {
 	"name": "metalshop",
-	"version": "0.0.0-dev.45",
+	"version": "0.0.0-dev.46",
 	"description": "ready-made app components and microservices",
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
@@ -20,7 +20,7 @@
 	"scripts": {
 		"prepare": "run-s clean && run-p compile importmap && run-s test",
 		"clean": "rimraf dist && mkdirp dist",
-		"importmap": "importly --host=node_modules < package.json > dist/importmap.json",
+		"importmap": "importly --host=jsdelivr < package.json > dist/importmap.json",
 		"compile": "tsc",
 		"watch": "tsc -w",
 		"test": "exit 0",
@@ -38,7 +38,7 @@
 	},
 	"dependencies": {
 		"@adobe/lit-mobx": "0.0.3",
-		"authoritarian": "0.0.0-dev.47",
+		"authoritarian": "0.0.0-dev.48",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",
 		"lit-element": "^2.3.1",
