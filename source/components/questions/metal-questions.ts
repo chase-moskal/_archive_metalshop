@@ -26,6 +26,8 @@ export class MetalQuestions extends mixinLoadable(Component) {
 	loadingMessage = "loading questions board..."
 	errorMessage = "questions board error"
 
+	private lastBoard: string = null
+
 	firstUpdated() {
 		this["initially-hidden"] = false
 		this._downloadQuestions()
@@ -39,11 +41,14 @@ export class MetalQuestions extends mixinLoadable(Component) {
 
 	private async _downloadQuestions() {
 		try {
-			const {board} = this
+			const {board, lastBoard} = this
 			this.loadableState = LoadableState.Loading
 			if (!board)
 				throw new Error(`questions-board requires attribute [board]`)
-			await this.share.uiBureau.fetchQuestions({board})
+			if (board !== this.lastBoard) {
+				this.lastBoard = board
+				await this.share.uiBureau.fetchQuestions({board})
+			}
 			this.loadableState = LoadableState.Ready
 		}
 		catch (error) {

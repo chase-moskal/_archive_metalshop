@@ -24,7 +24,7 @@ export class QuestionsModel {
 
 	@action.bound handleProfileUpdate(profile: Profile) {
 		for (const question of this.questions) {
-			if (question.author.profile.userId === profile.userId) {
+			if (question.author.profile.userId === profile?.userId) {
 				question.author.profile = profile
 			}
 		}
