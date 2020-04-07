@@ -1,7 +1,7 @@
 
 import {observable, action} from "mobx"
-import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
 import {PaywallGuardianTopic, AccessToken} from "authoritarian/dist/interfaces.js"
+import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
 
 const fakePaypalToken = "fake-paypal-token"
 

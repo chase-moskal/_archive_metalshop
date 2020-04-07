@@ -1,7 +1,7 @@
 
 import {observable, action} from "mobx"
 import {AccessToken, TokenStorageTopic, User} from "authoritarian/dist/interfaces.js"
-import {AuthMode, LoginDetail, GetAuthContext, LoginPopupRoutine, DecodeAccessToken, AuthContext, AccountShare} from "../interfaces.js"
+import {AuthMode, LoginDetail, GetAuthContext, LoginPopupRoutine, DecodeAccessToken, AuthContext} from "../interfaces.js"
 
 export class AuthModel {
 	@observable user: User

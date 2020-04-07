@@ -21,7 +21,6 @@ import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {QuestionsModel} from "./models/questions-model.js"
-import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
 
 export interface MetalConfig {
@@ -60,31 +59,6 @@ export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
 
 export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
 
-export interface SimpleModel {
-	reader?: Reader
-}
-
-// export interface UserState {
-// 	mode: UserMode
-// 	getAuthContext: GetAuthContext
-// }
-
-// export type UserUpdate = (state: UserState) => void
-
-// export type UserReader = Reader<UserState>
-
-// export interface UserModel {
-// 	reader: UserReader
-// 	start: () => Promise<void>
-// 	login: () => Promise<void>
-// 	logout: () => Promise<void>
-// 	receiveLoginWithAccessToken: (accessToken: AccessToken) => Promise<void>
-// }
-
-export interface PaywallState {
-	mode: PaywallMode
-}
-
 export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
 }
@@ -92,68 +66,6 @@ export interface LoginWithAccessToken {
 export interface LoginDetail {
 	getAuthContext: GetAuthContext
 }
-
-export interface ProfileEvents extends Pubsubs {
-	stateUpdate: Pubsub
-}
-
-// export interface ProfileState {
-// 	error: Error
-// 	admin: boolean
-// 	premium: boolean
-// 	loading: boolean
-// 	profile: Profile
-// 	adminClaim: boolean
-// }
-
-export interface AvatarWiring {
-	update: () => void
-	setPictureUrl(url: string): void
-	setPremium(premium: boolean): void
-}
-
-export interface WebComponent extends HTMLElement {
-	adoptedCallback?(): void
-	connectedCallback?(): void
-	disconnectedCallback?(): void
-	attributeChangedCallback?(
-		name: string,
-		oldValue: string,
-		newValue: string
-	): void
-}
-
-// export interface VimeoState {
-// 	vimeoId: string
-// 	loading: boolean
-// 	mode: PrivilegeMode
-// 	errorMessage: string
-// 	validationMessage: string
-// }
-
-// export interface VideoModel extends SimpleModel {
-// 	reader: Reader<VimeoState>
-// 	updateVideo(vimeostring: string): Promise<void>
-// 	receiveUserUpdate(state: UserState): Promise<void>
-// }
-
-// export interface VideoViewerModel extends SimpleModel {
-// 	prepareVideoModel: (options: {videoName: string}) => VideoModel
-// }
-
-// export interface QuestionsState {
-// 	user: User
-// 	profile: Profile
-// 	questions: Question[]
-// }
-
-// export interface QuestionsModel {
-// 	reader: Reader<QuestionsState>
-// 	bureau: QuestionsBureauUi
-// 	fetchLocalQuestions: (board: string) => Question[]
-// 	updateProfile(profile: Profile): void
-// 	receiveUserUpdate(state: UserState): Promise<void>
-// }
 
 export interface QuestionValidation {
 	angry: boolean
@@ -178,37 +90,10 @@ export interface QuestionsBureauUi {
 	purgeQuestions(o: {board: string}): Promise<void>
 }
 
-export interface ScheduleSentryUi {
-	getEventTime(options: {
-		eventName: string
-	}): Promise<number>
-	setEventTime(options: {
-		time: number
-		eventName: string
-	}): Promise<void>
-}
-
 export type PrepareHandleLikeClick = (o: {
 	like: boolean
 	questionId: string
 }) => (event: MouseEvent) => void
-
-// export interface CountdownState {
-// 	admin: boolean
-// 	eventTime: number
-// 	validationMessage: string
-// }
-
-// export interface CountdownModel {
-// 	reader: Reader<CountdownState>
-// 	refreshEventTime(): Promise<void>
-// 	setEventTime(time: number): Promise<void>
-// 	receiveUserUpdate(options: UserState): Promise<void>
-// }
-
-// export interface ScheduleModel extends SimpleModel {
-// 	prepareCountdownModel(options: {key: string}): CountdownModel
-// }
 
 //
 // supermodel
@@ -259,11 +144,6 @@ export enum PrivilegeMode {
 
 export type ReceiveGetAuthContext = (getAuthContext: GetAuthContext) => void
 
-// export interface VideoViewModel {
-// 	updateVideo(vimeostring: string): Promise<void>
-// 	handleAuthUpdate(update: AuthUpdate): Promise<void>
-// }
-
 //
 // component shares
 //
@@ -271,9 +151,9 @@ export type ReceiveGetAuthContext = (getAuthContext: GetAuthContext) => void
 export interface AccountShare {
 	user: User
 	mode: AuthMode
-	getAuthContext: GetAuthContext
 	login: () => Promise<void>
 	logout: () => Promise<void>
+	getAuthContext: GetAuthContext
 }
 
 export interface MyAvatarShare {

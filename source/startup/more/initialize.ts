@@ -12,8 +12,8 @@ import {decodeAccessToken} from "../../system/decode-access-token.js"
 const err = (message: string) => new AuthoritarianStartupError(message)
 
 export async function initialize(config: MetalConfig): Promise<MetalOptions> {
-	let progress: Partial<MetalOptions> = {}
-	progress.decodeAccessToken = decodeAccessToken
+	let options: Partial<MetalOptions> = {}
+	options.decodeAccessToken = decodeAccessToken
 
 	//
 	// use mocks instead of real microservices
@@ -36,8 +36,8 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			startPremium: config.mock?.includes("premium"),
 			startLoggedIn: config.mock?.includes("loggedin"),
 		})
-		progress = {
-			...progress,
+		options = {
+			...options,
 			authDealer,
 			tokenStorage,
 			scheduleSentry,
@@ -67,43 +67,43 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	if (authServerOrigin) {
 		queue(async() => {
 			const {authDealer} = await makeAuthClients({authServerOrigin})
-			progress.authDealer = authDealer
-			progress.loginPopupRoutine = async() => triggerLoginPopup({authServerOrigin})
-			progress.tokenStorage = await createTokenStorageClient({authServerOrigin})
+			options.authDealer = authDealer
+			options.loginPopupRoutine = async() => triggerLoginPopup({authServerOrigin})
+			options.tokenStorage = await createTokenStorageClient({authServerOrigin})
 		})
 	}
 
 	if (profileServerOrigin) {
 		queue(async() => {
-			progress.profileMagistrate = await makeProfileMagistrateClient({profileServerOrigin})
+			options.profileMagistrate = await makeProfileMagistrateClient({profileServerOrigin})
 		})
 	}
 
 	if (questionsServerOrigin) {
 		queue(async() => {
 			const {questionsBureau} = await makeQuestionsClients({questionsServerOrigin})
-			progress.questionsBureau = questionsBureau
+			options.questionsBureau = questionsBureau
 		})
 	}
 
 	if (scheduleServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: schedule initialization")
-			progress.scheduleSentry = null
+			options.scheduleSentry = null
 		})
 	}
 
 	if (paywallServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: paywall initialization")
-			progress.paywallGuardian = null
+			options.paywallGuardian = null
 		})
 	}
 
 	if (liveshowServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: liveshow initialization")
-			progress.liveshowGovernor = null
+			options.liveshowGovernor = null
 		})
 	}
 
@@ -114,20 +114,16 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		console.error(err(error.message))
 	}
 
-	//
-	// return options
-	//
-
 	return {
-		authDealer: progress.authDealer,
-		tokenStorage: progress.tokenStorage,
-		scheduleSentry: progress.scheduleSentry,
-		paywallGuardian: progress.paywallGuardian,
-		questionsBureau: progress.questionsBureau,
-		liveshowGovernor: progress.liveshowGovernor,
-		profileMagistrate: progress.profileMagistrate,
+		authDealer: options.authDealer,
+		tokenStorage: options.tokenStorage,
+		scheduleSentry: options.scheduleSentry,
+		paywallGuardian: options.paywallGuardian,
+		questionsBureau: options.questionsBureau,
+		liveshowGovernor: options.liveshowGovernor,
+		profileMagistrate: options.profileMagistrate,
 		//—
-		decodeAccessToken: progress.decodeAccessToken,
-		loginPopupRoutine: progress.loginPopupRoutine,
+		decodeAccessToken: options.decodeAccessToken,
+		loginPopupRoutine: options.loginPopupRoutine,
 	}
 }

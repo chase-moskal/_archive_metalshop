@@ -1,7 +1,6 @@
 
 export * from "mobx"
 import {action, computed, observable} from "mobx"
-
 import {objectMap} from "../toolbox/object-map.js"
 
 export const actionelize =

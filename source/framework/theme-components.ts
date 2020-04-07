@@ -1,12 +1,9 @@
 
-import {LitElement, CSSResult} from "lit-element"
-
 import {mixinCss} from "./mixin-css.js"
+import {LitElement, CSSResult} from "lit-element"
 import {objectMap} from "../toolbox/object-map.js"
 
-export function themeComponents<C extends new(...args: any[]) => LitElement>(
+export const themeComponents = <C extends new(...args: any[]) => LitElement>(
 	theme: CSSResult | CSSResult[],
 	components: {[key: string]: C}
-) {
-	return objectMap(components, Component => mixinCss(theme, Component))
-}
+) => objectMap(components, Component => mixinCss(theme, Component))

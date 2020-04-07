@@ -1,14 +1,6 @@
 
-import {
-	css,
-	svg,
-	html,
-	CSSResult,
-	LitElement,
-	CSSResultArray,
-} from "lit-element"
-
 import {ConstructorFor} from "../interfaces.js"
+import {css, svg, html, CSSResult, LitElement, CSSResultArray} from "lit-element"
 
 export enum LoadableState {
 	Loading,
