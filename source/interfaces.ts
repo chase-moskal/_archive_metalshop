@@ -25,13 +25,13 @@ import {Reader, Pubsubs, Pubsub} from "./toolbox/pubsub.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
 
 export interface MetalConfig {
-	mock: string
-	authServer: string
-	profileServer: string
-	paywallServer: string
-	scheduleServer: string
-	liveshowServer: string
-	questionsServer: string
+	["mock"]: string
+	["auth-server"]: string
+	["profile-server"]: string
+	["paywall-server"]: string
+	["schedule-server"]: string
+	["liveshow-server"]: string
+	["questions-server"]: string
 }
 
 export interface MetalOptions {
@@ -175,7 +175,7 @@ export interface QuestionsBureauUi {
 		like: boolean
 		questionId: string
 	}): Promise<Question>
-	purgeQuestions(): Promise<void>
+	purgeQuestions(o: {board: string}): Promise<void>
 }
 
 export interface ScheduleSentryUi {

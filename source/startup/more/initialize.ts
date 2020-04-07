@@ -1,6 +1,7 @@
 
 import {makeAuthClients} from "authoritarian/dist/business/auth-api/auth-clients.js"
 import {triggerLoginPopup} from "authoritarian/dist/business/account-popup/trigger-login-popup.js"
+import {makeQuestionsClients} from "authoritarian/dist/business/questions-bureau/questions-clients.js"
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
 
@@ -49,42 +50,57 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	}
 
 	//
-	// use real microservices
+	// use real microservices, overwriting mocks
 	//
 
 	const operations = []
 	const queue = (func: () => Promise<any>) => operations.push(func())
+	const {
+		["auth-server"]: authServerOrigin,
+		["paywall-server"]: paywallServerOrigin,
+		["profile-server"]: profileServerOrigin,
+		["liveshow-server"]: liveshowServerOrigin,
+		["schedule-server"]: scheduleServerOrigin,
+		["questions-server"]: questionsServerOrigin,
+	} = config
 
-	if (config.authServer) {
+	if (authServerOrigin) {
 		queue(async() => {
-			progress.authDealer = (await makeAuthClients({
-				authServerOrigin: config.authServer
-			})).authDealer
-			progress.loginPopupRoutine = async() => triggerLoginPopup({
-				authServerOrigin: config.authServer
-			})
-			progress.tokenStorage = await createTokenStorageClient({
-				authServerOrigin: config.authServer
-			})
+			const {authDealer} = await makeAuthClients({authServerOrigin})
+			progress.authDealer = authDealer
+			progress.loginPopupRoutine = async() => triggerLoginPopup({authServerOrigin})
+			progress.tokenStorage = await createTokenStorageClient({authServerOrigin})
 		})
 	}
 
-	if (config.profileServer) {
+	if (profileServerOrigin) {
 		queue(async() => {
-			progress.profileMagistrate = await makeProfileMagistrateClient({
-				profileServerOrigin: config.profileServer
-			})
+			progress.profileMagistrate = await makeProfileMagistrateClient({profileServerOrigin})
 		})
 	}
 
-	if (config.paywallServer) {
+	if (questionsServerOrigin) {
+		queue(async() => {
+			const {questionsBureau} = await makeQuestionsClients({questionsServerOrigin})
+			progress.questionsBureau = questionsBureau
+		})
+	}
+
+	if (scheduleServerOrigin) {
+		queue(async() => {
+			console.log("coming soon: schedule initialization")
+			progress.scheduleSentry = null
+		})
+	}
+
+	if (paywallServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: paywall initialization")
 			progress.paywallGuardian = null
 		})
 	}
 
-	if (config.liveshowServer) {
+	if (liveshowServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: liveshow initialization")
 			progress.liveshowGovernor = null

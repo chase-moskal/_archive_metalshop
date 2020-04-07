@@ -28,14 +28,17 @@
 					if (query.dev === "minikube") {
 						set("auth-server", "http://auth.metaldev.chasemoskal.com")
 						set("profile-server", "http://profile.metaldev.chasemoskal.com")
+						set("questions-server", "http://questions.metaldev.chasemoskal.com")
 					}
 					else if (query.dev === "node") {
 						set("auth-server", "http://auth.metaldev.chasemoskal.com:8000")
 						set("profile-server", "http://profile.metaldev.chasemoskal.com:8001")
+						set("questions-server", "http://questions.metaldev.chasemoskal.com:8002")
 					}
 					else {
 						set("auth-server", "https://auth.metalback.chasemoskal.com")
 						set("profile-server", "https://profile.metalback.chasemoskal.com")
+						set("questions-server", "https://questions.metalback.chasemoskal.com")
 					}
 				}
 			}()

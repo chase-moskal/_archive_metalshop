@@ -139,8 +139,9 @@ export class MetalQuestions extends mixinLoadable(Component) {
 	}
 
 	private _handlePurgeClick = async() => {
+		const {board} = this
 		if (confirm("Really purge ALL questions from the board?"))
-			await this.share.uiBureau.purgeQuestions()
+			await this.share.uiBureau.purgeQuestions({board})
 	}
 
 	renderReady() {

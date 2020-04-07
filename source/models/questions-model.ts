@@ -62,9 +62,9 @@ export class QuestionsModel {
 			this.likeLocalQuestion(questionId, liked, likes)
 			return result
 		},
-		purgeQuestions: async() => {
-			const options = await this.addTokenToOptions({})
-			await this.questionsBureau.purgeQuestions(options)
+		purgeQuestions: async(options: {board: string}) => {
+			const optionsWithToken = await this.addTokenToOptions(options)
+			await this.questionsBureau.purgeQuestions(optionsWithToken)
 			this.deleteAllCachedQuestions()
 		},
 	}
