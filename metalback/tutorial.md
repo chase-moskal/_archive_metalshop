@@ -22,6 +22,130 @@ prerequisites to install on your dev machine:
 1. deploy on minikube and test
 	- *coming soon*
 
+## provision a google kubernetes engine cluster
+
+resources
+- https://medium.com/bluekiri/deploy-a-nginx-ingress-and-a-certitificate-manager-controller-on-gke-using-helm-3-8e2802b979ec
+
+### (a) create the cluster
+1. get to the google kubernetes cloud console and hit "create cluster"
+1. choose your cluster basics
+	- name: `metalback2`, because i botched the first one
+	- location type: `zonal`, was default
+	- zone: `us-central1-c`, was default
+	- specify node locations: unchecked
+	- master version: release channel, `Rapid channel - 1.16.8-gke.8`
+	- ignored a seemingly random notification toast saying an api couldn't be created or something
+1. configure stuff in the left hand pane
+	- left pane, click the default node pool to configure it
+		- name: `default-pool`
+		- number of nodes: `3`, apparently the minimum for rolling upgrades
+		- autoscaling: disabled
+		- automation: auto-upgrade and auto-repair enabled, but surge upgrade disabled
+	- left pane: default-pool > nodes
+		- image type: `container-optimized os (cos) (default)`
+		- machine family: general purpose
+		- blah blah went with defaults
+		- except boot disk size, `30` GB instead of the default 100
+		- other panes for the node pool, all defaults
+	- left pane: cluster > automation
+		- use defaults
+	- left pane: cluster > networking
+		- use default of `Public cluster`
+		- use default of checked `Enable HTTP load balancing`
+	- left pane: cluster > security, also metadata section
+		- use defaults
+	- left pane: cluster > features
+		- telemetry: enabled for now (costs more)
+		- no other features enabled
+1. hit the "create" button at the bottom left (weird spot to put it)
+	- wait awhile for it to spool up
+
+### (b) install the google cloud sdk
+1. install the cli
+	```sh
+	# Add the Cloud SDK distribution URI as a package source
+	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+
+	# Import the Google Cloud Platform public key
+	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+
+	# Update the package list and install the Cloud SDK
+	sudo apt-get update && sudo apt-get install google-cloud-sdk
+	```
+1. perform `gcloud init` and authenticate via web browser (pretty cool)
+1. when it asks, choose your cluster's project id and zone as defaults
+
+### (c) configure static ip
+1. reserve that shit -- i named mine `metaladdress`
+	```sh
+	gcloud compute addresses create metaladdress --global
+	```
+1. look at it, and write down the ip, mine was `35.201.100.58`
+	```sh
+	gcloud compute addresses describe metaladdress
+	```
+1. add the following annotation to your ingress
+	```
+	annotations:
+		kubernetes.io/ingress.global-static-ip-name: metaladdress
+	```
+1. set an `A record` for your domain pointing to the static ip
+	- `metalback2` .chasemoskal.com → `35.201.100.58`
+	- `*.metalback2` .chasemoskal.com → `35.201.100.58`
+1. configure your yaml values to point to the right domain, `metalback2`
+
+### (d) install necessary cluster infrastructure
+1. set kubectl credentials for your cluster, mine's called `metalback2`
+	```sh
+	gcloud container clusters get-credentials metalback2
+	```
+1. install nginx-ingress into the cluster
+	- create the ingress-basic namespace
+		```sh
+		kubectl create namespace ingress-basic
+		```
+	- use helm to install the controller
+		```sh
+		helm install nginx-ingress stable/nginx-ingress \
+			--namespace ingress-basic \
+			--set rbac.create=true \
+			--set controller.publishService.enabled=true \
+			--set controller.replicaCount=2
+		```
+		- set your static ip
+		- wait a bit and verify with `kubectl get service -l app=nginx-ingress --namespace ingress-basic`, you should see the external ip assigned after a minute or so
+1. install acme cert-manager into cluster [*(cert-manager docs)*](https://cert-manager.io/docs/installation/kubernetes/)
+	- install the cert-manager kubernetes custom resources
+		```sh
+		kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.14.0/cert-manager.crds.yaml
+		```
+	- create the cert-manager namespace
+		```sh
+		kubectl create namespace cert-manager
+		```
+	- add the jetstack helm repo
+		```sh
+		helm repo add jetstack https://charts.jetstack.io
+		```
+	- update the repo
+		```sh
+		helm repo update
+		```
+	- use helm to deploy cert-manager into the cluster
+		```sh
+		helm install cert-manager jetstack/cert-manager \
+			--namespace cert-manager \
+			--version v0.14.1
+		```
+	- verify the install
+		```sh
+		kubectl get pods --namespace cert-manager
+		```
+		- you should see a few cert-manager pods running
+
+-------
+
 ## provision an azure kubernetes cluster
 
 &nbsp; **(a) create cluster in azure portal**

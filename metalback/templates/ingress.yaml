@@ -8,6 +8,9 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: issuer
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- if .Values.ingress.globalStaticIp }}
+    kubernetes.io/ingress.global-static-ip-name: {{ .Values.ingress.globalStaticIp }}
+    {{- end }}
 spec:
   {{- if .Values.ingress.tls }}
   tls:

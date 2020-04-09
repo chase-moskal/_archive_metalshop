@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+helm upgrade metalback-teahupoo . --install -f google.yaml
