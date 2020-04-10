@@ -5,8 +5,11 @@ ingress:
 
 microservices:
   auth:
-    # image: chasemoskal/auth-server:latest
+    image: chasemoskal/auth-server:latest
     replicas: 1
   profile:
-    # image: chasemoskal/profile-server:latest
+    image: chasemoskal/profile-server:latest
+    replicas: 1
+  questions:
+    image: chasemoskal/questions-server:latest
     replicas: 1

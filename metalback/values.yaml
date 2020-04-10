@@ -15,3 +15,7 @@ microservices:
     port: 8001
     replicas: 2
     image: chasemoskal/profile-server:v0.0.0-dev.12
+  questions:
+    port: 8002
+    replicas: 2
+    image: chasemoskal/profile-server:v0.0.0-dev.0
