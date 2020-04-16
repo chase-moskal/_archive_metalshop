@@ -3,8 +3,7 @@ import {observable, action} from "mobx"
 import {PaywallGuardianTopic, AccessToken} from "authoritarian/dist/interfaces.js"
 import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
 
-import {openPopup} from "authoritarian/dist/toolbox/popups/open-popup.js"
-import {namespace} from "authoritarian/dist/business/paywall-popup/common.js"
+import {openPaywallPopup} from "authoritarian/dist/business/paywall-popup/open-paywall-popup.js"
 import {PaywallPopupParameters, PaywallPopupPayload} from "authoritarian/dist/business/paywall-popup/interfaces.js"
 
 const fakePaypalToken = "fake-paypal-token"
@@ -43,14 +42,10 @@ export class PaywallModel {
 		const {userId} = user
 		const stripePlanId = "plan_H5oUIjw9895qDj"
 
-		const {closePopup, promisedPayload} = openPopup<PaywallPopupParameters, PaywallPopupPayload>({
-			namespace,
-			parameters: {
-				userId,
-				stripePlanId,
-			},
-			popupOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
-			popupPath: "/static/paywall-popup",
+		const {promisedPayload} = openPaywallPopup({
+			userId,
+			stripePlanId,
+			paywallServerOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
 		})
 
 		const payload = await promisedPayload
