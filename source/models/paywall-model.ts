@@ -3,6 +3,10 @@ import {observable, action} from "mobx"
 import {PaywallGuardianTopic, AccessToken} from "authoritarian/dist/interfaces.js"
 import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
 
+import {openPopup} from "authoritarian/dist/toolbox/popups/open-popup.js"
+import {namespace} from "authoritarian/dist/business/paywall-popup/common.js"
+import {PaywallPopupParameters, PaywallPopupPayload} from "authoritarian/dist/business/paywall-popup/interfaces.js"
+
 const fakePaypalToken = "fake-paypal-token"
 
 export class PaywallModel {
@@ -35,13 +39,30 @@ export class PaywallModel {
 	}
 
 	@action.bound async grantUserPremium() {
-		this.setMode(PaywallMode.Loading)
-		const {accessToken} = await this.getAuthContext()
-		const newAccessToken = await this.paywallGuardian.grantUserPremium({
-			accessToken,
-			paypalToken: fakePaypalToken,
+		const {user} = await this.getAuthContext()
+		const {userId} = user
+		const stripePlanId = "plan_H5oUIjw9895qDj"
+
+		const {closePopup, promisedPayload} = openPopup<PaywallPopupParameters, PaywallPopupPayload>({
+			namespace,
+			parameters: {
+				userId,
+				stripePlanId,
+			},
+			popupOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
+			popupPath: "/static/paywall-popup",
 		})
-		this.setNewAccessToken(newAccessToken)
+
+		const payload = await promisedPayload
+		console.log("WE GOTS LE PAYLOAD!", payload)
+
+		// this.setMode(PaywallMode.Loading)
+		// const {accessToken} = await this.getAuthContext()
+		// const newAccessToken = await this.paywallGuardian.grantUserPremium({
+		// 	accessToken,
+		// 	paypalToken: fakePaypalToken,
+		// })
+		// this.setNewAccessToken(newAccessToken)
 	}
 
 	@action.bound async revokeUserPremium() {
