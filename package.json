@@ -38,7 +38,7 @@
 	},
 	"dependencies": {
 		"@adobe/lit-mobx": "0.0.3",
-		"@stripe/stripe-js": "^1.3.2",
+		"@stripe/stripe-js": "^1.4.0",
 		"authoritarian": "0.0.0-dev.52",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",
@@ -48,7 +48,7 @@
 		"mobx": "^5.15.4",
 		"mobx-lit-element": "^0.1.2",
 		"redcrypto": "0.0.0-dev.5",
-		"renraku": "0.0.0-dev.26"
+		"renraku": "0.0.0-dev.28"
 	},
 	"repository": {
 		"type": "git",

@@ -1,5 +1,4 @@
 
-import {tokenDecode} from "redcrypto/dist/token-decode.js"
 import {mockSignToken} from "redcrypto/dist/curries/mock-sign-token.js"
 import {mockVerifyToken} from "redcrypto/dist/curries/mock-verify-token.js"
 
@@ -7,15 +6,19 @@ import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js
 import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
 import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
 import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
+import {makeStripeLiaison} from "authoritarian/dist/business/paywall/stripe-liaison.js"
 import {makeScheduleSentry} from "authoritarian/dist/business/schedule-sentry/sentry.js"
 import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
+import {makePaywallOverlord} from "authoritarian/dist/business/paywall/paywall-overlord.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
+import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
+import {mockStripeDatalayer} from "authoritarian/dist/business/paywall/mocks/mock-stripe-datalayer.js"
 import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-verify-google-token.js"
+import {mockBillingDatalayer} from "authoritarian/dist/business/paywall/mocks/mock-billing-datalayer.js"
 import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule-sentry/mock-schedule-datalayer.js"
 import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
-import {AccessToken, AccessPayload, StripeLiaisonTopic, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
 import {LoginPopupRoutine} from "../interfaces.js"
 
@@ -33,6 +36,7 @@ export const prepareAllMocks = async({
 	const verifyToken = mockVerifyToken()
 	const userDatalayer = mockUserDatalayer()
 	const profileDatalayer = mockProfileDatalayer()
+	const premiumSubscriptionStripePlanId = "premium-stripe-plan-id-" + Date.now()
 	const verifyGoogleToken = mockVerifyGoogleToken({
 		googleResult: {
 			googleId,
@@ -101,29 +105,24 @@ export const prepareAllMocks = async({
 		}
 	}
 
-	const stripeLiaison: StripeLiaisonTopic = {
-		async createSessionForLinking({accessToken}) {
-			return {
-				stripeSessionId: "fake-stripe-session-123"
-			}
-		},
-		async createSessionForPremium({accessToken}) {
-			return {
-				stripeSessionId: "fake-stripe-session-234"
-			}
-		},
-		async setPremiumAutoRenew({accessToken, autoRenew}) {
-			return null
-		},
-		async unlinkPaymentMethod({accessToken}) {
-			return null
-		},
-	}
+	const stripe = mockStripeDatalayer()
+	const billing = mockBillingDatalayer({stripe})
+	const paywallOverlord = makePaywallOverlord({authVanguard})
+	const stripeLiaison = makeStripeLiaison({
+		stripe,
+		billing,
+		verifyToken,
+		paywallOverlord,
+		premiumSubscriptionStripePlanId,
+	})
 
 	const scheduleDatalayer = mockScheduleDatalayer()
 	const scheduleSentry = makeScheduleSentry({verifyToken, scheduleDatalayer})
 
+	//
 	// starting conditions
+	//
+
 	const authTokens = await authExchanger.authenticateViaGoogle({
 		googleToken: "fakeGoogleToken123"
 	})
