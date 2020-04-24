@@ -9,9 +9,9 @@ import {
 	QuestionDraft,
 	AuthDealerTopic,
 	TokenStorageTopic,
+	StripeLiaisonTopic,
 	ScheduleSentryTopic,
 	QuestionsBureauTopic,
-	PaywallGuardianTopic,
 	LiveshowGovernorTopic,
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
@@ -36,8 +36,8 @@ export interface MetalConfig {
 export interface MetalOptions {
 	authDealer: AuthDealerTopic
 	tokenStorage: TokenStorageTopic
+	stripeLiaison: StripeLiaisonTopic
 	scheduleSentry: ScheduleSentryTopic
-	paywallGuardian: PaywallGuardianTopic
 	questionsBureau: QuestionsBureauTopic
 	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic

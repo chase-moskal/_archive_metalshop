@@ -25,8 +25,8 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		const {
 			authDealer,
 			tokenStorage,
+			stripeLiaison,
 			scheduleSentry,
-			paywallGuardian,
 			questionsBureau,
 			liveshowGovernor,
 			loginPopupRoutine,
@@ -40,8 +40,8 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			...options,
 			authDealer,
 			tokenStorage,
+			stripeLiaison,
 			scheduleSentry,
-			paywallGuardian,
 			questionsBureau,
 			liveshowGovernor,
 			loginPopupRoutine,
@@ -101,7 +101,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	if (paywallServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: paywall initialization")
-			options.paywallGuardian = null
+			options.stripeLiaison = null
 		})
 	}
 
@@ -122,8 +122,8 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	return {
 		authDealer: options.authDealer,
 		tokenStorage: options.tokenStorage,
+		stripeLiaison: options.stripeLiaison,
 		scheduleSentry: options.scheduleSentry,
-		paywallGuardian: options.paywallGuardian,
 		questionsBureau: options.questionsBureau,
 		liveshowGovernor: options.liveshowGovernor,
 		profileMagistrate: options.profileMagistrate,

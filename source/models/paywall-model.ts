@@ -1,6 +1,6 @@
 
 import {observable, action} from "mobx"
-import {PaywallGuardianTopic, AccessToken} from "authoritarian/dist/interfaces.js"
+import {StripeLiaisonTopic, AccessToken} from "authoritarian/dist/interfaces.js"
 import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
 
 import {openPaywallPopup} from "authoritarian/dist/business/paywall-popup/open-paywall-popup.js"
@@ -12,10 +12,10 @@ export class PaywallModel {
 	@observable mode: PaywallMode
 	@observable newAccessToken: AccessToken
 	private getAuthContext: GetAuthContext
-	private paywallGuardian: PaywallGuardianTopic
+	private stripeLiaison: StripeLiaisonTopic
 
 	constructor(options: {
-		paywallGuardian: PaywallGuardianTopic
+		stripeLiaison: StripeLiaisonTopic
 	}) { Object.assign(this, options) }
 
 	@action.bound async handleAuthUpdate({
@@ -38,18 +38,22 @@ export class PaywallModel {
 	}
 
 	@action.bound async grantUserPremium() {
-		const {user} = await this.getAuthContext()
-		const {userId} = user
-		const stripePlanId = "plan_H5oUIjw9895qDj"
 
-		const {promisedPayload} = openPaywallPopup({
-			userId,
-			stripePlanId,
-			paywallServerOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
-		})
+		// TODO
+		console.log("todo")
 
-		const payload = await promisedPayload
-		console.log("WE GOTS LE PAYLOAD!", payload)
+		// const {user} = await this.getAuthContext()
+		// const {userId} = user
+		// const stripePlanId = "plan_H5oUIjw9895qDj"
+
+		// const {promisedPayload} = openPaywallPopup({
+		// 	userId,
+		// 	stripePlanId,
+		// 	paywallServerOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
+		// })
+
+		// const payload = await promisedPayload
+		// console.log("WE GOTS LE PAYLOAD!", payload)
 
 		// this.setMode(PaywallMode.Loading)
 		// const {accessToken} = await this.getAuthContext()
@@ -61,13 +65,17 @@ export class PaywallModel {
 	}
 
 	@action.bound async revokeUserPremium() {
-		this.setMode(PaywallMode.Loading)
-		const {accessToken} = await this.getAuthContext()
-		const newAccessToken = await this.paywallGuardian.revokeUserPremium({
-			accessToken,
-			paypalToken: fakePaypalToken,
-		})
-		this.setNewAccessToken(newAccessToken)
+
+		// TODO
+		console.log("todo")
+
+		// this.setMode(PaywallMode.Loading)
+		// const {accessToken} = await this.getAuthContext()
+		// const newAccessToken = await this.paywallGuardian.revokeUserPremium({
+		// 	accessToken,
+		// 	paypalToken: fakePaypalToken,
+		// })
+		// this.setNewAccessToken(newAccessToken)
 	}
 
 	@action.bound private setMode(mode: PaywallMode) {

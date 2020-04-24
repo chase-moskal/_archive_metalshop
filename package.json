@@ -39,7 +39,7 @@
 	"dependencies": {
 		"@adobe/lit-mobx": "0.0.3",
 		"@stripe/stripe-js": "^1.3.2",
-		"authoritarian": "0.0.0-dev.51",
+		"authoritarian": "0.0.0-dev.52",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",
 		"lit-element": "^2.3.1",

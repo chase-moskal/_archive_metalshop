@@ -11,8 +11,8 @@ import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
 export function prepareSupermodel({
 	tokenStorage,
+	stripeLiaison,
 	scheduleSentry,
-	paywallGuardian,
 	questionsBureau,
 	liveshowGovernor,
 	profileMagistrate,
@@ -29,7 +29,7 @@ export function prepareSupermodel({
 			expiryGraceSeconds: 60
 		}),
 		profile: new ProfileModel({profileMagistrate}),
-		paywall: new PaywallModel({paywallGuardian}),
+		paywall: new PaywallModel({stripeLiaison}),
 		questions: new QuestionsModel({questionsBureau}),
 		liveshow: new LiveshowModel({liveshowGovernor}),
 		schedule: new ScheduleModel({scheduleSentry}),

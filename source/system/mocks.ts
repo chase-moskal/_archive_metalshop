@@ -15,7 +15,7 @@ import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-v
 import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule-sentry/mock-schedule-datalayer.js"
 import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
-import {AccessToken, AccessPayload, PaywallGuardianTopic, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
+import {AccessToken, AccessPayload, StripeLiaisonTopic, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
 import {LoginPopupRoutine} from "../interfaces.js"
 
@@ -101,16 +101,22 @@ export const prepareAllMocks = async({
 		}
 	}
 
-	const paywallGuardian: PaywallGuardianTopic = {
-		async grantUserPremium({accessToken}: {accessToken: AccessToken}) {
-			const {payload} = tokenDecode<AccessPayload>(accessToken)
-			payload.user.claims.premium = true
-			return signToken(payload, accessTokenExpiresMilliseconds)
+	const stripeLiaison: StripeLiaisonTopic = {
+		async createSessionForLinking({accessToken}) {
+			return {
+				stripeSessionId: "fake-stripe-session-123"
+			}
 		},
-		async revokeUserPremium({accessToken}: {accessToken: AccessToken}) {
-			const {payload} = tokenDecode<AccessPayload>(accessToken)
-			payload.user.claims.premium = false
-			return signToken(payload, accessTokenExpiresMilliseconds)
+		async createSessionForPremium({accessToken}) {
+			return {
+				stripeSessionId: "fake-stripe-session-234"
+			}
+		},
+		async setPremiumAutoRenew({accessToken, autoRenew}) {
+			return null
+		},
+		async unlinkPaymentMethod({accessToken}) {
+			return null
 		},
 	}
 
@@ -127,16 +133,18 @@ export const prepareAllMocks = async({
 		userId,
 		claims: {
 			admin: !!startAdmin,
-			premium: !!startPremium,
+			premium: !!startPremium
+				? {expires: Date.now() + (1000 * 60 * 60 * 24 * 30)}
+				: null,
 		}
 	})
 
 	return {
 		authDealer,
 		tokenStorage,
+		stripeLiaison,
 		scheduleSentry,
 		questionsBureau,
-		paywallGuardian,
 		liveshowGovernor,
 		loginPopupRoutine,
 		profileMagistrate,
