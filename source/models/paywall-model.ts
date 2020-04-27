@@ -1,22 +1,24 @@
 
 import {observable, action} from "mobx"
-import {StripeLiaisonTopic, AccessToken} from "authoritarian/dist/interfaces.js"
-import {PaywallMode, GetAuthContext, AuthUpdate, AuthMode} from "../interfaces.js"
-
-import {openPaywallPopup} from "authoritarian/dist/business/paywall-popup/open-paywall-popup.js"
-import {PaywallPopupParameters, PaywallPopupPayload} from "authoritarian/dist/business/paywall-popup/interfaces.js"
-
-const fakePaypalToken = "fake-paypal-token"
+import {StripeLiaisonTopic, User} from "authoritarian/dist/interfaces.js"
+import {GetAuthContext, AuthUpdate, AuthMode, BillingStatus, PremiumStatus, TriggerPaywallPopup} from "../interfaces.js"
 
 export class PaywallModel {
-	@observable mode: PaywallMode
-	@observable newAccessToken: AccessToken
+	@observable autoRenew: boolean
+	@observable billingStatus: BillingStatus
+	@observable premiumStatus: PremiumStatus
 	private getAuthContext: GetAuthContext
 	private stripeLiaison: StripeLiaisonTopic
+	private triggerPaywallPopup: TriggerPaywallPopup
 
 	constructor(options: {
 		stripeLiaison: StripeLiaisonTopic
+		triggerPaywallPopup: TriggerPaywallPopup
 	}) { Object.assign(this, options) }
+
+	//
+	// public methods
+	//
 
 	@action.bound async handleAuthUpdate({
 		user,
@@ -24,65 +26,74 @@ export class PaywallModel {
 		getAuthContext,
 	}: AuthUpdate) {
 		this.getAuthContext = getAuthContext
-		let paywallMode: PaywallMode = PaywallMode.LoggedOut
-		if (authMode === AuthMode.LoggedIn) {
-			this.setMode(PaywallMode.Loading)
-			paywallMode = !!user.claims.premium
-				? PaywallMode.Premium
-				: PaywallMode.NotPremium
-		}
-		else {
-			paywallMode = PaywallMode.LoggedOut
-		}
-		this.setMode(paywallMode)
+		this.setStatuses({
+			billingStatus: authMode === AuthMode.LoggedIn
+				? this.isBillingLinked(user)
+					? BillingStatus.Linked
+					: BillingStatus.Unlinked
+				: BillingStatus.Unlinked,
+			premiumStatus: authMode === AuthMode.LoggedIn
+				? this.isPremium(user)
+					? PremiumStatus.Premium
+					: PremiumStatus.NotPremium
+				: PremiumStatus.NotPremium,
+			autoRenew: authMode === AuthMode.LoggedIn
+				? this.isPremium(user)
+					? user.claims.premium.autoRenew
+					: false
+				: false,
+		})
 	}
 
-	@action.bound async grantUserPremium() {
-
-		// TODO
-		console.log("todo")
-
-		// const {user} = await this.getAuthContext()
-		// const {userId} = user
-		// const stripePlanId = "plan_H5oUIjw9895qDj"
-
-		// const {promisedPayload} = openPaywallPopup({
-		// 	userId,
-		// 	stripePlanId,
-		// 	paywallServerOrigin: "http://paywall.metaldev.chasemoskal.com:8003",
-		// })
-
-		// const payload = await promisedPayload
-		// console.log("WE GOTS LE PAYLOAD!", payload)
-
-		// this.setMode(PaywallMode.Loading)
-		// const {accessToken} = await this.getAuthContext()
-		// const newAccessToken = await this.paywallGuardian.grantUserPremium({
-		// 	accessToken,
-		// 	paypalToken: fakePaypalToken,
-		// })
-		// this.setNewAccessToken(newAccessToken)
+	@action.bound async linkCard() {
+		const {accessToken} = await this.getAuthContext()
+		const {stripeSessionId} = await this.stripeLiaison.createSessionForLinking({
+			accessToken
+		})
+		await this.triggerPaywallPopup({stripeSessionId})
 	}
 
-	@action.bound async revokeUserPremium() {
-
-		// TODO
-		console.log("todo")
-
-		// this.setMode(PaywallMode.Loading)
-		// const {accessToken} = await this.getAuthContext()
-		// const newAccessToken = await this.paywallGuardian.revokeUserPremium({
-		// 	accessToken,
-		// 	paypalToken: fakePaypalToken,
-		// })
-		// this.setNewAccessToken(newAccessToken)
+	@action.bound async unlinkCard() {
+		const {accessToken} = await this.getAuthContext()
+		await this.stripeLiaison.unlinkPaymentMethod({accessToken})
 	}
 
-	@action.bound private setMode(mode: PaywallMode) {
-		this.mode = mode
+	@action.bound async premiumSubscribe() {
+		const {accessToken} = await this.getAuthContext()
+		const {stripeSessionId} = await this.stripeLiaison.createSessionForPremium({
+			accessToken
+		})
+		await this.triggerPaywallPopup({stripeSessionId})
 	}
 
-	@action.bound private setNewAccessToken(accessToken: AccessToken) {
-		this.newAccessToken = accessToken
+	@action.bound async premiumSetAutoRenew({autoRenew}: {autoRenew: boolean}) {
+		const {accessToken} = await this.getAuthContext()
+		await this.stripeLiaison.setPremiumAutoRenew({
+			autoRenew,
+			accessToken,
+		})
+	}
+
+	//
+	// private methods
+	//
+
+	private isPremium(user: User) {
+		const expires = user?.claims?.premium?.expires
+		return expires && (expires > Date.now())
+	}
+
+	private isBillingLinked(user: User) {
+		return !!user?.claims?.billing?.linked
+	}
+
+	@action private setStatuses({billingStatus, premiumStatus, autoRenew}: {
+			autoRenew: boolean
+			billingStatus: BillingStatus
+			premiumStatus: PremiumStatus
+		}) {
+		this.autoRenew = autoRenew
+		this.premiumStatus = premiumStatus
+		this.billingStatus = billingStatus
 	}
 }

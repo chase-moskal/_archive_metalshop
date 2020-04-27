@@ -44,6 +44,7 @@ export interface MetalOptions {
 	//—
 	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
+	triggerPaywallPopup: TriggerPaywallPopup
 }
 
 export interface AuthContext {
@@ -128,10 +129,16 @@ export enum ProfileMode {
 	None,
 }
 
-export enum PaywallMode {
-	Error,
-	Loading,
-	LoggedOut,
+export type TriggerPaywallPopup = (options: {
+	stripeSessionId: string
+}) => Promise<void>
+
+export enum BillingStatus {
+	Unlinked,
+	Linked,
+}
+
+export enum PremiumStatus {
 	NotPremium,
 	Premium,
 }
@@ -158,7 +165,7 @@ export interface AccountShare {
 
 export interface MyAvatarShare {
 	profile: Profile
-	paywallMode: PaywallMode
+	premiumStatus: PremiumStatus
 }
 
 export interface AdminModeShare {
@@ -186,9 +193,14 @@ export interface ProfileShare {
 export interface PaywallShare {
 	user: User
 	profile: Profile
-	mode: PaywallMode
-	grantUserPremium: () => Promise<void>
-	revokeUserPremium: () => Promise<void>
+	authMode: AuthMode
+	autoRenew: boolean
+	premiumStatus: PremiumStatus
+	billingStatus: BillingStatus
+	linkCard(): Promise<void>
+	unlinkCard(): Promise<void>
+	premiumSubscribe(): Promise<void>
+	premiumSetAutoRenew(): Promise<void>
 }
 
 export interface QuestionsShare {

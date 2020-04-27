@@ -40,10 +40,15 @@ export const wireComponents = (supermodel: Supermodel) => ({
 	})),
 	MetalPaywall: share(MetalPaywall, () => (<PaywallShare>{
 		user: supermodel.auth.user,
-		mode: supermodel.paywall.mode,
+		authMode: supermodel.auth.mode,
 		profile: supermodel.profile.profile,
-		grantUserPremium: supermodel.paywall.grantUserPremium,
-		revokeUserPremium: supermodel.paywall.revokeUserPremium,
+		autoRenew: supermodel.paywall.autoRenew,
+		premiumStatus: supermodel.paywall.premiumStatus,
+		billingStatus: supermodel.paywall.billingStatus,
+		linkCard: supermodel.paywall.linkCard,
+		unlinkCard: supermodel.paywall.unlinkCard,
+		premiumSubscribe: supermodel.paywall.premiumSubscribe,
+		premiumSetAutoRenew: supermodel.paywall.premiumSetAutoRenew,
 	})),
 	MetalLiveshow: share(MetalLiveshow, () => (<LiveshowShare>{
 		user: supermodel.auth.user,
@@ -53,7 +58,7 @@ export const wireComponents = (supermodel: Supermodel) => ({
 	})),
 	MetalMyAvatar: share(MetalMyAvatar, () => (<MyAvatarShare>{
 		profile: supermodel.profile.profile,
-		paywallMode: supermodel.paywall.mode,
+		premiumStatus: supermodel.paywall.premiumStatus,
 	})),
 	MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
 		user: supermodel.auth.user,

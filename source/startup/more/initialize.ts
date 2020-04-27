@@ -1,6 +1,7 @@
 
 import {makeAuthClients} from "authoritarian/dist/business/auth-api/auth-clients.js"
 import {openAccountPopup} from "authoritarian/dist/business/account-popup/open-account-popup.js"
+import {openPaywallPopup} from "authoritarian/dist/business/paywall-popup/open-paywall-popup.js"
 import {makeQuestionsClients} from "authoritarian/dist/business/questions-bureau/questions-clients.js"
 import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
 import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
@@ -101,6 +102,14 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	if (paywallServerOrigin) {
 		queue(async() => {
 			console.log("coming soon: paywall initialization")
+			options.triggerPaywallPopup = async({stripeSessionId}: {
+					stripeSessionId: string
+				}) => {
+				openPaywallPopup({
+					stripeSessionId,
+					paywallServerOrigin,
+				})
+			}
 			options.stripeLiaison = null
 		})
 	}
@@ -130,5 +139,6 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		//—
 		decodeAccessToken: options.decodeAccessToken,
 		loginPopupRoutine: options.loginPopupRoutine,
+		triggerPaywallPopup: options.triggerPaywallPopup,
 	}
 }
