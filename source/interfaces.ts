@@ -3,6 +3,7 @@ import {
 	User,
 	Profile,
 	Question,
+	Settings,
 	AuthTokens,
 	AccessToken,
 	ScheduleEvent,
@@ -22,6 +23,8 @@ import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {QuestionsModel} from "./models/questions-model.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
+
+import * as loading from "./toolbox/loading.js"
 
 export interface MetalConfig {
 	["mock"]: string
@@ -175,6 +178,13 @@ export interface AdminOnlyShare {
 	user: User
 	profile: Profile
 	profileMode: ProfileMode
+}
+
+export interface DetailsShare {
+	user: User
+	profileLoad: loading.Load<Profile>
+	settingsLoad: loading.Load<Settings>
+	saveProfile: (profile: Profile) => Promise<void>
 }
 
 export interface ProfileShare {

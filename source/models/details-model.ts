@@ -1,0 +1,161 @@
+
+import {observable, action} from "mobx"
+import * as loading from "../toolbox/loading.js"
+import {AuthMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
+import {SimpleConsole, DisabledLogger} from "authoritarian/dist/toolbox/logger.js"
+import {ProfileMagistrateTopic, Profile, SettingsSheriffTopic, Settings} from "authoritarian/dist/interfaces.js"
+
+const prepareAuthLoggedIn = ({
+		logger,
+		getTicket,
+		getAuthContext,
+		setProfileLoad,
+		incrementTicket,
+		settingsSheriff,
+		setSettingsLoad,
+		profileMagistrate,
+	}: {
+		logger: SimpleConsole
+		getTicket: () => number
+		incrementTicket: () => number
+		getAuthContext: GetAuthContext
+		settingsSheriff: SettingsSheriffTopic
+		profileMagistrate: ProfileMagistrateTopic
+		setProfileLoad: (load: loading.Load<Profile>) => void
+		setSettingsLoad: (load: loading.Load<Settings>) => void
+	}) => async function authLoggedIn() {
+
+	const {user, accessToken} = await getAuthContext()
+	const {userId} = user
+
+	logger.log("details: authLoggedIn, refreshing settings and profile")
+	const ticket = incrementTicket()
+	const sessionStillValid = () => ticket === getTicket()
+
+	async function loadSettings() {
+		try {
+			setSettingsLoad(loading.loading())
+			const settings = await settingsSheriff.fetchSettings({accessToken})
+			if (sessionStillValid()) {
+				setSettingsLoad(loading.ready(settings))
+				logger.debug("settings loaded")
+				return settings
+			}
+			else logger.debug("settings discarded, outdated session")
+		}
+		catch (error) {
+			setSettingsLoad(loading.error("error loading settings"))
+			throw error
+		}
+	}
+
+	async function loadProfile() {
+		try {
+			setProfileLoad(loading.loading())
+			const profile = await profileMagistrate.getProfile({userId})
+			if (sessionStillValid()) {
+				setProfileLoad(loading.ready(profile))
+				logger.debug("profile loaded")
+				return profile
+			}
+			else logger.debug("profile discarded, outdated session")
+		}
+		catch (error) {
+			setProfileLoad(loading.error("error loading profile"))
+			throw error
+		}
+	}
+
+	await Promise.allSettled([loadSettings(), loadProfile()])
+}
+
+export class DetailsModel {
+	@observable profile = loading.load<Profile>()
+	@observable settings = loading.load<Settings>()
+	
+	private getAuthContext: GetAuthContext
+	private lastAuthMode: AuthMode
+
+	private _ticket: number = 0
+	private getTicket = () => this._ticket
+	private incrementTicket = () => {
+		this._ticket += 1
+		return this._ticket
+	}
+
+	private logger: SimpleConsole
+	private settingsSheriff: SettingsSheriffTopic
+	private profileMagistrate: ProfileMagistrateTopic
+
+	constructor(options: {
+			logger?: SimpleConsole
+			settingsSheriff: SettingsSheriffTopic
+			profileMagistrate: ProfileMagistrateTopic
+		}) {
+		Object.assign(this, {logger: new DisabledLogger()}, options)
+	}
+
+	@action.bound private setProfileLoad(load: loading.Load<Profile>) {
+		this.profile = load
+	}
+
+	@action.bound private setSettingsLoad(load: loading.Load<Settings>) {
+		this.settings = load
+	}
+
+	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
+		this.getAuthContext = getAuthContext
+		const authModeChanged: boolean = mode === this.lastAuthMode
+		this.lastAuthMode = mode
+		const {
+			logger,
+			getTicket,
+			setProfileLoad,
+			setSettingsLoad,
+			settingsSheriff,
+			incrementTicket,
+			profileMagistrate,
+		} = this
+
+		const setAll = (load: loading.Load<any>) => {
+			setProfileLoad(load)
+			setSettingsLoad(load)
+		}
+
+		async function authLoggedOut() {
+			setAll(loading.none()) 
+		}
+
+		async function authLoading() {
+			setAll(loading.loading())
+		}
+
+		async function authError() {
+			setAll(loading.error("auth error occurred"))
+		}
+
+		async function authOtherwise() {
+			logger.warn("unknown auth mode")
+			setAll(loading.none())
+		}
+
+		const authLoggedIn = prepareAuthLoggedIn({
+			logger,
+			getTicket,
+			getAuthContext,
+			setProfileLoad,
+			setSettingsLoad,
+			settingsSheriff,
+			incrementTicket,
+			profileMagistrate,
+		})
+
+		switch (mode) {
+			case AuthMode.LoggedIn: await authLoggedIn()
+			break; case AuthMode.LoggedOut: await authLoggedOut()
+			break; case AuthMode.Loading: await authLoading()
+			break; case AuthMode.Error: await authError()
+			break; default: await authOtherwise()
+		}
+	}
+}

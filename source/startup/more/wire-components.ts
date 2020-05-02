@@ -2,6 +2,7 @@
 import {share} from "../../framework/share.js"
 import {Supermodel, AccountShare, ProfileShare, CountdownShare, PaywallShare, LiveshowShare, MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare} from "../../interfaces.js"
 
+import {IronLoading} from "../../components/iron-loading.js"
 import {MetalAvatar} from "../../components/metal-avatar.js"
 import {MetalAccount} from "../../components/metal-account.js"
 import {MetalProfile} from "../../components/metal-profile.js"
