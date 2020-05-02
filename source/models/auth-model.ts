@@ -1,7 +1,7 @@
 
 import {observable, action} from "mobx"
-import {AccessToken, TokenStorageTopic, User} from "authoritarian/dist/interfaces.js"
-import {AuthMode, LoginDetail, GetAuthContext, LoginPopupRoutine, DecodeAccessToken, AuthContext} from "../interfaces.js"
+import {AccessToken, TokenStoreTopic, User} from "authoritarian/dist/interfaces.js"
+import {AuthMode, LoginDetail, GetAuthContext, TriggerAccountPopup, DecodeAccessToken, AuthContext} from "../interfaces.js"
 
 export class AuthModel {
 	@observable user: User
@@ -9,13 +9,13 @@ export class AuthModel {
 	@observable mode: AuthMode = AuthMode.Loading
 	private authContext: AuthContext
 	private expiryGraceSeconds: number
-	private tokenStorage: TokenStorageTopic
-	private loginPopupRoutine: LoginPopupRoutine
+	private tokenStore: TokenStoreTopic
+	private triggerAccountPopup: TriggerAccountPopup
 	private decodeAccessToken: DecodeAccessToken
 
 	constructor(options: {
-		tokenStorage: TokenStorageTopic
-		loginPopupRoutine: LoginPopupRoutine
+		tokenStore: TokenStoreTopic
+		triggerAccountPopup: TriggerAccountPopup
 		decodeAccessToken: DecodeAccessToken
 		expiryGraceSeconds: number
 	}) { Object.assign(this, options) }
@@ -23,7 +23,7 @@ export class AuthModel {
 	@action.bound async useExistingLogin() {
 		this.setLoading()
 		try {
-			const accessToken = await this.tokenStorage.passiveCheck()
+			const accessToken = await this.tokenStore.passiveCheck()
 			if (accessToken) {
 				const detail = this.processAccessToken(accessToken)
 				const {user} = await detail.getAuthContext()
@@ -37,7 +37,7 @@ export class AuthModel {
 	}
 
 	@action.bound async loginWithAccessToken(accessToken: AccessToken) {
-		await this.tokenStorage.writeAccessToken(accessToken)
+		await this.tokenStore.writeAccessToken(accessToken)
 		if (accessToken) {
 			const detail = this.processAccessToken(accessToken)
 			const {user} = await detail.getAuthContext()
@@ -51,8 +51,8 @@ export class AuthModel {
 	@action.bound async login() {
 		this.setLoggedOut()
 		try {
-			const authTokens = await this.loginPopupRoutine()
-			await this.tokenStorage.writeTokens(authTokens)
+			const authTokens = await this.triggerAccountPopup()
+			await this.tokenStore.writeTokens(authTokens)
 			const detail = this.processAccessToken(authTokens.accessToken)
 			const {user} = await detail.getAuthContext()
 			this.setLoggedIn(detail, user)
@@ -65,7 +65,7 @@ export class AuthModel {
 	@action.bound async logout() {
 		this.setLoading()
 		try {
-			await this.tokenStorage.clearTokens()
+			await this.tokenStore.clearTokens()
 			this.authContext = null
 			this.setLoggedOut()
 		}
@@ -83,7 +83,7 @@ export class AuthModel {
 				const gracedExp = (this.authContext.exp - this.expiryGraceSeconds)
 				const expired = gracedExp < (Date.now() / 1000)
 				if (expired) {
-					const accessToken = await this.tokenStorage.passiveCheck()
+					const accessToken = await this.tokenStore.passiveCheck()
 					this.authContext = this.decodeAccessToken(accessToken)
 				}
 				return this.authContext

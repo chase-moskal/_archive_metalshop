@@ -10,26 +10,30 @@ import {QuestionsModel} from "../../models/questions-model.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
 export function prepareSupermodel({
-	tokenStorage,
-	stripeLiaison,
+	tokenStore,
+	paywallLiaison,
 	scheduleSentry,
 	questionsBureau,
 	liveshowGovernor,
 	profileMagistrate,
 	//—
-	loginPopupRoutine,
 	decodeAccessToken,
+	triggerAccountPopup,
+	triggerCheckoutPopup,
 }: MetalOptions): Supermodel {
 
 	const supermodel = {
 		auth: new AuthModel({
-			tokenStorage,
-			loginPopupRoutine,
+			tokenStore,
+			triggerAccountPopup,
 			decodeAccessToken,
 			expiryGraceSeconds: 60
 		}),
 		profile: new ProfileModel({profileMagistrate}),
-		paywall: new PaywallModel({stripeLiaison}),
+		paywall: new PaywallModel({
+			paywallLiaison,
+			triggerCheckoutPopup,
+		}),
 		questions: new QuestionsModel({questionsBureau}),
 		liveshow: new LiveshowModel({liveshowGovernor}),
 		schedule: new ScheduleModel({scheduleSentry}),
@@ -46,11 +50,12 @@ export function prepareSupermodel({
 		supermodel.questions.handleAuthUpdate(update)
 	})
 
-	// paywall updates
-	autorun(() => {
-		const {newAccessToken} = supermodel.paywall
-		supermodel.auth.loginWithAccessToken(newAccessToken)
-	})
+	// TODO reconsider
+	// // paywall updates
+	// autorun(() => {
+	// 	const {newAccessToken} = supermodel.paywall
+	// 	supermodel.auth.loginWithAccessToken(newAccessToken)
+	// })
 
 	// profile updates
 	autorun(() => {

@@ -2,25 +2,26 @@
 import {mockSignToken} from "redcrypto/dist/curries/mock-sign-token.js"
 import {mockVerifyToken} from "redcrypto/dist/curries/mock-verify-token.js"
 
-import {makeAuthVanguard} from "authoritarian/dist/business/auth-api/vanguard.js"
-import {makeAuthExchanger} from "authoritarian/dist/business/auth-api/exchanger.js"
-import {mockStorage} from "authoritarian/dist/business/token-storage/mock-storage.js"
-import {TokenStorage} from "authoritarian/dist/business/token-storage/token-storage.js"
-import {makeStripeLiaison} from "authoritarian/dist/business/paywall/stripe-liaison.js"
-import {makeScheduleSentry} from "authoritarian/dist/business/schedule-sentry/sentry.js"
-import {makeQuestionsBureau} from "authoritarian/dist/business/questions-bureau/bureau.js"
-import {makePaywallOverlord} from "authoritarian/dist/business/paywall/paywall-overlord.js"
-import {mockUserDatalayer} from "authoritarian/dist/business/auth-api/mock-user-datalayer.js"
-import {makeProfileMagistrate} from "authoritarian/dist/business/profile-magistrate/magistrate.js"
-import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
-import {mockStripeDatalayer} from "authoritarian/dist/business/paywall/mocks/mock-stripe-datalayer.js"
-import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth-api/mock-verify-google-token.js"
-import {mockBillingDatalayer} from "authoritarian/dist/business/paywall/mocks/mock-billing-datalayer.js"
-import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule-sentry/mock-schedule-datalayer.js"
-import {mockProfileDatalayer} from "authoritarian/dist/business/profile-magistrate/mock-profile-datalayer.js"
-import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions-bureau/mock-questions-datalayer.js"
+import {TokenStore} from "authoritarian/dist/business/auth/token-store.js"
+import {makeAuthVanguard} from "authoritarian/dist/business/auth/vanguard.js"
+import {makeAuthExchanger} from "authoritarian/dist/business/auth/exchanger.js"
+import {mockStorage} from "authoritarian/dist/business/auth/mocks/mock-storage.js"
+import {makePaywallLiaison} from "authoritarian/dist/business/paywall/liaison.js"
+import {makeScheduleSentry} from "authoritarian/dist/business/schedule/sentry.js"
+import {makeQuestionsBureau} from "authoritarian/dist/business/questions/bureau.js"
+import {makeProfileMagistrate} from "authoritarian/dist/business/profile/magistrate.js"
+import {mockUserDatalayer} from "authoritarian/dist/business/auth/mocks/mock-user-datalayer.js"
+import {mockProfileDatalayer} from "authoritarian/dist/business/profile/mocks/mock-profile-datalayer.js"
+import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth/mocks/mock-verify-google-token.js"
+import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule/mocks/mock-schedule-datalayer.js"
+import {mockSettingsDatalayer} from "authoritarian/dist/business/settings/mocks/mock-settings-datalayer.js"
+import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions/mocks/mock-questions-datalayer.js"
 
-import {LoginPopupRoutine} from "../interfaces.js"
+import {random8} from "authoritarian/dist/toolbox/random8.js"
+import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
+import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
+
+import {TriggerAccountPopup, TriggerCheckoutPopup} from "../interfaces.js"
 
 export const prepareAllMocks = async({
 	startAdmin,
@@ -36,7 +37,7 @@ export const prepareAllMocks = async({
 	const verifyToken = mockVerifyToken()
 	const userDatalayer = mockUserDatalayer()
 	const profileDatalayer = mockProfileDatalayer()
-	const premiumSubscriptionStripePlanId = "premium-stripe-plan-id-" + Date.now()
+	const premiumStripePlanId = `mock-premium-stripe-plan-${random8()}`
 	const verifyGoogleToken = mockVerifyGoogleToken({
 		googleResult: {
 			googleId,
@@ -69,13 +70,16 @@ export const prepareAllMocks = async({
 		refreshTokenExpiresMilliseconds,
 	})
 
-	const loginPopupRoutine: LoginPopupRoutine = async() => {
+	const triggerAccountPopup: TriggerAccountPopup = async() => {
 		return authExchanger.authenticateViaGoogle({
 			googleToken: "fakeGoogleToken123"
 		})
 	}
 
-	const tokenStorage = new TokenStorage({
+	const triggerCheckoutPopup: TriggerCheckoutPopup =
+		async({stripeSessionId}) => { /* noop */ }
+
+	const tokenStore = new TokenStore({
 		authExchanger,
 		storage: mockStorage(),
 	})
@@ -105,15 +109,17 @@ export const prepareAllMocks = async({
 		}
 	}
 
-	const stripe = mockStripeDatalayer()
-	const billing = mockBillingDatalayer({stripe})
-	const paywallOverlord = makePaywallOverlord({authVanguard})
-	const stripeLiaison = makeStripeLiaison({
-		stripe,
-		billing,
+	const settingsDatalayer = mockSettingsDatalayer()
+	const {stripeDatalayer, billingDatalayer} = mockStripeCircuit({
+		logger: console,
+		authVanguard,
+		settingsDatalayer,
+	})
+	const paywallLiaison = makePaywallLiaison({
 		verifyToken,
-		paywallOverlord,
-		premiumSubscriptionStripePlanId,
+		stripeDatalayer,
+		billingDatalayer,
+		premiumStripePlanId,
 	})
 
 	const scheduleDatalayer = mockScheduleDatalayer()
@@ -127,25 +133,24 @@ export const prepareAllMocks = async({
 		googleToken: "fakeGoogleToken123"
 	})
 	const {userId} = await verifyToken<RefreshPayload>(authTokens.refreshToken)
-	if (startLoggedIn) await tokenStorage.writeTokens(authTokens)
+	if (startLoggedIn) await tokenStore.writeTokens(authTokens)
 	await authVanguard.setClaims({
 		userId,
 		claims: {
 			admin: !!startAdmin,
-			premium: !!startPremium
-				? {expires: Date.now() + (1000 * 60 * 60 * 24 * 30)}
-				: null,
+			premium: !!startPremium,
 		}
 	})
 
 	return {
 		authDealer,
-		tokenStorage,
-		stripeLiaison,
+		tokenStore,
+		paywallLiaison,
 		scheduleSentry,
 		questionsBureau,
 		liveshowGovernor,
-		loginPopupRoutine,
 		profileMagistrate,
+		triggerAccountPopup,
+		triggerCheckoutPopup,
 	}
 }

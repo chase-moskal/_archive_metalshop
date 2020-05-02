@@ -12,12 +12,8 @@ export class LiveshowModel {
 	private liveshowGovernor: LiveshowGovernorTopic
 
 	authUpdate = pubsub<HandleAuthUpdate>()
-	handleAuthUpdate(update: AuthUpdate) {
-		this.authUpdate.publish(update)
-	}
-	dispose() {
-		this.authUpdate.dispose()
-	}
+	handleAuthUpdate(update: AuthUpdate) { this.authUpdate.publish(update) }
+	dispose() { this.authUpdate.dispose() }
 
 	constructor(options: {
 		liveshowGovernor: LiveshowGovernorTopic

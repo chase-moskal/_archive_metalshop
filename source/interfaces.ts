@@ -8,8 +8,8 @@ import {
 	ScheduleEvent,
 	QuestionDraft,
 	AuthDealerTopic,
-	TokenStorageTopic,
-	StripeLiaisonTopic,
+	TokenStoreTopic,
+	PaywallLiaisonTopic,
 	ScheduleSentryTopic,
 	QuestionsBureauTopic,
 	LiveshowGovernorTopic,
@@ -33,18 +33,20 @@ export interface MetalConfig {
 	["questions-server"]: string
 }
 
+export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
+
 export interface MetalOptions {
 	authDealer: AuthDealerTopic
-	tokenStorage: TokenStorageTopic
-	stripeLiaison: StripeLiaisonTopic
+	tokenStore: TokenStoreTopic
+	paywallLiaison: PaywallLiaisonTopic
 	scheduleSentry: ScheduleSentryTopic
 	questionsBureau: QuestionsBureauTopic
 	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
 	//—
-	loginPopupRoutine: LoginPopupRoutine
 	decodeAccessToken: DecodeAccessToken
-	triggerPaywallPopup: TriggerPaywallPopup
+	triggerAccountPopup: TriggerAccountPopup
+	triggerCheckoutPopup: TriggerCheckoutPopup
 }
 
 export interface AuthContext {
@@ -54,11 +56,9 @@ export interface AuthContext {
 }
 
 export type GetAuthContext = () => Promise<AuthContext>
-export type AccountPopupLogin = (authServerUrl: string) => Promise<AuthTokens>
-export type LoginPopupRoutine = () => Promise<AuthTokens>
+export type TriggerAccountPopup = () => Promise<AuthTokens>
 export type DecodeAccessToken = (accessToken: AccessToken) => AuthContext
-
-export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
+export type TriggerCheckoutPopup = (o: {stripeSessionId: string}) => Promise<void>
 
 export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
@@ -129,10 +129,6 @@ export enum ProfileMode {
 	None,
 }
 
-export type TriggerPaywallPopup = (options: {
-	stripeSessionId: string
-}) => Promise<void>
-
 export enum BillingStatus {
 	Unlinked,
 	Linked,
@@ -194,13 +190,13 @@ export interface PaywallShare {
 	user: User
 	profile: Profile
 	authMode: AuthMode
-	autoRenew: boolean
-	premiumStatus: PremiumStatus
-	billingStatus: BillingStatus
-	linkCard(): Promise<void>
-	unlinkCard(): Promise<void>
-	premiumSubscribe(): Promise<void>
-	premiumSetAutoRenew(): Promise<void>
+	// autoRenew: boolean
+	// premiumStatus: PremiumStatus
+	// billingStatus: BillingStatus
+	// linkCard(): Promise<void>
+	// unlinkCard(): Promise<void>
+	// premiumSubscribe(): Promise<void>
+	// premiumSetAutoRenew(): Promise<void>
 }
 
 export interface QuestionsShare {

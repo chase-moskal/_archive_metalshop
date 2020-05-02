@@ -37,8 +37,8 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"@adobe/lit-mobx": "0.0.3",
-		"@stripe/stripe-js": "^1.4.0",
+		"@adobe/lit-mobx": "0.0.4",
+		"@stripe/stripe-js": "^1.5.0",
 		"authoritarian": "0.0.0-dev.52",
 		"commotion": "^0.1.0-dev.0",
 		"crosscall": "0.0.6-dev.19",

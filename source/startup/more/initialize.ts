@@ -1,10 +1,11 @@
 
-import {makeAuthClients} from "authoritarian/dist/business/auth-api/auth-clients.js"
-import {openAccountPopup} from "authoritarian/dist/business/account-popup/open-account-popup.js"
-import {openPaywallPopup} from "authoritarian/dist/business/paywall-popup/open-paywall-popup.js"
-import {makeQuestionsClients} from "authoritarian/dist/business/questions-bureau/questions-clients.js"
-import {makeProfileMagistrateClient} from "authoritarian/dist/business/profile-magistrate/magistrate-client.js"
-import {createTokenStorageClient} from "authoritarian/dist/business/token-storage/create-token-storage-client.js"
+import {makeAuthClients} from "authoritarian/dist/business/auth/auth-clients.js"
+import {makeProfileClients} from "authoritarian/dist/business/profile/profile-clients.js"
+import {makePaywallClients} from "authoritarian/dist/business/paywall/paywall-clients.js"
+import {makeQuestionsClients} from "authoritarian/dist/business/questions/questions-clients.js"
+import {openVaultIframe} from "authoritarian/dist/business/auth/vault-popup/open-vault-iframe.js"
+import {openAccountPopup} from "authoritarian/dist/business/auth/account-popup/open-account-popup.js"
+import {openCheckoutPopup} from "authoritarian/dist/business/paywall/checkout-popup/open-checkout-popup.js"
 
 import {MetalConfig, MetalOptions} from "../../interfaces.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
@@ -25,13 +26,14 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			await import("../../system/mocks.js")
 		const {
 			authDealer,
-			tokenStorage,
-			stripeLiaison,
+			tokenStore,
+			paywallLiaison,
 			scheduleSentry,
 			questionsBureau,
 			liveshowGovernor,
-			loginPopupRoutine,
 			profileMagistrate,
+			triggerAccountPopup,
+			triggerCheckoutPopup,
 		} = await prepareAllMocks({
 			startAdmin: config.mock?.includes("admin"),
 			startPremium: config.mock?.includes("premium"),
@@ -40,13 +42,14 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		options = {
 			...options,
 			authDealer,
-			tokenStorage,
-			stripeLiaison,
+			tokenStore,
+			paywallLiaison,
 			scheduleSentry,
 			questionsBureau,
 			liveshowGovernor,
-			loginPopupRoutine,
 			profileMagistrate,
+			triggerAccountPopup,
+			triggerCheckoutPopup,
 		}
 	}
 
@@ -69,19 +72,21 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		queue(async() => {
 			const {authDealer} = await makeAuthClients({authServerOrigin})
 			options.authDealer = authDealer
-			options.loginPopupRoutine = async() => {
+			options.triggerAccountPopup = async() => {
 				const {promisedPayload} = openAccountPopup({
 					authServerOrigin
 				})
 				return promisedPayload
 			}
-			options.tokenStorage = await createTokenStorageClient({authServerOrigin})
+			const {tokenStore} = await openVaultIframe({authServerOrigin})
+			options.tokenStore = tokenStore
 		})
 	}
 
 	if (profileServerOrigin) {
 		queue(async() => {
-			options.profileMagistrate = await makeProfileMagistrateClient({profileServerOrigin})
+			const {profileMagistrate} = await makeProfileClients({profileServerOrigin})
+			options.profileMagistrate = profileMagistrate
 		})
 	}
 
@@ -101,16 +106,17 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 
 	if (paywallServerOrigin) {
 		queue(async() => {
-			console.log("coming soon: paywall initialization")
-			options.triggerPaywallPopup = async({stripeSessionId}: {
+			console.log("coming soon: paywall initialization!")
+			options.triggerCheckoutPopup = async({stripeSessionId}: {
 					stripeSessionId: string
 				}) => {
-				openPaywallPopup({
+				openCheckoutPopup({
 					stripeSessionId,
 					paywallServerOrigin,
 				})
 			}
-			options.stripeLiaison = null
+			const {paywallLiaison} = await makePaywallClients({paywallServerOrigin})
+			options.paywallLiaison = paywallLiaison
 		})
 	}
 
@@ -130,15 +136,15 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 
 	return {
 		authDealer: options.authDealer,
-		tokenStorage: options.tokenStorage,
-		stripeLiaison: options.stripeLiaison,
+		tokenStore: options.tokenStore,
+		paywallLiaison: options.paywallLiaison,
 		scheduleSentry: options.scheduleSentry,
 		questionsBureau: options.questionsBureau,
 		liveshowGovernor: options.liveshowGovernor,
 		profileMagistrate: options.profileMagistrate,
 		//—
 		decodeAccessToken: options.decodeAccessToken,
-		loginPopupRoutine: options.loginPopupRoutine,
-		triggerPaywallPopup: options.triggerPaywallPopup,
+		triggerAccountPopup: options.triggerAccountPopup,
+		triggerCheckoutPopup: options.triggerCheckoutPopup,
 	}
 }
