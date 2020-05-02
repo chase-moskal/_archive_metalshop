@@ -10,6 +10,7 @@ import {makePaywallLiaison} from "authoritarian/dist/business/paywall/liaison.js
 import {makeScheduleSentry} from "authoritarian/dist/business/schedule/sentry.js"
 import {makeQuestionsBureau} from "authoritarian/dist/business/questions/bureau.js"
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile/magistrate.js"
+import {makeSettingsSheriff} from "authoritarian/dist/business/settings/settings-sheriff.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth/mocks/mock-user-datalayer.js"
 import {mockProfileDatalayer} from "authoritarian/dist/business/profile/mocks/mock-profile-datalayer.js"
 import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth/mocks/mock-verify-google-token.js"
@@ -110,6 +111,8 @@ export const prepareAllMocks = async({
 	}
 
 	const settingsDatalayer = mockSettingsDatalayer()
+	const settingsSheriff = makeSettingsSheriff({verifyToken, settingsDatalayer})
+
 	const {stripeDatalayer, billingDatalayer} = mockStripeCircuit({
 		logger: console,
 		authVanguard,
@@ -147,6 +150,7 @@ export const prepareAllMocks = async({
 		tokenStore,
 		paywallLiaison,
 		scheduleSentry,
+		settingsSheriff,
 		questionsBureau,
 		liveshowGovernor,
 		profileMagistrate,

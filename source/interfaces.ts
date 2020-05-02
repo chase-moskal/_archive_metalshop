@@ -12,13 +12,14 @@ import {
 	TokenStoreTopic,
 	PaywallLiaisonTopic,
 	ScheduleSentryTopic,
+	SettingsSheriffTopic,
 	QuestionsBureauTopic,
 	LiveshowGovernorTopic,
 	ProfileMagistrateTopic,
 } from "authoritarian/dist/interfaces.js"
 
 import {AuthModel} from "./models/auth-model.js"
-import {ProfileModel} from "./models/profile-model.js"
+import {DetailsModel} from "./models/details-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {QuestionsModel} from "./models/questions-model.js"
@@ -43,6 +44,7 @@ export interface MetalOptions {
 	tokenStore: TokenStoreTopic
 	paywallLiaison: PaywallLiaisonTopic
 	scheduleSentry: ScheduleSentryTopic
+	settingsSheriff: SettingsSheriffTopic
 	questionsBureau: QuestionsBureauTopic
 	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
@@ -79,18 +81,18 @@ export interface QuestionValidation {
 
 export interface QuestionsBureauUi {
 	fetchQuestions(o: {
-		board: string
-	}): Promise<Question[]>
+			board: string
+		}): Promise<Question[]>
 	postQuestion(o: {
-		draft: QuestionDraft
-	}): Promise<Question>
+			draft: QuestionDraft
+		}): Promise<Question>
 	deleteQuestion(o: {
-		questionId: string
-	}): Promise<void>
+			questionId: string
+		}): Promise<void>
 	likeQuestion(o: {
-		like: boolean
-		questionId: string
-	}): Promise<Question>
+			like: boolean
+			questionId: string
+		}): Promise<Question>
 	purgeQuestions(o: {board: string}): Promise<void>
 }
 
@@ -105,7 +107,7 @@ export type PrepareHandleLikeClick = (o: {
 
 export interface Supermodel {
 	auth: AuthModel
-	profile: ProfileModel
+	details: DetailsModel
 	paywall: PaywallModel
 	schedule: ScheduleModel
 	liveshow: LiveshowModel

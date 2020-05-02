@@ -4,15 +4,18 @@ import {autorun} from "mobx"
 import {AuthModel} from "../../models/auth-model.js"
 import {ProfileModel} from "../../models/profile-model.js"
 import {PaywallModel} from "../../models/paywall-model.js"
+import {DetailsModel} from "../../models/details-model.js"
 import {LiveshowModel} from "../../models/liveshow-model.js"
 import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
+import {SimpleConsole} from "authoritarian/dist/toolbox/logger.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
 export function prepareSupermodel({
 	tokenStore,
 	paywallLiaison,
 	scheduleSentry,
+	settingsSheriff,
 	questionsBureau,
 	liveshowGovernor,
 	profileMagistrate,
@@ -22,6 +25,8 @@ export function prepareSupermodel({
 	triggerCheckoutPopup,
 }: MetalOptions): Supermodel {
 
+	const logger: SimpleConsole = console
+
 	const supermodel = {
 		auth: new AuthModel({
 			tokenStore,
@@ -29,7 +34,7 @@ export function prepareSupermodel({
 			decodeAccessToken,
 			expiryGraceSeconds: 60
 		}),
-		profile: new ProfileModel({profileMagistrate}),
+		details: new DetailsModel({logger, profileMagistrate, settingsSheriff}),
 		paywall: new PaywallModel({
 			paywallLiaison,
 			triggerCheckoutPopup,
@@ -43,7 +48,7 @@ export function prepareSupermodel({
 	autorun(() => {
 		const {user, mode, getAuthContext} = supermodel.auth
 		const update: AuthUpdate = {user, mode, getAuthContext}
-		supermodel.profile.handleAuthUpdate(update)
+		supermodel.details.handleAuthUpdate(update)
 		supermodel.paywall.handleAuthUpdate(update)
 		supermodel.liveshow.handleAuthUpdate(update)
 		supermodel.schedule.handleAuthUpdate(update)
@@ -56,12 +61,11 @@ export function prepareSupermodel({
 	// 	const {newAccessToken} = supermodel.paywall
 	// 	supermodel.auth.loginWithAccessToken(newAccessToken)
 	// })
-
-	// profile updates
-	autorun(() => {
-		const {profile} = supermodel.profile
-		supermodel.questions.handleProfileUpdate(profile)
-	})
+	// // profile updates
+	// autorun(() => {
+	// 	const {profile} = supermodel.profile
+	// 	supermodel.questions.handleProfileUpdate(profile)
+	// })
 
 	return supermodel
 }

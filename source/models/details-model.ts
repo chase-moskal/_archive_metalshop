@@ -1,5 +1,5 @@
 
-import {observable, action} from "mobx"
+import {observable, action, computed} from "mobx"
 import * as loading from "../toolbox/loading.js"
 import {AuthMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
 import {SimpleConsole, DisabledLogger} from "authoritarian/dist/toolbox/logger.js"
@@ -70,9 +70,11 @@ const prepareAuthLoggedIn = ({
 }
 
 export class DetailsModel {
-	@observable profile = loading.load<Profile>()
-	@observable settings = loading.load<Settings>()
-	
+	@observable profileLoad = loading.load<Profile>()
+	@observable settingsLoad = loading.load<Settings>()
+	@computed get profile() { return loading.payload(this.profileLoad) }
+	@computed get settings() { return loading.payload(this.settingsLoad) }
+
 	private getAuthContext: GetAuthContext
 	private lastAuthMode: AuthMode
 
@@ -96,11 +98,17 @@ export class DetailsModel {
 	}
 
 	@action.bound private setProfileLoad(load: loading.Load<Profile>) {
-		this.profile = load
+		this.profileLoad = load
 	}
 
 	@action.bound private setSettingsLoad(load: loading.Load<Settings>) {
-		this.settings = load
+		this.settingsLoad = load
+	}
+
+	@action.bound async saveProfile(profile: Profile) {
+		const {accessToken} = await this.getAuthContext()
+		await this.profileMagistrate.setProfile({accessToken, profile})
+		this.setProfileLoad(loading.ready(profile))
 	}
 
 	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
