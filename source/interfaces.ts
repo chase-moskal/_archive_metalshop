@@ -171,15 +171,13 @@ export interface MyAvatarShare {
 
 export interface AdminModeShare {
 	user: User
-	profile: Profile
-	profileMode: ProfileMode
-	saveProfile(newProfile: Profile): Promise<void>
+	settingsLoad: loading.Load<Settings>
+	setAdminMode(inputs: {adminMode: boolean}): Promise<Settings>
 }
 
 export interface AdminOnlyShare {
 	user: User
-	profile: Profile
-	profileMode: ProfileMode
+	settingsLoad: loading.Load<Settings>
 }
 
 export interface DetailsShare {

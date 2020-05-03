@@ -1,7 +1,8 @@
 
 import {share} from "../../framework/share.js"
-import {Supermodel, AccountShare, ProfileShare, CountdownShare, PaywallShare, LiveshowShare, MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare, DetailsShare} from "../../interfaces.js"
+import {Supermodel, AccountShare, CountdownShare, PaywallShare, LiveshowShare, MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare, DetailsShare} from "../../interfaces.js"
 
+import {IronLoading} from "../../components/iron-loading.js"
 import {MetalAvatar} from "../../components/metal-avatar.js"
 import {MetalAccount} from "../../components/metal-account.js"
 import {MetalPaywall} from "../../components/metal-paywall.js"
@@ -22,6 +23,7 @@ export const wireComponents = (supermodel: Supermodel) => {
 		settingsLoad: supermodel.details.settingsLoad,
 	}
 	return {
+		IronLoading,
 		MetalAvatar,
 		MetalAccount: share(MetalAccount, () => (<AccountShare>{
 			user: supermodel.auth.user,
@@ -63,12 +65,12 @@ export const wireComponents = (supermodel: Supermodel) => {
 		})),
 		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
 			user: supermodel.auth.user,
-			profile: supermodel.details.profile,
-			saveProfile: supermodel.details.saveProfile,
+			settingsLoad: supermodel.details.settingsLoad,
+			setAdminMode: () => { throw new Error("TODO implement") },
 		})),
 		MetalAdminOnly: share(MetalAdminOnly, () => (<AdminOnlyShare>{
 			user: supermodel.auth.user,
-			profile: supermodel.details.profile,
+			settingsLoad: supermodel.details.settingsLoad,
 		})),
 		MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{
 			user: supermodel.auth.user,

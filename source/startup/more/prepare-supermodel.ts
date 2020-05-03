@@ -2,14 +2,14 @@
 import {autorun} from "mobx"
 
 import {AuthModel} from "../../models/auth-model.js"
-import {ProfileModel} from "../../models/profile-model.js"
 import {PaywallModel} from "../../models/paywall-model.js"
 import {DetailsModel} from "../../models/details-model.js"
 import {LiveshowModel} from "../../models/liveshow-model.js"
 import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
-import {SimpleConsole} from "authoritarian/dist/toolbox/logger.js"
+import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
+import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
 
 export function prepareSupermodel({
 	tokenStore,
@@ -25,7 +25,8 @@ export function prepareSupermodel({
 	triggerCheckoutPopup,
 }: MetalOptions): Supermodel {
 
-	const logger: SimpleConsole = console
+	const logger: Logger = makeLogger()
+	logger.info("logger created")
 
 	const supermodel = {
 		auth: new AuthModel({

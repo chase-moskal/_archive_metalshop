@@ -13,11 +13,12 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
-		const {renderProfile} = this
 		const {profileLoad} = this.share
 		return html`
 			<div class="profile">
-				${litLoading(profileLoad, renderProfile)}
+				<iron-loading .load=${profileLoad}>
+					${this.renderProfile()}
+				</iron-loading>
 			</div>
 		`
 	}
@@ -30,10 +31,7 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 	})
 
 	private get _profile() {
-		const {profileLoad} = this.share
-		return profileLoad.state == loading.LoadState.Ready
-			? profileLoad.payload
-			: null
+		return loading.payload(this.share.profileLoad)
 	}
 
 	private _handleInputChange = () => {
@@ -60,13 +58,15 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 		return profile
 	}
 
-	private renderProfile = (profile: Profile) => {
+	private renderProfile = () => {
 		const {user} = this.share
 		const {
 			_inputDebouncer,
 			_handleSaveClick,
+			_profile: profile,
 			_handleInputChange,
 		} = this
+		if (!profile) return null
 		const showSaveButton = !!this._changedProfile
 		return html`
 			<div class="panel">

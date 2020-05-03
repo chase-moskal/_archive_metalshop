@@ -2,7 +2,7 @@
 import {html} from "lit-element"
 import {renderAuthor} from "./render-author.js"
 import {QuestionValidation} from "../../interfaces.js"
-import {Question, QuestionAuthor} from "authoritarian/dist/interfaces.js"
+import {QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 export function renderQuestionEditor({
 	expand,
@@ -14,7 +14,6 @@ export function renderQuestionEditor({
 	author = {
 		profile: {
 			avatar: null,
-			adminMode: false,
 			userId: "FAKE_USER_ID",
 			nickname: "FAKE_NICKNAME",
 		},

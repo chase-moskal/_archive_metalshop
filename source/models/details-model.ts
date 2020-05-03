@@ -2,7 +2,7 @@
 import {observable, action, computed} from "mobx"
 import * as loading from "../toolbox/loading.js"
 import {AuthMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
-import {SimpleConsole, DisabledLogger} from "authoritarian/dist/toolbox/logger.js"
+import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {ProfileMagistrateTopic, Profile, SettingsSheriffTopic, Settings} from "authoritarian/dist/interfaces.js"
 
 const prepareAuthLoggedIn = ({
@@ -15,7 +15,7 @@ const prepareAuthLoggedIn = ({
 		setSettingsLoad,
 		profileMagistrate,
 	}: {
-		logger: SimpleConsole
+		logger: Logger
 		getTicket: () => number
 		incrementTicket: () => number
 		getAuthContext: GetAuthContext
@@ -85,16 +85,16 @@ export class DetailsModel {
 		return this._ticket
 	}
 
-	private logger: SimpleConsole
+	private logger: Logger
 	private settingsSheriff: SettingsSheriffTopic
 	private profileMagistrate: ProfileMagistrateTopic
 
 	constructor(options: {
-			logger?: SimpleConsole
+			logger: Logger
 			settingsSheriff: SettingsSheriffTopic
 			profileMagistrate: ProfileMagistrateTopic
 		}) {
-		Object.assign(this, {logger: new DisabledLogger()}, options)
+		Object.assign(this, options)
 	}
 
 	@action.bound private setProfileLoad(load: loading.Load<Profile>) {

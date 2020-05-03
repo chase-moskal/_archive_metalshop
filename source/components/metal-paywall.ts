@@ -1,6 +1,6 @@
 
 import {star} from "../system/icons.js"
-import {PaywallShare, PaywallMode, ConstructorFor} from "../interfaces.js"
+import {PaywallShare, ConstructorFor} from "../interfaces.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
 
@@ -8,59 +8,59 @@ const Component: ConstructorFor<MetalshopComponent<PaywallShare>> =
 	MetalshopComponent
 
 export class MetalPaywall extends mixinLoadable(Component) {
-	static get styles() { return [super.styles || css``, styles] }
-	loadingMessage = "loading supporter panel"
+	// static get styles() { return [super.styles || css``, styles] }
+	// loadingMessage = "loading supporter panel"
 
-	updated() {
-		const {mode} = this.share
-		switch (mode) {
-			case PaywallMode.Loading:
-				this.loadableState = LoadableState.Loading
-				break
-			case PaywallMode.Error:
-				this.loadableState = LoadableState.Error
-				break
-			default:
-				this.loadableState = LoadableState.Ready
-		}
-	}
+	// updated() {
+	// 	const {mode} = this.share
+	// 	switch (mode) {
+	// 		case PaywallMode.Loading:
+	// 			this.loadableState = LoadableState.Loading
+	// 			break
+	// 		case PaywallMode.Error:
+	// 			this.loadableState = LoadableState.Error
+	// 			break
+	// 		default:
+	// 			this.loadableState = LoadableState.Ready
+	// 	}
+	// }
 
-	private _renderNotPremium() {return html`
-		<header>
-			<h3>Become a premium supporter!</h3>
-		</header>
-		<section>
-			<p>It comes with cool features!</p>
-		</section>
-		<footer class="coolbuttonarea">
-			<button @click=${this.share.grantUserPremium}>Subscribe</button>
-			<span class="price">$5<small>/month</small></span>
-		</footer>
-	`}
+	// private _renderNotPremium() {return html`
+	// 	<header>
+	// 		<h3>Become a premium supporter!</h3>
+	// 	</header>
+	// 	<section>
+	// 		<p>It comes with cool features!</p>
+	// 	</section>
+	// 	<footer class="coolbuttonarea">
+	// 		<button @click=${this.share.grantUserPremium}>Subscribe</button>
+	// 		<span class="price">$5<small>/month</small></span>
+	// 	</footer>
+	// `}
 
-	private _renderPremium() {return html`
-		<header>
-			<div class="icon">${star}</div>
-			<h3>You are a premium supporter!</h3>
-		</header>
-		<section>
-			<p>You have the cool features!</p>
-		</section>
-		<footer class="coolbuttonarea">
-			<button @click=${this.share.revokeUserPremium}>Unsubscribe</button>
-			<span class="note">You are currently subscribed</span>
-		</footer>
-	`}
+	// private _renderPremium() {return html`
+	// 	<header>
+	// 		<div class="icon">${star}</div>
+	// 		<h3>You are a premium supporter!</h3>
+	// 	</header>
+	// 	<section>
+	// 		<p>You have the cool features!</p>
+	// 	</section>
+	// 	<footer class="coolbuttonarea">
+	// 		<button @click=${this.share.revokeUserPremium}>Unsubscribe</button>
+	// 		<span class="note">You are currently subscribed</span>
+	// 	</footer>
+	// `}
 
-	renderReady() {
-		const {mode} = this.share
-		if (mode === undefined) return null
-		switch (mode) {
-			case PaywallMode.LoggedOut: return null
-			case PaywallMode.NotPremium: return this._renderNotPremium()
-			case PaywallMode.Premium: return this._renderPremium()
-		}
-	}
+	// renderReady() {
+	// 	const {mode} = this.share
+	// 	if (mode === undefined) return null
+	// 	switch (mode) {
+	// 		case PaywallMode.LoggedOut: return null
+	// 		case PaywallMode.NotPremium: return this._renderNotPremium()
+	// 		case PaywallMode.Premium: return this._renderPremium()
+	// 	}
+	// }
 }
 
 const styles = css`

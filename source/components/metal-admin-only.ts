@@ -1,4 +1,5 @@
 
+import * as loading from "../toolbox/loading.js"
 import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
 import {ProfileMode, AdminOnlyShare, ConstructorFor} from "../interfaces.js"
 import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
@@ -21,26 +22,16 @@ export class MetalAdminOnly extends mixinLoadable(Component) {
 	}
 
 	updated() {
-		const {profileMode, user, profile} = this.share
-
-		this["admin"] = !!user?.claims?.admin && !!profile?.adminMode
+		const {user, settingsLoad} = this.share
+		const settings = loading.payload(settingsLoad)
+		this["admin"] = !!user?.claims?.admin && !!settings?.admin?.actAsAdmin
 		this["not-admin"] = !this["admin"]
-
-		const loadingState = (mode: LoadableState) => this.loadableState = mode
-		switch (profileMode) {
-			case ProfileMode.Error:
-				loadingState(LoadableState.Error)
-				break
-			case ProfileMode.Loading:
-				loadingState(LoadableState.Loading)
-				break
-			case ProfileMode.None:
-			case ProfileMode.Loaded:
-				loadingState(LoadableState.Ready)
-				break
-			default:
-				loadingState(LoadableState.Error)
-		}
+		this.loadableState = loading.select(settingsLoad, {
+			none: () => LoadableState.Loading,
+			loading: () => LoadableState.Loading,
+			error: reason => LoadableState.Error,
+			ready: settings => LoadableState.Ready,
+		})
 	}
 
 	renderReady() {
