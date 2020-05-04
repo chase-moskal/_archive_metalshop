@@ -14,16 +14,6 @@ export function mixinAutorun<C extends ConstructorFor<LitElement>>(
 	return class LitElementWithMobxAutorun extends Constructor {
 
 		autorun() {}
-		[_autorunDispose]: IReactionDisposer
-		[_autorunClear]() {
-			const dispose = this[_autorunDispose]
-			if (dispose) dispose()
-			this[_autorunDispose] = undefined
-		}
-		[_autorunInitialize]() {
-			this[_autorunClear]()
-			this[_autorunDispose] = autorun(() => this.autorun)
-		}
 
 		connectedCallback() {
 			this[_autorunInitialize]()
@@ -33,6 +23,19 @@ export function mixinAutorun<C extends ConstructorFor<LitElement>>(
 		disconnectedCallback() {
 			super.disconnectedCallback()
 			this[_autorunClear]()
+		}
+
+		private [_autorunDispose]: IReactionDisposer
+
+		private [_autorunClear]() {
+			const dispose = this[_autorunDispose]
+			if (dispose) dispose()
+			this[_autorunDispose] = undefined
+		}
+
+		private [_autorunInitialize]() {
+			this[_autorunClear]()
+			this[_autorunDispose] = autorun(() => this.autorun())
 		}
 	}
 }

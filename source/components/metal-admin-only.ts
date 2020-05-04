@@ -49,7 +49,6 @@ export class MetalAdminOnly extends LoadableComponent<AdminOnlyShare> {
 	updated() {
 		const {user, settingsLoad} = this.share
 		const settings = loading.payload(settingsLoad)
-		console.log("ADMINONLY,", user, settings)
 		this["admin"] = !!user?.claims?.admin && !!settings?.admin?.actAsAdmin
 		this["not-admin"] = !this["admin"]
 		this.loadableState = loading.select(settingsLoad, {

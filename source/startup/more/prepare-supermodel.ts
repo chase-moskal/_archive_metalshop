@@ -46,7 +46,6 @@ export function prepareSupermodel({
 	autorun(() => {
 		const {user, mode, getAuthContext} = supermodel.auth
 		const update: AuthUpdate = {user, mode, getAuthContext}
-		logger.log("AUTH UPDATE", update)
 		supermodel.details.handleAuthUpdate(update)
 		supermodel.paywall.handleAuthUpdate(update)
 		supermodel.liveshow.handleAuthUpdate(update)
