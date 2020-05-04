@@ -26,6 +26,7 @@ import {QuestionsModel} from "./models/questions-model.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
 
 import * as loading from "./toolbox/loading.js"
+import {CSSResult, CSSResultArray} from "lit-element"
 import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 
 export interface MetalConfig {
@@ -38,6 +39,7 @@ export interface MetalConfig {
 	["questions-server"]: string
 }
 
+export type CSS = CSSResult | CSSResultArray
 export type ConstructorFor<T extends {} = {}> = new(...args: any[]) => T
 
 export interface MetalOptions {

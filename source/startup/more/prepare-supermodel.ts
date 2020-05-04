@@ -7,7 +7,6 @@ import {DetailsModel} from "../../models/details-model.js"
 import {LiveshowModel} from "../../models/liveshow-model.js"
 import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
-import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
 
 export function prepareSupermodel({

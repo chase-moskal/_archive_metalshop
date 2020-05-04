@@ -15,7 +15,7 @@ import {MetalSettings} from "../../components/details/metal-settings.js"
 import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
 
-export const wireComponents = (supermodel: Supermodel) => {
+export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
 		user: supermodel.auth.user,
 		saveProfile: supermodel.details.saveProfile,
