@@ -1,7 +1,7 @@
 
 import {styles} from "./details-styles.js"
-import {litLoading} from "../iron-loading.js"
 import {DetailsShare} from "../../interfaces.js"
+import {litLoading} from "../../toolbox/lit-loading.js"
 import {Settings} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, css} from "../../framework/metalshop-component.js"
 

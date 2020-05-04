@@ -11,10 +11,13 @@ import {MetalConfig, MetalOptions} from "../../interfaces.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
 
+import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
+
 const err = (message: string) => new AuthoritarianStartupError(message)
 
 export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	let options: Partial<MetalOptions> = {}
+	options.logger = makeLogger()
 	options.decodeAccessToken = decodeAccessToken
 
 	//
@@ -22,8 +25,8 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	//
 
 	if (config.mock !== null) {
-		const {prepareAllMocks} =
-			await import("../../system/mocks.js")
+		const {makeAllMocks: prepareAllMocks} =
+			await import("./make-all-mocks.js")
 		const {
 			authDealer,
 			tokenStore,
@@ -137,6 +140,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	}
 
 	return {
+		logger: options.logger,
 		authDealer: options.authDealer,
 		tokenStore: options.tokenStore,
 		paywallLiaison: options.paywallLiaison,

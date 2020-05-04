@@ -1,17 +1,18 @@
 
 import * as loading from "../toolbox/loading.js"
-import {LitElement, property, html, css, TemplateResult} from "lit-element"
+import {mixinStyles} from "../framework/mixin-styles.js"
+import {LitElement, property, html, css} from "lit-element"
 
-export const litLoading = <Payload>(
-		load: loading.Load<Payload>,
-		renderReady: (payload: Payload) => TemplateResult,
-	) => loading.select(load, {
-	none: () => html`<div data-load="none">none</div>`,
-	loading: () => html`<div data-load="loading">loading</div>`,
-	error: reason => html`<div data-load="error">error: <span .textContent=${reason}></span></div>`,
-	ready: payload => html`<div data-load="ready">${renderReady(payload)}</div>`,
-})
+const styles = css`
 
+* {
+	margin: 0;
+	padding: 0;
+}
+
+`
+
+@mixinStyles(styles)
 export class IronLoading<Payload = any> extends LitElement {
 	@property({type: Object}) load = loading.load<Payload>()
 
@@ -36,11 +37,4 @@ export class IronLoading<Payload = any> extends LitElement {
 			`,
 		})
 	}
-
-	static css = css`
-		* {
-			margin: 0;
-			padding: 0;
-		}
-	`
 }

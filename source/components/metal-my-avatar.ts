@@ -7,7 +7,7 @@ export class MetalMyAvatar extends MetalshopComponent<MyAvatarShare> {
 
 	render() {
 		const {profile, premiumStatus} = this.share
-		const {avatar = ""} = profile
+		const avatar = profile?.avatar || ""
 		const premium: boolean = premiumStatus == PremiumStatus.Premium
 		return html`
 			<metal-avatar src=${avatar} ?premium=${premium}></metal-avatar>

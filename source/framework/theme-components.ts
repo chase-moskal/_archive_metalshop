@@ -1,9 +1,13 @@
 
-import {mixinCss} from "./mixin-css.js"
-import {LitElement, CSSResult} from "lit-element"
+import {LitElement} from "lit-element"
+import {ConstructorFor} from "../interfaces.js"
+import {mixinStyles, CSS} from "./mixin-styles.js"
 import {objectMap} from "../toolbox/object-map.js"
 
-export const themeComponents = <C extends new(...args: any[]) => LitElement>(
-	theme: CSSResult | CSSResult[],
+export const themeComponents = <C extends ConstructorFor<LitElement>>(
+	theme: CSS,
 	components: {[key: string]: C}
-) => objectMap(components, Component => mixinCss(theme, Component))
+) => {
+	const mixinTheme = mixinStyles(theme)
+	return objectMap(components, Component => mixinTheme(Component))
+}

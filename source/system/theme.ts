@@ -1,5 +1,6 @@
 
 import {css} from "lit-element"
+import {litLoadingStyles} from "../toolbox/lit-loading.js"
 
 export const theme = css`
 	* {
@@ -94,4 +95,6 @@ export const theme = css`
 	.coolbuttonarea button[disabled]::before {
 		display: none !important;
 	}
+
+	${litLoadingStyles}
 `

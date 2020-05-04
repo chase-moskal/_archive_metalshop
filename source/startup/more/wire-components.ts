@@ -28,9 +28,9 @@ export const wireComponents = (supermodel: Supermodel) => {
 		MetalAccount: share(MetalAccount, () => (<AccountShare>{
 			user: supermodel.auth.user,
 			mode: supermodel.auth.mode,
-			getAuthContext: supermodel.auth.getAuthContext,
 			login: supermodel.auth.login,
 			logout: supermodel.auth.logout,
+			getAuthContext: supermodel.auth.getAuthContext,
 		})),
 		MetalProfile: share(MetalProfile, detailsShare),
 		MetalSettings: share(MetalSettings, detailsShare),

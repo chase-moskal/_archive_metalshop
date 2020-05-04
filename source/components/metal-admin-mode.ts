@@ -1,14 +1,11 @@
 
 import * as loading from "../toolbox/loading.js"
+import {AdminModeShare} from "../interfaces.js"
 import {deepEqual, deepClone} from "../toolbox/deep.js"
-import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {AdminModeShare, ProfileMode, ConstructorFor} from "../interfaces.js"
-import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
+import {property, html, css} from "../framework/metalshop-component.js"
+import {LoadableComponent, LoadableState} from "../framework/loadable-component.js"
 
-const Component: ConstructorFor<MetalshopComponent<AdminModeShare>> =
-	MetalshopComponent
-
-export class MetalAdminMode extends mixinLoadable(Component) {
+export class MetalAdminMode extends LoadableComponent<AdminModeShare> {
 	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in admin controls"
 	loadingMessage = "loading admin controls"

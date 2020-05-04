@@ -1,71 +1,55 @@
 
-import {AccountShare, AuthMode, ConstructorFor} from "../interfaces.js"
-import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
+import {AccountShare, AuthMode} from "../interfaces.js"
 import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-const Component: ConstructorFor<MetalshopComponent<AccountShare>> =
-	MetalshopComponent
+import * as loading from "../toolbox/loading.js"
+import {litLoading} from "../toolbox/lit-loading.js"
 
-export class MetalAccount extends mixinLoadable(Component) {
+const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
+	switch (mode) {
+		case AuthMode.Loading: return loading.loading()
+		case AuthMode.Error: return loading.error("auth error")
+		case AuthMode.LoggedIn: return loading.ready(null)
+		case AuthMode.LoggedOut: return loading.ready(null)
+		default: throw new Error("unknown auth mode")
+	}
+}
+
+export class MetalAccount extends MetalshopComponent<AccountShare> {
 	static get styles() { return [super.styles || css``, styles] }
-	loadingMessage = "loading user panel"
-	errorMessage = "user account system error"
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-
-	@property({type: Boolean, reflect: true}) get ["logged-in"]() {
-		return this.share.mode === AuthMode.LoggedIn
-	}
-
-	onLoginClick: (event: MouseEvent) => void = () => {
-		this.share.login()
-	}
-
-	onLogoutClick: (event: MouseEvent) => void = () => {
-		this.share.logout()
-	}
+	onLoginClick: (event: MouseEvent) => void = () => this.share.login()
+	onLogoutClick: (event: MouseEvent) => void = () => this.share.logout()
 
 	firstUpdated() {
 		this["initially-hidden"] = false
 	}
 
-	updated() {
+	render() {
 		const {mode} = this.share
-		this.loadableState = (mode === AuthMode.Error)
-			? LoadableState.Error
-			: (mode === AuthMode.Loading)
-				? LoadableState.Loading
-				: LoadableState.Ready
-	}
-
-	private _renderLoggedIn = () => html`
-		<slot></slot>
-		<div class="logout coolbuttonarea">
-			<button @click=${this.onLogoutClick}>
-				Logout
-			</button>
-		</div>
-	`
-
-	private _renderLoggedOut = () => html`
-		<div class="login coolbuttonarea">
-			<button @click=${this.onLoginClick}>
-				Login
-			</button>
-		</div>
-	`
-
-	renderReady() {
-		const {
-			_renderLoggedIn,
-			_renderLoggedOut,
-			["logged-in"]: loggedIn,
-		} = this
-
-		return html`
+		const load = authModeToLoad(mode)
+		const loggedIn = mode === AuthMode.LoggedIn
+		return litLoading(load, () => html`
 			<slot name="top"></slot>
-			${loggedIn ? _renderLoggedIn() : _renderLoggedOut()}
+			${loggedIn
+				? html`
+					<slot></slot>
+					<div class="wedge logout coolbuttonarea">
+						<button @click=${this.onLogoutClick}>
+							Logout
+						</button>
+					</div>
+				`
+				: html`
+					<div class="wedge login coolbuttonarea">
+						<button @click=${this.onLoginClick}>
+							Login
+						</button>
+					</div>
+				`
+			}
 			<slot name="bottom"></slot>
-		`
+		`)
 	}
 }
 
@@ -74,27 +58,27 @@ const styles = css`
 		display: block;
 	}
 
-	div {
+	.wedge {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
 	}
 
 	.login {
-		justify-content: var(--user-panel-login-justify, center);
+		justify-content: var(--metal-account-login-justify, center);
 	}
 
 	.logout {
-		justify-content: var(--user-panel-logout-justify, flex-end);
+		justify-content: var(--metal-account-logout-justify, flex-end);
 	}
 
 	* + div {
-		margin-top: var(--user-panel-margins, 0.5em);
+		margin-top: var(--metal-account-margins, 0.5em);
 	}
 
 	::slotted(*) {
 		display: block;
-		margin-top: var(--user-panel-margins, 0.5em) !important;
+		margin-top: var(--metal-account-margins, 0.5em) !important;
 	}
 
 	::slotted(*:first-child) {

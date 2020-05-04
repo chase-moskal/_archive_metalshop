@@ -7,9 +7,7 @@ export const litLoading = <Payload>(
 		renderReady: (payload: Payload) => TemplateResult,
 	) => loading.select(load, {
 	none: () => html`
-		<div data-load="none">
-			none
-		</div>
+		<div data-load="none">none</div>
 	`,
 	loading: () => html`
 		<div data-load="loading">loading</div>

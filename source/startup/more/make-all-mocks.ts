@@ -22,9 +22,9 @@ import {random8} from "authoritarian/dist/toolbox/random8.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
 import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
-import {TriggerAccountPopup, TriggerCheckoutPopup} from "../interfaces.js"
+import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
 
-export const prepareAllMocks = async({
+export const makeAllMocks = async({
 	startAdmin,
 	startPremium,
 	startLoggedIn,

@@ -1,16 +1,16 @@
 
 import {styles} from "./details-styles.js"
-import {litLoading} from "../iron-loading.js"
 import {select} from "../../toolbox/selects.js"
 import {DetailsShare} from "../../interfaces.js"
 import * as loading from "../../toolbox/loading.js"
 import {Profile} from "authoritarian/dist/interfaces.js"
 import {makeDebouncer} from "../../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../../toolbox/deep.js"
-import {MetalshopComponent, property, html, css} from "../../framework/metalshop-component.js"
+import {mixinStyles} from "../../framework/mixin-styles.js"
+import {MetalshopComponent, property, html} from "../../framework/metalshop-component.js"
 
+@mixinStyles(styles)
 export class MetalProfile extends MetalshopComponent<DetailsShare> {
-	static get styles() { return [super.styles || css``, styles] }
 
 	render() {
 		const {profileLoad} = this.share
@@ -52,7 +52,7 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 		const profile = deepClone(this._profile)
 		const input = select<HTMLInputElement>(
 			"input[name=nickname]",
-			this.shadowRoot
+			this.shadowRoot,
 		)
 		profile.nickname = input.value
 		return profile

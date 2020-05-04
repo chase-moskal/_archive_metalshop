@@ -28,7 +28,6 @@ const prepareAuthLoggedIn = ({
 	const {user, accessToken} = await getAuthContext()
 	const {userId} = user
 
-	logger.log("details: authLoggedIn, refreshing settings and profile")
 	const ticket = incrementTicket()
 	const sessionStillValid = () => ticket === getTicket()
 
@@ -66,7 +65,9 @@ const prepareAuthLoggedIn = ({
 		}
 	}
 
+	logger.debug("loading settings and profile..")
 	await Promise.allSettled([loadSettings(), loadProfile()])
+	logger.debug("done loading settings and profile")
 }
 
 export class DetailsModel {
@@ -131,7 +132,7 @@ export class DetailsModel {
 		}
 
 		async function authLoggedOut() {
-			setAll(loading.none()) 
+			setAll(loading.none())
 		}
 
 		async function authLoading() {

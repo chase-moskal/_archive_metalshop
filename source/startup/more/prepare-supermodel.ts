@@ -9,9 +9,9 @@ import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
 import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
-import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
 
 export function prepareSupermodel({
+	logger,
 	tokenStore,
 	paywallLiaison,
 	scheduleSentry,
@@ -24,9 +24,6 @@ export function prepareSupermodel({
 	triggerAccountPopup,
 	triggerCheckoutPopup,
 }: MetalOptions): Supermodel {
-
-	const logger: Logger = makeLogger()
-	logger.info("logger created")
 
 	const supermodel = {
 		auth: new AuthModel({
@@ -49,6 +46,7 @@ export function prepareSupermodel({
 	autorun(() => {
 		const {user, mode, getAuthContext} = supermodel.auth
 		const update: AuthUpdate = {user, mode, getAuthContext}
+		logger.log("AUTH UPDATE", update)
 		supermodel.details.handleAuthUpdate(update)
 		supermodel.paywall.handleAuthUpdate(update)
 		supermodel.liveshow.handleAuthUpdate(update)
