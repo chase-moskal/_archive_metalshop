@@ -2,11 +2,16 @@
 import * as loading from "../toolbox/loading.js"
 import {AdminModeShare} from "../interfaces.js"
 import {deepEqual, deepClone} from "../toolbox/deep.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
 import {property, html, css} from "../framework/metalshop-component.js"
 import {LoadableComponent, LoadableState} from "../framework/loadable-component.js"
 
+@mixinStyles(css`
+	:host {
+		color: var(--metal-admin-color, #fd34e2);
+	}
+`)
 export class MetalAdminMode extends LoadableComponent<AdminModeShare> {
-	static get styles() { return [super.styles || css``, styles] }
 	errorMessage = "error in admin controls"
 	loadingMessage = "loading admin controls"
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
@@ -51,9 +56,3 @@ export class MetalAdminMode extends LoadableComponent<AdminModeShare> {
 		` : null
 	}
 }
-
-const styles = css`
-	:host {
-		color: var(--metal-admin-color, #fd34e2);
-	}
-`

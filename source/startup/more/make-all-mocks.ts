@@ -61,7 +61,7 @@ export const makeAllMocks = async({
 		const {getProfile} = profileMagistrate
 		profileMagistrate.getProfile = async(options) => {
 			console.log("get profile!")
-			await nap(10)
+			await nap(1)
 			return getProfile.call(profileMagistrate, options)
 		}
 	}

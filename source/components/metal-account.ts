@@ -4,6 +4,7 @@ import {MetalshopComponent, property, html, css} from "../framework/metalshop-co
 
 import * as loading from "../toolbox/loading.js"
 import {litLoading} from "../toolbox/lit-loading.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
 
 const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
 	switch (mode) {
@@ -15,8 +16,39 @@ const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
 	}
 }
 
+@mixinStyles(css`
+	:host {
+		display: block;
+	}
+
+	.wedge {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	.login {
+		justify-content: var(--metal-account-login-justify, center);
+	}
+
+	.logout {
+		justify-content: var(--metal-account-logout-justify, flex-end);
+	}
+
+	* + div {
+		margin-top: var(--metal-account-margins, 0.5em);
+	}
+
+	::slotted(*) {
+		display: block;
+		margin-top: var(--metal-account-margins, 0.5em) !important;
+	}
+
+	::slotted(*:first-child) {
+		margin-top: unset !important;
+	}
+`)
 export class MetalAccount extends MetalshopComponent<AccountShare> {
-	static get styles() { return [super.styles || css``, styles] }
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	onLoginClick: (event: MouseEvent) => void = () => this.share.login()
 	onLogoutClick: (event: MouseEvent) => void = () => this.share.logout()
@@ -52,36 +84,3 @@ export class MetalAccount extends MetalshopComponent<AccountShare> {
 		`)
 	}
 }
-
-const styles = css`
-	:host {
-		display: block;
-	}
-
-	.wedge {
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-	}
-
-	.login {
-		justify-content: var(--metal-account-login-justify, center);
-	}
-
-	.logout {
-		justify-content: var(--metal-account-logout-justify, flex-end);
-	}
-
-	* + div {
-		margin-top: var(--metal-account-margins, 0.5em);
-	}
-
-	::slotted(*) {
-		display: block;
-		margin-top: var(--metal-account-margins, 0.5em) !important;
-	}
-
-	::slotted(*:first-child) {
-		margin-top: unset !important;
-	}
-`

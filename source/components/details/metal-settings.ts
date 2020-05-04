@@ -10,6 +10,7 @@ export class MetalSettings extends MetalshopComponent<DetailsShare> {
 
 	private renderSettings = (settings: Settings) => html`
 		<div>settings!</div>
+		<metal-admin-mode>Admin mode</metal-admin-mode>
 	`
 
 	render() {

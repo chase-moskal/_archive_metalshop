@@ -3,7 +3,7 @@ import {styles} from "./details-styles.js"
 import {select} from "../../toolbox/selects.js"
 import {DetailsShare} from "../../interfaces.js"
 import * as loading from "../../toolbox/loading.js"
-import {Profile} from "authoritarian/dist/interfaces.js"
+import {Profile, Claims} from "authoritarian/dist/interfaces.js"
 import {makeDebouncer} from "../../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../../toolbox/deep.js"
 import {mixinStyles} from "../../framework/mixin-styles.js"
@@ -14,59 +14,64 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 
 	render() {
 		const {user, profileLoad} = this.share
-		const {
-			_inputDebouncer,
-			_handleSaveClick,
-			_profile: profile,
-			_handleInputChange,
-		} = this
-		if (!profile) return null
-		const showSaveButton = !!this._changedProfile
+		const {_profile: profile} = this
 		return html`
-			<div class="profile">
-				<iron-loading .load=${profileLoad}>
-
-					<div class="panel">
-						<div class="container formarea coolbuttonarea">
-							<metal-avatar
-								src=${profile && profile.avatar}
-								?premium=${user.claims.premium}
-							></metal-avatar>
-							<div>
-								<ul>
-									${user.claims.admin
-										? html`<li data-tag="admin">Admin</li>`
-										: null}
-									${user.claims.premium
-										? html`<li data-tag="premium">Premium</li>`
-										: null}
-								</ul>
-								<input
-									type="text"
-									name="nickname"
-									spellcheck="false"
-									autocomplete="off"
-									placeholder="nickname"
-									@change=${_handleInputChange}
-									@keyup=${_inputDebouncer.queue}
-									.value=${profile.nickname}
-									/>
-								${showSaveButton
-									? html`
-										<button
-											class="save"
-											@click=${_handleSaveClick}>
-												Save
-										</button>`
-									: null}
-							</div>
+			<iron-loading .load=${profileLoad} class="formarea coolbuttonarea">
+				${(profile && user) ? html`
+					<div class="container">
+						<metal-avatar
+							src=${profile && profile.avatar}
+							?premium=${user.claims.premium}
+						></metal-avatar>
+						<div>
+							${this.renderClaimsList(user)}
+							${this.renderNicknameInput()}
+							${this.renderSaveNicknameButton()}
 						</div>
-						<metal-admin-mode>Admin mode</metal-admin-mode>
 					</div>
-
-				</iron-loading>
-			</div>
+				` : null}
+			</iron-loading>
 		`
+	}
+
+	private renderClaimsList(user: Claims) {
+		return html`
+			<ul>
+				${user.claims.admin
+					? html`<li data-tag="admin">Admin</li>`
+					: null}
+				${user.claims.premium
+					? html`<li data-tag="premium">Premium</li>`
+					: null}
+			</ul>
+		`
+	}
+
+	private renderNicknameInput() {
+		return html`
+			<input
+				type="text"
+				name="nickname"
+				spellcheck="false"
+				autocomplete="off"
+				placeholder="nickname"
+				@change=${this._handleInputChange}
+				@keyup=${() => {
+					console.log("QUEUE")
+					this._inputDebouncer.queue()
+				}}
+				.value=${this._profile.nickname}
+				/>
+		`
+	}
+
+	private renderSaveNicknameButton() {
+		const showSaveButton = !!this._changedProfile
+		return showSaveButton ? html`
+			<button class="save" @click=${this._handleSaveClick}>
+				Save
+			</button>
+		` : null
 	}
 
 	@property({type: Object}) private _changedProfile: Profile = null

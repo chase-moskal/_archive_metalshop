@@ -7,7 +7,16 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium&display=swap"/>
 		<link rel="stylesheet" href="demo.css"/>
 		<script type="importmap-shim" src="dist/importmap.json"></script>
-		<script type="module-shim" src="dist/main.js"></script>
+		<script async defer type="module-shim" src="dist/main.js"></script>
+		<script async defer type="module-shim">
+			import * as loading from "./dist/toolbox/loading.js"
+			const details = document.querySelector("[data-demo='iron-loading']")
+			const ironLoading = details.querySelector("iron-loading")
+			details.querySelector("button[data-state=none]").onclick = () => ironLoading.load = loading.none()
+			details.querySelector("button[data-state=loading]").onclick = () => ironLoading.load = loading.loading()
+			details.querySelector("button[data-state=error]").onclick = () => ironLoading.load = loading.error()
+			details.querySelector("button[data-state=ready]").onclick = () => ironLoading.load = loading.ready()
+		</script>
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
 		<!-- metalshop config -->
@@ -97,41 +106,43 @@
 			</section>
 			<section class="component-demos">
 				<h2>component demos <small><metal-admin-mode initially-hidden>Admin mode</metal-admin-mode></small></h2>
+				<details data-demo="iron-loading">
+					<summary>&lt;iron-loading&gt;</summary>
+					<button data-state="none">none</button>
+					<button data-state="loading">loading</button>
+					<button data-state="error">error</button>
+					<button data-state="ready">ready</button>
+					<iron-loading initially-hidden>
+						<p>demo: ready</p>
+					</iron-loading>
+				</details>
 				<details>
 					<summary>&lt;metal-questions&gt;</summary>
-
 					<metal-questions board="qa1" initially-hidden>
 						<h2 slot="post">Post your question!</h2>
 						<h2 slot="rate">Rate other submitted questions</h2>
 					</metal-questions>
-
 				</details>
 				<details>
 					<summary>&lt;metal-countdown&gt;</summary>
-
 					<metal-countdown event-name="countdown1" initially-hidden>
 						<h2>Countdown to next stream</h2>
 					</metal-countdown>
-
 				</details>
 				<details>
 					<summary>&lt;metal-liveshow&gt;</summary>
-
 					<metal-liveshow video-name="livestream" initially-hidden>
 						<h2>Welcome to the private livestream!</h2>
 						<p>You are logged in as a premium supporter</p>
 					</metal-liveshow>
-
 				</details>
 				<details>
 					<summary>&lt;metal-account&gt;</summary>
-
 					<metal-account initially-hidden>
 						<h2 slot="top">Your account</h2>
 						<metal-profile></metal-profile>
 						<metal-paywall></metal-paywall>
 					</metal-account>
-
 				</details>
 			</section>
 		</main>
