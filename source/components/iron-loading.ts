@@ -25,13 +25,9 @@ export class IronLoading<Payload = any> extends LitElement {
 	@property({type: String})
 		loading: string = "loading"
 
-
 	//
 	// load and derived properties
 	//
-
-	@property({type: Boolean, reflect: true})
-		payload = false
 
 	@property({type: String, reflect: true})
 		state: string = "none"
@@ -45,7 +41,6 @@ export class IronLoading<Payload = any> extends LitElement {
 	set load(value: loading.Load<Payload>) {
 		if (!value) value = loading.none()
 		this._load = value
-		this.payload = !!loading.payload(value)
 		this.state = loading.LoadState[value.state].toLowerCase()
 		this.requestUpdate()
 	}

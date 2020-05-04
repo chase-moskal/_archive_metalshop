@@ -1,9 +1,9 @@
 
 import {AccountShare, AuthMode} from "../interfaces.js"
-import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
+import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
 import * as loading from "../toolbox/loading.js"
-import {litLoading} from "../toolbox/lit-loading.js"
+import {styles} from "./styles/metal-account-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 
 const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
@@ -16,38 +16,7 @@ const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
 	}
 }
 
-@mixinStyles(css`
-	:host {
-		display: block;
-	}
-
-	.wedge {
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-	}
-
-	.login {
-		justify-content: var(--metal-account-login-justify, center);
-	}
-
-	.logout {
-		justify-content: var(--metal-account-logout-justify, flex-end);
-	}
-
-	* + div {
-		margin-top: var(--metal-account-margins, 0.5em);
-	}
-
-	::slotted(*) {
-		display: block;
-		margin-top: var(--metal-account-margins, 0.5em) !important;
-	}
-
-	::slotted(*:first-child) {
-		margin-top: unset !important;
-	}
-`)
+@mixinStyles(styles)
 export class MetalAccount extends MetalshopComponent<AccountShare> {
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	onLoginClick: (event: MouseEvent) => void = () => this.share.login()
@@ -61,26 +30,33 @@ export class MetalAccount extends MetalshopComponent<AccountShare> {
 		const {mode} = this.share
 		const load = authModeToLoad(mode)
 		const loggedIn = mode === AuthMode.LoggedIn
-		return litLoading(load, () => html`
-			<slot name="top"></slot>
-			${loggedIn
-				? html`
-					<slot></slot>
-					<div class="wedge logout coolbuttonarea">
-						<button @click=${this.onLogoutClick}>
-							Logout
-						</button>
-					</div>
-				`
-				: html`
-					<div class="wedge login coolbuttonarea">
-						<button @click=${this.onLoginClick}>
-							Login
-						</button>
-					</div>
-				`
-			}
-			<slot name="bottom"></slot>
-		`)
+		return html`
+			<iron-loading .load=${load}>
+				<slot name="top"></slot>
+				${loggedIn ? this.renderLoggedIn() : this.renderLoggedOut()}
+				<slot name="bottom"></slot>
+			</iron-loading>
+		`
+	}
+
+	private renderLoggedIn() {
+		return html`
+			<slot></slot>
+			<div class="wedge logout coolbuttonarea">
+				<button @click=${this.onLogoutClick}>
+					Logout
+				</button>
+			</div>
+		`
+	}
+
+	private renderLoggedOut() {
+		return html`
+			<div class="wedge login coolbuttonarea">
+				<button @click=${this.onLoginClick}>
+					Login
+				</button>
+			</div>
+		`
 	}
 }
