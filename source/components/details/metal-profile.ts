@@ -13,11 +13,57 @@ import {MetalshopComponent, property, html} from "../../framework/metalshop-comp
 export class MetalProfile extends MetalshopComponent<DetailsShare> {
 
 	render() {
-		const {profileLoad} = this.share
+		const {user, profileLoad} = this.share
+		const {
+			_inputDebouncer,
+			_handleSaveClick,
+			_profile: profile,
+			_handleInputChange,
+		} = this
+		if (!profile) return null
+		const showSaveButton = !!this._changedProfile
 		return html`
 			<div class="profile">
 				<iron-loading .load=${profileLoad}>
-					${this.renderProfile()}
+
+					<div class="panel">
+						<div class="container formarea coolbuttonarea">
+							<metal-avatar
+								src=${profile && profile.avatar}
+								?premium=${user.claims.premium}
+							></metal-avatar>
+							<div>
+								<ul>
+									${user.claims.admin
+										? html`<li data-tag="admin">Admin</li>`
+										: null}
+									${user.claims.premium
+										? html`<li data-tag="premium">Premium</li>`
+										: null}
+								</ul>
+								<input
+									type="text"
+									name="nickname"
+									spellcheck="false"
+									autocomplete="off"
+									placeholder="nickname"
+									@change=${_handleInputChange}
+									@keyup=${_inputDebouncer.queue}
+									.value=${profile.nickname}
+									/>
+								${showSaveButton
+									? html`
+										<button
+											class="save"
+											@click=${_handleSaveClick}>
+												Save
+										</button>`
+									: null}
+							</div>
+						</div>
+						<metal-admin-mode>Admin mode</metal-admin-mode>
+					</div>
+
 				</iron-loading>
 			</div>
 		`
@@ -56,56 +102,5 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 		)
 		profile.nickname = input.value
 		return profile
-	}
-
-	private renderProfile = () => {
-		const {user} = this.share
-		const {
-			_inputDebouncer,
-			_handleSaveClick,
-			_profile: profile,
-			_handleInputChange,
-		} = this
-		if (!profile) return null
-		const showSaveButton = !!this._changedProfile
-		return html`
-			<div class="panel">
-				<div class="container formarea coolbuttonarea">
-					<metal-avatar
-						src=${profile && profile.avatar}
-						?premium=${user.claims.premium}
-					></metal-avatar>
-					<div>
-						<ul>
-							${user.claims.admin
-								? html`<li data-tag="admin">Admin</li>`
-								: null}
-							${user.claims.premium
-								? html`<li data-tag="premium">Premium</li>`
-								: null}
-						</ul>
-						<input
-							type="text"
-							name="nickname"
-							spellcheck="false"
-							autocomplete="off"
-							placeholder="nickname"
-							@change=${_handleInputChange}
-							@keyup=${_inputDebouncer.queue}
-							.value=${profile.nickname}
-							/>
-						${showSaveButton
-							? html`
-								<button
-									class="save"
-									@click=${_handleSaveClick}>
-										Save
-								</button>`
-							: null}
-					</div>
-				</div>
-				<metal-admin-mode>Admin mode</metal-admin-mode>
-			</div>
-		`
 	}
 }

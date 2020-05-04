@@ -1,16 +1,16 @@
 
-export * from "lit-element"
 import {LitElement} from "lit-element"
 import {ConstructorFor} from "../interfaces.js"
 import {autorun, IReactionDisposer} from "mobx"
 
-export const _autorunClear = Symbol("_autorunClear")
-export const _autorunDispose = Symbol("_autorunDispose")
-export const _autorunInitialize = Symbol("_autorunInitialize")
+const _autorunClear = Symbol("_autorunClear")
+const _autorunDispose = Symbol("_autorunDispose")
+const _autorunInitialize = Symbol("_autorunInitialize")
 
-export function mixinAutorun<C extends ConstructorFor<LitElement>>(
-		Constructor: C
-	): C & ConstructorFor<{autorun: () => void}> {
+type MixinIn = ConstructorFor<LitElement>
+type MixinOut = ConstructorFor<{autorun: () => void}>
+
+export function mixinAutorun<C extends MixinIn>(Constructor: C): C & MixinOut {
 	return class LitElementWithMobxAutorun extends Constructor {
 
 		autorun() {}

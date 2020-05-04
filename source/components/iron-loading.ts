@@ -20,6 +20,7 @@ export class IronLoading<Payload = any> extends LitElement {
 		return html`<slot name="error">LOAD:error ${reason}</slot>`
 	}
 
+	@property({type: Function})
 	renderReady(payload: Payload): TemplateResult {
 		return html`<slot>LOAD:ready</slot>`
 	}
