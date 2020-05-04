@@ -24,15 +24,17 @@ import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/
 
 import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
 
+import {nap} from "../../toolbox/nap.js"
+
 export const makeAllMocks = async({
-	startAdmin,
-	startPremium,
-	startLoggedIn,
-}: {
-	startAdmin: boolean
-	startPremium: boolean
-	startLoggedIn: boolean
-}) => {
+		startAdmin,
+		startPremium,
+		startLoggedIn,
+	}: {
+		startAdmin: boolean
+		startPremium: boolean
+		startLoggedIn: boolean
+	}) => {
 	const googleId = "g123456"
 	const signToken = mockSignToken()
 	const verifyToken = mockVerifyToken()
@@ -49,9 +51,20 @@ export const makeAllMocks = async({
 
 	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
 	const profileMagistrate = makeProfileMagistrate({
+		verifyToken,
 		profileDatalayer,
-		verifyToken
 	})
+
+	// TODO latency
+	// adding mock latency
+	{
+		const {getProfile} = profileMagistrate
+		profileMagistrate.getProfile = async(options) => {
+			console.log("get profile!")
+			await nap(10)
+			return getProfile.call(profileMagistrate, options)
+		}
+	}
 
 	let count = 0
 	const generateRandomNickname = () => `user-${++count}`
