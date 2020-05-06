@@ -1,13 +1,21 @@
 
-import {star} from "../system/icons.js"
-import {PaywallShare, ConstructorFor} from "../interfaces.js"
-import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
+import {PaywallShare} from "../interfaces.js"
+import {star as starIcon} from "../system/icons.js"
+import {styles} from "./styles/metal-paywall-styles.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
+import {MetalshopComponent, html} from "../framework/metalshop-component.js"
 
-const Component: ConstructorFor<MetalshopComponent<PaywallShare>> =
-	MetalshopComponent
+@mixinStyles(styles)
+export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 
-export class MetalPaywall extends mixinLoadable(Component) {
+	render() {
+		return html`
+			<iron-loading>
+				temp
+			</iron-loading>
+		`
+	}
+
 	// static get styles() { return [super.styles || css``, styles] }
 	// loadingMessage = "loading supporter panel"
 
@@ -62,40 +70,3 @@ export class MetalPaywall extends mixinLoadable(Component) {
 	// 	}
 	// }
 }
-
-const styles = css`
-	* {
-		margin: 0;
-		padding: 0;
-		box-sizing: border-box;
-	}
-
-	:host {
-		display: block;
-		padding: 1em 0;
-	}
-
-	header .icon {
-		float: right;
-		color: var(--paywall-premium-star-color, yellow);
-	}
-
-	header .icon svg {
-		width: 4em;
-		height: 4em;
-		margin-right: 0.5em;
-	}
-
-	section {
-		padding: 1em 0;
-	}
-
-	footer > * {
-		padding: 0 0.5em;
-	}
-
-	footer > span {
-		opacity: 0.8;
-		font-size: 0.8em;
-	}
-`

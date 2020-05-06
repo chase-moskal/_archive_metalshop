@@ -3,7 +3,7 @@ import {observable, action} from "mobx"
 import {ProfileMagistrateTopic, Profile} from "authoritarian/dist/interfaces.js"
 
 import {AuthoritarianProfileError} from "../system/errors.js"
-import {AuthMode, ProfileMode, GetAuthContext, AuthUpdate} from "../interfaces.js"
+import {AuthMode, ProfileMode, GetAuthContext, AuthPayload} from "../interfaces.js"
 
 export class ProfileModel {
 	@observable profile: Profile = null
@@ -17,7 +17,7 @@ export class ProfileModel {
 		profileMagistrate: ProfileMagistrateTopic
 	}) { Object.assign(this, options) }
 
-	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
+	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthPayload) {
 		this.getAuthContext = getAuthContext
 		if (mode === AuthMode.LoggedIn) {
 			this.cancel = false

@@ -1,182 +1,111 @@
 
-// import {Profile} from "authoritarian/dist/interfaces.js"
+import {styles} from "./styles/details-styles.js"
+import {select} from "../toolbox/selects.js"
+import {DetailsShare} from "../interfaces.js"
+import * as loading from "../toolbox/loading.js"
+import {Profile, Claims} from "authoritarian/dist/interfaces.js"
+import {makeDebouncer} from "../toolbox/debouncer.js"
+import {deepClone, deepEqual} from "../toolbox/deep.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
+import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
-// import {select} from "../toolbox/selects.js"
-// import {Debouncer} from "../toolbox/debouncer.js"
-// import {deepClone, deepEqual} from "../toolbox/deep.js"
-// import {ProfileShare, ProfileMode, ConstructorFor} from "../interfaces.js"
-// import {mixinLoadable, LoadableState} from "../framework/mixin-loadable.js"
-// import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
+@mixinStyles(styles)
+export class MetalProfile extends MetalshopComponent<DetailsShare> {
 
-// const Component: ConstructorFor<MetalshopComponent<ProfileShare>> =
-// 	MetalshopComponent
+	render() {
+		const {user, profileLoad} = this.share
+		const {_profile: profile} = this
+		return html`
+			<iron-loading .load=${profileLoad} class="formarea coolbuttonarea">
+				${(profile && user) ? html`
+					<div class="container">
+						<metal-avatar
+							src=${profile?.avatar}
+							?premium=${user.claims.premium}
+						></metal-avatar>
+						<div>
+							${this.renderClaimsList(user)}
+							${this.renderNicknameInput()}
+							${this.renderSaveNicknameButton()}
+						</div>
+					</div>
+				` : null}
+			</iron-loading>
+		`
+	}
 
-// export class MetalProfile extends mixinLoadable(Component) {
-// 	static get styles() { return [super.styles || css``, styles] }
-// 	errorMessage = "error in profile panel"
-// 	loadingMessage = "loading profile panel"
+	private renderClaimsList(user: Claims) {
+		return html`
+			<ul>
+				${user.claims.admin
+					? html`<li data-tag="admin">Admin</li>`
+					: null}
+				${user.claims.premium
+					? html`<li data-tag="premium">Premium</li>`
+					: null}
+			</ul>
+		`
+	}
 
-// 	@property({type: Object}) private _changedProfile: Profile = null
-// 	private _inputDebouncer = new Debouncer({
-// 		delay: 1000,
-// 		action: () => this._handleInputChange()
-// 	})
+	private renderNicknameInput() {
+		return html`
+			<input
+				type="text"
+				name="nickname"
+				spellcheck="false"
+				autocomplete="off"
+				placeholder="nickname"
+				@change=${this._handleInputChange}
+				@keyup=${() => {
+					console.log("QUEUE")
+					this._inputDebouncer.queue()
+				}}
+				.value=${this._profile.nickname}
+				/>
+		`
+	}
 
-// 	reset() {
-// 		this._changedProfile = null
-// 	}
+	private renderSaveNicknameButton() {
+		const showSaveButton = !!this._changedProfile
+		return showSaveButton ? html`
+			<button class="save" @click=${this._handleSaveClick}>
+				Save
+			</button>
+		` : null
+	}
 
-// 	updated() {
-// 		const {mode} = this.share
-// 		this.loadableState = mode === ProfileMode.Error
-// 			? LoadableState.Error
-// 			: mode === ProfileMode.Loading
-// 				? LoadableState.Loading
-// 				: LoadableState.Ready
-// 	}
+	@property({type: Object}) private _changedProfile: Profile = null
 
-// 	private _handleInputChange = () => {
-// 		const {profile} = this.share
-// 		if (!profile) return
-// 		const newProfile = this._generateNewProfileFromInputs()
-// 		const changes = !deepEqual(profile, newProfile)
-// 		this._changedProfile = changes ? newProfile : null
-// 	}
+	private _inputDebouncer = makeDebouncer({
+		delay: 1000,
+		action: () => this._handleInputChange()
+	})
 
-// 	private _handleSaveClick = async() => {
-// 		const {_changedProfile} = this
-// 		this._changedProfile = null
-// 		await this.share.saveProfile(_changedProfile)
-// 	}
+	private get _profile() {
+		return loading.payload(this.share.profileLoad)
+	}
 
-// 	private _generateNewProfileFromInputs(): Profile {
-// 		const profile = deepClone(this.share.profile)
-// 		const input = select<HTMLInputElement>(
-// 			"input[name=nickname]",
-// 			this.shadowRoot
-// 		)
-// 		profile.nickname = input.value
-// 		return profile
-// 	}
+	private _handleInputChange = () => {
+		const {_profile} = this
+		if (!_profile) return
+		const newProfile = this._generateNewProfileFromInputs()
+		const changes = !deepEqual(_profile, newProfile)
+		this._changedProfile = changes ? newProfile : null
+	}
 
-// 	renderReady() {
-// 		const {
-// 			_inputDebouncer,
-// 			_handleSaveClick,
-// 			_handleInputChange,
-// 		} = this
-// 		const {profile, user} = this.share
-// 		const showSaveButton = !!this._changedProfile
+	private _handleSaveClick = async() => {
+		const {_changedProfile} = this
+		this._changedProfile = null
+		await this.share.saveProfile(_changedProfile)
+	}
 
-// 		if (!profile) return null
-// 		return html`
-// 			<div class="panel">
-// 				<div class="container formarea coolbuttonarea">
-// 					<metal-avatar
-// 						src=${profile && profile.avatar}
-// 						?premium=${user.claims.premium}
-// 					></metal-avatar>
-// 					<div>
-// 						<ul>
-// 							${user.claims.admin
-// 								? html`<li data-tag="admin">Admin</li>`
-// 								: null}
-// 							${user.claims.premium
-// 								? html`<li data-tag="premium">Premium</li>`
-// 								: null}
-// 						</ul>
-// 						<input
-// 							type="text"
-// 							name="nickname"
-// 							spellcheck="false"
-// 							autocomplete="off"
-// 							placeholder="nickname"
-// 							@change=${_handleInputChange}
-// 							@keyup=${_inputDebouncer.queue}
-// 							.value=${profile.nickname}
-// 							/>
-// 						${showSaveButton
-// 							? html`
-// 								<button
-// 									class="save"
-// 									@click=${_handleSaveClick}>
-// 										Save
-// 								</button>`
-// 							: null}
-// 					</div>
-// 				</div>
-// 				<metal-admin-mode>Admin mode</metal-admin-mode>
-// 			</div>
-// 		`
-// 	}
-// }
-
-// const styles = css`
-// 	* {
-// 		margin: 0;
-// 		padding: 0;
-// 		box-sizing: border-box;
-// 	}
-
-// 	.panel > * + * {
-// 		margin-top: 0.5em;
-// 	}
-
-// 	.container {
-// 		display: flex;
-// 		flex-direction: row;
-// 	}
-
-// 	metal-avatar {
-// 		flex: 0 0 auto;
-// 		--avatar-size: 6em;
-// 		border: 5px solid rgba(255,255,255, 0.5);
-// 	}
-
-// 	.container > div {
-// 		flex: 1 1 auto;
-// 		display: flex;
-// 		padding: 0.5em;
-// 		flex-direction: column;
-// 		justify-content: center;
-// 	}
-
-// 	.container > div > * + * {
-// 		margin-top: 0.25em;
-// 	}
-
-// 	button.save {
-// 		margin-left: auto;
-// 	}
-
-// 	ul > li {
-// 		opacity: 0.7;
-// 		font-size: 0.7em;
-// 		display: inline-block;
-// 		padding: 0.2em 0.5em;
-// 		border-radius: 0.5em;
-// 		font-family: monospace;
-// 		border: 1px solid;
-// 	}
-
-// 	input {
-// 		width: 100%;
-// 	}
-
-// 	h3 {
-// 		font-size: 1.1em;
-// 	}
-
-// 	@media (max-width: 450px) {
-// 		.container {
-// 			flex-direction: column;
-// 			align-items: flex-start;
-// 		}
-// 	}
-
-// 	metal-admin-mode {
-// 		display: block;
-// 		padding-left: 1em;
-// 		padding-right: 1em;
-// 	}
-// `
+	private _generateNewProfileFromInputs(): Profile {
+		const profile = deepClone(this._profile)
+		const input = select<HTMLInputElement>(
+			"input[name=nickname]",
+			this.shadowRoot,
+		)
+		profile.nickname = input.value
+		return profile
+	}
+}

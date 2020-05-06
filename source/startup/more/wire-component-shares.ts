@@ -6,45 +6,53 @@ import {IronLoading} from "../../components/iron-loading.js"
 import {MetalAvatar} from "../../components/metal-avatar.js"
 import {MetalAccount} from "../../components/metal-account.js"
 import {MetalPaywall} from "../../components/metal-paywall.js"
+import {MetalProfile} from "../../components/metal-profile.js"
 import {MetalLiveshow} from "../../components/metal-liveshow.js"
+import {MetalSettings} from "../../components/metal-settings.js"
 import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
 import {MetalAdminMode} from "../../components/metal-admin-mode.js"
 import {MetalAdminOnly} from "../../components/metal-admin-only.js"
-import {MetalProfile} from "../../components/details/metal-profile.js"
-import {MetalSettings} from "../../components/details/metal-settings.js"
 import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
 
+import * as loading from "../../toolbox/loading.js"
+
 export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
-		user: supermodel.auth.user,
-		saveProfile: supermodel.details.saveProfile,
+		authLoad: supermodel.auth.authLoad,
 		profileLoad: supermodel.details.profileLoad,
 		settingsLoad: supermodel.details.settingsLoad,
+		metaLoad: loading.meta(
+			supermodel.auth.authLoad,
+			supermodel.details.profileLoad,
+			supermodel.details.settingsLoad,
+		),
+		saveProfile: supermodel.details.saveProfile,
 	}
 	return {
 		IronLoading,
 		MetalAvatar,
 		MetalAccount: share(MetalAccount, () => (<AccountShare>{
-			user: supermodel.auth.user,
-			mode: supermodel.auth.mode,
 			login: supermodel.auth.login,
 			logout: supermodel.auth.logout,
-			getAuthContext: supermodel.auth.getAuthContext,
+			authLoad: supermodel.auth.authLoad,
 		})),
 		MetalProfile: share(MetalProfile, detailsShare),
 		MetalSettings: share(MetalSettings, detailsShare),
 		MetalCountdown: share(MetalCountdown, () => (<CountdownShare>{
-			user: supermodel.auth.user,
 			events: supermodel.schedule.events,
-			profile: supermodel.details.profile,
+			authLoad: supermodel.auth.authLoad,
+			profileLoad: supermodel.details.profileLoad,
 			loadEvent: supermodel.schedule.loadEvent,
 			saveEvent: supermodel.schedule.saveEvent,
 		})),
 		MetalPaywall: share(MetalPaywall, () => (<PaywallShare>{
-			user: supermodel.auth.user,
-			authMode: supermodel.auth.mode,
-			profile: supermodel.details.profile,
+			authLoad: supermodel.auth.authLoad,
+			profileLoad: supermodel.details.profileLoad,
+			metaLoad: loading.meta(
+				supermodel.auth.authLoad,
+				supermodel.details.profileLoad,
+			),
 			// autoRenew: supermodel.paywall.autoRenew,
 			// premiumStatus: supermodel.paywall.premiumStatus,
 			// billingStatus: supermodel.paywall.billingStatus,
@@ -54,9 +62,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			// premiumSetAutoRenew: supermodel.paywall.premiumSetAutoRenew,
 		})),
 		MetalLiveshow: share(MetalLiveshow, () => (<LiveshowShare>{
-			user: supermodel.auth.user,
-			authMode: supermodel.auth.mode,
-			getAuthContext: supermodel.auth.getAuthContext,
+			authLoad: supermodel.auth.authLoad,
 			makeViewModel: supermodel.liveshow.makeViewModel,
 		})),
 		MetalMyAvatar: share(MetalMyAvatar, () => (<MyAvatarShare>{
@@ -64,17 +70,21 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			premiumStatus: supermodel.paywall.premiumStatus,
 		})),
 		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
-			user: supermodel.auth.user,
+			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
 			setAdminMode: () => { throw new Error("TODO implement") },
 		})),
 		MetalAdminOnly: share(MetalAdminOnly, () => (<AdminOnlyShare>{
-			user: supermodel.auth.user,
+			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
 		})),
 		MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{
-			user: supermodel.auth.user,
-			profile: supermodel.details.profile,
+			authLoad: supermodel.auth.authLoad,
+			profileLoad: supermodel.details.profileLoad,
+			metaLoad: loading.meta(
+				supermodel.auth.authLoad,
+				supermodel.details.profileLoad,
+			),
 			uiBureau: supermodel.questions.uiBureau,
 			fetchCachedQuestions: supermodel.questions.fetchCachedQuestions,
 		})),

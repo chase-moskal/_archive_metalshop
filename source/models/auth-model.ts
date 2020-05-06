@@ -1,24 +1,26 @@
 
 import {observable, action} from "mobx"
-import {AccessToken, TokenStoreTopic, User} from "authoritarian/dist/interfaces.js"
-import {AuthMode, LoginDetail, GetAuthContext, TriggerAccountPopup, DecodeAccessToken, AuthContext} from "../interfaces.js"
+import * as loading from "../toolbox/loading.js"
+import {AccessToken, TokenStoreTopic} from "authoritarian/dist/interfaces.js"
+import {AuthPayload, TriggerAccountPopup, DecodeAccessToken, AuthContext} from "../interfaces.js"
+
 
 export class AuthModel {
-	@observable user: User
-	@observable getAuthContext: GetAuthContext
-	@observable mode: AuthMode = AuthMode.Loading
+	@observable authLoad = loading.load<AuthPayload>()
 	private authContext: AuthContext
 	private expiryGraceSeconds: number
 	private tokenStore: TokenStoreTopic
-	private triggerAccountPopup: TriggerAccountPopup
 	private decodeAccessToken: DecodeAccessToken
+	private triggerAccountPopup: TriggerAccountPopup
 
 	constructor(options: {
-		tokenStore: TokenStoreTopic
-		triggerAccountPopup: TriggerAccountPopup
-		decodeAccessToken: DecodeAccessToken
-		expiryGraceSeconds: number
-	}) { Object.assign(this, options) }
+			expiryGraceSeconds: number
+			tokenStore: TokenStoreTopic
+			decodeAccessToken: DecodeAccessToken
+			triggerAccountPopup: TriggerAccountPopup
+		}) {
+		Object.assign(this, options)
+	}
 
 	@action.bound async useExistingLogin() {
 		this.setLoading()
@@ -26,8 +28,7 @@ export class AuthModel {
 			const accessToken = await this.tokenStore.passiveCheck()
 			if (accessToken) {
 				const detail = this.processAccessToken(accessToken)
-				const {user} = await detail.getAuthContext()
-				this.setLoggedIn(detail, user)
+				this.setLoggedIn(detail)
 			}
 			else this.setLoggedOut()
 		}
@@ -40,8 +41,7 @@ export class AuthModel {
 		await this.tokenStore.writeAccessToken(accessToken)
 		if (accessToken) {
 			const detail = this.processAccessToken(accessToken)
-			const {user} = await detail.getAuthContext()
-			this.setLoggedIn(detail, user)
+			this.setLoggedIn(detail)
 		}
 		else {
 			this.setLoggedOut()
@@ -53,9 +53,8 @@ export class AuthModel {
 		try {
 			const authTokens = await this.triggerAccountPopup()
 			await this.tokenStore.writeTokens(authTokens)
-			const detail = this.processAccessToken(authTokens.accessToken)
-			const {user} = await detail.getAuthContext()
-			this.setLoggedIn(detail, user)
+			const payload = this.processAccessToken(authTokens.accessToken)
+			this.setLoggedIn(payload)
 		}
 		catch (error) {
 			console.error(error)
@@ -75,8 +74,8 @@ export class AuthModel {
 	}
 
 	@action.bound private processAccessToken(
-		accessToken: AccessToken
-	): LoginDetail {
+			accessToken: AccessToken
+		): AuthPayload {
 		this.authContext = this.decodeAccessToken(accessToken)
 		return {
 			getAuthContext: async() => {
@@ -92,27 +91,19 @@ export class AuthModel {
 	}
 
 	@action.bound private setError(error: Error) {
-		this.user = null
-		this.mode = AuthMode.Error
-		this.getAuthContext = null
 		console.error(error)
+		this.authLoad = loading.error(undefined)
 	}
 
 	@action.bound private setLoading() {
-		this.user = null
-		this.getAuthContext = null
-		this.mode = AuthMode.Loading
+		this.authLoad = loading.loading()
 	}
 
-	@action.bound private setLoggedIn({getAuthContext}: LoginDetail, user: User) {
-		this.user = user
-		this.mode = AuthMode.LoggedIn
-		this.getAuthContext = getAuthContext
+	@action.bound private setLoggedIn({getAuthContext}: AuthPayload) {
+		this.authLoad = loading.ready({getAuthContext})
 	}
 
 	@action.bound private setLoggedOut() {
-		this.user = null
-		this.getAuthContext = null
-		this.mode = AuthMode.LoggedOut
+		this.authLoad = loading.ready({getAuthContext: null})
 	}
 }

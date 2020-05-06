@@ -1,7 +1,9 @@
 
 import {observable, action} from "mobx"
 import {PaywallLiaisonTopic, User} from "authoritarian/dist/interfaces.js"
-import {GetAuthContext, AuthUpdate, AuthMode, BillingStatus, PremiumStatus, TriggerCheckoutPopup} from "../interfaces.js"
+import {GetAuthContext, AuthPayload, AuthMode, BillingStatus, PremiumStatus, TriggerCheckoutPopup} from "../interfaces.js"
+import * as loading from "../toolbox/loading.js"
+
 
 export class PaywallModel {
 	@observable autoRenew: boolean
@@ -20,11 +22,14 @@ export class PaywallModel {
 	// // public methods
 	// //
 
+	@action.bound handleAuthLoadUpdate(authLoad: loading.Load<AuthPayload>) {
+		const update = loading.payload(authLoad)
+	}
+
 	@action.bound async handleAuthUpdate({
 		user,
-		mode: authMode,
 		getAuthContext,
-	}: AuthUpdate) {
+	}: AuthPayload) {
 		this.getAuthContext = getAuthContext
 		
 		// TODO something

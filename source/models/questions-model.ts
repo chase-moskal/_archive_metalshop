@@ -1,6 +1,6 @@
 
 import {observable, action} from "mobx"
-import {AuthMode, GetAuthContext, AuthUpdate, QuestionsBureauUi} from "../interfaces.js"
+import {AuthMode, GetAuthContext, AuthPayload, QuestionsBureauUi} from "../interfaces.js"
 import {Profile, User, Question, QuestionsBureauTopic} from "authoritarian/dist/interfaces.js"
 
 export class QuestionsModel {
@@ -13,7 +13,7 @@ export class QuestionsModel {
 		questionsBureau: QuestionsBureauTopic
 	}) { Object.assign(this, options) }
 
-	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthUpdate) {
+	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthPayload) {
 		this.getAuthContext = getAuthContext
 		if (mode === AuthMode.LoggedIn) {
 			const {user} = await this.getAuthContext()

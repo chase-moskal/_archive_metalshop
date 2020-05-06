@@ -73,7 +73,7 @@ export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
 }
 
-export interface LoginDetail {
+export interface AuthPayload {
 	getAuthContext: GetAuthContext
 }
 
@@ -125,12 +125,6 @@ export enum AuthMode {
 	LoggedOut,
 }
 
-export interface AuthUpdate {
-	user: User
-	mode: AuthMode
-	getAuthContext: GetAuthContext
-}
-
 export enum ProfileMode {
 	Error,
 	Loading,
@@ -154,18 +148,14 @@ export enum PrivilegeMode {
 	Privileged,
 }
 
-export type ReceiveGetAuthContext = (getAuthContext: GetAuthContext) => void
-
 //
 // component shares
 //
 
 export interface AccountShare {
-	user: User
-	mode: AuthMode
 	login: () => Promise<void>
 	logout: () => Promise<void>
-	getAuthContext: GetAuthContext
+	authLoad: loading.Load<AuthPayload>
 }
 
 export interface MyAvatarShare {
@@ -174,36 +164,34 @@ export interface MyAvatarShare {
 }
 
 export interface AdminModeShare {
-	user: User
+	authLoad: loading.Load<AuthPayload>
 	settingsLoad: loading.Load<Settings>
 	setAdminMode(inputs: {adminMode: boolean}): Promise<Settings>
 }
 
 export interface AdminOnlyShare {
-	user: User
+	authLoad: loading.Load<AuthPayload>
 	settingsLoad: loading.Load<Settings>
 }
 
 export interface DetailsShare {
-	user: User
 	profileLoad: loading.Load<Profile>
 	settingsLoad: loading.Load<Settings>
 	saveProfile: (profile: Profile) => Promise<void>
 }
 
-export interface ProfileShare {
-	user: User
-	profile: Profile
-	mode: ProfileMode
-	displayAdminFeatures: boolean
-	loadProfile: () => Promise<Profile>
-	saveProfile: (profile: Profile) => Promise<void>
-}
+// export interface ProfileShare {
+// 	user: User
+// 	profile: Profile
+// 	mode: ProfileMode
+// 	displayAdminFeatures: boolean
+// 	loadProfile: () => Promise<Profile>
+// 	saveProfile: (profile: Profile) => Promise<void>
+// }
 
 export interface PaywallShare {
-	user: User
-	profile: Profile
-	authMode: AuthMode
+	profileLoad: loading.Load<Profile>
+	authLoad: loading.Load<AuthPayload>
 	// autoRenew: boolean
 	// premiumStatus: PremiumStatus
 	// billingStatus: BillingStatus
@@ -214,24 +202,23 @@ export interface PaywallShare {
 }
 
 export interface QuestionsShare {
-	user: User
-	profile: Profile
+	metaLoad: loading.Load<void>
+	profileLoad: loading.Load<Profile>
+	authLoad: loading.Load<AuthPayload>
 	uiBureau: QuestionsBureauUi
 	fetchCachedQuestions(board: string): Question[]
 }
 
 export interface CountdownShare {
-	user: User
-	profile: Profile
+	authLoad: loading.Load<AuthPayload>
+	profileLoad: loading.Load<Profile>
 	events: {[key: string]: ScheduleEvent}
 	loadEvent: (name: string) => Promise<ScheduleEvent>
 	saveEvent: (name: string, event: ScheduleEvent) => Promise<void>
 }
 
 export interface LiveshowShare {
-	user: User
-	authMode: AuthMode
-	getAuthContext: GetAuthContext
+	authLoad: loading.Load<AuthPayload>
 	makeViewModel(options: {videoName: string}): {
 		dispose: () => void
 		viewModel: LiveshowViewModel

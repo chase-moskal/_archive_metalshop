@@ -62,11 +62,11 @@ export function loading(): LoadLoading {
 	return {state: LoadState.Loading}
 }
 
-export function error(reason: string): LoadError {
+export function error(reason?: string): LoadError {
 	return {state: LoadState.Error, reason}
 }
 
-export function ready<Payload>(payload: Payload): LoadReady<Payload> {
+export function ready<Payload>(payload?: Payload): LoadReady<Payload> {
 	return {state: LoadState.Ready, payload}
 }
 
@@ -74,4 +74,27 @@ export function payload<Payload>(load: Load<Payload>) {
 	return (load.state == LoadState.Ready)
 		? load.payload
 		: null
+}
+
+export const isNone = (load: Load<any>) => load.state === LoadState.None
+export const isLoading = (load: Load<any>) => load.state === LoadState.Loading
+export const isError = (load: Load<any>) => load.state === LoadState.Error
+export const isReady = (load: Load<any>) => load.state === LoadState.Ready
+
+export function meta(...loads: Load<any>[]) {
+	let allNone = true
+	let anyError = false
+	let allReady = true
+	for (const load of loads) {
+		if (load.state !== LoadState.None) allNone = false
+		if (load.state === LoadState.Error) anyError = true
+		if (load.state !== LoadState.Ready) allReady = false
+	}
+	return anyError
+		? error()
+		: allReady
+			? ready()
+			: allNone
+				? none()
+				: loading()
 }

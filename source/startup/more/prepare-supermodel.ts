@@ -2,12 +2,13 @@
 import {autorun} from "mobx"
 
 import {AuthModel} from "../../models/auth-model.js"
+import * as loading from "../../toolbox/loading.js"
 import {PaywallModel} from "../../models/paywall-model.js"
 import {DetailsModel} from "../../models/details-model.js"
 import {LiveshowModel} from "../../models/liveshow-model.js"
 import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
-import {MetalOptions, Supermodel, AuthUpdate} from "../../interfaces.js"
+import {MetalOptions, Supermodel, AuthPayload} from "../../interfaces.js"
 
 export function prepareSupermodel({
 	logger,
@@ -43,13 +44,12 @@ export function prepareSupermodel({
 
 	// auth updates
 	autorun(() => {
-		const {user, mode, getAuthContext} = supermodel.auth
-		const update: AuthUpdate = {user, mode, getAuthContext}
-		supermodel.details.handleAuthUpdate(update)
-		supermodel.paywall.handleAuthUpdate(update)
-		supermodel.liveshow.handleAuthUpdate(update)
-		supermodel.schedule.handleAuthUpdate(update)
-		supermodel.questions.handleAuthUpdate(update)
+		const {authLoad} = supermodel.auth
+		supermodel.details.handleAuthLoad(authLoad)
+		supermodel.paywall.handleAuthLoad(authLoad)
+		supermodel.liveshow.handleAuthLoad(authLoad)
+		supermodel.schedule.handleAuthLoad(authLoad)
+		supermodel.questions.handleAuthLoad(authLoad)
 	})
 
 	// TODO reconsider
