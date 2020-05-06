@@ -1,9 +1,8 @@
 
-
 import {pubsub} from "../toolbox/pubsub.js"
 import * as loading from "../toolbox/loading.js"
 import {observable, action, runInAction} from "mobx"
-import {AuthPayload, PrivilegeMode, GetAuthContext} from "../interfaces.js"
+import {AuthPayload, PrivilegeLevel, GetAuthContext, VideoPayload} from "../interfaces.js"
 import {LiveshowGovernorTopic, User, AccessToken} from "authoritarian/dist/interfaces.js"
 
 export type HandleAuthUpdate = (auth: loading.Load<AuthPayload>) => Promise<void>
@@ -63,10 +62,9 @@ export class LiveshowViewModel {
 	// public observables
 	//
 
-	@observable vimeoId: string = null
-	@observable load = loading.load<void>()
 	@observable validationMessage: string = null
-	@observable mode: PrivilegeMode = PrivilegeMode.Unknown
+	@observable videoLoad = loading.load<VideoPayload>()
+	@observable privilege: PrivilegeLevel = PrivilegeLevel.Unknown
 
 	//
 	// private variables and constructor
@@ -87,21 +85,19 @@ export class LiveshowViewModel {
 	// public actions
 	//
 
-	@action.bound ascertainPrivilege(user: User): PrivilegeMode {
+	@action.bound ascertainPrivilege(user: User): PrivilegeLevel {
 		return user.claims.admin
-			? PrivilegeMode.Privileged
+			? PrivilegeLevel.Privileged
 			: user.claims.premium
-				? PrivilegeMode.Privileged
-				: PrivilegeMode.Unprivileged
+				? PrivilegeLevel.Privileged
+				: PrivilegeLevel.Unprivileged
 	}
 
 	@action.bound async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
 
 		// initialize observables
-		this.load = loading.none()
-		this.mode = <PrivilegeMode>PrivilegeMode.Unknown
-		this.vimeoId = null
-		this.validationMessage = null
+		this.videoLoad = loading.none()
+		this.privilege = <PrivilegeLevel>PrivilegeLevel.Unknown
 
 		// setup variables
 		this.getAuthContext = null
@@ -117,17 +113,18 @@ export class LiveshowViewModel {
 
 				// set privilege level
 				const privilege = this.ascertainPrivilege(user)
-				runInAction(() => this.mode = privilege)
+				runInAction(() => this.privilege = privilege)
 
 				// load video
-				if (privilege === PrivilegeMode.Privileged) {
-					runInAction(() => this.load = loading.loading())
+				if (privilege === PrivilegeLevel.Privileged) {
+					runInAction(() => this.videoLoad = loading.loading())
 					const {vimeoId} = await this.loadVideo(accessToken)
-					runInAction(() => this.vimeoId = vimeoId)
-					runInAction(() => this.load = loading.ready())
+					runInAction(() => this.videoLoad = loading.ready({
+						vimeoId
+					}))
 				}
 			}
-			else this.mode = PrivilegeMode.Unprivileged
+			else this.privilege = PrivilegeLevel.Unprivileged
 		}
 	}
 

@@ -100,6 +100,10 @@ export interface QuestionsBureauUi {
 	purgeQuestions(o: {board: string}): Promise<void>
 }
 
+export interface VideoPayload {
+	vimeoId: string
+}
+
 export type PrepareHandleLikeClick = (o: {
 	like: boolean
 	questionId: string
@@ -142,7 +146,7 @@ export enum PremiumStatus {
 	Premium,
 }
 
-export enum PrivilegeMode {
+export enum PrivilegeLevel {
 	Unknown,
 	Unprivileged,
 	Privileged,
@@ -202,7 +206,6 @@ export interface PaywallShare {
 }
 
 export interface QuestionsShare {
-	metaLoad: loading.Load<void>
 	profileLoad: loading.Load<Profile>
 	authLoad: loading.Load<AuthPayload>
 	uiBureau: QuestionsBureauUi
