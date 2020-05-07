@@ -25,8 +25,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	//
 
 	if (config.mock !== null) {
-		const {makeAllMocks: prepareAllMocks} =
-			await import("./make-all-mocks.js")
+		const {makeAllMocks} = await import("./make-all-mocks.js")
 		const {
 			authDealer,
 			tokenStore,
@@ -34,11 +33,12 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			scheduleSentry,
 			questionsBureau,
 			settingsSheriff,
+			checkoutPopupUrl,
 			liveshowGovernor,
 			profileMagistrate,
 			triggerAccountPopup,
 			triggerCheckoutPopup,
-		} = await prepareAllMocks({
+		} = await makeAllMocks({
 			startAdmin: config.mock?.includes("admin"),
 			startPremium: config.mock?.includes("premium"),
 			startLoggedIn: config.mock?.includes("loggedin"),
@@ -52,6 +52,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 			settingsSheriff,
 			questionsBureau,
 			liveshowGovernor,
+			checkoutPopupUrl,
 			profileMagistrate,
 			triggerAccountPopup,
 			triggerCheckoutPopup,

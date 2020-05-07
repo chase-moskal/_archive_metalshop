@@ -122,6 +122,8 @@ export const makeAllMocks = async({
 	const scheduleDatalayer = mockScheduleDatalayer()
 	const scheduleSentry = makeScheduleSentry({verifyToken, scheduleDatalayer})
 
+	const checkoutPopupUrl = "http://metaldev.chasemoskal.com:8003/html/checkout"
+
 	const triggerAccountPopup: TriggerAccountPopup =
 		async() => authExchanger.authenticateViaGoogle({googleToken})
 
@@ -134,7 +136,7 @@ export const makeAllMocks = async({
 		const lag = <T extends (...args: any[]) => Promise<any>>(func: T) => {
 			return async function(...args: any[]) {
 				console.log("latency:", func.name)
-				const ms = (Math.random() * 2000) + 200
+				const ms = (Math.random() * 600) + 100
 				await nap(ms)
 				return func.apply(this, args)
 			}
@@ -174,6 +176,7 @@ export const makeAllMocks = async({
 		settingsSheriff,
 		questionsBureau,
 		liveshowGovernor,
+		checkoutPopupUrl,
 		profileMagistrate,
 		triggerAccountPopup,
 		triggerCheckoutPopup,
