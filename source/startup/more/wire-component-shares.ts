@@ -46,11 +46,12 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		})),
 		MetalPaywall: share(MetalPaywall, () => (<PaywallShare>{
 			authLoad: supermodel.auth.authLoad,
-			premium: supermodel.paywall.premium,
-			billingPremiumSubscription: supermodel.paywall.billingPremiumSubscription,
-			checkoutPremium: supermodel.paywall.checkoutPremium,
+			premiumClaim: supermodel.paywall.premiumClaim,
+			premiumExpires: supermodel.paywall.premiumExpires,
+			premiumSubscription: supermodel.paywall.premiumSubscription,
 			updatePremium: supermodel.paywall.updatePremium,
 			cancelPremium: supermodel.paywall.cancelPremium,
+			checkoutPremium: supermodel.paywall.checkoutPremium,
 			// autoRenew: supermodel.paywall.autoRenew,
 			// premiumStatus: supermodel.paywall.premiumStatus,
 			// billingStatus: supermodel.paywall.billingStatus,
@@ -65,7 +66,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		})),
 		MetalMyAvatar: share(MetalMyAvatar, () => (<MyAvatarShare>{
 			profile: supermodel.details.profile,
-			premium: supermodel.paywall.premium,
+			premium: supermodel.paywall.premiumClaim,
 		})),
 		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
 			authLoad: supermodel.auth.authLoad,

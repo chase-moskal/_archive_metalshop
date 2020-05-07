@@ -160,13 +160,20 @@ export const makeAllMocks = async({
 	const authTokens = await authExchanger.authenticateViaGoogle({googleToken})
 	const {userId} = await verifyToken<RefreshPayload>(authTokens.refreshToken)
 	if (startLoggedIn) await tokenStore.writeTokens(authTokens)
+
 	await authVanguard.setClaims({
 		userId,
 		claims: {
 			admin: !!startAdmin,
-			premium: !!startPremium,
 		}
 	})
+
+	if (startPremium) {
+		await paywallLiaison.checkoutPremium({
+			popupUrl: checkoutPopupUrl,
+			accessToken: authTokens.accessToken,
+		})
+	}
 
 	return {
 		authDealer,

@@ -5,15 +5,79 @@ import {styles} from "./styles/metal-paywall-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html} from "../framework/metalshop-component.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 
 	render() {
+		const {authLoad, premiumClaim, premiumSubscription} = this.share
 		return html`
-			<iron-loading>
-				temp
+			<iron-loading .load=${authLoad}>
+				${premiumClaim
+					? this.renderPanelPremium()
+					: this.renderPanelNoPremium()}
+				${premiumSubscription
+					? this.renderPanelSubscription()
+					: this.renderPanelNoSubscription()}
 			</iron-loading>
 		`
+	}
+
+	private renderPanelPremium() {
+		const {premiumExpires} = this.share
+		return html`
+			<div class="panel-premium">
+				<h3>You are Premium!</h3>
+				<p>expires: ${premiumExpires}</p>
+			</div>
+		`
+	}
+
+	private renderPanelNoPremium() {
+		return html`
+			<div class="panel-no-premium">
+				<h3>Not premium</h3>
+			</div>
+		`
+	}
+
+	private renderPanelSubscription() {
+		const {premiumSubscription} = this.share
+		const {brand, last4, expireYear, expireMonth} = premiumSubscription.card
+		return html`
+			<div class="panel-subscription">
+				<h3>Billing subscription for Premium is Active</h3>
+				<p>${brand} card ending in ${last4}, card expires ${expireYear}/${expireMonth}</p>
+				<button @click=${this.handleUpdatePremiumClick}>
+					Update card
+				</button>
+				<button @click=${this.handleCancelPremiumClick}>
+					Cancel subscription
+				</button>
+			</div>
+		`
+	}
+
+	private renderPanelNoSubscription () {
+		return html`
+			<div class="panel-no-subscription">
+				<h3>No active billing subscription</h3>
+				<button @click=${this.handleCheckoutPremiumClick}>
+					Subscribe
+				</button>
+			</div>
+		`
+	}
+
+	private async handleCheckoutPremiumClick() {
+		await this.share.checkoutPremium()
+	}
+
+	private async handleUpdatePremiumClick() {
+		await this.share.updatePremium()
+	}
+
+	private async handleCancelPremiumClick() {
+		await this.share.cancelPremium()
 	}
 
 	// static get styles() { return [super.styles || css``, styles] }

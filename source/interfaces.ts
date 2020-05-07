@@ -185,8 +185,9 @@ export interface DetailsShare {
 
 export interface PaywallShare {
 	authLoad: loading.Load<AuthPayload>
-	premium: boolean
-	billingPremiumSubscription: {
+	premiumClaim: boolean
+	premiumExpires: number
+	premiumSubscription: {
 		card: CardClues
 	}
 	checkoutPremium(): Promise<void>

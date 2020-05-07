@@ -23,11 +23,15 @@ export class PaywallModel {
 		Object.assign(this, options)
 	}
 
-	@computed get premium(): boolean {
+	@computed get premiumClaim(): boolean {
 		return !!this.auth?.user?.claims?.premium
 	}
 
-	@computed get billingPremiumSubscription() {
+	@computed get premiumExpires(): number {
+		return this.details?.settings?.premium?.expires
+	}
+
+	@computed get premiumSubscription() {
 		return this.details?.settings?.billing?.premiumSubscription
 	}
 
