@@ -1,22 +1,19 @@
 
-import {PremiumStatus, MyAvatarShare} from "../interfaces.js"
+import {MyAvatarShare} from "../interfaces.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
 
+@mixinStyles(css`
+	:host {
+		display: block;
+	}
+`)
 export class MetalMyAvatar extends MetalshopComponent<MyAvatarShare> {
-	static get styles() { return [super.styles || css``, styles] }
-
 	render() {
-		const {profile, premiumStatus} = this.share
+		const {profile, premium} = this.share
 		const avatar = profile?.avatar || ""
-		const premium: boolean = premiumStatus == PremiumStatus.Premium
 		return html`
 			<metal-avatar src=${avatar} ?premium=${premium}></metal-avatar>
 		`
 	}
 }
-
-const styles = css`
-	:host {
-		display: block;
-	}
-`

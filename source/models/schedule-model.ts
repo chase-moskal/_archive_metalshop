@@ -1,5 +1,6 @@
 
 import {observable, action} from "mobx"
+import * as loading from "../toolbox/loading.js"
 import {GetAuthContext, AuthPayload} from "../interfaces.js"
 import {ScheduleSentryTopic, ScheduleEvent} from "authoritarian/dist/interfaces.js"
 
@@ -12,8 +13,8 @@ export class ScheduleModel {
 		scheduleSentry: ScheduleSentryTopic
 	}) { Object.assign(this, options) }
 
-	@action.bound async handleAuthUpdate({getAuthContext}: AuthPayload) {
-		this.getAuthContext = getAuthContext
+	@action.bound async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+		this.getAuthContext = loading.payload(authLoad)?.getAuthContext
 	}
 
 	@action.bound async loadEvent(name: string): Promise<ScheduleEvent> {

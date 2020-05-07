@@ -1,107 +1,59 @@
 
-import {observable, action} from "mobx"
-import {PaywallLiaisonTopic, User} from "authoritarian/dist/interfaces.js"
-import {GetAuthContext, AuthPayload, AuthMode, BillingStatus, PremiumStatus, TriggerCheckoutPopup} from "../interfaces.js"
-import * as loading from "../toolbox/loading.js"
+import {observable, action, computed} from "mobx"
+import {PaywallLiaisonTopic} from "authoritarian/dist/interfaces.js"
+import {TriggerCheckoutPopup} from "../interfaces.js"
 
+import {AuthModel} from "./auth-model.js"
+import {DetailsModel} from "./details-model.js"
 
 export class PaywallModel {
-	@observable autoRenew: boolean
-	@observable billingStatus: BillingStatus
-	@observable premiumStatus: PremiumStatus
-	private getAuthContext: GetAuthContext
-	private paywallLiaison: PaywallLiaisonTopic
-	private triggerCheckoutPopup: TriggerCheckoutPopup
+	@observable private readonly auth: AuthModel
+	@observable private readonly details: DetailsModel
+	private readonly checkoutPopupUrl: string
+	private readonly paywallLiaison: PaywallLiaisonTopic
+	private readonly triggerCheckoutPopup: TriggerCheckoutPopup
 
 	constructor(options: {
-		paywallLiaison: PaywallLiaisonTopic
-		triggerCheckoutPopup: TriggerCheckoutPopup
-	}) { Object.assign(this, options) }
-
-	// //
-	// // public methods
-	// //
-
-	@action.bound handleAuthLoadUpdate(authLoad: loading.Load<AuthPayload>) {
-		const update = loading.payload(authLoad)
+			auth: AuthModel
+			details: DetailsModel
+			checkoutPopupUrl: string
+			paywallLiaison: PaywallLiaisonTopic
+			triggerCheckoutPopup: TriggerCheckoutPopup
+		}) {
+		Object.assign(this, options)
 	}
 
-	@action.bound async handleAuthUpdate({
-		user,
-		getAuthContext,
-	}: AuthPayload) {
-		this.getAuthContext = getAuthContext
-		
-		// TODO something
-
-		// this.setStatuses({
-		// 	billingStatus: authMode === AuthMode.LoggedIn
-		// 		? this.isBillingLinked(user)
-		// 			? BillingStatus.Linked
-		// 			: BillingStatus.Unlinked
-		// 		: BillingStatus.Unlinked,
-		// 	premiumStatus: authMode === AuthMode.LoggedIn
-		// 		? this.isPremium(user)
-		// 			? PremiumStatus.Premium
-		// 			: PremiumStatus.NotPremium
-		// 		: PremiumStatus.NotPremium,
-		// 	autoRenew: authMode === AuthMode.LoggedIn
-		// 		? this.isPremium(user)
-		// 			? user.claims.premium.autoRenew
-		// 			: false
-		// 		: false,
-		// })
+	@computed get premium(): boolean {
+		return !!this.auth?.user?.claims?.premium
 	}
 
-	// @action.bound async linkCard() {
-	// 	const {accessToken} = await this.getAuthContext()
-	// 	const {stripeSessionId} = await this.stripeLiaison.createSessionForLinking({
-	// 		accessToken
-	// 	})
-	// 	await this.triggerPaywallPopup({stripeSessionId})
-	// }
+	@computed get billingPremiumSubscription() {
+		return this.details?.settings?.billing?.premiumSubscription
+	}
 
-	// @action.bound async unlinkCard() {
-	// 	const {accessToken} = await this.getAuthContext()
-	// 	await this.stripeLiaison.unlink({accessToken})
-	// }
+	@action.bound async checkoutPremium() {
+		const {accessToken} = await this.auth.getAuthContext()
+		const {stripeSessionId} = await this.paywallLiaison.checkoutPremium({
+			accessToken,
+			popupUrl: this.checkoutPopupUrl,
+		})
+		await this.triggerCheckoutPopup({stripeSessionId})
+		await this.auth.reauthorize()
+	}
 
-	// @action.bound async premiumSubscribe() {
-	// 	const {accessToken} = await this.getAuthContext()
-	// 	const {stripeSessionId} = await this.stripeLiaison.createSessionForPremium({
-	// 		accessToken
-	// 	})
-	// 	await this.triggerPaywallPopup({stripeSessionId})
-	// }
+	@action.bound async updatePremium() {
+		const {accessToken} = await this.auth.getAuthContext()
+		const {stripeSessionId} = await this.paywallLiaison.updatePremium({
+			accessToken,
+			popupUrl: this.checkoutPopupUrl,
+		})
+		await this.triggerCheckoutPopup({stripeSessionId})
+		await this.auth.reauthorize()
+	}
 
-	// @action.bound async premiumSetAutoRenew({autoRenew}: {autoRenew: boolean}) {
-	// 	const {accessToken} = await this.getAuthContext()
-	// 	await this.stripeLiaison.setPremiumAutoRenew({
-	// 		autoRenew,
-	// 		accessToken,
-	// 	})
-	// }
-
-	// //
-	// // private methods
-	// //
-
-	// private isPremium(user: User) {
-	// 	const expires = user?.claims?.premium?.expires
-	// 	return expires && (expires > Date.now())
-	// }
-
-	// private isBillingLinked(user: User) {
-	// 	return !!user?.claims?.billing?.linked
-	// }
-
-	// @action private setStatuses({billingStatus, premiumStatus, autoRenew}: {
-	// 		autoRenew: boolean
-	// 		billingStatus: BillingStatus
-	// 		premiumStatus: PremiumStatus
-	// 	}) {
-	// 	this.autoRenew = autoRenew
-	// 	this.premiumStatus = premiumStatus
-	// 	this.billingStatus = billingStatus
-	// }
+	@action.bound async cancelPremium() {
+		const {accessToken} = await this.auth.getAuthContext()
+		await this.paywallLiaison.cancelPremium({accessToken})
+		await this.auth.reauthorize()
+	}
 }

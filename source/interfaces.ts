@@ -4,6 +4,7 @@ import {
 	Profile,
 	Question,
 	Settings,
+	CardClues,
 	AuthTokens,
 	AccessToken,
 	ScheduleEvent,
@@ -53,6 +54,7 @@ export interface MetalOptions {
 	liveshowGovernor: LiveshowGovernorTopic
 	profileMagistrate: ProfileMagistrateTopic
 	//—
+	checkoutPopupUrl: string
 	decodeAccessToken: DecodeAccessToken
 	triggerAccountPopup: TriggerAccountPopup
 	triggerCheckoutPopup: TriggerCheckoutPopup
@@ -122,13 +124,6 @@ export interface Supermodel {
 	questions: QuestionsModel
 }
 
-export enum AuthMode {
-	Error,
-	Loading,
-	LoggedIn,
-	LoggedOut,
-}
-
 export enum ProfileMode {
 	Error,
 	Loading,
@@ -136,9 +131,9 @@ export enum ProfileMode {
 	None,
 }
 
-export enum BillingStatus {
-	Unlinked,
-	Linked,
+export enum BillingPremiumSubscription {
+	Unsubscribed,
+	Subscribed,
 }
 
 export enum PremiumStatus {
@@ -164,7 +159,7 @@ export interface AccountShare {
 
 export interface MyAvatarShare {
 	profile: Profile
-	premiumStatus: PremiumStatus
+	premium: boolean
 }
 
 export interface AdminModeShare {
@@ -179,36 +174,28 @@ export interface AdminOnlyShare {
 }
 
 export interface DetailsShare {
+	authLoad: loading.Load<AuthPayload>
 	profileLoad: loading.Load<Profile>
 	settingsLoad: loading.Load<Settings>
 	saveProfile: (profile: Profile) => Promise<void>
 }
 
-// export interface ProfileShare {
-// 	user: User
-// 	profile: Profile
-// 	mode: ProfileMode
-// 	displayAdminFeatures: boolean
-// 	loadProfile: () => Promise<Profile>
-// 	saveProfile: (profile: Profile) => Promise<void>
-// }
-
 export interface PaywallShare {
-	profileLoad: loading.Load<Profile>
 	authLoad: loading.Load<AuthPayload>
-	// autoRenew: boolean
-	// premiumStatus: PremiumStatus
-	// billingStatus: BillingStatus
-	// linkCard(): Promise<void>
-	// unlinkCard(): Promise<void>
-	// premiumSubscribe(): Promise<void>
-	// premiumSetAutoRenew(): Promise<void>
+	premium: boolean
+	billingPremiumSubscription: {
+		card: CardClues
+	}
+	checkoutPremium(): Promise<void>
+	updatePremium(): Promise<void>
+	cancelPremium(): Promise<void>
 }
 
 export interface QuestionsShare {
+	user: User
+	uiBureau: QuestionsBureauUi
 	profileLoad: loading.Load<Profile>
 	authLoad: loading.Load<AuthPayload>
-	uiBureau: QuestionsBureauUi
 	fetchCachedQuestions(board: string): Question[]
 }
 

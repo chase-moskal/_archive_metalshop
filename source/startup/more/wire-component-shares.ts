@@ -22,11 +22,6 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		authLoad: supermodel.auth.authLoad,
 		profileLoad: supermodel.details.profileLoad,
 		settingsLoad: supermodel.details.settingsLoad,
-		metaLoad: loading.meta(
-			supermodel.auth.authLoad,
-			supermodel.details.profileLoad,
-			supermodel.details.settingsLoad,
-		),
 		saveProfile: supermodel.details.saveProfile,
 	}
 	return {
@@ -48,11 +43,11 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		})),
 		MetalPaywall: share(MetalPaywall, () => (<PaywallShare>{
 			authLoad: supermodel.auth.authLoad,
-			profileLoad: supermodel.details.profileLoad,
-			metaLoad: loading.meta(
-				supermodel.auth.authLoad,
-				supermodel.details.profileLoad,
-			),
+			premium: supermodel.paywall.premium,
+			billingPremiumSubscription: supermodel.paywall.billingPremiumSubscription,
+			checkoutPremium: supermodel.paywall.checkoutPremium,
+			updatePremium: supermodel.paywall.updatePremium,
+			cancelPremium: supermodel.paywall.cancelPremium,
 			// autoRenew: supermodel.paywall.autoRenew,
 			// premiumStatus: supermodel.paywall.premiumStatus,
 			// billingStatus: supermodel.paywall.billingStatus,
@@ -67,7 +62,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		})),
 		MetalMyAvatar: share(MetalMyAvatar, () => (<MyAvatarShare>{
 			profile: supermodel.details.profile,
-			premiumStatus: supermodel.paywall.premiumStatus,
+			premium: supermodel.paywall.premium,
 		})),
 		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
 			authLoad: supermodel.auth.authLoad,
@@ -81,10 +76,6 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{
 			authLoad: supermodel.auth.authLoad,
 			profileLoad: supermodel.details.profileLoad,
-			metaLoad: loading.meta(
-				supermodel.auth.authLoad,
-				supermodel.details.profileLoad,
-			),
 			uiBureau: supermodel.questions.uiBureau,
 			fetchCachedQuestions: supermodel.questions.fetchCachedQuestions,
 		})),

@@ -2,8 +2,8 @@
 import {pubsub} from "../toolbox/pubsub.js"
 import * as loading from "../toolbox/loading.js"
 import {observable, action, runInAction} from "mobx"
-import {AuthPayload, PrivilegeLevel, GetAuthContext, VideoPayload} from "../interfaces.js"
 import {LiveshowGovernorTopic, User, AccessToken} from "authoritarian/dist/interfaces.js"
+import {AuthPayload, PrivilegeLevel, GetAuthContext, VideoPayload} from "../interfaces.js"
 
 export type HandleAuthUpdate = (auth: loading.Load<AuthPayload>) => Promise<void>
 

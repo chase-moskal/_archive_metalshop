@@ -1,25 +1,22 @@
 
 import {observable, action} from "mobx"
-import {AuthMode, GetAuthContext, AuthPayload, QuestionsBureauUi} from "../interfaces.js"
-import {Profile, User, Question, QuestionsBureauTopic} from "authoritarian/dist/interfaces.js"
+import * as loading from "../toolbox/loading.js"
+import {GetAuthContext, AuthPayload, QuestionsBureauUi} from "../interfaces.js"
+import {Profile, Question, QuestionsBureauTopic} from "authoritarian/dist/interfaces.js"
 
 export class QuestionsModel {
-	@observable user: User
 	@observable questions: Question[] = []
 	private getAuthContext: GetAuthContext
 	private questionsBureau: QuestionsBureauTopic
 
 	constructor(options: {
-		questionsBureau: QuestionsBureauTopic
-	}) { Object.assign(this, options) }
+			questionsBureau: QuestionsBureauTopic
+		}) {
+		Object.assign(this, options)
+	}
 
-	@action.bound async handleAuthUpdate({mode, getAuthContext}: AuthPayload) {
-		this.getAuthContext = getAuthContext
-		if (mode === AuthMode.LoggedIn) {
-			const {user} = await this.getAuthContext()
-			this.setUser(user)
-		}
-		else this.setUser(null)
+	@action.bound handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+		this.getAuthContext = loading.payload(authLoad)?.getAuthContext
 	}
 
 	@action.bound handleProfileUpdate(profile: Profile) {
@@ -67,17 +64,6 @@ export class QuestionsModel {
 			await this.questionsBureau.purgeQuestions(optionsWithToken)
 			this.deleteAllCachedQuestions()
 		},
-	}
-
-	@action.bound private setUser(user: User) {
-		this.user = user
-		if (user) {
-			for (const question of this.questions) {
-				if (question.author.user.userId === user.userId) {
-					Object.assign(question.author.user, user)
-				}
-			}
-		}
 	}
 
 	@action.bound private cacheQuestion(question: Question) {

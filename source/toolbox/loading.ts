@@ -81,7 +81,7 @@ export const isLoading = (load: Load<any>) => load.state === LoadState.Loading
 export const isError = (load: Load<any>) => load.state === LoadState.Error
 export const isReady = (load: Load<any>) => load.state === LoadState.Ready
 
-export function meta(...loads: Load<any>[]) {
+export function meta(...loads: Load<any>[]): Load<void> {
 	let allNone = true
 	let anyError = false
 	let allReady = true

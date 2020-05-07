@@ -1,35 +1,62 @@
 
-import {styles} from "./styles/details-styles.js"
 import {select} from "../toolbox/selects.js"
 import {DetailsShare} from "../interfaces.js"
 import * as loading from "../toolbox/loading.js"
-import {Profile, Claims} from "authoritarian/dist/interfaces.js"
+import {styles} from "./styles/details-styles.js"
 import {makeDebouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
+import {Profile, Claims, User} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
 @mixinStyles(styles)
 export class MetalProfile extends MetalshopComponent<DetailsShare> {
 
+	@property({type: Object})
+		private user: User = null
+
+	@property({type: Object})
+		private profile: Profile = null
+
+	autoruns = [
+		() => this.autorunAuth(),
+		() => this.autorunProfile(),
+	]
+
+	private async autorunAuth() {
+		const {authLoad} = this.share
+		this.user = null
+		const getAuthContext = loading.payload(authLoad)?.getAuthContext
+		if (getAuthContext) {
+			const {user} = await getAuthContext()
+			this.user = user
+		}
+	}
+
+	private autorunProfile() {
+		this.profile = null
+		const {profileLoad} = this.share
+		const profile = loading.payload(profileLoad)
+		this.profile = profile
+	}
+
 	render() {
-		const {user, profileLoad} = this.share
-		const {_profile: profile} = this
+		const {user, profile} = this
+		const {profileLoad} = this.share
+		const premium = user?.claims.premium
 		return html`
 			<iron-loading .load=${profileLoad} class="formarea coolbuttonarea">
-				${(profile && user) ? html`
-					<div class="container">
-						<metal-avatar
-							src=${profile?.avatar}
-							?premium=${user.claims.premium}
-						></metal-avatar>
-						<div>
-							${this.renderClaimsList(user)}
-							${this.renderNicknameInput()}
-							${this.renderSaveNicknameButton()}
-						</div>
+				<div class="container">
+					<metal-avatar
+						src=${profile?.avatar}
+						?premium=${premium}
+					></metal-avatar>
+					<div>
+						${this.renderClaimsList(user)}
+						${this.renderNicknameInput()}
+						${this.renderSaveNicknameButton()}
 					</div>
-				` : null}
+				</div>
 			</iron-loading>
 		`
 	}
@@ -56,11 +83,8 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 				autocomplete="off"
 				placeholder="nickname"
 				@change=${this._handleInputChange}
-				@keyup=${() => {
-					console.log("QUEUE")
-					this._inputDebouncer.queue()
-				}}
-				.value=${this._profile.nickname}
+				@keyup=${this._inputDebouncer.queue}
+				.value=${this.profile?.nickname}
 				/>
 		`
 	}
@@ -81,15 +105,11 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 		action: () => this._handleInputChange()
 	})
 
-	private get _profile() {
-		return loading.payload(this.share.profileLoad)
-	}
-
 	private _handleInputChange = () => {
-		const {_profile} = this
-		if (!_profile) return
+		const {profile} = this
+		if (!profile) return
 		const newProfile = this._generateNewProfileFromInputs()
-		const changes = !deepEqual(_profile, newProfile)
+		const changes = !deepEqual(profile, newProfile)
 		this._changedProfile = changes ? newProfile : null
 	}
 
@@ -100,7 +120,7 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 	}
 
 	private _generateNewProfileFromInputs(): Profile {
-		const profile = deepClone(this._profile)
+		const profile = deepClone(this.profile)
 		const input = select<HTMLInputElement>(
 			"input[name=nickname]",
 			this.shadowRoot,

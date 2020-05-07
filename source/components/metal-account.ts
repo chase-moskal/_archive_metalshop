@@ -1,20 +1,10 @@
 
-import {AccountShare, AuthMode} from "../interfaces.js"
+import {AccountShare} from "../interfaces.js"
 import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
 import * as loading from "../toolbox/loading.js"
 import {styles} from "./styles/metal-account-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-
-const authModeToLoad = (mode: AuthMode): loading.Load<void> => {
-	switch (mode) {
-		case AuthMode.Loading: return loading.loading()
-		case AuthMode.Error: return loading.error("auth error")
-		case AuthMode.LoggedIn: return loading.ready(null)
-		case AuthMode.LoggedOut: return loading.ready(null)
-		default: throw new Error("unknown auth mode")
-	}
-}
 
 @mixinStyles(styles)
 export class MetalAccount extends MetalshopComponent<AccountShare> {
@@ -27,11 +17,10 @@ export class MetalAccount extends MetalshopComponent<AccountShare> {
 	}
 
 	render() {
-		const {mode} = this.share
-		const load = authModeToLoad(mode)
-		const loggedIn = mode === AuthMode.LoggedIn
+		const {authLoad} = this.share
+		const loggedIn = !!loading.payload(authLoad)?.getAuthContext
 		return html`
-			<iron-loading .load=${load}>
+			<iron-loading .load=${authLoad}>
 				<slot name="top"></slot>
 				${loggedIn ? this.renderLoggedIn() : this.renderLoggedOut()}
 				<slot name="bottom"></slot>

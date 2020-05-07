@@ -4,8 +4,8 @@ import {select} from "../toolbox/selects.js"
 import * as loading from "../toolbox/loading.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {LiveshowViewModel} from "../models/liveshow-model.js"
-import {LiveshowShare, AuthMode, PrivilegeLevel, AuthPayload, VideoPayload} from "../interfaces.js"
-import {MetalshopComponent, property, html, TemplateResult} from "../framework/metalshop-component.js"
+import {LiveshowShare, PrivilegeLevel} from "../interfaces.js"
+import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
 import {styles} from "./styles/metal-liveshow-styles.js"
 

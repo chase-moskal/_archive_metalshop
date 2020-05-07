@@ -1,22 +1,9 @@
 
 import {silhouette} from "../system/icons.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-export class MetalAvatar extends MetalshopComponent<{}> {
-	static get styles() { return [super.styles || css``, styles] }
-	@property({type: String}) src: string = ""
-	@property({type: Boolean}) premium: boolean = false
-	@property({type: Object}) defaultPicture = silhouette
-
-	render() {
-		const {src} = this
-		return src
-			? html`<img src=${src} alt=""/>`
-			: this.defaultPicture
-	}
-}
-
-const styles = css`
+@mixinStyles(css`
 	* {
 		margin: 0;
 		padding: 0;
@@ -46,4 +33,16 @@ const styles = css`
 		height: 100%;
 		object-fit: cover;
 	}
-`
+`)
+export class MetalAvatar extends MetalshopComponent<{}> {
+	@property({type: String}) src: string = ""
+	@property({type: Boolean}) premium: boolean = false
+	@property({type: Object}) defaultPicture = silhouette
+
+	render() {
+		const {src} = this
+		return src
+			? html`<img src=${src} alt=""/>`
+			: this.defaultPicture
+	}
+}

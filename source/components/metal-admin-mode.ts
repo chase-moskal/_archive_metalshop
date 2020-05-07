@@ -3,31 +3,54 @@ import * as loading from "../toolbox/loading.js"
 import {AdminModeShare} from "../interfaces.js"
 import {deepEqual, deepClone} from "../toolbox/deep.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {property, html, css} from "../framework/metalshop-component.js"
-import {LoadableComponent, LoadableState} from "../framework/loadable-component.js"
+import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
 @mixinStyles(css`
 	:host {
 		color: var(--metal-admin-color, #fd34e2);
 	}
 `)
-export class MetalAdminMode extends LoadableComponent<AdminModeShare> {
-	errorMessage = "error in admin controls"
-	loadingMessage = "loading admin controls"
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
+export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
+
+	@property({type: Boolean, reflect: true})
+		["initially-hidden"]: boolean
+
+	@property({type: Boolean})
+		private adminMode: boolean = false
+
+	@property({type: Boolean})
+		private adminClaim: boolean = false
 
 	firstUpdated() {
 		this["initially-hidden"] = false
 	}
 
-	updated() {
-		const {settingsLoad} = this.share
-		this.loadableState = loading.select(settingsLoad, {
-			none: () => LoadableState.Loading,
-			loading: () => LoadableState.Loading,
-			error: reason => LoadableState.Error,
-			ready: settings => LoadableState.Ready,
-		})
+	async autorun() {
+		const {authLoad, settingsLoad} = this.share
+		const settings = loading.payload(settingsLoad)
+		const getAuthContext = loading.payload(authLoad)?.getAuthContext
+		if (getAuthContext && settings) {
+			const {user} = await getAuthContext()
+			this.adminClaim = user.claims.admin
+			this.adminMode = settings.admin.actAsAdmin
+		}
+		else {
+			this.adminMode = false
+			this.adminClaim = false
+		}
+	}
+
+	render() {
+		const {adminClaim, adminMode} = this
+		return adminClaim ? html`
+			<input
+				type="checkbox"
+				?checked=${adminMode}
+				@change=${this._handleAdminModeChange}
+				@keyup=${this._handleAdminModeChange}
+				/>
+			<label><slot>Admin mode</slot></label>
+		` : null
 	}
 
 	private _handleAdminModeChange = (event: InputEvent) => {
@@ -38,21 +61,5 @@ export class MetalAdminMode extends LoadableComponent<AdminModeShare> {
 		newSettings.admin.actAsAdmin = adminMode
 		const changes = !deepEqual(settings, newSettings)
 		if (changes) setAdminMode({adminMode})
-	}
-
-	renderReady() {
-		const {user, settingsLoad} = this.share
-		const settings = loading.payload(settingsLoad)
-		const adminClaim = user?.claims?.admin
-		const adminMode = settings?.admin?.actAsAdmin
-		return (adminClaim && settings) ? html`
-			<input
-				type="checkbox"
-				?checked=${adminMode}
-				@change=${this._handleAdminModeChange}
-				@keyup=${this._handleAdminModeChange}
-				/>
-			<label><slot>Admin mode</slot></label>
-		` : null
 	}
 }

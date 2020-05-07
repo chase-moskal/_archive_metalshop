@@ -121,6 +121,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 				})
 			}
 			const {paywallLiaison} = await makePaywallClients({paywallServerOrigin})
+			options.paywallCheckoutPopupUrl = `${paywallServerOrigin}/html/checkout`
 			options.paywallLiaison = paywallLiaison
 		})
 	}
@@ -153,5 +154,6 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		decodeAccessToken: options.decodeAccessToken,
 		triggerAccountPopup: options.triggerAccountPopup,
 		triggerCheckoutPopup: options.triggerCheckoutPopup,
+		paywallCheckoutPopupUrl: options.paywallCheckoutPopupUrl,
 	}
 }

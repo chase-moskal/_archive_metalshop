@@ -1,19 +1,20 @@
 
 import {LitElement} from "lit-element"
 import {ConstructorFor} from "../interfaces.js"
-import {autorun, IReactionDisposer} from "mobx"
+import {autorun, IReactionDisposer, IReactionPublic} from "mobx"
 
 const _autorunClear = Symbol("_autorunClear")
-const _autorunDispose = Symbol("_autorunDispose")
+const _autorunDisposers = Symbol("_autorunDisposers")
 const _autorunInitialize = Symbol("_autorunInitialize")
 
 type MixinIn = ConstructorFor<LitElement>
-type MixinOut = ConstructorFor<{autorun: () => void}>
+type MixinOut<C extends MixinIn> = C & ConstructorFor<{autorun: () => void}>
 
-export function mixinAutorun<C extends MixinIn>(Constructor: C): C & MixinOut {
+export function mixinAutorun<C extends MixinIn>(Constructor: C): MixinOut<C> {
 	return class LitElementWithMobxAutorun extends Constructor {
 
 		autorun() {}
+		autoruns: IReactionPublic[] = []
 
 		connectedCallback() {
 			this[_autorunInitialize]()
@@ -25,17 +26,21 @@ export function mixinAutorun<C extends MixinIn>(Constructor: C): C & MixinOut {
 			this[_autorunClear]()
 		}
 
-		private [_autorunDispose]: IReactionDisposer
+		private [_autorunDisposers]: IReactionDisposer[] = []
 
 		private [_autorunClear]() {
-			const dispose = this[_autorunDispose]
-			if (dispose) dispose()
-			this[_autorunDispose] = undefined
+			for (const dispose of this[_autorunDisposers]) {
+				dispose()
+			}
+			this[_autorunDisposers] = []
 		}
 
 		private [_autorunInitialize]() {
 			this[_autorunClear]()
-			this[_autorunDispose] = autorun(() => this.autorun())
+			this[_autorunDisposers] = [
+				autorun(() => this.autorun()),
+				...this.autoruns.map(run => autorun(() => run)),
+			]
 		}
 	}
 }

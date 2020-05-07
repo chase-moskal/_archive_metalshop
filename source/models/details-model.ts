@@ -1,7 +1,7 @@
 
-import {observable, action, computed} from "mobx"
 import * as loading from "../toolbox/loading.js"
-import {AuthMode, GetAuthContext, AuthPayload} from "../interfaces.js"
+import {observable, action, computed} from "mobx"
+import {GetAuthContext, AuthPayload} from "../interfaces.js"
 import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {ProfileMagistrateTopic, Profile, SettingsSheriffTopic, Settings} from "authoritarian/dist/interfaces.js"
 

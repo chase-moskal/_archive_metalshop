@@ -1,12 +1,24 @@
 
 import {observable, action} from "mobx"
 import * as loading from "../toolbox/loading.js"
-import {AccessToken, TokenStoreTopic} from "authoritarian/dist/interfaces.js"
-import {AuthPayload, TriggerAccountPopup, DecodeAccessToken, AuthContext} from "../interfaces.js"
-
+import {User, AccessToken, TokenStoreTopic} from "authoritarian/dist/interfaces.js"
+import {AuthPayload, TriggerAccountPopup, DecodeAccessToken, AuthContext, GetAuthContext} from "../interfaces.js"
+// import {observelize, actionelize} from "../framework/mobb.js"
 
 export class AuthModel {
+
+	//
+	// public observables
+	//
+
+	@observable user: User = null
+	@observable getAuthContext: GetAuthContext = null
 	@observable authLoad = loading.load<AuthPayload>()
+
+	//
+	// private auth model state
+	//
+
 	private authContext: AuthContext
 	private expiryGraceSeconds: number
 	private tokenStore: TokenStoreTopic
@@ -21,6 +33,10 @@ export class AuthModel {
 		}) {
 		Object.assign(this, options)
 	}
+
+	//
+	// public functions
+	//
 
 	@action.bound async useExistingLogin() {
 		this.setLoading()
@@ -40,8 +56,8 @@ export class AuthModel {
 	@action.bound async loginWithAccessToken(accessToken: AccessToken) {
 		await this.tokenStore.writeAccessToken(accessToken)
 		if (accessToken) {
-			const detail = this.processAccessToken(accessToken)
-			this.setLoggedIn(detail)
+			const payload = this.processAccessToken(accessToken)
+			this.setLoggedIn(payload)
 		}
 		else {
 			this.setLoggedOut()
@@ -73,37 +89,98 @@ export class AuthModel {
 		}
 	}
 
+	@action.bound async reauthorize() {
+		this.setLoading()
+		try {
+			await this.tokenStore.writeAccessToken(null)
+			this.authContext = null
+			await this.useExistingLogin()
+		}
+		catch (error) {
+			this.setError(error)
+		}
+	}
+
+	//
+	// private methods
+	//
+
 	@action.bound private processAccessToken(
 			accessToken: AccessToken
 		): AuthPayload {
 		this.authContext = this.decodeAccessToken(accessToken)
-		return {
-			getAuthContext: async() => {
-				const gracedExp = (this.authContext.exp - this.expiryGraceSeconds)
-				const expired = gracedExp < (Date.now() / 1000)
-				if (expired) {
-					const accessToken = await this.tokenStore.passiveCheck()
-					this.authContext = this.decodeAccessToken(accessToken)
-				}
-				return this.authContext
+		this.user = this.authContext?.user
+		const getAuthContext = async() => {
+			const gracedExp = (this.authContext.exp - this.expiryGraceSeconds)
+			const expired = gracedExp < (Date.now() / 1000)
+			if (expired) {
+				const accessToken = await this.tokenStore.passiveCheck()
+				this.authContext = this.decodeAccessToken(accessToken)
+				this.user = this.authContext?.user
 			}
+			return this.authContext
 		}
+		return {getAuthContext}
 	}
 
 	@action.bound private setError(error: Error) {
-		console.error(error)
+		this.user = null
+		this.getAuthContext = null
 		this.authLoad = loading.error(undefined)
+		console.error(error)
 	}
 
 	@action.bound private setLoading() {
+		this.user = null
+		this.getAuthContext = null
 		this.authLoad = loading.loading()
 	}
 
 	@action.bound private setLoggedIn({getAuthContext}: AuthPayload) {
+		this.getAuthContext = getAuthContext
 		this.authLoad = loading.ready({getAuthContext})
 	}
 
 	@action.bound private setLoggedOut() {
+		this.user = null
+		this.getAuthContext = null
 		this.authLoad = loading.ready({getAuthContext: null})
 	}
 }
+
+// // reimagined in functional style...
+// export function makeAuthModel({
+// 		tokenStore,
+// 		decodeAccessToken,
+// 		expiryGraceSeconds,
+// 		triggerAccountPopup,
+// 	}: {
+// 		expiryGraceSeconds: number
+// 		tokenStore: TokenStoreTopic
+// 		decodeAccessToken: DecodeAccessToken
+// 		triggerAccountPopup: TriggerAccountPopup
+// 	}) {
+
+// 	const observables = observelize({
+// 		user: <User>null,
+// 		getAuthContext: <GetAuthContext>null,
+// 		authLoad: loading.load<AuthPayload>(),
+// 	})
+
+// 	const privateActions = actionelize({
+// 		processAccessToken() {},
+// 		setError() {},
+// 		setLoading() {},
+// 		setLoggedIn() {},
+// 		setLoggedOut() {},
+// 	})
+
+// 	const actions = actionelize({
+// 		async login() {},
+// 		async logout() {},
+// 		async useExistingLogin() {},
+// 		async loginWithAccessToken() {},
+// 	})
+
+// 	return {observables, actions}
+// }
