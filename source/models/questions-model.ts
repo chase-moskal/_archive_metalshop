@@ -6,20 +6,24 @@ import {Profile, Question, QuestionsBureauTopic} from "authoritarian/dist/interf
 
 export class QuestionsModel {
 	@observable questions: Question[] = []
-	private getAuthContext: GetAuthContext
-	private questionsBureau: QuestionsBureauTopic
+	#getAuthContext: GetAuthContext
+	#questionsBureau: QuestionsBureauTopic
 
 	constructor(options: {
 			questionsBureau: QuestionsBureauTopic
 		}) {
-		Object.assign(this, options)
+		this.#questionsBureau = options.questionsBureau
 	}
 
-	@action.bound handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
-		this.getAuthContext = loading.payload(authLoad)?.getAuthContext
+	//.
+
+	 @action.bound
+	handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+		this.#getAuthContext = loading.payload(authLoad)?.getAuthContext
 	}
 
-	@action.bound handleProfileUpdate(profile: Profile) {
+	 @action.bound
+	handleProfileUpdate(profile: Profile) {
 		for (const question of this.questions) {
 			if (question.author.profile.userId === profile?.userId) {
 				question.author.profile = profile
@@ -33,25 +37,25 @@ export class QuestionsModel {
 
 	uiBureau: QuestionsBureauUi = {
 		fetchQuestions: async({board}) => {
-			const questions = await this.questionsBureau.fetchQuestions({board})
+			const questions = await this.#questionsBureau.fetchQuestions({board})
 			for (const question of questions) this.cacheQuestion(question)
 			return questions
 		},
 		postQuestion: async(options) => {
-			const question = await this.questionsBureau.postQuestion(
+			const question = await this.#questionsBureau.postQuestion(
 				await this.addTokenToOptions(options)
 			)
 			this.cacheQuestion(question)
 			return question
 		},
 		deleteQuestion: async(options) => {
-			await this.questionsBureau.deleteQuestion(
+			await this.#questionsBureau.deleteQuestion(
 				await this.addTokenToOptions(options)
 			)
 			this.deleteLocalQuestion(options.questionId)
 		},
 		likeQuestion: async(options) => {
-			const result = await this.questionsBureau.likeQuestion(
+			const result = await this.#questionsBureau.likeQuestion(
 				await this.addTokenToOptions(options)
 			)
 			const {liked, likes} = result.likeInfo
@@ -61,24 +65,29 @@ export class QuestionsModel {
 		},
 		purgeQuestions: async(options: {board: string}) => {
 			const optionsWithToken = await this.addTokenToOptions(options)
-			await this.questionsBureau.purgeQuestions(optionsWithToken)
+			await this.#questionsBureau.purgeQuestions(optionsWithToken)
 			this.deleteAllCachedQuestions()
 		},
 	}
 
-	@action.bound private cacheQuestion(question: Question) {
+	//.
+
+	 @action.bound
+	private cacheQuestion(question: Question) {
 		const existing = this.getLocalQuestion(question.questionId)
 		if (existing) Object.assign(existing, question)
 		else this.questions.push(question)
 	}
 
-	@action.bound private deleteLocalQuestion(questionId: string) {
+	 @action.bound
+	private deleteLocalQuestion(questionId: string) {
 		this.questions = this.questions.filter(
 			question => question.questionId !== questionId
 		)
 	}
 
-	@action.bound private likeLocalQuestion(
+	 @action.bound
+	private likeLocalQuestion(
 		questionId: string,
 		liked: boolean,
 		likes: number,
@@ -88,7 +97,8 @@ export class QuestionsModel {
 		question.likeInfo.likes = likes
 	}
 
-	@action.bound private deleteAllCachedQuestions() {
+	 @action.bound
+	private deleteAllCachedQuestions() {
 		this.questions = []
 	}
 
@@ -97,7 +107,7 @@ export class QuestionsModel {
 	)
 
 	private addTokenToOptions = async<O extends {}>(options: O) => {
-		const {accessToken} = await this.getAuthContext()
+		const {accessToken} = await this.#getAuthContext()
 		return {...options, accessToken}
 	}
 }

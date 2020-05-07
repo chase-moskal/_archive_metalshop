@@ -9,21 +9,24 @@ export class ScheduleModel {
 	private getAuthContext: GetAuthContext
 	private scheduleSentry: ScheduleSentryTopic
 
-	constructor(options: {
-		scheduleSentry: ScheduleSentryTopic
-	}) { Object.assign(this, options) }
+	constructor(options: {scheduleSentry: ScheduleSentryTopic}) {
+		Object.assign(this, options)
+	}
 
-	@action.bound async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+	 @action.bound
+	async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
 		this.getAuthContext = loading.payload(authLoad)?.getAuthContext
 	}
 
-	@action.bound async loadEvent(name: string): Promise<ScheduleEvent> {
+	 @action.bound
+	async loadEvent(name: string): Promise<ScheduleEvent> {
 		const event = await this.scheduleSentry.getEvent({name})
 		if (event) this.cacheEvent(name, event)
 		return event
 	}
 
-	@action.bound async saveEvent(name: string, event: ScheduleEvent): Promise<void> {
+	 @action.bound
+	async saveEvent(name: string, event: ScheduleEvent): Promise<void> {
 		const {accessToken} = await this.getAuthContext()
 		await this.scheduleSentry.setEvent({accessToken, name, event})
 		this.cacheEvent(name, event)

@@ -174,6 +174,9 @@ export interface AdminOnlyShare {
 }
 
 export interface DetailsShare {
+	user: User
+	profile: Profile
+	settings: Settings
 	authLoad: loading.Load<AuthPayload>
 	profileLoad: loading.Load<Profile>
 	settingsLoad: loading.Load<Settings>
@@ -193,9 +196,8 @@ export interface PaywallShare {
 
 export interface QuestionsShare {
 	user: User
+	profile: Profile
 	uiBureau: QuestionsBureauUi
-	profileLoad: loading.Load<Profile>
-	authLoad: loading.Load<AuthPayload>
 	fetchCachedQuestions(board: string): Question[]
 }
 

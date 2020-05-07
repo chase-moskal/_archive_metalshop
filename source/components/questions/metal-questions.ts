@@ -1,6 +1,7 @@
 
 import {sortQuestions} from "./helpers.js"
 import {styles} from "./metal-questions-styles.js"
+import * as loading from "../../toolbox/loading.js"
 import {renderQuestion} from "./render-question.js"
 import {mixinStyles} from "../../framework/mixin-styles.js"
 import {renderQuestionEditor} from "./render-question-editor.js"
@@ -8,47 +9,125 @@ import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
 import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, property, html, PropertyValues} from "../../framework/metalshop-component.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
 export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
-	@property({type: String, reflect: true}) ["board"]: string
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	@property({type: String}) draftText: string = ""
-	@property({type: Boolean}) adminMode: boolean = false
-	@property({type: Number}) minCharacterLimit: number = 10
-	@property({type: Number}) maxCharacterLimit: number = 240
+
+	 @property({type: String, reflect: true})
+	["board"]: string
+
+	 @property({type: Boolean, reflect: true})
+	["initially-hidden"]: boolean
+
+	 @property({type: String})
+	draftText: string = ""
+
+	 @property({type: Boolean})
+	adminMode: boolean = false
+
+	 @property({type: Number})
+	minCharacterLimit: number = 10
+
+	 @property({type: Number})
+	maxCharacterLimit: number = 240
+
+	 @property({type: Object})
+	private load: loading.Load<null>
 
 	private lastBoard: string = null
 
 	firstUpdated() {
 		this["initially-hidden"] = false
-		this._downloadQuestions()
+		this.downloadQuestions()
 	}
 
 	updated(changedProperties: PropertyValues) {
 		if (changedProperties.has("board")) {
-			this._downloadQuestions()
+			this.downloadQuestions()
 		}
 	}
 
-	private async _downloadQuestions() {
+	render() {
+		const {
+			load,
+			board,
+			draftText,
+			handlePostClick,
+			handlePurgeClick,
+			maxCharacterLimit,
+			handleTextAreaChange,
+			prepareHandleLikeClick,
+			prepareHandleDeleteClick,
+		} = this
+
+		const questions = this.share.fetchCachedQuestions(board)
+		const {user, profile} = this.share
+		const me: QuestionAuthor = {user, profile}
+		const validation = this.validatePost(me)
+		const expand = draftText.length > 0
+
+		return html`
+			<iron-loading .load=${load}>
+
+				<metal-admin-only class="coolbuttonarea" block header>
+					<button @click=${handlePurgeClick}>Purge all questions</button>
+				</metal-admin-only>
+
+				<div class="posting-area">
+					<slot name="post">
+						<h2>Post your own question</h2>
+					</slot>
+					${renderQuestionEditor({
+						expand,
+						draftText,
+						author: me,
+						validation,
+						handlePostClick,
+						maxCharacterLimit,
+						handleTextAreaChange,
+					})}
+				</div>
+
+				<div class="questions-area">
+					<slot name="rate">
+						<h2>Rate questions</h2>
+					</slot>
+					<ol class="questions">
+						${sortQuestions(me, questions).map(question => html`
+							<li>
+								${renderQuestion({
+									me,
+									question,
+									prepareHandleLikeClick,
+									prepareHandleDeleteClick,
+								})}
+							</li>
+						`)}
+					</ol>
+				</div>
+			</iron-loading>
+		`
+	}
+
+	private async downloadQuestions() {
 		try {
+			const {uiBureau} = this.share
 			const {board, lastBoard} = this
-			this.loadableState = LoadableState.Loading
+			this.load = loading.loading()
 			if (!board)
 				throw new Error(`questions-board requires attribute [board]`)
-			if (board !== this.lastBoard) {
+			if (board !== lastBoard) {
 				this.lastBoard = board
-				await this.share.uiBureau.fetchQuestions({board})
+				await uiBureau.fetchQuestions({board})
 			}
-			this.loadableState = LoadableState.Ready
+			this.load = loading.ready()
 		}
 		catch (error) {
-			this.loadableState = LoadableState.Error
+			this.load = loading.error("failed to download questions")
 			console.error(error)
 		}
 	}
 
-	private _getQuestionDraft(): QuestionDraft {
+	private getQuestionDraft(): QuestionDraft {
 		const {board, draftText: content} = this
 		const time = Date.now()
 		const valid = !!content
@@ -57,12 +136,12 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 			: null
 	}
 
-	private _handleTextAreaChange = (event: Event) => {
+	private handleTextAreaChange = (event: Event) => {
 		const target = <HTMLTextAreaElement>event.target
 		this.draftText = target.value
 	}
 
-	private _warnUnauthenticatedUser = (): boolean => {
+	private warnUnauthenticatedUser = (): boolean => {
 		const {user} = this.share
 		let warned = false
 		if (!user) {
@@ -72,34 +151,33 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 		return warned
 	}
 
-	private _handlePostClick = async(event: MouseEvent) => {
-		if (this._warnUnauthenticatedUser()) return
-		const draft = this._getQuestionDraft()
+	private handlePostClick = async(event: MouseEvent) => {
+		if (this.warnUnauthenticatedUser()) return
+		const draft = this.getQuestionDraft()
 		try {
-			this.loadableState = LoadableState.Loading
+			this.load = loading.loading()
 			await this.share.uiBureau.postQuestion({draft})
 			this.draftText = ""
-			this.loadableState = LoadableState.Ready
+			this.load = loading.ready()
 		}
 		catch (error) {
-			this.errorMessage = "error posting question"
-			this.loadableState = LoadableState.Error
+			this.load = loading.error("error posting question")
 			console.error(error)
 		}
 	}
 
-	private _prepareHandleDeleteClick = (questionId: string) => async() => {
-		if (this._warnUnauthenticatedUser())
+	private prepareHandleDeleteClick = (questionId: string) => async() => {
+		if (this.warnUnauthenticatedUser())
 			return
 		if (confirm(`Really delete question ${questionId}?`))
 			await this.share.uiBureau.deleteQuestion({questionId})
 	}
 
-	private _prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
+	private prepareHandleLikeClick: PrepareHandleLikeClick = ({like, questionId}: {
 		like: boolean
 		questionId: string
 	}) => async(event: MouseEvent) => {
-		if (this._warnUnauthenticatedUser()) return
+		if (this.warnUnauthenticatedUser()) return
 		await this.share.uiBureau.likeQuestion({
 			like,
 			questionId,
@@ -108,7 +186,7 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 		if (active) active.blur()
 	}
 
-	private _validatePost(author: QuestionAuthor) {
+	private validatePost(author: QuestionAuthor) {
 		const {
 			draftText,
 			minCharacterLimit: min,
@@ -134,65 +212,9 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 		return {postable, message, angry}
 	}
 
-	private _handlePurgeClick = async() => {
+	private handlePurgeClick = async() => {
 		const {board} = this
 		if (confirm("Really purge ALL questions from the board?"))
 			await this.share.uiBureau.purgeQuestions({board})
-	}
-
-	renderReady() {
-		const {
-			board,
-			draftText,
-			maxCharacterLimit,
-			_handlePostClick: handlePostClick,
-			_handlePurgeClick: _handlePurgeClick,
-			_handleTextAreaChange: handleTextAreaChange,
-			_prepareHandleLikeClick: prepareHandleLikeClick,
-			_prepareHandleDeleteClick: prepareHandleDeleteClick,
-		} = this
-
-		const questions = this.share.fetchCachedQuestions(board)
-		const {user, profile} = this.share
-		const me: QuestionAuthor = {user, profile}
-		const validation = this._validatePost(me)
-		const expand = draftText.length > 0
-
-		return html`
-			<metal-admin-only class="coolbuttonarea" block header>
-				<button @click=${_handlePurgeClick}>Purge all questions</button>
-			</metal-admin-only>
-			<div>
-				<slot name="post">
-					<h2>Post your own question</h2>
-				</slot>
-				${renderQuestionEditor({
-					expand,
-					draftText,
-					author: me,
-					validation,
-					handlePostClick,
-					maxCharacterLimit,
-					handleTextAreaChange
-				})}
-			</div>
-			<div>
-				<slot name="rate">
-					<h2>Rate questions</h2>
-				</slot>
-				<ol class="questions">
-					${sortQuestions(me, questions).map(question => html`
-						<li>
-							${renderQuestion({
-								me,
-								question,
-								prepareHandleLikeClick,
-								prepareHandleDeleteClick,
-							})}
-						</li>
-					`)}
-				</ol>
-			</div>
-		`
 	}
 }

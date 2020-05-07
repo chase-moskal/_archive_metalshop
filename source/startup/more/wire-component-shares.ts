@@ -19,6 +19,9 @@ import * as loading from "../../toolbox/loading.js"
 
 export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
+		user: supermodel.auth.user,
+		profile: supermodel.details.profile,
+		settings: supermodel.details.settings,
 		authLoad: supermodel.auth.authLoad,
 		profileLoad: supermodel.details.profileLoad,
 		settingsLoad: supermodel.details.settingsLoad,
@@ -74,8 +77,8 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			settingsLoad: supermodel.details.settingsLoad,
 		})),
 		MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{
-			authLoad: supermodel.auth.authLoad,
-			profileLoad: supermodel.details.profileLoad,
+			user: supermodel.auth.user,
+			profile: supermodel.details.profile,
 			uiBureau: supermodel.questions.uiBureau,
 			fetchCachedQuestions: supermodel.questions.fetchCachedQuestions,
 		})),

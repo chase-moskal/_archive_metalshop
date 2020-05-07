@@ -58,6 +58,11 @@ export class DetailsModel {
 			loading: () => setAll(loading.loading()),
 			error: reason => setAll(loading.error(reason)),
 			ready: async({getAuthContext}) => {
+				if (!getAuthContext) {
+					setProfileLoad(loading.none())
+					setSettingsLoad(loading.none())
+					return null
+				}
 				this.getAuthContext = getAuthContext
 				const {user, accessToken} = await getAuthContext()
 				const {userId} = user

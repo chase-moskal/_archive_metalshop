@@ -57,5 +57,10 @@ export function prepareSupermodel({
 		supermodel.questions.handleAuthLoad(authLoad)
 	})
 
+	autorun(() => {
+		const {profile} = supermodel.details
+		supermodel.questions.handleProfileUpdate(profile)
+	})
+
 	return supermodel
 }

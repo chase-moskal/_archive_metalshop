@@ -9,10 +9,15 @@ import {MetalshopComponent, property, html} from "../framework/metalshop-compone
 
 import {styles} from "./styles/metal-liveshow-styles.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
 export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	@property({type: String, reflect: true}) ["video-name"]: string
+
+	 @property({type: Boolean, reflect: true})
+	["initially-hidden"]: boolean
+
+	 @property({type: String, reflect: true})
+	["video-name"]: string
+
 	private _viewModel: LiveshowViewModel
 	private _viewModelDispose: () => void
 
@@ -34,7 +39,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 
 	render() {
 		const {authLoad} = this.share
-		const {privilege} = this._viewModel
+		const privilege = this._viewModel?.privilege
 		return html`
 			<iron-loading .load=${authLoad}>
 				${this.renderPrivilegeBoxes(privilege)}
@@ -43,7 +48,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 	}
 
 	private renderPrivilegeBoxes(privilege: PrivilegeLevel) {
-		const {validationMessage} = this._viewModel
+		const {validationMessage} = this._viewModel || {}
 		switch (privilege) {
 			case PrivilegeLevel.Unknown: return html`
 				<slot name="unknown">
@@ -91,7 +96,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 	}
 
 	private _renderViewer() {
-		const {vimeoId} = loading.payload(this._viewModel.videoLoad)
+		const {vimeoId} = loading.payload(this._viewModel.videoLoad) || {}
 		const query = "?color=00a651&title=0&byline=0&portrait=0&badge=0"
 		return vimeoId ? html`
 			<div class="viewer">
