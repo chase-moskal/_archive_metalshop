@@ -3,11 +3,10 @@ import {cancel} from "../system/icons.js"
 import {select} from "../toolbox/selects.js"
 import * as loading from "../toolbox/loading.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
+import {styles} from "./styles/metal-liveshow-styles.js"
 import {LiveshowViewModel} from "../models/liveshow-model.js"
 import {LiveshowShare, PrivilegeLevel} from "../interfaces.js"
 import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
-
-import {styles} from "./styles/metal-liveshow-styles.js"
 
  @mixinStyles(styles)
 export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
@@ -42,14 +41,15 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 		const privilege = this._viewModel?.privilege
 		return html`
 			<iron-loading .load=${authLoad}>
-				${this.renderPrivilegeBoxes(privilege)}
+				${this.renderPrivilegeBox(privilege)}
 			</iron-loading>
 		`
 	}
 
-	private renderPrivilegeBoxes(privilege: PrivilegeLevel) {
+	private renderPrivilegeBox(privilege: PrivilegeLevel) {
 		const {validationMessage} = this._viewModel || {}
 		switch (privilege) {
+
 			case PrivilegeLevel.Unknown: return html`
 				<slot name="unknown">
 					<h2>Private video</h2>

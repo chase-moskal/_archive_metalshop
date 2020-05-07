@@ -3,7 +3,6 @@ import {observable, action} from "mobx"
 import * as loading from "../toolbox/loading.js"
 import {User, AccessToken, TokenStoreTopic} from "authoritarian/dist/interfaces.js"
 import {AuthPayload, TriggerAccountPopup, DecodeAccessToken, AuthContext, GetAuthContext} from "../interfaces.js"
-// import {observelize, actionelize} from "../framework/mobb.js"
 
 export class AuthModel {
 
@@ -16,7 +15,7 @@ export class AuthModel {
 	@observable authLoad = loading.load<AuthPayload>()
 
 	//
-	// private auth model state
+	// private state
 	//
 
 	private authContext: AuthContext
@@ -38,7 +37,8 @@ export class AuthModel {
 	// public functions
 	//
 
-	@action.bound async useExistingLogin() {
+	 @action.bound
+	async useExistingLogin() {
 		this.setLoading()
 		try {
 			const accessToken = await this.tokenStore.passiveCheck()
@@ -53,7 +53,8 @@ export class AuthModel {
 		}
 	}
 
-	@action.bound async loginWithAccessToken(accessToken: AccessToken) {
+	 @action.bound
+	async loginWithAccessToken(accessToken: AccessToken) {
 		await this.tokenStore.writeAccessToken(accessToken)
 		if (accessToken) {
 			const payload = this.processAccessToken(accessToken)
@@ -64,8 +65,9 @@ export class AuthModel {
 		}
 	}
 
-	@action.bound async login() {
-		this.setLoggedOut()
+	 @action.bound
+	async login() {
+		this.setLoading()
 		try {
 			const authTokens = await this.triggerAccountPopup()
 			await this.tokenStore.writeTokens(authTokens)
@@ -77,7 +79,8 @@ export class AuthModel {
 		}
 	}
 
-	@action.bound async logout() {
+	 @action.bound
+	async logout() {
 		this.setLoading()
 		try {
 			await this.tokenStore.clearTokens()
@@ -89,7 +92,8 @@ export class AuthModel {
 		}
 	}
 
-	@action.bound async reauthorize() {
+	 @action.bound
+	async reauthorize() {
 		this.setLoading()
 		try {
 			await this.tokenStore.writeAccessToken(null)
@@ -105,7 +109,8 @@ export class AuthModel {
 	// private methods
 	//
 
-	@action.bound private processAccessToken(
+	 @action.bound
+	private processAccessToken(
 			accessToken: AccessToken
 		): AuthPayload {
 		this.authContext = this.decodeAccessToken(accessToken)
@@ -123,25 +128,29 @@ export class AuthModel {
 		return {getAuthContext}
 	}
 
-	@action.bound private setError(error: Error) {
+	 @action.bound
+	private setError(error: Error) {
 		this.user = null
 		this.getAuthContext = null
 		this.authLoad = loading.error(undefined)
 		console.error(error)
 	}
 
-	@action.bound private setLoading() {
+	 @action.bound
+	private setLoading() {
 		this.user = null
 		this.getAuthContext = null
 		this.authLoad = loading.loading()
 	}
 
-	@action.bound private setLoggedIn({getAuthContext}: AuthPayload) {
+	 @action.bound
+	private setLoggedIn({getAuthContext}: AuthPayload) {
 		this.getAuthContext = getAuthContext
 		this.authLoad = loading.ready({getAuthContext})
 	}
 
-	@action.bound private setLoggedOut() {
+	 @action.bound
+	private setLoggedOut() {
 		this.user = null
 		this.getAuthContext = null
 		this.authLoad = loading.ready({getAuthContext: null})

@@ -22,9 +22,8 @@ import {random8} from "authoritarian/dist/toolbox/random8.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
 import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
 
-import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
-
 import {nap} from "../../toolbox/nap.js"
+import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
 
 export const makeAllMocks = async({
 		startAdmin,
@@ -35,12 +34,15 @@ export const makeAllMocks = async({
 		startPremium: boolean
 		startLoggedIn: boolean
 	}) => {
-	const googleId = "g123456"
+
+	const googleId = `mock-google-id-${random8()}`
+	const googleToken = `mock-google-token-${random8()}`
+	const premiumStripePlanId = `mock-premium-stripe-plan-${random8()}`
+
 	const signToken = mockSignToken()
 	const verifyToken = mockVerifyToken()
 	const userDatalayer = mockUserDatalayer()
 	const profileDatalayer = mockProfileDatalayer()
-	const premiumStripePlanId = `mock-premium-stripe-plan-${random8()}`
 	const verifyGoogleToken = mockVerifyGoogleToken({
 		googleResult: {
 			googleId,
@@ -55,23 +57,11 @@ export const makeAllMocks = async({
 		profileDatalayer,
 	})
 
-	// TODO latency
-	// adding mock latency
-	{
-		const {getProfile} = profileMagistrate
-		profileMagistrate.getProfile = async(options) => {
-			console.log("get profile!")
-			await nap(1)
-			return getProfile.call(profileMagistrate, options)
-		}
-	}
-
-	let count = 0
-	const generateRandomNickname = () => `user-${++count}`
-
-	const year = 1000 * 60 * 60 * 24 * 365
-	const accessTokenExpiresMilliseconds = 1000 * year
-	const refreshTokenExpiresMilliseconds = 1001 * year
+	const minute = 1000 * 60
+	const day = minute * 60 * 24
+	const accessTokenExpiresMilliseconds = 20 * minute
+	const refreshTokenExpiresMilliseconds = day * 365
+	const generateRandomNickname = () => `User ${random8()}`
 
 	const authExchanger = makeAuthExchanger({
 		signToken,
@@ -83,15 +73,6 @@ export const makeAllMocks = async({
 		accessTokenExpiresMilliseconds,
 		refreshTokenExpiresMilliseconds,
 	})
-
-	const triggerAccountPopup: TriggerAccountPopup = async() => {
-		return authExchanger.authenticateViaGoogle({
-			googleToken: "fakeGoogleToken123"
-		})
-	}
-
-	const triggerCheckoutPopup: TriggerCheckoutPopup =
-		async({stripeSessionId}) => { /* noop */ }
 
 	const tokenStore = new TokenStore({
 		authExchanger,
@@ -127,8 +108,8 @@ export const makeAllMocks = async({
 	const settingsSheriff = makeSettingsSheriff({verifyToken, settingsDatalayer})
 
 	const {stripeDatalayer, billingDatalayer} = mockStripeCircuit({
-		logger: console,
 		authVanguard,
+		logger: console,
 		settingsDatalayer,
 	})
 	const paywallLiaison = makePaywallLiaison({
@@ -141,13 +122,40 @@ export const makeAllMocks = async({
 	const scheduleDatalayer = mockScheduleDatalayer()
 	const scheduleSentry = makeScheduleSentry({verifyToken, scheduleDatalayer})
 
+	const triggerAccountPopup: TriggerAccountPopup =
+		async() => authExchanger.authenticateViaGoogle({googleToken})
+
+	const triggerCheckoutPopup: TriggerCheckoutPopup =
+		async({stripeSessionId}) => null
+
+	// TODO latency
+	// adding mock latency
+	{
+		const lag = <T extends (...args: any[]) => Promise<any>>(func: T) => {
+			return async function(...args: any[]) {
+				console.log("latency:", func.name)
+				const ms = (Math.random() * 2000) + 200
+				await nap(ms)
+				return func.apply(this, args)
+			}
+		}
+
+		authVanguard.getUser = lag(authVanguard.getUser)
+		authVanguard.setClaims = lag(authVanguard.setClaims)
+		authVanguard.createUser = lag(authVanguard.createUser)
+		profileMagistrate.getProfile = lag(profileMagistrate.getProfile)
+		profileMagistrate.setProfile = lag(profileMagistrate.setProfile)
+		authExchanger.authenticateViaGoogle = lag(authExchanger.authenticateViaGoogle)
+		authExchanger.authorize = lag(authExchanger.authorize)
+		questionsBureau.fetchQuestions = lag(questionsBureau.fetchQuestions)
+		settingsSheriff.fetchSettings = lag(settingsSheriff.fetchSettings)
+	}
+
 	//
 	// starting conditions
 	//
 
-	const authTokens = await authExchanger.authenticateViaGoogle({
-		googleToken: "fakeGoogleToken123"
-	})
+	const authTokens = await authExchanger.authenticateViaGoogle({googleToken})
 	const {userId} = await verifyToken<RefreshPayload>(authTokens.refreshToken)
 	if (startLoggedIn) await tokenStore.writeTokens(authTokens)
 	await authVanguard.setClaims({
