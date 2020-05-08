@@ -60,6 +60,6 @@ export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
 		const newSettings = deepClone(settings)
 		newSettings.admin.actAsAdmin = adminMode
 		const changes = !deepEqual(settings, newSettings)
-		if (changes) setAdminMode({adminMode})
+		if (changes) return setAdminMode(adminMode)
 	}
 }

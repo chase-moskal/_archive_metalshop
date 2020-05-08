@@ -15,17 +15,15 @@ import {MetalAdminOnly} from "../../components/metal-admin-only.js"
 import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
 import {MetalQuestions} from "../../components/questions/metal-questions.js"
 
-import * as loading from "../../toolbox/loading.js"
-
 export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
 		user: supermodel.auth.user,
+		authLoad: supermodel.auth.authLoad,
 		profile: supermodel.details.profile,
 		settings: supermodel.details.settings,
-		authLoad: supermodel.auth.authLoad,
 		profileLoad: supermodel.details.profileLoad,
-		settingsLoad: supermodel.details.settingsLoad,
 		saveProfile: supermodel.details.saveProfile,
+		settingsLoad: supermodel.details.settingsLoad,
 	}
 	return {
 		IronLoading,
@@ -71,7 +69,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
 			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
-			setAdminMode: () => { throw new Error("TODO implement") },
+			setAdminMode: supermodel.details.setAdminMode,
 		})),
 		MetalAdminOnly: share(MetalAdminOnly, () => (<AdminOnlyShare>{
 			authLoad: supermodel.auth.authLoad,

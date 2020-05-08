@@ -165,7 +165,7 @@ export interface MyAvatarShare {
 export interface AdminModeShare {
 	authLoad: loading.Load<AuthPayload>
 	settingsLoad: loading.Load<Settings>
-	setAdminMode(inputs: {adminMode: boolean}): Promise<Settings>
+	setAdminMode(adminMode: boolean): Promise<void>
 }
 
 export interface AdminOnlyShare {

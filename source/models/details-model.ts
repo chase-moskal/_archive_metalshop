@@ -32,6 +32,15 @@ export class DetailsModel {
 		Object.assign(this, options)
 	}
 
+	@action.bound async setAdminMode(adminMode: boolean) {
+		const {accessToken} = await this.getAuthContext()
+		const settings = await this.settingsSheriff.setAdminMode({
+			accessToken,
+			adminMode,
+		})
+		this.setSettingsLoad(loading.ready(settings))
+	}
+
 	@action.bound async saveProfile(profile: Profile) {
 		const {accessToken} = await this.getAuthContext()
 		await this.profileMagistrate.setProfile({accessToken, profile})

@@ -61,7 +61,7 @@ export const makeAllMocks = async({
 	const day = minute * 60 * 24
 	const accessTokenExpiresMilliseconds = 20 * minute
 	const refreshTokenExpiresMilliseconds = day * 365
-	const generateRandomNickname = () => `User ${random8()}`
+	const generateRandomNickname = () => `User-${random8().toUpperCase()}`
 
 	const authExchanger = makeAuthExchanger({
 		signToken,
@@ -181,6 +181,9 @@ export const makeAllMocks = async({
 		authExchanger.authorize = lag(authExchanger.authorize)
 		questionsBureau.fetchQuestions = lag(questionsBureau.fetchQuestions)
 		settingsSheriff.fetchSettings = lag(settingsSheriff.fetchSettings)
+		paywallLiaison.checkoutPremium = lag(paywallLiaison.checkoutPremium)
+		paywallLiaison.cancelPremium = lag(paywallLiaison.cancelPremium)
+		paywallLiaison.updatePremium = lag(paywallLiaison.updatePremium)
 	}
 
 	return {

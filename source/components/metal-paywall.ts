@@ -18,7 +18,7 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		const {authLoad, premiumClaim, premiumSubscription} = this.share
 		const totalLoad = loading.meta(authLoad, paywallLoad)
 		return html`
-			<iron-loading .load=${totalLoad}>
+			<iron-loading .load=${totalLoad} class="coolbuttonarea">
 				${premiumClaim
 					? this.renderPanelPremium()
 					: this.renderPanelNoPremium()}

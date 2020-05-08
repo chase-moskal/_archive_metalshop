@@ -6,6 +6,8 @@ export function deepClone<T extends {}>(obj: T): T {
 const isSet = (a: any) => (a !== null && a !== undefined)
 
 export function deepEqual<T extends {}>(a: T, b: T): boolean {
+	if (!isSet(a) || !isSet(b)) return a === b
+
 	for (const [key, aValue] of Object.entries(a)) {
 		if (!b.hasOwnProperty(key)) return false
 		const bValue = b[key]
@@ -23,11 +25,14 @@ export function deepEqual<T extends {}>(a: T, b: T): boolean {
 					return false
 		}
 	}
+
 	for (const [key] of Object.entries(a))
 		if (!b.hasOwnProperty(key))
 			return false
+
 	for (const [key] of Object.entries(b))
 		if (!a.hasOwnProperty(key))
 			return false
+
 	return true
 }
