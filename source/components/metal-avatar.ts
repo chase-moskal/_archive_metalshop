@@ -11,16 +11,19 @@ import {MetalshopComponent, property, html, css} from "../framework/metalshop-co
 	}
 
 	:host {
+		--avatar-premium-color: var(--premium-color, yellow);
 		display: block;
 		width: var(--avatar-size, 3em);
 		height: var(--avatar-size, 3em);
 		max-width: var(--avatar-max-width, 100%);
 		max-height: var(--avatar-max-height, 100%);
 		overflow: hidden;
+		border: var(--avatar-border, 0 solid rgba(255,255,255, 0.1));
+		transition: border 1s ease;
 	}
 
 	:host([premium]) {
-		border: 2px solid yellow;
+		border: var(--avatar-border-premium, 4px solid var(--avatar-premium-color));
 	}
 
 	:host([hidden]) {
@@ -36,8 +39,8 @@ import {MetalshopComponent, property, html, css} from "../framework/metalshop-co
 `)
 export class MetalAvatar extends MetalshopComponent<{}> {
 	@property({type: String}) src: string = ""
-	@property({type: Boolean}) premium: boolean = false
 	@property({type: Object}) defaultPicture = silhouette
+	@property({type: Boolean, reflect: true}) premium: boolean = false
 
 	render() {
 		const {src} = this

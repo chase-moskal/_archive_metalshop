@@ -5,7 +5,7 @@ import {styles} from "./styles/details-styles.js"
 import {makeDebouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {Profile, Claims, User} from "authoritarian/dist/interfaces.js"
+import {Profile, Claims} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
@@ -21,7 +21,6 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 
 	render() {
 		const {profileLoad, user, profile} = this.share
-		const claims = user?.claims
 		const premium = user?.claims.premium
 		return html`
 			<iron-loading .load=${profileLoad}>
@@ -31,7 +30,7 @@ export class MetalProfile extends MetalshopComponent<DetailsShare> {
 						?premium=${premium}
 					></metal-avatar>
 					<div>
-						${this.renderClaimsList(claims)}
+						${this.renderClaimsList(user?.claims)}
 						${this.renderNicknameInput(profile)}
 						${this.renderSaveNicknameButton()}
 					</div>

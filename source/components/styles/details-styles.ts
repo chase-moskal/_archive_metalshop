@@ -24,7 +24,7 @@ ${litLoadingStyles}
 metal-avatar {
 	flex: 0 0 auto;
 	--avatar-size: 6em;
-	border: 5px solid rgba(255,255,255, 0.5);
+	/* border: 5px solid rgba(255,255,255, 0.5); */
 }
 
 .container > div {

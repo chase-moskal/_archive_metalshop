@@ -20,7 +20,7 @@ import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions/mock
 
 import {random8} from "authoritarian/dist/toolbox/random8.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
-import {AccessToken, LiveshowGovernorTopic, RefreshPayload} from "authoritarian/dist/interfaces.js"
+import {AccessToken, LiveshowGovernorTopic, RefreshPayload, AccessPayload} from "authoritarian/dist/interfaces.js"
 
 import {nap} from "../../toolbox/nap.js"
 import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
@@ -157,22 +157,31 @@ export const makeAllMocks = async({
 	// starting conditions
 	//
 
-	const authTokens = await authExchanger.authenticateViaGoogle({googleToken})
-	const {userId} = await verifyToken<RefreshPayload>(authTokens.refreshToken)
-	if (startLoggedIn) await tokenStore.writeTokens(authTokens)
+	console.log({startAdmin, startLoggedIn, startPremium})
+	await tokenStore.clearTokens()
 
-	await authVanguard.setClaims({
-		userId,
-		claims: {
-			admin: !!startAdmin,
+	if (startLoggedIn || startAdmin || startPremium) {
+		const authTokens = await authExchanger.authenticateViaGoogle({googleToken})
+
+		if (startAdmin) {
+			const {user} = await verifyToken<AccessPayload>(authTokens.accessToken)
+			const {userId, claims} = user
+			claims.admin = true
+			await authVanguard.setClaims({userId, claims})
 		}
-	})
 
-	if (startPremium) {
-		await paywallLiaison.checkoutPremium({
-			popupUrl: checkoutPopupUrl,
-			accessToken: authTokens.accessToken,
-		})
+		if (startPremium) {
+			await paywallLiaison.checkoutPremium({
+				popupUrl: checkoutPopupUrl,
+				accessToken: authTokens.accessToken,
+			})
+		}
+
+		if (startLoggedIn) {
+			const {refreshToken} = authTokens
+			authTokens.accessToken = await authExchanger.authorize({refreshToken})
+			await tokenStore.writeTokens(authTokens)
+		}
 	}
 
 	return {

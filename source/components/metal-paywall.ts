@@ -26,6 +26,7 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		const {premiumExpires} = this.share
 		return html`
 			<div class="panel-premium">
+				${starIcon}
 				<h3>You are Premium!</h3>
 				<p>expires: ${premiumExpires}</p>
 			</div>
