@@ -21,12 +21,11 @@ export const styles = css`
 }
 
 * + div {
-	margin-top: var(--metal-account-margins, 0.5em);
+	margin-top: var(--metal-account-margins, 0.4rem);
 }
 
 ::slotted(*) {
-	display: block;
-	margin-top: var(--metal-account-margins, 0.5em) !important;
+	margin-top: var(--metal-account-margins, 0.4rem) !important;
 }
 
 ::slotted(*:first-child) {

@@ -3,15 +3,22 @@ import {PaywallShare} from "../interfaces.js"
 import {star as starIcon} from "../system/icons.js"
 import {styles} from "./styles/metal-paywall-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {MetalshopComponent, html} from "../framework/metalshop-component.js"
+import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
+
+import * as loading from "../toolbox/loading.js"
 
  @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 
+	 @property({type: Object})
+	paywallLoad: loading.Load<void> = loading.ready<void>()
+
 	render() {
+		const {paywallLoad} = this
 		const {authLoad, premiumClaim, premiumSubscription} = this.share
+		const totalLoad = loading.meta(authLoad, paywallLoad)
 		return html`
-			<iron-loading .load=${authLoad}>
+			<iron-loading .load=${totalLoad}>
 				${premiumClaim
 					? this.renderPanelPremium()
 					: this.renderPanelNoPremium()}
@@ -69,69 +76,29 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		`
 	}
 
+	private loadingOp = async<P extends any>(func: () => Promise<P>): Promise<P> => {
+		this.paywallLoad = loading.loading()
+		try {
+			const result = await func()
+			this.paywallLoad = loading.ready()
+			return result
+		}
+		catch (error) {
+			console.error(error)
+			this.paywallLoad = loading.error()
+			throw error
+		}
+	}
+
 	private async handleCheckoutPremiumClick() {
-		await this.share.checkoutPremium()
+		await this.loadingOp(async() => this.share.checkoutPremium())
 	}
 
 	private async handleUpdatePremiumClick() {
-		await this.share.updatePremium()
+		await this.loadingOp(async () => this.share.updatePremium())
 	}
 
 	private async handleCancelPremiumClick() {
-		await this.share.cancelPremium()
+		await this.loadingOp(async () => this.share.cancelPremium())
 	}
-
-	// static get styles() { return [super.styles || css``, styles] }
-	// loadingMessage = "loading supporter panel"
-
-	// updated() {
-	// 	const {mode} = this.share
-	// 	switch (mode) {
-	// 		case PaywallMode.Loading:
-	// 			this.loadableState = LoadableState.Loading
-	// 			break
-	// 		case PaywallMode.Error:
-	// 			this.loadableState = LoadableState.Error
-	// 			break
-	// 		default:
-	// 			this.loadableState = LoadableState.Ready
-	// 	}
-	// }
-
-	// private _renderNotPremium() {return html`
-	// 	<header>
-	// 		<h3>Become a premium supporter!</h3>
-	// 	</header>
-	// 	<section>
-	// 		<p>It comes with cool features!</p>
-	// 	</section>
-	// 	<footer class="coolbuttonarea">
-	// 		<button @click=${this.share.grantUserPremium}>Subscribe</button>
-	// 		<span class="price">$5<small>/month</small></span>
-	// 	</footer>
-	// `}
-
-	// private _renderPremium() {return html`
-	// 	<header>
-	// 		<div class="icon">${star}</div>
-	// 		<h3>You are a premium supporter!</h3>
-	// 	</header>
-	// 	<section>
-	// 		<p>You have the cool features!</p>
-	// 	</section>
-	// 	<footer class="coolbuttonarea">
-	// 		<button @click=${this.share.revokeUserPremium}>Unsubscribe</button>
-	// 		<span class="note">You are currently subscribed</span>
-	// 	</footer>
-	// `}
-
-	// renderReady() {
-	// 	const {mode} = this.share
-	// 	if (mode === undefined) return null
-	// 	switch (mode) {
-	// 		case PaywallMode.LoggedOut: return null
-	// 		case PaywallMode.NotPremium: return this._renderNotPremium()
-	// 		case PaywallMode.Premium: return this._renderPremium()
-	// 	}
-	// }
 }

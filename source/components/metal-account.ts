@@ -6,7 +6,7 @@ import * as loading from "../toolbox/loading.js"
 import {styles} from "./styles/metal-account-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
 export class MetalAccount extends MetalshopComponent<AccountShare> {
 	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	onLoginClick: (event: MouseEvent) => void = () => this.share.login()

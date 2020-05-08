@@ -1,7 +1,5 @@
 
 import {css} from "../../framework/metalshop-component.js"
-import {litLoadingStyles} from "../../toolbox/lit-loading.js"
-
 export const styles = css`
 
 * {
@@ -10,7 +8,13 @@ export const styles = css`
 	box-sizing: border-box;
 }
 
-${litLoadingStyles}
+:host {
+	display: block;
+}
+
+:host([hidden]) {
+	display: none;
+}
 
 .panel > * + * {
 	margin-top: 0.5em;
@@ -24,7 +28,7 @@ ${litLoadingStyles}
 metal-avatar {
 	flex: 0 0 auto;
 	--avatar-size: 6em;
-	/* border: 5px solid rgba(255,255,255, 0.5); */
+	--avatar-border: 5px solid rgba(255,255,255, 0.5);
 }
 
 .container > div {

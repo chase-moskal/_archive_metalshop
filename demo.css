@@ -215,34 +215,33 @@ metal-my-avatar {
 	color: white;
 }
 
-menu-system metal-account > * {
-	background: rgba(255, 255, 255, 0.4);
-	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
-}
-
 menu-system metal-profile {
 	--metal-admin-color: #316f31;
 }
 
 metal-account {
+	text-align: left;
 	--coolbutton-background: #463b35;
+	--user-panel-login-justify: center;
+	--user-panel-logout-justify: flex-end;
+}
+
+metal-account > * {
+	padding: 1rem;
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
+}
+
+metal-settings {
+	padding: 0.5rem 1rem;
 }
 
 metal-paywall {
 	--coolbutton-background: #00a464;
 }
 
-metal-account {
-	text-align: left;
-	--user-panel-login-justify: center;
-	--user-panel-logout-justify: flex-end;
-}
-
-metal-account > * {
-	padding: 2em;
-}
-
 metal-account > h2 {
+	font-size: 1.2rem;
 	opacity: 0.3;
 	padding: 0;
 	text-align: center;
