@@ -1,11 +1,10 @@
 
 import {PaywallShare} from "../interfaces.js"
+import * as loading from "../toolbox/loading.js"
 import {star as starIcon} from "../system/icons.js"
 import {styles} from "./styles/metal-paywall-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
-
-import * as loading from "../toolbox/loading.js"
 
  @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {
@@ -30,12 +29,16 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 	}
 
 	private renderPanelPremium() {
-		const {premiumExpires} = this.share
+		const {premiumExpires, premiumSubscription} = this.share
+		const duration = premiumExpires - Date.now()
+		const days = Math.ceil(duration / (1000 * 60 * 60 * 24))
 		return html`
 			<div class="panel-premium">
 				${starIcon}
 				<h3>You are Premium!</h3>
-				<p>expires: ${premiumExpires}</p>
+				${premiumSubscription
+					? null
+					: html`<p>Remaining: ${days} day${days === 1 ? "" : "s"}</p>`}
 			</div>
 		`
 	}
@@ -53,12 +56,12 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		const {brand, last4, expireYear, expireMonth} = premiumSubscription.card
 		return html`
 			<div class="panel-subscription">
-				<h3>Billing subscription for Premium is Active</h3>
+				<h3>Billing subscription is active</h3>
 				<p>${brand} card ending in ${last4}, card expires ${expireYear}/${expireMonth}</p>
-				<button @click=${this.handleUpdatePremiumClick}>
+				<button class="update" @click=${this.handleUpdatePremiumClick}>
 					Update card
 				</button>
-				<button @click=${this.handleCancelPremiumClick}>
+				<button class="cancel" @click=${this.handleCancelPremiumClick}>
 					Cancel subscription
 				</button>
 			</div>
@@ -68,8 +71,8 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 	private renderPanelNoSubscription () {
 		return html`
 			<div class="panel-no-subscription">
-				<h3>No active billing subscription</h3>
-				<button @click=${this.handleCheckoutPremiumClick}>
+				<p>No active billing subscription</p>
+				<button class="subscribe" @click=${this.handleCheckoutPremiumClick}>
 					Subscribe
 				</button>
 			</div>

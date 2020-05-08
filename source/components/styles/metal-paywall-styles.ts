@@ -37,4 +37,12 @@ footer > span {
 	font-size: 0.8em;
 }
 
+button.update {
+	background: #50505096;
+}
+
+button.cancel {
+	background: #401c1c96;
+}
+
 `

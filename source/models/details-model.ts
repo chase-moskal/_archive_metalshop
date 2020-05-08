@@ -32,22 +32,26 @@ export class DetailsModel {
 		Object.assign(this, options)
 	}
 
-	@action.bound async setAdminMode(adminMode: boolean) {
+	 @action.bound
+	async setAdminMode(adminMode: boolean) {
+		this.setSettingsLoad(loading.loading())
 		const {accessToken} = await this.getAuthContext()
 		const settings = await this.settingsSheriff.setAdminMode({
-			accessToken,
 			adminMode,
+			accessToken,
 		})
 		this.setSettingsLoad(loading.ready(settings))
 	}
 
-	@action.bound async saveProfile(profile: Profile) {
+	 @action.bound
+	async saveProfile(profile: Profile) {
 		const {accessToken} = await this.getAuthContext()
 		await this.profileMagistrate.setProfile({accessToken, profile})
 		this.setProfileLoad(loading.ready(profile))
 	}
 
-	@action.bound async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+	 @action.bound
+	async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
 		this.getAuthContext = null
 		const {
 			logger,
@@ -119,11 +123,13 @@ export class DetailsModel {
 		})
 	}
 
-	@action.bound private setProfileLoad(load: loading.Load<Profile>) {
+	 @action.bound
+	private setProfileLoad(load: loading.Load<Profile>) {
 		this.profileLoad = load
 	}
 
-	@action.bound private setSettingsLoad(load: loading.Load<Settings>) {
+	 @action.bound
+	private setSettingsLoad(load: loading.Load<Settings>) {
 		this.settingsLoad = load
 	}
 }

@@ -49,7 +49,6 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 	private renderPrivilegeBox(privilege: PrivilegeLevel) {
 		const {validationMessage} = this._viewModel || {}
 		switch (privilege) {
-
 			case PrivilegeLevel.Unknown: return html`
 				<slot name="unknown">
 					<h2>Private video</h2>
@@ -64,7 +63,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 				</slot>
 				<div class="ghostplayer">${cancel}</div>
 			`
-			case PrivilegeLevel.Privileged: html`
+			case PrivilegeLevel.Privileged: return html`
 				<slot></slot>
 				${this._renderViewer()}
 				<metal-admin-only class="adminpanel coolbuttonarea formarea" block header>

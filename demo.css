@@ -41,6 +41,10 @@ html, body {
 	--focus-outline: 2px solid #ff4d17;
 }
 
+metal-account {
+	--metal-admin-color: green;
+}
+
 body {
 	max-width: 960px;
 	padding: 0 5%;

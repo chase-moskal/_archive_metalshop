@@ -134,6 +134,11 @@ export const makeAllMocks = async({
 	// starting conditions
 	//
 
+	const days = 1000 * 60 * 60 * 24
+	await scheduleDatalayer.setEvent("countdown1", {
+		time: Date.now() + (3.14159 * days)
+	})
+
 	await tokenStore.clearTokens()
 
 	if (startLoggedIn || startAdmin || startPremium) {
@@ -181,6 +186,7 @@ export const makeAllMocks = async({
 		authExchanger.authorize = lag(authExchanger.authorize)
 		questionsBureau.fetchQuestions = lag(questionsBureau.fetchQuestions)
 		settingsSheriff.fetchSettings = lag(settingsSheriff.fetchSettings)
+		settingsSheriff.setAdminMode = lag(settingsSheriff.setAdminMode)
 		paywallLiaison.checkoutPremium = lag(paywallLiaison.checkoutPremium)
 		paywallLiaison.cancelPremium = lag(paywallLiaison.cancelPremium)
 		paywallLiaison.updatePremium = lag(paywallLiaison.updatePremium)

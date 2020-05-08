@@ -2,7 +2,7 @@
 import {clock} from "../../system/icons.js"
 import {styles} from "./metal-countdown-styles.js"
 import {CountdownShare} from "../../interfaces.js"
-import {formatDate, formatDuration} from "./dates.js"
+import {formatDate, formatDuration} from "../../toolbox/dates.js"
 import {MetalshopComponent, property, html, css} from "../../framework/metalshop-component.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000

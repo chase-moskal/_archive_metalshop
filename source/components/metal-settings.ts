@@ -4,9 +4,11 @@ import {styles} from "./styles/details-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
 export class MetalSettings extends MetalshopComponent<DetailsShare> {
-	@property({type: Boolean, reflect: true}) ["hidden"]: boolean = true
+
+	 @property({type: Boolean, reflect: true})
+	["hidden"]: boolean = true
 
 	autorun() {
 		const {user} = this.share

@@ -5,21 +5,21 @@ import {deepEqual, deepClone} from "../toolbox/deep.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
-@mixinStyles(css`
+ @mixinStyles(css`
 	:host {
 		color: var(--metal-admin-color, #fd34e2);
 	}
-`)
+ `)
 export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
 
-	@property({type: Boolean, reflect: true})
-		["initially-hidden"]: boolean
+	 @property({type: Boolean, reflect: true})
+	["initially-hidden"]: boolean
 
-	@property({type: Boolean})
-		private adminMode: boolean = false
+	 @property({type: Boolean})
+	private adminMode: boolean = false
 
-	@property({type: Boolean})
-		private adminClaim: boolean = false
+	 @property({type: Boolean})
+	private adminClaim: boolean = false
 
 	firstUpdated() {
 		this["initially-hidden"] = false
