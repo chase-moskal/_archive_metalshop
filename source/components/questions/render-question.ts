@@ -20,11 +20,11 @@ export function renderQuestion({
 	prepareHandleDeleteClick: (questionId: string) => (event: MouseEvent) => void
 }) {
 	const {
-		questionId,
 		time,
 		author,
 		content,
 		likeInfo,
+		questionId,
 	} = question
 
 	const {authority, mine} = ascertainOwnership(question, me)
@@ -52,6 +52,7 @@ export function renderQuestion({
 				likeInfo,
 				handleLikeClick,
 				handleUnlikeClick,
+				placeholderNickname: "Unknown",
 			})}
 
 			<div class="body">

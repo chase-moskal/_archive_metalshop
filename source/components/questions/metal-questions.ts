@@ -61,7 +61,7 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 
 		const questions = this.share.fetchCachedQuestions(board)
 		const {user, profile} = this.share
-		const me: QuestionAuthor = {user, profile}
+		const me: QuestionAuthor = (user && profile) ? {user, profile} : null
 		const validation = this.validatePost(me)
 		const expand = draftText.length > 0
 
@@ -186,30 +186,56 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 		if (active) active.blur()
 	}
 
-	private validatePost(author: QuestionAuthor) {
+	private validatePost(author: QuestionAuthor): {
+			angry: boolean
+			message: string
+			postable: boolean
+		} {
 		const {
 			draftText,
 			minCharacterLimit: min,
 			maxCharacterLimit: max
 		} = this
 		const {length} = draftText
-
 		const tooLittle = length < min
 		const tooBig = length > max
+		const premiumClaim = author?.user?.claims.premium
 
-		const premium = author.user && author.user.claims.premium
-		const {message, angry} = premium
-			? length > 0
-				? tooLittle
-					? {message: "Not enough characters to post", angry: true}
-					: tooBig
-						? {message: "Too many characters to post", angry: true}
-						: {message: "", angry: false}
-				: {message: "Nothing to post", angry: false}
-			: {message: "You must become premium to post", angry: false}
+		if (!author) return {
+			postable: false,
+			message: "You must be logged in as a premium user to post",
+			angry: false,
+		}
 
-		const postable = !message
-		return {postable, message, angry}
+		if (!premiumClaim) return {
+			postable: false,
+			message: "You must become a premium user to post",
+			angry: false,
+		}
+
+		if (length <= 0) return {
+			postable: false,
+			message: "Nothing to post",
+			angry: false,
+		}
+
+		if (tooLittle) return {
+			postable: false,
+			message: `${min - length} more characters needed...`,
+			angry: true,
+		}
+
+		if (tooBig) return {
+			postable: false,
+			message: `${max - length} characters too many`,
+			angry: true,
+		}
+
+		return {
+			postable: true,
+			message: null,
+			angry: false,
+		}
 	}
 
 	private handlePurgeClick = async() => {

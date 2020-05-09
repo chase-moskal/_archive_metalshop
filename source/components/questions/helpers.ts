@@ -1,5 +1,5 @@
 
-import {Question, QuestionAuthor} from "authoritarian/dist/interfaces.js"
+import {User, Question, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 
 export function ascertainOwnership(question: Question, me: QuestionAuthor) {
 	if (!me || !me.user) return {mine: false, authority: false}
@@ -18,7 +18,7 @@ const sortLikes = (a: Question, b: Question) => {
 }
 
 export const sortQuestions = (me: QuestionAuthor, questions: Question[]) => {
-	const myUserId = me.user && me.user.userId
+	const myUserId = me?.user?.userId
 	const filterMine = (q: Question) => q.author.user.userId === myUserId
 	const filterTheirs = (q: Question) => q.author.user.userId !== myUserId
 	return myUserId

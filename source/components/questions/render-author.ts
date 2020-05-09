@@ -9,27 +9,28 @@ export function renderAuthor({
 	likeInfo,
 	handleLikeClick,
 	handleUnlikeClick,
+	placeholderNickname = "You"
 }: {
 	time: number
-	author: QuestionAuthor
+	author?: QuestionAuthor
 	handleLikeClick: (event: MouseEvent) => void
 	handleUnlikeClick: (event: MouseEvent) => void
 	likeInfo?: LikeInfo
+	placeholderNickname?: string
 }) {
 	const date = new Date(time)
 	const datestring = `${date.getFullYear()}`
 		+ `-${(date.getMonth() + 1).toString().padStart(2, "0")}`
 		+ `-${date.getDate().toString().padStart(2, "0")}`
 	const timestring = date.toLocaleTimeString()
-	const {user, profile} = author
-	return (user && profile) ? html`
+	const premium = !!author?.user?.claims.premium
+	const avatar = author?.profile?.avatar || null
+	const nickname = author?.profile?.nickname || placeholderNickname
+	return html`
 		<div class="author">
-			<metal-avatar
-				src=${profile.avatar}
-				?premium=${user.claims.premium}
-			></metal-avatar>
+			<metal-avatar .src=${avatar} ?premium=${premium}></metal-avatar>
 			<div class="card">
-				<p class="nickname">${profile.nickname}</p>
+				<p class="nickname">${nickname}</p>
 				<div class="details">
 					<p class="time" title=${`${datestring} ${timestring}`}>
 						${datestring}
@@ -39,7 +40,7 @@ export function renderAuthor({
 							class="likebutton"
 							@click=${likeInfo.liked ? handleUnlikeClick : handleLikeClick}
 							?data-liked=${likeInfo.liked}
-							title="${likeInfo.liked ? "Unlike" : "Like"} question by ${profile.nickname}">
+							title="${likeInfo.liked ? "Unlike" : "Like"} question by ${nickname}">
 								<span class="like-heart">
 									${heart}
 								</span>
@@ -51,5 +52,5 @@ export function renderAuthor({
 				</div>
 			</div>
 		</div>
-	` : null
+	`
 }

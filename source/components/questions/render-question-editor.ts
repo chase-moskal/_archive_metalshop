@@ -32,7 +32,7 @@ export function renderQuestionEditor({
 	author?: QuestionAuthor
 }) {
 	const {message, postable, angry} = validation
-	const messageActive = !!message
+	const invalid = !!message
 	return html`
 		<div class="question editor">
 			${renderAuthor({
@@ -42,7 +42,6 @@ export function renderQuestionEditor({
 				handleLikeClick: () => {},
 				handleUnlikeClick: () => {},
 			})}
-
 			<div class="body">
 				<textarea
 					class="content"
@@ -59,11 +58,10 @@ export function renderQuestionEditor({
 							<p
 								class="message"
 								?data-angry=${angry}
-								?data-active=${messageActive}>
+								?data-active=${invalid}>
 									${message}
 							</p>
-						`
-						: null}
+						` : null}
 					<button
 						?disabled=${!postable}
 						@click=${handlePostClick}
