@@ -47,7 +47,7 @@ export const makeAllMocks = async({
 		googleResult: {
 			googleId,
 			name: `Faker McFakerson`,
-			avatar: "https://picsum.photos/id/375/200/200",
+			avatar: "https://i.imgur.com/CEqYyCy.jpg",
 		}
 	})
 

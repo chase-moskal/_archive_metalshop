@@ -185,6 +185,7 @@ export interface DetailsShare {
 
 export interface PaywallShare {
 	authLoad: loading.Load<AuthPayload>
+	settingsLoad: loading.Load<Settings>
 	premiumClaim: boolean
 	premiumExpires: number
 	premiumSubscription: {

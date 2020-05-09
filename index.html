@@ -91,18 +91,19 @@
 					<p>remember, this stuff is work-in-progress, so some stuff doesn't work yet in various modes</p>
 					<h3>mock mode is fake mode</h3>
 					<ul>
+						<li><a href="/?mock">/?mock</a> ← start logged out</li>
 						<li><a href="/?mock=loggedin">/?mock=loggedin</a> ← start logged in</li>
-						<li><a href="/?mock=premium">/?mock=premium</a> ← be a premium user</li>
-						<li><a href="/?mock=admin">/?mock=admin</a> ← be an administrator</li>
+						<li><a href="/?mock=loggedin+admin">/?mock=admin</a> ← be an administrator</li>
+						<li><a href="/?mock=loggedin+premium">/?mock=premium</a> ← be a premium user</li>
 						<li><a href="/?mock=loggedin+premium+admin">/?mock=loggedin+premium+admin</a> ← god mode</li>
 					</ul>
-					<h3>choose your microservices</h3>
+					<!-- <h3>choose your microservices</h3>
 					<ul>
 						<li><a href="/">/</a> ← mock mode by default for now</li>
 						<li><a href="/?dev=node">/?dev=node</a> ← local node microservices</li>
 						<li><a href="/?dev=minikube">/?dev=minikube</a> ← local kubernetes cluster</li>
 						<li><a href="/?dev=prod">/?dev=prod</a> ← production cluster</li>
-					</ul>
+					</ul> -->
 				</section>
 			</section>
 			<section class="component-demos">
