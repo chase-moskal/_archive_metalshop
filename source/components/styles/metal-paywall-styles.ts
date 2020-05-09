@@ -42,7 +42,46 @@ button.update {
 }
 
 button.cancel {
-	background: #401c1c96;
+	background: #6b222296;
+}
+
+.panel + * {
+	margin-top: 0.5em;
+}
+
+.panel > * + * {
+	margin-top: 0.5em;
+}
+
+.panel.premium .banner {
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	align-items: center;
+}
+
+.panel.premium .banner * {
+	flex: 0 0 auto;
+}
+
+.panel.premium .banner svg {
+	width: 5em;
+	height: 5em;
+	color: yellow;
+	border-radius: 5em;
+	background: rgba(255,255, 64, 0.5);
+}
+
+.panel.premium .banner h3 {
+	padding: 1em;
+}
+
+.buttonbar {
+	width: 100%;
+}
+
+.buttonbar.right {
+	text-align: right;
 }
 
 `

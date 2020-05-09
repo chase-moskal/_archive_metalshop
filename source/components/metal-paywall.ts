@@ -4,7 +4,7 @@ import * as loading from "../toolbox/loading.js"
 import {star as starIcon} from "../system/icons.js"
 import {styles} from "./styles/metal-paywall-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
+import {MetalshopComponent, html, property, TemplateResult} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {
@@ -29,23 +29,19 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 	}
 
 	private renderPanelPremium() {
-		const {premiumExpires, premiumSubscription} = this.share
-		const duration = premiumExpires - Date.now()
-		const days = Math.ceil(duration / (1000 * 60 * 60 * 24))
 		return html`
-			<div class="panel-premium">
-				${starIcon}
-				<h3>You are Premium!</h3>
-				${premiumSubscription
-					? null
-					: html`<p>Remaining: ${days} day${days === 1 ? "" : "s"}</p>`}
+			<div class="panel premium">
+				<div class="banner">
+					${starIcon}
+					<h3>You are Premium!</h3>
+				</div>
 			</div>
 		`
 	}
 
 	private renderPanelNoPremium() {
 		return html`
-			<div class="panel-no-premium">
+			<div class="panel no-premium">
 				<h3>Not premium</h3>
 			</div>
 		`
@@ -55,23 +51,31 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		const {premiumSubscription} = this.share
 		const {brand, last4, expireYear, expireMonth} = premiumSubscription.card
 		return html`
-			<div class="panel-subscription">
+			<div class="panel subscription">
 				<h3>Billing subscription is active</h3>
 				<p>${brand} card ending in ${last4}, card expires ${expireYear}/${expireMonth}</p>
-				<button class="update" @click=${this.handleUpdatePremiumClick}>
-					Update card
-				</button>
-				<button class="cancel" @click=${this.handleCancelPremiumClick}>
-					Cancel subscription
-				</button>
+				<div class="buttonbar">
+					<button class="update" @click=${this.handleUpdatePremiumClick}>
+						Update card
+					</button>
+					<button class="cancel" @click=${this.handleCancelPremiumClick}>
+						Cancel subscription
+					</button>
+				</div>
 			</div>
 		`
 	}
 
 	private renderPanelNoSubscription () {
+		const {premiumExpires} = this.share
 		return html`
-			<div class="panel-no-subscription">
+			<div class="panel no-subscription">
 				<p>No active billing subscription</p>
+				${premiumExpires ? (() => {
+					const duration = premiumExpires - Date.now()
+					const days = Math.ceil(duration / (1000 * 60 * 60 * 24))
+					return html`<p>Remaining: ${days} day${days === 1 ? "" : "s"}</p>`
+				})() : null}
 				<button class="subscribe" @click=${this.handleCheckoutPremiumClick}>
 					Subscribe
 				</button>
