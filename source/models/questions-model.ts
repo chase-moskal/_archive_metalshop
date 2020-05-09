@@ -88,10 +88,10 @@ export class QuestionsModel {
 
 	 @action.bound
 	private likeLocalQuestion(
-		questionId: string,
-		liked: boolean,
-		likes: number,
-	) {
+			questionId: string,
+			liked: boolean,
+			likes: number,
+		) {
 		const question = this.getLocalQuestion(questionId)
 		question.likeInfo.liked = liked
 		question.likeInfo.likes = likes
@@ -102,9 +102,9 @@ export class QuestionsModel {
 		this.questions = []
 	}
 
-	private getLocalQuestion = (questionId: string) => this.questions.find(
+	private getLocalQuestion = (questionId: string) => questionId ? this.questions.find(
 		question => question.questionId === questionId
-	)
+	) : null
 
 	private addTokenToOptions = async<O extends {}>(options: O) => {
 		const {accessToken} = await this.#getAuthContext()
