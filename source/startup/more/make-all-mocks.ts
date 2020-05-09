@@ -20,7 +20,7 @@ import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions/mock
 
 import {random8} from "authoritarian/dist/toolbox/random8.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
-import {AccessToken, LiveshowGovernorTopic, RefreshPayload, AccessPayload} from "authoritarian/dist/interfaces.js"
+import {AccessToken, LiveshowGovernorTopic, AccessPayload} from "authoritarian/dist/interfaces.js"
 
 import {nap} from "../../toolbox/nap.js"
 import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"

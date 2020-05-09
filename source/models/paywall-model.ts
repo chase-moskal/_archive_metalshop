@@ -1,10 +1,10 @@
 
 import {observable, action, computed} from "mobx"
 import {PaywallLiaisonTopic} from "authoritarian/dist/interfaces.js"
-import {TriggerCheckoutPopup} from "../interfaces.js"
 
 import {AuthModel} from "./auth-model.js"
 import {DetailsModel} from "./details-model.js"
+import {TriggerCheckoutPopup} from "../interfaces.js"
 
 export class PaywallModel {
 	@observable private readonly auth: AuthModel
@@ -23,19 +23,23 @@ export class PaywallModel {
 		Object.assign(this, options)
 	}
 
-	@computed get premiumClaim(): boolean {
+	 @computed
+	get premiumClaim(): boolean {
 		return !!this.auth?.user?.claims?.premium
 	}
 
-	@computed get premiumExpires(): number {
+	 @computed
+	get premiumExpires(): number {
 		return this.details?.settings?.premium?.expires
 	}
 
-	@computed get premiumSubscription() {
+	 @computed
+	get premiumSubscription() {
 		return this.details?.settings?.billing?.premiumSubscription
 	}
 
-	@action.bound async checkoutPremium() {
+	 @action.bound
+	async checkoutPremium() {
 		const {accessToken} = await this.auth.getAuthContext()
 		const {stripeSessionId} = await this.paywallLiaison.checkoutPremium({
 			accessToken,
@@ -45,7 +49,8 @@ export class PaywallModel {
 		await this.auth.reauthorize()
 	}
 
-	@action.bound async updatePremium() {
+	 @action.bound
+	async updatePremium() {
 		const {accessToken} = await this.auth.getAuthContext()
 		const {stripeSessionId} = await this.paywallLiaison.updatePremium({
 			accessToken,
@@ -55,7 +60,8 @@ export class PaywallModel {
 		await this.auth.reauthorize()
 	}
 
-	@action.bound async cancelPremium() {
+	 @action.bound
+	async cancelPremium() {
 		const {accessToken} = await this.auth.getAuthContext()
 		await this.paywallLiaison.cancelPremium({accessToken})
 		await this.auth.reauthorize()

@@ -85,7 +85,8 @@ export class LiveshowViewModel {
 	// public actions
 	//
 
-	@action.bound ascertainPrivilege(user: User): PrivilegeLevel {
+	 @action.bound
+	ascertainPrivilege(user: User): PrivilegeLevel {
 		return user.claims.admin
 			? PrivilegeLevel.Privileged
 			: user.claims.premium
@@ -93,7 +94,8 @@ export class LiveshowViewModel {
 				: PrivilegeLevel.Unprivileged
 	}
 
-	@action.bound async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
+	 @action.bound
+	async handleAuthLoad(authLoad: loading.Load<AuthPayload>) {
 
 		// initialize observables
 		this.videoLoad = loading.none()
@@ -128,7 +130,8 @@ export class LiveshowViewModel {
 		}
 	}
 
-	@action.bound async updateVideo(vimeostring: string) {
+	 @action.bound
+	async updateVideo(vimeostring: string) {
 		vimeostring = vimeostring.trim()
 		this.validationMessage = null
 
@@ -162,7 +165,8 @@ export class LiveshowViewModel {
 	// private functionality
 	//
 
-	@action.bound private async loadVideo(accessToken: AccessToken) {
+	 @action.bound
+	private async loadVideo(accessToken: AccessToken) {
 		return await this.liveshowGovernor.getShow({
 			accessToken,
 			videoName: this.videoName,
