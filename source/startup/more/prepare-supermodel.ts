@@ -27,8 +27,8 @@ export function prepareSupermodel({
 
 	const auth = new AuthModel({
 		tokenStore,
-		triggerAccountPopup,
 		decodeAccessToken,
+		triggerAccountPopup,
 		expiryGraceSeconds: 60
 	})
 

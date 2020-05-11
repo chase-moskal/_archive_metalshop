@@ -19,23 +19,35 @@ import {mockSettingsDatalayer} from "authoritarian/dist/business/settings/mocks/
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions/mocks/mock-questions-datalayer.js"
 
 import {random8} from "authoritarian/dist/toolbox/random8.js"
+import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
 import {AccessToken, LiveshowGovernorTopic, AccessPayload} from "authoritarian/dist/interfaces.js"
 
 import {nap} from "../../toolbox/nap.js"
-import {TriggerAccountPopup, TriggerCheckoutPopup} from "../../interfaces.js"
+import {decodeAccessToken as defaultDecodeAccessToken} from "../../system/decode-access-token.js"
+import {TriggerAccountPopup, TriggerCheckoutPopup, MetalOptions, DecodeAccessToken} from "../../interfaces.js"
 
-export const makeAllMocks = async({
+export const makeMetalMocks = async({
 		startAdmin,
 		startPremium,
 		startLoggedIn,
+		logger = console,
+		googleUserName = "Steve Stephenson",
+		decodeAccessToken = defaultDecodeAccessToken,
+		googleUserAvatar = "https://i.imgur.com/CEqYyCy.jpg",
+		generateRandomNickname = () => `User-${random8().toUpperCase()}`
 	}: {
+		logger: Logger
 		startAdmin: boolean
 		startPremium: boolean
 		startLoggedIn: boolean
-	}) => {
+		googleUserName?: string
+		googleUserAvatar?: string
+		decodeAccessToken?: DecodeAccessToken
+		generateRandomNickname?: () => string
+	}): Promise<MetalOptions> => {
 
-	const googleId = `mock-google-id-${random8()}`
+	const googleId = `mock-google-user-${random8()}`
 	const googleToken = `mock-google-token-${random8()}`
 	const premiumStripePlanId = `mock-premium-stripe-plan-${random8()}`
 
@@ -46,8 +58,8 @@ export const makeAllMocks = async({
 	const verifyGoogleToken = mockVerifyGoogleToken({
 		googleResult: {
 			googleId,
-			name: `Faker McFakerson`,
-			avatar: "https://i.imgur.com/CEqYyCy.jpg",
+			name: googleUserName,
+			avatar: googleUserAvatar,
 		}
 	})
 
@@ -61,7 +73,6 @@ export const makeAllMocks = async({
 	const day = minute * 60 * 24
 	const accessTokenExpiresMilliseconds = 20 * minute
 	const refreshTokenExpiresMilliseconds = day * 365
-	const generateRandomNickname = () => `User-${random8().toUpperCase()}`
 
 	const authExchanger = makeAuthExchanger({
 		signToken,
@@ -193,6 +204,7 @@ export const makeAllMocks = async({
 	}
 
 	return {
+		logger,
 		authDealer,
 		tokenStore,
 		paywallLiaison,
@@ -201,6 +213,7 @@ export const makeAllMocks = async({
 		questionsBureau,
 		liveshowGovernor,
 		checkoutPopupUrl,
+		decodeAccessToken,
 		profileMagistrate,
 		triggerAccountPopup,
 		triggerCheckoutPopup,

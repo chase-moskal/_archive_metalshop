@@ -56,10 +56,10 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 				<p>${brand} card ending in ${last4}, card expires ${expireYear}/${expireMonth}</p>
 				<div class="buttonbar">
 					<button class="update" @click=${this.handleUpdatePremiumClick}>
-						Update card
+						Update
 					</button>
 					<button class="cancel" @click=${this.handleCancelPremiumClick}>
-						Cancel subscription
+						Cancel
 					</button>
 				</div>
 			</div>

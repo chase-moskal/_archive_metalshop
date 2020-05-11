@@ -67,9 +67,9 @@ button.cancel {
 .panel.premium .banner svg {
 	width: 5em;
 	height: 5em;
-	color: yellow;
 	border-radius: 5em;
-	background: rgba(255,255, 64, 0.5);
+	color: var(--premium-color, yellow);
+	background: var(--premium-background, rgba(255,255, 64, 0.5));
 }
 
 .panel.premium .banner h3 {

@@ -32,6 +32,7 @@ import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 
 export interface MetalConfig {
 	["mock"]: string
+	["mock-avatar"]: string
 	["auth-server"]: string
 	["profile-server"]: string
 	["paywall-server"]: string
