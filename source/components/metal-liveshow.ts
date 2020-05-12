@@ -11,17 +11,14 @@ import {MetalshopComponent, property, html} from "../framework/metalshop-compone
  @mixinStyles(styles)
 export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 
-	 @property({type: Boolean, reflect: true})
-	["initially-hidden"]: boolean
-
 	 @property({type: String, reflect: true})
 	["video-name"]: string
 
 	private _viewModel: LiveshowViewModel
 	private _viewModelDispose: () => void
 
-	firstUpdated() {
-		this["initially-hidden"] = false
+	firstUpdated(props) {
+		super.firstUpdated(props)
 		const {["video-name"]: videoName} = this
 		const {viewModel, dispose} = this.share.makeViewModel({videoName})
 		this._viewModel = viewModel
@@ -66,7 +63,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 			case PrivilegeLevel.Privileged: return html`
 				<slot></slot>
 				${this._renderViewer()}
-				<metal-admin-only class="adminpanel coolbuttonarea formarea" block header>
+				<metal-is-admin fancy class="adminpanel coolbuttonarea formarea">
 					<div class="inputarea">
 						<input
 							type="text"
@@ -80,7 +77,7 @@ export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 					${validationMessage && html`
 						<p class="error">${validationMessage}</p>
 					`}
-				</metal-admin-only>
+				</metal-is-admin>
 			`
 		}
 	}

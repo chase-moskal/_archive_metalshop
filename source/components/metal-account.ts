@@ -8,13 +8,6 @@ import {mixinStyles} from "../framework/mixin-styles.js"
 
  @mixinStyles(styles)
 export class MetalAccount extends MetalshopComponent<AccountShare> {
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	onLoginClick: (event: MouseEvent) => void = () => this.share.login()
-	onLogoutClick: (event: MouseEvent) => void = () => this.share.logout()
-
-	firstUpdated() {
-		this["initially-hidden"] = false
-	}
 
 	render() {
 		const {authLoad} = this.share
@@ -31,20 +24,16 @@ export class MetalAccount extends MetalshopComponent<AccountShare> {
 	private renderLoggedIn() {
 		return html`
 			<slot></slot>
-			<div class="wedge logout coolbuttonarea">
-				<button @click=${this.onLogoutClick}>
-					Logout
-				</button>
+			<div class="wedge logout">
+				<metal-button-auth></metal-button-auth>
 			</div>
 		`
 	}
 
 	private renderLoggedOut() {
 		return html`
-			<div class="wedge login coolbuttonarea">
-				<button @click=${this.onLoginClick}>
-					Login
-				</button>
+			<div class="wedge login">
+				<metal-button-auth></metal-button-auth>
 			</div>
 		`
 	}

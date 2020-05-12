@@ -110,9 +110,7 @@ export class AuthModel {
 	//
 
 	 @action.bound
-	private processAccessToken(
-			accessToken: AccessToken
-		): AuthPayload {
+	private processAccessToken(accessToken: AccessToken): AuthPayload {
 		this.authContext = this.decodeAccessToken(accessToken)
 		this.user = this.authContext?.user
 		const getAuthContext = async() => {
@@ -125,7 +123,7 @@ export class AuthModel {
 			}
 			return this.authContext
 		}
-		return {getAuthContext}
+		return {getAuthContext, user: this.user}
 	}
 
 	 @action.bound
@@ -144,16 +142,16 @@ export class AuthModel {
 	}
 
 	 @action.bound
-	private setLoggedIn({getAuthContext}: AuthPayload) {
+	private setLoggedIn({user, getAuthContext}: AuthPayload) {
 		this.getAuthContext = getAuthContext
-		this.authLoad = loading.ready({getAuthContext})
+		this.authLoad = loading.ready({user, getAuthContext})
 	}
 
 	 @action.bound
 	private setLoggedOut() {
 		this.user = null
 		this.getAuthContext = null
-		this.authLoad = loading.ready({getAuthContext: null})
+		this.authLoad = loading.ready({user: null, getAuthContext: null})
 	}
 }
 

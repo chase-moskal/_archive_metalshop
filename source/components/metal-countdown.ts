@@ -1,23 +1,23 @@
 
-import {clock} from "../../system/icons.js"
-import {styles} from "./metal-countdown-styles.js"
-import {CountdownShare} from "../../interfaces.js"
-import {formatDate, formatDuration} from "../../toolbox/dates.js"
-import {MetalshopComponent, property, html, css} from "../../framework/metalshop-component.js"
+import {clock} from "../system/icons.js"
+import {CountdownShare} from "../interfaces.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
+import {styles} from "./styles/metal-countdown-styles.js"
+import {formatDate, formatDuration} from "../toolbox/dates.js"
+import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
 const timeOffset = (new Date()).getTimezoneOffset() * 60 * 1000
 
+ @mixinStyles(styles)
 export class MetalCountdown extends MetalshopComponent<CountdownShare> {
-	static get styles() { return [super.styles || css``, styles] }
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
 	@property({type: String}) ["event-name"]: string
 	@property({type: String}) adminDate: number = NaN
 	@property({type: String}) adminTime: number = NaN
 	@property({type: String}) adminValidationMessage: string = ""
 	private _interval: any
 
-	async firstUpdated() {
-		this["initially-hidden"] = false
+	async firstUpdated(props) {
+		super.firstUpdated(props)
 		const {["event-name"]: eventName} = this
 		if (!eventName) throw new Error(`schedule-countdown requires [event-name] attribute`)
 		await this.share.loadEvent(eventName)
@@ -98,7 +98,7 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 	private renderAdminPanel({scheduled}: {scheduled: boolean}) {
 		const {adminValidationMessage} = this
 		return html`
-			<metal-admin-only class="controls coolbuttonarea" block header>
+			<metal-is-admin fancy class="controls coolbuttonarea">
 				<input
 					type="date"
 					@keyUp=${this._handleUpdateDate}
@@ -126,7 +126,7 @@ export class MetalCountdown extends MetalshopComponent<CountdownShare> {
 				${adminValidationMessage ? html`
 					<p class="validation">${adminValidationMessage}</p>
 				` : null}
-			</metal-admin-only>
+			</metal-is-admin>
 		`
 	}
 

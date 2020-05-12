@@ -3,34 +3,25 @@ import * as loading from "../toolbox/loading.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {styles} from "../components/styles/iron-loading-styles.js"
 import {LitElement, TemplateResult, property, html} from "lit-element"
+import {mixinInitiallyHidden} from "../framework/mixin-initially-hidden.js"
 import {spinner as spinnerIcon, error as errorIcon} from "../system/icons.js"
 
-@mixinStyles(styles)
+ @mixinStyles(styles)
+ @mixinInitiallyHidden
 export class IronLoading<Payload = any> extends LitElement {
 
-	//
-	// initially-hidden shenanigans
-	//
+	 @property({type: String})
+	error: string = "error"
 
-	@property({type: Boolean, reflect: true})
-		["initially-hidden"]: boolean
-
-	firstUpdated() {
-		this["initially-hidden"] = false
-	}
-
-	@property({type: String})
-		error: string = "error"
-
-	@property({type: String})
-		loading: string = "loading"
+	 @property({type: String})
+	loading: string = "loading"
 
 	//
 	// load and derived properties
 	//
 
-	@property({type: String, reflect: true})
-		state: string = "none"
+	 @property({type: String, reflect: true})
+	state: string = "none"
 
 	private _load = loading.load<Payload>()
 

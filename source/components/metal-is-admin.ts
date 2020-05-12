@@ -5,20 +5,14 @@ import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
 
 @mixinStyles(css`
-	:host {
-		color: var(--metal-admin-color, #ff5c98);
-		--coolbutton-background: var(--metal-admin-color, #ff5c98);
-	}
 
-	:host([block]) {
+	:host([admin][fancy]) {
 		display: block;
 		padding: 1em 0.5em !important;
 		border: 1px solid;
 		border-radius: 3px;
-	}
-
-	:host([not-admin]) {
-		display: none !important;
+		color: var(--metal-admin-color, #ff5c98);
+		--coolbutton-background: var(--metal-admin-color, #ff5c98);
 	}
 
 	.header {
@@ -27,18 +21,13 @@ import {MetalshopComponent, property, html, css} from "../framework/metalshop-co
 		text-transform: uppercase;
 		margin-bottom: 0.5em;
 	}
+
 `)
-export class MetalAdminOnly extends MetalshopComponent<AdminOnlyShare> {
-	@property({type: Boolean, reflect: true}) ["initially-hidden"]: boolean
-	@property({type: Boolean, reflect: true}) ["block"]: boolean
-	@property({type: Boolean, reflect: true}) ["header"]: boolean
+export class MetalIsAdmin extends MetalshopComponent<AdminOnlyShare> {
+	@property({type: Boolean, reflect: true}) ["fancy"]: boolean
 	@property({type: Boolean, reflect: true}) ["admin"]: boolean = false
 	@property({type: Boolean, reflect: true}) ["not-admin"]: boolean = true
 	@property({type: Object}) private load = loading.load<any>()
-
-	firstUpdated() {
-		this["initially-hidden"] = false
-	}
 
 	async autorun() {
 		const {authLoad, settingsLoad} = this.share
@@ -61,11 +50,20 @@ export class MetalAdminOnly extends MetalshopComponent<AdminOnlyShare> {
 	}
 
 	render() {
-		return !this.admin ? null : html`
-			${!!this["header"] ? html`
-				<p class="header"><strong>Admin-only controls</strong></p>
-			` : null}
-			<slot></slot>
+		const header = this["fancy"]
+			? html`<p class="header"><strong>Admin-only controls</strong></p>`
+			: null
+		return html`
+			<iron-loading .load=${this.load}>
+				${this["admin"]
+					? html`
+						${header}
+						<slot></slot>
+					`
+					: html`
+						<slot name="not"></slot>
+					`}
+			</iron-loading>
 		`
 	}
 }

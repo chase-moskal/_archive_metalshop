@@ -108,6 +108,30 @@
 			</section>
 			<section class="component-demos">
 				<h2>component demos <small><metal-admin-mode initially-hidden>Admin mode</metal-admin-mode></small></h2>
+				<details data-demo="is-testing">
+					<summary>"is" components</summary>
+					<div>
+						<p><strong>&lt;metal-is-loggedin&gt;</strong></p>
+						<metal-is-loggedin initially-hidden>
+							<p>you are logged in</p>
+							<p slot="not">you are logged out</p>
+						</metal-is-loggedin>
+						<p><strong>&lt;metal-is-premium&gt;</strong></p>
+						<metal-is-premium initially-hidden>
+							<p>you are premium</p>
+							<p slot="not">you are NOT premium</p>
+						</metal-is-premium>
+						<p><strong>&lt;metal-is-admin&gt;</strong></p>
+						<metal-is-admin fancy initially-hidden>
+							<p>you are admin</p>
+							<p slot="not">you are NOT admin</p>
+						</metal-is-admin>
+					</div>
+				</details>
+				<details data-demo="metal-button-auth">
+					<summary>&lt;metal-button-auth&gt;</summary>
+					<metal-button-auth></metal-button-auth>
+				</details>
 				<details data-demo="iron-loading">
 					<summary>&lt;iron-loading&gt;</summary>
 					<button data-state="none">none</button>

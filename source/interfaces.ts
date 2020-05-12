@@ -77,6 +77,7 @@ export interface LoginWithAccessToken {
 }
 
 export interface AuthPayload {
+	user: User
 	getAuthContext: GetAuthContext
 }
 

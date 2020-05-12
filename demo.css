@@ -264,10 +264,6 @@ metal-questions {
 	--question-avatar-border-radius: 5em;
 }
 
-metal-countdown[initially-hidden] {
-	display: none;
-}
-
 metal-liveshow {
 	padding: 0.5em;
 	max-width: 640px;

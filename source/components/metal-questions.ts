@@ -1,22 +1,19 @@
 
-import {sortQuestions} from "./helpers.js"
-import {styles} from "./metal-questions-styles.js"
-import * as loading from "../../toolbox/loading.js"
-import {renderQuestion} from "./render-question.js"
-import {mixinStyles} from "../../framework/mixin-styles.js"
-import {renderQuestionEditor} from "./render-question-editor.js"
-import {QuestionsShare, PrepareHandleLikeClick} from "../../interfaces.js"
+import {sortQuestions} from "./questions/helpers.js"
+import {styles} from "./styles/metal-questions-styles.js"
+import * as loading from "../toolbox/loading.js"
+import {renderQuestion} from "./questions/render-question.js"
+import {mixinStyles} from "../framework/mixin-styles.js"
+import {renderQuestionEditor} from "./questions/render-question-editor.js"
+import {QuestionsShare, PrepareHandleLikeClick} from "../interfaces.js"
 import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
-import {MetalshopComponent, property, html, PropertyValues} from "../../framework/metalshop-component.js"
+import {MetalshopComponent, property, html, PropertyValues} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
 export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 
 	 @property({type: String, reflect: true})
 	["board"]: string
-
-	 @property({type: Boolean, reflect: true})
-	["initially-hidden"]: boolean
 
 	 @property({type: String})
 	draftText: string = ""
@@ -35,8 +32,8 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 
 	private lastBoard: string = null
 
-	firstUpdated() {
-		this["initially-hidden"] = false
+	firstUpdated(props) {
+		super.firstUpdated(props)
 		this.downloadQuestions()
 	}
 
@@ -68,9 +65,9 @@ export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
 		return html`
 			<iron-loading .load=${load}>
 
-				<metal-admin-only class="coolbuttonarea" block header>
+				<metal-is-admin fancy class="coolbuttonarea">
 					<button @click=${handlePurgeClick}>Purge all questions</button>
-				</metal-admin-only>
+				</metal-is-admin>
 
 				<div class="posting-area">
 					<slot name="post">

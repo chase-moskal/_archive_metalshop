@@ -21,7 +21,7 @@ export const styles = css`
 		display: none;
 	}
 
-	:host > metal-admin-only {
+	:host > metal-is-admin {
 		flex: 1 1 auto;
 		align-self: center;
 		width: 100%;

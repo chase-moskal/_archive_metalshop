@@ -10,10 +10,13 @@ import {MetalProfile} from "../../components/metal-profile.js"
 import {MetalLiveshow} from "../../components/metal-liveshow.js"
 import {MetalSettings} from "../../components/metal-settings.js"
 import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
+import {MetalCountdown} from "../../components/metal-countdown.js"
+import {MetalQuestions} from "../../components/metal-questions.js"
 import {MetalAdminMode} from "../../components/metal-admin-mode.js"
-import {MetalAdminOnly} from "../../components/metal-admin-only.js"
-import {MetalCountdown} from "../../components/countdown/metal-countdown.js"
-import {MetalQuestions} from "../../components/questions/metal-questions.js"
+import {MetalIsAdmin} from "../../components/metal-is-admin.js"
+import {MetalIsPremium} from "../../components/metal-is-premium.js"
+import {MetalButtonAuth} from "../../components/metal-button-auth.js"
+import {MetalIsLoggedin} from "../../components/metal-is-loggedin.js"
 
 export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
@@ -25,14 +28,18 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		saveProfile: supermodel.details.saveProfile,
 		settingsLoad: supermodel.details.settingsLoad,
 	}
+	const accountShare = () => <AccountShare>{
+		login: supermodel.auth.login,
+		logout: supermodel.auth.logout,
+		authLoad: supermodel.auth.authLoad,
+	}
 	return {
 		IronLoading,
 		MetalAvatar,
-		MetalAccount: share(MetalAccount, () => (<AccountShare>{
-			login: supermodel.auth.login,
-			logout: supermodel.auth.logout,
-			authLoad: supermodel.auth.authLoad,
-		})),
+		MetalAccount: share(MetalAccount, accountShare),
+		MetalIsPremium: share(MetalIsPremium, accountShare),
+		MetalButtonAuth: share(MetalButtonAuth, accountShare),
+		MetalIsLoggedin: share(MetalIsLoggedin, accountShare),
 		MetalProfile: share(MetalProfile, detailsShare),
 		MetalSettings: share(MetalSettings, detailsShare),
 		MetalCountdown: share(MetalCountdown, () => (<CountdownShare>{
@@ -65,7 +72,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			settingsLoad: supermodel.details.settingsLoad,
 			setAdminMode: supermodel.details.setAdminMode,
 		})),
-		MetalAdminOnly: share(MetalAdminOnly, () => (<AdminOnlyShare>{
+		MetalIsAdmin: share(MetalIsAdmin, () => (<AdminOnlyShare>{
 			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
 		})),

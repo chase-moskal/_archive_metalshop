@@ -31,7 +31,7 @@ export const styles = css`
 		opacity: 0.5;
 	}
 
-	metal-admin-only {
+	metal-is-admin {
 		margin-top: 0.5em;
 	}
 
