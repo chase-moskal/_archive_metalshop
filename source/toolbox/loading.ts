@@ -106,7 +106,7 @@ export function meta(...loads: Load<any>[]): Load<void> {
 				: none()
 }
 
-export function meta2(...loads: Load<any>[]) {
+export function meta2(...loads: Load<any>[]): Load<void> {
 	const {allNone, anyError, anyLoading} = metameta(...loads)
 	return anyError
 		? error()

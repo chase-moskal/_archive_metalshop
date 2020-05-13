@@ -27,23 +27,21 @@ export class MetalIsAdmin extends MetalshopComponent<AdminOnlyShare> {
 	@property({type: Boolean, reflect: true}) ["fancy"]: boolean
 	@property({type: Boolean, reflect: true}) ["admin"]: boolean = false
 	@property({type: Boolean, reflect: true}) ["not-admin"]: boolean = true
-	@property({type: Object}) private load = loading.load<any>()
+	@property({type: Boolean}) private load = loading.load<void>()
 
 	async autorun() {
 		const {authLoad, settingsLoad} = this.share
-		this.load = loading.meta2(authLoad, settingsLoad)
-		const authReady = loading.isReady(authLoad)
-		const settingsReady = loading.isReady(settingsLoad)
 
-		if (authReady && settingsReady) {
-			const {getAuthContext} = loading.payload(authLoad)
-			const settings = loading.payload(settingsLoad)
-			const {user} = await getAuthContext()
+		const auth = loading.payload(authLoad)
+		const settings = loading.payload(settingsLoad)
+		const user = auth?.user
+
+		this["admin"] = false
+		this["not-admin"] = !this["admin"]
+		this.load = loading.meta2(authLoad, settingsLoad)
+
+		if (auth && settings || user) {
 			this["admin"] = !!user?.claims?.admin && !!settings?.admin?.actAsAdmin
-			this["not-admin"] = !this["admin"]
-		}
-		else {
-			this["admin"] = false
 			this["not-admin"] = !this["admin"]
 		}
 
