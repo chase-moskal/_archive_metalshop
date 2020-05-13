@@ -45,39 +45,67 @@ button.cancel {
 	background: #6b222296;
 }
 
-.panel + * {
-	margin-top: 0.5em;
-}
-
-.panel > * + * {
-	margin-top: 0.5em;
-}
-
-.panel.premium .banner {
+iron-loading {
 	display: flex;
-	width: 100%;
 	flex-direction: row;
-	align-items: center;
+	width: 100%;
 }
 
-.panel.premium .banner * {
+iron-loading > * {
+	flex: 0 1 auto;
+}
+
+iron-loading > * + * {
+	margin-left: 1em;
+}
+
+.panel {
+	display: flex;
+	align-items: flex-start;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+
+.panel > * {
 	flex: 0 0 auto;
 }
 
-.panel.premium .banner svg {
-	width: 5em;
-	height: 5em;
-	border-radius: 5em;
+.panel.premium {
+	width: 6em;
 	color: var(--premium-color, yellow);
+}
+
+.panel.no-premium {
+	width: 8em;
+}
+
+.panel.subscription,
+.panel.no-subscription {
+	flex-grow: 1;
+	justify-content: center;
+}
+
+.panel.premium svg {
+	width: 6em;
+	height: 6em;
+	border-radius: 6em;
 	background: var(--premium-background, rgba(255,255, 64, 0.5));
 }
 
-.panel.premium .banner h3 {
-	padding: 1em;
+.panel.premium h3 {
+	font-size: 1em;
+	text-align: center;
+	width: 100%;
+}
+
+.panel.no-premium h3 {
+	font-size: 1em;
+	font-weight: inherit;
 }
 
 .buttonbar {
 	width: 100%;
+	margin: 0.4em auto;
 }
 
 .buttonbar.right {

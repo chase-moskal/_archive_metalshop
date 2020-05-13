@@ -7,9 +7,15 @@ import {registerComponents} from "./toolbox/register-components.js"
 import {demoComponents} from "./components/demos/all-demo-components.js"
 
 function modifyMetalConfigBasedOnQueryParams() {
-	const query = parseQuery<{mock: string; dev: string}>()
+	const query = parseQuery<{mock: string; dev: string; menu: string}>()
 	const config = document.querySelector("metal-config")
 	const attr = (key: string, value: string) => config.setAttribute(key, value)
+	if (query.menu !== undefined) {
+		setTimeout(() =>{
+			const menuDisplay = document.querySelector("menu-system > menu-display:nth-child(1)")
+			;(<any>menuDisplay).toggle()
+		}, 0)
+	}
 	if (query.mock !== undefined) {
 		attr("mock", query.mock)
 	}

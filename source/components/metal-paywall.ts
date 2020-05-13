@@ -31,10 +31,8 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 	private renderPanelPremium() {
 		return html`
 			<div class="panel premium">
-				<div class="banner">
-					${starIcon}
-					<h3>You are Premium!</h3>
-				</div>
+				${starIcon}
+				<h3>Premium</h3>
 			</div>
 		`
 	}
@@ -53,7 +51,7 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 		return html`
 			<div class="panel subscription">
 				<h3>Billing subscription is active</h3>
-				<p>${brand} card ending in ${last4}, card expires ${expireYear}/${expireMonth}</p>
+				<p>${brand} ends in ${last4} expires ${expireYear}/${expireMonth}</p>
 				<div class="buttonbar">
 					<button class="update" @click=${this.handleUpdatePremiumClick}>
 						Update
@@ -68,17 +66,28 @@ export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 
 	private renderPanelNoSubscription () {
 		const {premiumExpires} = this.share
+		const days = (() => {
+			if (!premiumExpires) return null
+			const duration = premiumExpires - Date.now()
+			return Math.ceil(duration / (1000 * 60 * 60 * 24))
+		})()
+		function calculateDays(premiumExpires: number) {
+			if (!premiumExpires) return null
+			const duration = premiumExpires - Date.now()
+			const days = Math.ceil(duration / (1000 * 60 * 60 * 24))
+			return html`<p>Remaining: ${days} day${days === 1 ? "" : "s"}</p>`
+		}
 		return html`
 			<div class="panel no-subscription">
 				<p>No active billing subscription</p>
-				${premiumExpires ? (() => {
-					const duration = premiumExpires - Date.now()
-					const days = Math.ceil(duration / (1000 * 60 * 60 * 24))
-					return html`<p>Remaining: ${days} day${days === 1 ? "" : "s"}</p>`
-				})() : null}
-				<button class="subscribe" @click=${this.handleCheckoutPremiumClick}>
-					Subscribe
-				</button>
+				${days
+					? html`<p>Remaining: ${days} day${days === 1 ? "": "s"}</p>`
+					: null}
+				<div class="buttonbar">
+					<button class="subscribe" @click=${this.handleCheckoutPremiumClick}>
+						Subscribe
+					</button>
+				</div>
 			</div>
 		`
 	}

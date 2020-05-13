@@ -34,7 +34,7 @@ metal-avatar {
 .container > div {
 	flex: 1 1 auto;
 	display: flex;
-	padding: 0.5em;
+	margin-left: 1em;
 	flex-direction: column;
 	justify-content: center;
 }

@@ -176,32 +176,32 @@ export const makeMetalMocks = async({
 		}
 	}
 
-	// TODO latency
-	// adding mock latency
-	{
-		const lag = <T extends (...args: any[]) => Promise<any>>(func: T) => {
-			return async function(...args: any[]) {
-				const ms = (Math.random() * 600) + 100
-				console.log(`mock lag added: ${func.name} by ${ms.toFixed(0)} milliseconds`)
-				await nap(ms)
-				return func.apply(this, args)
-			}
-		}
+	// // TODO latency
+	// // adding mock latency
+	// {
+	// 	const lag = <T extends (...args: any[]) => Promise<any>>(func: T) => {
+	// 		return async function(...args: any[]) {
+	// 			const ms = (Math.random() * 600) + 100
+	// 			console.log(`mock lag added: ${func.name} by ${ms.toFixed(0)} milliseconds`)
+	// 			await nap(ms)
+	// 			return func.apply(this, args)
+	// 		}
+	// 	}
 
-		authVanguard.getUser = lag(authVanguard.getUser)
-		authVanguard.setClaims = lag(authVanguard.setClaims)
-		authVanguard.createUser = lag(authVanguard.createUser)
-		profileMagistrate.getProfile = lag(profileMagistrate.getProfile)
-		profileMagistrate.setProfile = lag(profileMagistrate.setProfile)
-		authExchanger.authenticateViaGoogle = lag(authExchanger.authenticateViaGoogle)
-		authExchanger.authorize = lag(authExchanger.authorize)
-		questionsBureau.fetchQuestions = lag(questionsBureau.fetchQuestions)
-		settingsSheriff.fetchSettings = lag(settingsSheriff.fetchSettings)
-		settingsSheriff.setAdminMode = lag(settingsSheriff.setAdminMode)
-		paywallLiaison.checkoutPremium = lag(paywallLiaison.checkoutPremium)
-		paywallLiaison.cancelPremium = lag(paywallLiaison.cancelPremium)
-		paywallLiaison.updatePremium = lag(paywallLiaison.updatePremium)
-	}
+	// 	authVanguard.getUser = lag(authVanguard.getUser)
+	// 	authVanguard.setClaims = lag(authVanguard.setClaims)
+	// 	authVanguard.createUser = lag(authVanguard.createUser)
+	// 	profileMagistrate.getProfile = lag(profileMagistrate.getProfile)
+	// 	profileMagistrate.setProfile = lag(profileMagistrate.setProfile)
+	// 	authExchanger.authenticateViaGoogle = lag(authExchanger.authenticateViaGoogle)
+	// 	authExchanger.authorize = lag(authExchanger.authorize)
+	// 	questionsBureau.fetchQuestions = lag(questionsBureau.fetchQuestions)
+	// 	settingsSheriff.fetchSettings = lag(settingsSheriff.fetchSettings)
+	// 	settingsSheriff.setAdminMode = lag(settingsSheriff.setAdminMode)
+	// 	paywallLiaison.checkoutPremium = lag(paywallLiaison.checkoutPremium)
+	// 	paywallLiaison.cancelPremium = lag(paywallLiaison.cancelPremium)
+	// 	paywallLiaison.updatePremium = lag(paywallLiaison.updatePremium)
+	// }
 
 	return {
 		logger,
