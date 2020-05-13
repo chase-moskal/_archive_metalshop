@@ -81,20 +81,38 @@ export const isLoading = (load: Load<any>) => load.state === LoadState.Loading
 export const isError = (load: Load<any>) => load.state === LoadState.Error
 export const isReady = (load: Load<any>) => load.state === LoadState.Ready
 
-export function meta(...loads: Load<any>[]): Load<void> {
+export function metameta(...loads: Load<any>[]) {
 	let allNone = true
 	let anyError = false
+	let anyLoading = false
 	let allReady = true
 	for (const load of loads) {
 		if (load.state !== LoadState.None) allNone = false
+		if (load.state === LoadState.Loading) anyLoading = true
 		if (load.state === LoadState.Error) anyError = true
 		if (load.state !== LoadState.Ready) allReady = false
 	}
+	return {allNone, anyError, anyLoading, allReady}
+}
+
+export function meta(...loads: Load<any>[]): Load<void> {
+	const {anyError, anyLoading, allReady} = metameta(...loads)
 	return anyError
 		? error()
-		: allReady
-			? ready()
+		: anyLoading
+			? loading()
+			: allReady
+				? ready()
+				: none()
+}
+
+export function meta2(...loads: Load<any>[]) {
+	const {allNone, anyError, anyLoading} = metameta(...loads)
+	return anyError
+		? error()
+		: anyLoading
+			? loading()
 			: allNone
 				? none()
-				: loading()
+				: ready()
 }

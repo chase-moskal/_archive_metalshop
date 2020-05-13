@@ -1,5 +1,6 @@
 
 import {autorun} from "mobx"
+import {MetalOptions, Supermodel} from "../../interfaces.js"
 
 import {AuthModel} from "../../models/auth-model.js"
 import {PaywallModel} from "../../models/paywall-model.js"
@@ -7,7 +8,6 @@ import {DetailsModel} from "../../models/details-model.js"
 import {LiveshowModel} from "../../models/liveshow-model.js"
 import {ScheduleModel} from "../../models/schedule-model.js"
 import {QuestionsModel} from "../../models/questions-model.js"
-import {MetalOptions, Supermodel} from "../../interfaces.js"
 
 export function prepareSupermodel({
 	logger,

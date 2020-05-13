@@ -31,10 +31,11 @@ export class MetalIsAdmin extends MetalshopComponent<AdminOnlyShare> {
 
 	async autorun() {
 		const {authLoad, settingsLoad} = this.share
-		this.load = loading.meta(authLoad, settingsLoad)
-		const loadingIsDone = loading.isReady(this.load)
+		this.load = loading.meta2(authLoad, settingsLoad)
+		const authReady = loading.isReady(authLoad)
+		const settingsReady = loading.isReady(settingsLoad)
 
-		if (loadingIsDone) {
+		if (authReady && settingsReady) {
 			const {getAuthContext} = loading.payload(authLoad)
 			const settings = loading.payload(settingsLoad)
 			const {user} = await getAuthContext()

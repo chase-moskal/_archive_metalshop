@@ -8,15 +8,6 @@
 		<link rel="stylesheet" href="demo.css"/>
 		<script type="importmap-shim" src="dist/importmap.json"></script>
 		<script async defer type="module-shim" src="dist/main.js"></script>
-		<script async defer type="module-shim">
-			import * as loading from "./dist/toolbox/loading.js"
-			const details = document.querySelector("[data-demo='iron-loading']")
-			const ironLoading = details.querySelector("iron-loading")
-			details.querySelector("button[data-state=none]").onclick = () => ironLoading.load = loading.none()
-			details.querySelector("button[data-state=loading]").onclick = () => ironLoading.load = loading.loading()
-			details.querySelector("button[data-state=error]").onclick = () => ironLoading.load = loading.error()
-			details.querySelector("button[data-state=ready]").onclick = () => ironLoading.load = loading.ready()
-		</script>
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
 		<!-- metalshop config -->
@@ -116,11 +107,13 @@
 							<p>you are logged in</p>
 							<p slot="not">you are logged out</p>
 						</metal-is-loggedin>
+						<br/>
 						<p><strong>&lt;metal-is-premium&gt;</strong></p>
 						<metal-is-premium initially-hidden>
 							<p>you are premium</p>
 							<p slot="not">you are NOT premium</p>
 						</metal-is-premium>
+						<br/>
 						<p><strong>&lt;metal-is-admin&gt;</strong></p>
 						<metal-is-admin fancy initially-hidden>
 							<p>you are admin</p>
@@ -134,13 +127,14 @@
 				</details>
 				<details data-demo="iron-loading">
 					<summary>&lt;iron-loading&gt;</summary>
-					<button data-state="none">none</button>
+					<demo-iron-loading></demo-iron-loading>
+					<!-- <button data-state="none">none</button>
 					<button data-state="loading">loading</button>
 					<button data-state="error">error</button>
 					<button data-state="ready">ready</button>
 					<iron-loading initially-hidden>
 						<p>demo: ready</p>
-					</iron-loading>
+					</iron-loading> -->
 				</details>
 				<details>
 					<summary>&lt;metal-questions&gt;</summary>

@@ -10,7 +10,6 @@ import {openCheckoutPopup} from "authoritarian/dist/business/paywall/checkout-po
 import {MetalConfig, MetalOptions} from "../../interfaces.js"
 import {AuthoritarianStartupError} from "../../system/errors.js"
 import {decodeAccessToken} from "../../system/decode-access-token.js"
-
 import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
