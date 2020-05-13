@@ -1,6 +1,6 @@
 
-import {MetalConfig} from "../../interfaces.js"
-import {AuthoritarianStartupError} from "../../system/errors.js"
+import {MetalConfig} from "../interfaces.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 

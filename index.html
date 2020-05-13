@@ -9,46 +9,17 @@
 		<link rel="stylesheet" href="demo.css"/>
 
 		<script type="importmap-shim" src="dist/importmap.json"></script>
-		<script async defer type="module-shim" src="dist/main.js"></script>
+		<script async defer type="module-shim" src="dist/start-metalshop-demo.js"></script>
 		<script async defer src="https://unpkg.com/es-module-shims@0.4.6/dist/es-module-shims.js"></script>
 
-		<!-- metalshop config -->
+		<!-- metalshop is configured by this element -->
 		<metal-config mock></metal-config>
-
-		<script type="module">
-			import {parseQuery} from "./dist/toolbox/parse-query.js"
-			~function() {
-				const query = parseQuery()
-				const config = document.querySelector("metal-config")
-				const set = (key, value) => config.setAttribute(key, value)
-
-				if (query.mock !== undefined) {
-					set("mock", query.mock)
-				}
-
-				if (query.dev !== undefined) {
-					if (query.dev === "minikube") {
-						set("auth-server", "http://auth.metaldev.chasemoskal.com")
-						set("profile-server", "http://profile.metaldev.chasemoskal.com")
-						set("questions-server", "http://questions.metaldev.chasemoskal.com")
-					}
-					else if (query.dev === "node") {
-						set("auth-server", "http://auth.metaldev.chasemoskal.com:8000")
-						set("profile-server", "http://profile.metaldev.chasemoskal.com:8001")
-						set("questions-server", "http://questions.metaldev.chasemoskal.com:8002")
-					}
-					else {
-						set("auth-server", "https://auth.metalback.chasemoskal.com")
-						set("profile-server", "https://profile.metalback.chasemoskal.com")
-						set("questions-server", "https://questions.metalback.chasemoskal.com")
-					}
-				}
-			}()
-		</script>
 	</head>
 	<body>
 		<header>
 			<h1>🤘 metalshop</h1>
+
+			<!-- menu system comes from the "menutown" library -->
 			<menu-system sticky initially-hidden>
 				<menu-display>
 
@@ -100,8 +71,13 @@
 				</section>
 			</section>
 			<section class="component-demos">
-				<h2>component demos <small><metal-admin-mode initially-hidden>Admin mode</metal-admin-mode></small></h2>
-				<details data-demo="is-testing">
+				<h2>
+					component demos
+					<small>
+						<metal-admin-mode initially-hidden>Admin mode</metal-admin-mode>
+					</small>
+				</h2>
+				<details>
 					<summary>&lt;metal-is-*&gt; components</summary>
 					<div>
 						<p><strong>&lt;metal-is-loggedin&gt;</strong></p>
@@ -123,20 +99,13 @@
 						</metal-is-admin>
 					</div>
 				</details>
-				<details data-demo="metal-button-auth">
+				<details>
 					<summary>&lt;metal-button-auth&gt;</summary>
 					<metal-button-auth></metal-button-auth>
 				</details>
-				<details data-demo="iron-loading">
+				<details>
 					<summary>&lt;iron-loading&gt;</summary>
 					<demo-iron-loading></demo-iron-loading>
-					<!-- <button data-state="none">none</button>
-					<button data-state="loading">loading</button>
-					<button data-state="error">error</button>
-					<button data-state="ready">ready</button>
-					<iron-loading initially-hidden>
-						<p>demo: ready</p>
-					</iron-loading> -->
 				</details>
 				<details>
 					<summary>&lt;metal-questions&gt;</summary>

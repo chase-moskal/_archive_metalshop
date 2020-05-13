@@ -23,9 +23,9 @@ import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
 import {AccessToken, LiveshowGovernorTopic, AccessPayload} from "authoritarian/dist/interfaces.js"
 
-import {nap} from "../../toolbox/nap.js"
-import {decodeAccessToken as defaultDecodeAccessToken} from "../../system/decode-access-token.js"
-import {TriggerAccountPopup, TriggerCheckoutPopup, MetalOptions, DecodeAccessToken} from "../../interfaces.js"
+import {nap} from "../toolbox/nap.js"
+import {decodeAccessToken as defaultDecodeAccessToken} from "../system/decode-access-token.js"
+import {TriggerAccountPopup, TriggerCheckoutPopup, MetalOptions, DecodeAccessToken} from "../interfaces.js"
 
 export const makeMetalMocks = async({
 		startAdmin,

@@ -5,8 +5,8 @@
 	"author": "Chase Moskal <chasemoskal@gmail.com>",
 	"license": "ISC",
 	"type": "module",
-	"main": "dist/main.js",
-	"module": "dist/main.js",
+	"main": "dist/start-metalshop.js",
+	"module": "dist/start-metalshop.js",
 	"files": [
 		"dist"
 	],

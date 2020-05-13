@@ -1,4 +1,6 @@
 
+import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
+
 import {makeAuthClients} from "authoritarian/dist/business/auth/auth-clients.js"
 import {makeProfileClients} from "authoritarian/dist/business/profile/profile-clients.js"
 import {makePaywallClients} from "authoritarian/dist/business/paywall/paywall-clients.js"
@@ -7,10 +9,9 @@ import {openVaultIframe} from "authoritarian/dist/business/auth/vault-popup/open
 import {openAccountPopup} from "authoritarian/dist/business/auth/account-popup/open-account-popup.js"
 import {openCheckoutPopup} from "authoritarian/dist/business/paywall/checkout-popup/open-checkout-popup.js"
 
-import {MetalConfig, MetalOptions} from "../../interfaces.js"
-import {AuthoritarianStartupError} from "../../system/errors.js"
-import {decodeAccessToken} from "../../system/decode-access-token.js"
-import {makeLogger} from "authoritarian/dist/toolbox/logger/make-logger.js"
+import {MetalConfig, MetalOptions} from "../interfaces.js"
+import {AuthoritarianStartupError} from "../system/errors.js"
+import {decodeAccessToken} from "../system/decode-access-token.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 

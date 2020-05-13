@@ -1,22 +1,25 @@
 
-import {share} from "../../framework/share.js"
-import {Supermodel, AccountShare, CountdownShare, PaywallShare, LiveshowShare, MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare, DetailsShare} from "../../interfaces.js"
+import {share} from "../framework/share.js"
+import {
+	Supermodel, AccountShare, CountdownShare, PaywallShare, LiveshowShare,
+	MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare, DetailsShare,
+} from "../interfaces.js"
 
-import {IronLoading} from "../../components/iron-loading.js"
-import {MetalAvatar} from "../../components/metal-avatar.js"
-import {MetalAccount} from "../../components/metal-account.js"
-import {MetalPaywall} from "../../components/metal-paywall.js"
-import {MetalProfile} from "../../components/metal-profile.js"
-import {MetalIsAdmin} from "../../components/metal-is-admin.js"
-import {MetalLiveshow} from "../../components/metal-liveshow.js"
-import {MetalSettings} from "../../components/metal-settings.js"
-import {MetalMyAvatar} from "../../components/metal-my-avatar.js"
-import {MetalCountdown} from "../../components/metal-countdown.js"
-import {MetalQuestions} from "../../components/metal-questions.js"
-import {MetalAdminMode} from "../../components/metal-admin-mode.js"
-import {MetalIsPremium} from "../../components/metal-is-premium.js"
-import {MetalButtonAuth} from "../../components/metal-button-auth.js"
-import {MetalIsLoggedin} from "../../components/metal-is-loggedin.js"
+import {IronLoading} from "../components/iron-loading.js"
+import {MetalAvatar} from "../components/metal-avatar.js"
+import {MetalAccount} from "../components/metal-account.js"
+import {MetalPaywall} from "../components/metal-paywall.js"
+import {MetalProfile} from "../components/metal-profile.js"
+import {MetalIsAdmin} from "../components/metal-is-admin.js"
+import {MetalLiveshow} from "../components/metal-liveshow.js"
+import {MetalSettings} from "../components/metal-settings.js"
+import {MetalMyAvatar} from "../components/metal-my-avatar.js"
+import {MetalCountdown} from "../components/metal-countdown.js"
+import {MetalQuestions} from "../components/metal-questions.js"
+import {MetalAdminMode} from "../components/metal-admin-mode.js"
+import {MetalIsPremium} from "../components/metal-is-premium.js"
+import {MetalButtonAuth} from "../components/metal-button-auth.js"
+import {MetalIsLoggedin} from "../components/metal-is-loggedin.js"
 
 export const wireComponentShares = (supermodel: Supermodel) => {
 	const detailsShare = () => <DetailsShare>{
