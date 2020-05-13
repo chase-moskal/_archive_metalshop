@@ -1,8 +1,9 @@
 
+import {MobxLitElement} from "@adobe/lit-mobx"
+
 import {Share} from "./share.js"
 import {theme} from "../system/theme.js"
 import {mixinStyles} from "./mixin-styles.js"
-import {MobxLitElement} from "@adobe/lit-mobx"
 import {mixinAutorun} from "./mixin-autorun.js"
 import {mixinInitiallyHidden} from "./mixin-initially-hidden.js"
 
