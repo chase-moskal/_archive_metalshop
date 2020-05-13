@@ -10,14 +10,15 @@ function modifyMetalConfigBasedOnQueryParams() {
 	const query = parseQuery<{mock: string; dev: string; menu: string}>()
 	const config = document.querySelector("metal-config")
 	const attr = (key: string, value: string) => config.setAttribute(key, value)
-	if (query.menu !== undefined) {
-		setTimeout(() =>{
-			const menuDisplay = document.querySelector("menu-system > menu-display:nth-child(1)")
-			;(<any>menuDisplay).toggle()
-		}, 0)
-	}
 	if (query.mock !== undefined) {
 		attr("mock", query.mock)
+		if (query.mock.includes("open")) {
+			setTimeout(() =>{
+				document.querySelector<any>(
+					"menu-system > menu-display:nth-child(1)"
+				)?.toggle()
+			}, 0)
+		}
 	}
 	if (query.dev !== undefined) {
 		// dev is running minikube local kubernetes cluster in dev mode
