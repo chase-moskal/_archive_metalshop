@@ -1,15 +1,8 @@
 
 import {AccountShare} from "../interfaces.js"
-import {MetalshopComponent, property, html, css} from "../framework/metalshop-component.js"
-
 import * as loading from "../toolbox/loading.js"
-import {mixinStyles} from "../framework/mixin-styles.js"
+import {MetalshopComponent, html} from "../framework/metalshop-component.js"
 
-const styles = css`
-
-`
-
- @mixinStyles(styles)
 export class MetalButtonAuth extends MetalshopComponent<AccountShare> {
 	onLoginClick: (event: MouseEvent) => void = () => this.share.login()
 	onLogoutClick: (event: MouseEvent) => void = () => this.share.logout()

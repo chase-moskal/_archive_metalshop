@@ -3,6 +3,7 @@ import {share} from "../framework/share.js"
 import {
 	Supermodel, AccountShare, CountdownShare, PaywallShare, LiveshowShare,
 	MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare, DetailsShare,
+	ButtonPremiumShare,
 } from "../interfaces.js"
 
 import {IronLoading} from "../components/iron-loading.js"
@@ -20,9 +21,10 @@ import {MetalAdminMode} from "../components/metal-admin-mode.js"
 import {MetalIsPremium} from "../components/metal-is-premium.js"
 import {MetalButtonAuth} from "../components/metal-button-auth.js"
 import {MetalIsLoggedin} from "../components/metal-is-loggedin.js"
+import {MetalButtonPremium} from "../components/metal-button-premium.js"
 
 export const wireComponentShares = (supermodel: Supermodel) => {
-	const detailsShare = () => <DetailsShare>{
+	const detailsShare = (): DetailsShare => ({
 		user: supermodel.auth.user,
 		authLoad: supermodel.auth.authLoad,
 		profile: supermodel.details.profile,
@@ -30,12 +32,22 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		profileLoad: supermodel.details.profileLoad,
 		saveProfile: supermodel.details.saveProfile,
 		settingsLoad: supermodel.details.settingsLoad,
-	}
-	const accountShare = () => <AccountShare>{
+	})
+	const accountShare = (): AccountShare => ({
 		login: supermodel.auth.login,
 		logout: supermodel.auth.logout,
 		authLoad: supermodel.auth.authLoad,
-	}
+	})
+	const paywallShare = (): PaywallShare => ({
+		authLoad: supermodel.auth.authLoad,
+		settingsLoad: supermodel.details.settingsLoad,
+		premiumClaim: supermodel.paywall.premiumClaim,
+		premiumExpires: supermodel.paywall.premiumExpires,
+		premiumSubscription: supermodel.paywall.premiumSubscription,
+		updatePremium: supermodel.paywall.updatePremium,
+		cancelPremium: supermodel.paywall.cancelPremium,
+		checkoutPremium: supermodel.paywall.checkoutPremium,
+	})
 	return {
 		IronLoading,
 		MetalAvatar,
@@ -45,41 +57,39 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		MetalIsLoggedin: share(MetalIsLoggedin, accountShare),
 		MetalProfile: share(MetalProfile, detailsShare),
 		MetalSettings: share(MetalSettings, detailsShare),
-		MetalCountdown: share(MetalCountdown, () => (<CountdownShare>{
+		MetalCountdown: share(MetalCountdown, (): CountdownShare => ({
 			events: supermodel.schedule.events,
 			authLoad: supermodel.auth.authLoad,
 			profileLoad: supermodel.details.profileLoad,
 			loadEvent: supermodel.schedule.loadEvent,
 			saveEvent: supermodel.schedule.saveEvent,
 		})),
-		MetalPaywall: share(MetalPaywall, () => (<PaywallShare>{
+		MetalPaywall: share(MetalPaywall, paywallShare),
+		MetalButtonPremium: share(MetalButtonPremium, (): ButtonPremiumShare => ({
 			authLoad: supermodel.auth.authLoad,
-			settingsLoad: supermodel.details.settingsLoad,
-			premiumClaim: supermodel.paywall.premiumClaim,
-			premiumExpires: supermodel.paywall.premiumExpires,
-			premiumSubscription: supermodel.paywall.premiumSubscription,
-			updatePremium: supermodel.paywall.updatePremium,
-			cancelPremium: supermodel.paywall.cancelPremium,
+			login: supermodel.auth.login,
 			checkoutPremium: supermodel.paywall.checkoutPremium,
+			premiumClaim: supermodel.paywall.premiumClaim,
+			premiumSubscription: supermodel.paywall.premiumSubscription,
 		})),
-		MetalLiveshow: share(MetalLiveshow, () => (<LiveshowShare>{
+		MetalLiveshow: share(MetalLiveshow, (): LiveshowShare => ({
 			authLoad: supermodel.auth.authLoad,
 			makeViewModel: supermodel.liveshow.makeViewModel,
 		})),
-		MetalMyAvatar: share(MetalMyAvatar, () => (<MyAvatarShare>{
+		MetalMyAvatar: share(MetalMyAvatar, (): MyAvatarShare => ({
 			profile: supermodel.details.profile,
 			premium: supermodel.paywall.premiumClaim,
 		})),
-		MetalAdminMode: share(MetalAdminMode, () => (<AdminModeShare>{
+		MetalAdminMode: share(MetalAdminMode, (): AdminModeShare => ({
 			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
 			setAdminMode: supermodel.details.setAdminMode,
 		})),
-		MetalIsAdmin: share(MetalIsAdmin, () => (<AdminOnlyShare>{
+		MetalIsAdmin: share(MetalIsAdmin, (): AdminOnlyShare => ({
 			authLoad: supermodel.auth.authLoad,
 			settingsLoad: supermodel.details.settingsLoad,
 		})),
-		MetalQuestions: share(MetalQuestions, () => (<QuestionsShare>{
+		MetalQuestions: share(MetalQuestions, (): QuestionsShare => ({
 			user: supermodel.auth.user,
 			profile: supermodel.details.profile,
 			uiBureau: supermodel.questions.uiBureau,

@@ -153,6 +153,10 @@ export enum PrivilegeLevel {
 // component shares
 //
 
+export interface SettingsPremiumSubscription {
+	card: CardClues
+}
+
 export interface AccountShare {
 	login: () => Promise<void>
 	logout: () => Promise<void>
@@ -162,6 +166,14 @@ export interface AccountShare {
 export interface MyAvatarShare {
 	profile: Profile
 	premium: boolean
+}
+
+export interface ButtonPremiumShare {
+	premiumClaim: boolean
+	premiumSubscription: SettingsPremiumSubscription
+	authLoad: loading.Load<AuthPayload>
+	checkoutPremium(): Promise<void>
+	login: () => Promise<void>
 }
 
 export interface AdminModeShare {
@@ -190,9 +202,7 @@ export interface PaywallShare {
 	settingsLoad: loading.Load<Settings>
 	premiumClaim: boolean
 	premiumExpires: number
-	premiumSubscription: {
-		card: CardClues
-	}
+	premiumSubscription: SettingsPremiumSubscription
 	checkoutPremium(): Promise<void>
 	updatePremium(): Promise<void>
 	cancelPremium(): Promise<void>
