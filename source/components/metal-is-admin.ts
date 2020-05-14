@@ -27,7 +27,7 @@ export class MetalIsAdmin extends MetalshopComponent<AdminOnlyShare> {
 	@property({type: Boolean, reflect: true}) ["fancy"]: boolean
 	@property({type: Boolean, reflect: true}) ["admin"]: boolean = false
 	@property({type: Boolean, reflect: true}) ["not-admin"]: boolean = true
-	@property({type: Boolean}) private load = loading.load<void>()
+	@property({type: Boolean}) private load = loading.load<true>()
 
 	async autorun() {
 		const {authLoad, settingsLoad} = this.share

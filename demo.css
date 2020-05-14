@@ -79,7 +79,6 @@ body > header > * {
 main {
 	padding: 1rem;
 	background: rgba(255,255,255, 0.1);
-	padding-bottom: 50rem;
 	box-shadow: 2px 4px 25px rgba(0,0,0, 0.3);
 }
 
@@ -166,11 +165,11 @@ details[open] > summary {
 	background: rgba(0,0,0, 0.8);
 }
 
-details > * {
+details > div {
 	margin: auto;
 }
 
-details[open] > * {
+details[open] > div {
 	animation: sweep 1s ease-out;
 }
 
@@ -239,8 +238,9 @@ menu-system metal-account > * {
 	box-shadow: 1px 4px 3px rgba(0,0,0, 0.1);
 }
 
-metal-settings {
-	padding: 0.5rem 1rem;
+metal-account metal-settings {
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
 }
 
 metal-paywall {

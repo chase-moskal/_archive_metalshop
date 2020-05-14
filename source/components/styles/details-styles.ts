@@ -72,10 +72,4 @@ h3 {
 	}
 }
 
-metal-admin-mode {
-	display: block;
-	padding-left: 1em;
-	padding-right: 1em;
-}
-
 `

@@ -1,36 +1,35 @@
 
-import {sortQuestions} from "./questions/helpers.js"
-import {styles} from "./styles/metal-questions-styles.js"
 import * as loading from "../toolbox/loading.js"
-import {renderQuestion} from "./questions/render-question.js"
+import {sortQuestions} from "./questions/helpers.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {renderQuestionEditor} from "./questions/render-question-editor.js"
+import {styles} from "./styles/metal-questions-styles.js"
+import {renderQuestion} from "./questions/render-question.js"
 import {QuestionsShare, PrepareHandleLikeClick} from "../interfaces.js"
+import {renderQuestionEditor} from "./questions/render-question-editor.js"
 import {QuestionDraft, QuestionAuthor} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, property, html, PropertyValues} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
 export class MetalQuestions extends MetalshopComponent<QuestionsShare> {
-
-	 @property({type: String, reflect: true})
-	["board"]: string
-
-	 @property({type: String})
-	draftText: string = ""
-
-	 @property({type: Boolean})
-	adminMode: boolean = false
-
-	 @property({type: Number})
-	minCharacterLimit: number = 10
-
-	 @property({type: Number})
-	maxCharacterLimit: number = 240
-
-	 @property({type: Object})
-	private load: loading.Load<null>
-
 	private lastBoard: string = null
+
+	@property({type: String, reflect: true})
+		["board"]: string
+
+	@property({type: String})
+		draftText: string = ""
+
+	@property({type: Boolean})
+		adminMode: boolean = false
+
+	@property({type: Number})
+		minCharacterLimit: number = 10
+
+	@property({type: Number})
+		maxCharacterLimit: number = 240
+
+	@property({type: Object})
+		private load: loading.Load<null>
 
 	firstUpdated(props) {
 		super.firstUpdated(props)

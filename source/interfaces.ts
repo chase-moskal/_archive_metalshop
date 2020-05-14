@@ -172,10 +172,11 @@ export interface MyAvatarShare {
 
 export interface ButtonPremiumShare {
 	premiumClaim: boolean
-	premiumSubscription: SettingsPremiumSubscription
 	authLoad: loading.Load<AuthPayload>
+	settingsLoad: loading.Load<Settings>
+	premiumSubscription: SettingsPremiumSubscription
+	login(): Promise<void>
 	checkoutPremium(): Promise<void>
-	login: () => Promise<void>
 }
 
 export interface AdminModeShare {

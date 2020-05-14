@@ -102,40 +102,64 @@
 				</details>
 				<details>
 					<summary>&lt;metal-button-*&gt;</summary>
-					<metal-button-auth></metal-button-auth>
-					<metal-button-premium></metal-button-premium>
+					<div>
+						<metal-button-auth></metal-button-auth>
+						<metal-button-premium></metal-button-premium>
+					</div>
 				</details>
 				<details>
 					<summary>&lt;iron-loading&gt;</summary>
-					<demo-iron-loading></demo-iron-loading>
+					<div>
+						<demo-iron-loading></demo-iron-loading>
+					</div>
 				</details>
 				<details>
 					<summary>&lt;metal-questions&gt;</summary>
-					<metal-questions board="qa1" initially-hidden>
-						<h2 slot="post">Post your question!</h2>
-						<h2 slot="rate">Rate other submitted questions</h2>
-					</metal-questions>
+					<div>
+						<metal-questions board="qa1" initially-hidden>
+							<h2 slot="post">Post your question!</h2>
+							<h2 slot="rate">Rate other submitted questions</h2>
+						</metal-questions>
+					</div>
 				</details>
 				<details>
 					<summary>&lt;metal-countdown&gt;</summary>
-					<metal-countdown event-name="countdown1" initially-hidden>
-						<h2>Countdown to next stream</h2>
-					</metal-countdown>
+					<div>
+						<metal-countdown event-name="countdown1" initially-hidden>
+							<h2>Countdown to next stream</h2>
+						</metal-countdown>
+					</div>
 				</details>
 				<details>
 					<summary>&lt;metal-liveshow&gt;</summary>
-					<metal-liveshow video-name="livestream" initially-hidden>
-						<h2>Welcome to the private livestream!</h2>
-						<p>You are logged in as a premium supporter</p>
-					</metal-liveshow>
+					<div>
+						<metal-liveshow video-name="livestream" initially-hidden>
+							<h2>Welcome to the private livestream!</h2>
+							<p>You are logged in as a premium supporter</p>
+						</metal-liveshow>
+					</div>
 				</details>
 				<details>
 					<summary>&lt;metal-account&gt;</summary>
-					<metal-account initially-hidden>
-						<h2 slot="top">Your account</h2>
+					<div>
+						<metal-account initially-hidden>
+							<h2 slot="top">Your account</h2>
+							<metal-profile></metal-profile>
+							<metal-settings></metal-settings>
+							<metal-paywall></metal-paywall>
+						</metal-account>
+					</div>
+				</details>
+				<details>
+					<summary>&lt;metal-account&gt; disassembled</summary>
+					<div>
+						<br/><h3>profile:</h3>
 						<metal-profile></metal-profile>
+						<br/><h3>settings:</h3>
+						<metal-settings></metal-settings>
+						<br/><h3>paywall:</h3>
 						<metal-paywall></metal-paywall>
-					</metal-account>
+					</div>
 				</details>
 			</section>
 		</main>

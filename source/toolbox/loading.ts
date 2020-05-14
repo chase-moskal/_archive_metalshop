@@ -95,18 +95,18 @@ export function metameta(...loads: Load<any>[]) {
 	return {allNone, anyError, anyLoading, allReady}
 }
 
-export function meta(...loads: Load<any>[]): Load<void> {
+export function meta(...loads: Load<any>[]): Load<true> {
 	const {anyError, anyLoading, allReady} = metameta(...loads)
 	return anyError
 		? error()
 		: anyLoading
 			? loading()
 			: allReady
-				? ready()
+				? ready(true)
 				: none()
 }
 
-export function meta2(...loads: Load<any>[]): Load<void> {
+export function meta2(...loads: Load<any>[]): Load<true> {
 	const {allNone, anyError, anyLoading} = metameta(...loads)
 	return anyError
 		? error()
@@ -114,5 +114,5 @@ export function meta2(...loads: Load<any>[]): Load<void> {
 			? loading()
 			: allNone
 				? none()
-				: ready()
+				: ready(true)
 }

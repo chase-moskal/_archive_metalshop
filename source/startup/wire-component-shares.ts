@@ -69,6 +69,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		MetalButtonPremium: share(MetalButtonPremium, (): ButtonPremiumShare => ({
 			authLoad: supermodel.auth.authLoad,
 			premiumClaim: supermodel.paywall.premiumClaim,
+			settingsLoad: supermodel.settings.settingsLoad,
 			premiumSubscription: supermodel.paywall.premiumSubscription,
 			login: supermodel.auth.login,
 			checkoutPremium: supermodel.paywall.checkoutPremium,
