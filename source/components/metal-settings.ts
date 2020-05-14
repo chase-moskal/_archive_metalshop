@@ -1,11 +1,11 @@
 
-import {DetailsShare} from "../interfaces.js"
+import {SettingsShare} from "../interfaces.js"
 import {styles} from "./styles/details-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
-export class MetalSettings extends MetalshopComponent<DetailsShare> {
+export class MetalSettings extends MetalshopComponent<SettingsShare> {
 
 	 @property({type: Boolean, reflect: true})
 	["hidden"]: boolean = true

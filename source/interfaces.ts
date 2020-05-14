@@ -20,10 +20,11 @@ import {
 } from "authoritarian/dist/interfaces.js"
 
 import {AuthModel} from "./models/auth-model.js"
-import {DetailsModel} from "./models/details-model.js"
+import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {QuestionsModel} from "./models/questions-model.js"
+import {SettingsModel} from "./models/settings-model.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
 
 import * as loading from "./toolbox/loading.js"
@@ -119,8 +120,9 @@ export type PrepareHandleLikeClick = (o: {
 
 export interface Supermodel {
 	auth: AuthModel
-	details: DetailsModel
 	paywall: PaywallModel
+	profile: ProfileModel
+	settings: SettingsModel
 	schedule: ScheduleModel
 	liveshow: LiveshowModel
 	questions: QuestionsModel
@@ -187,14 +189,19 @@ export interface AdminOnlyShare {
 	settingsLoad: loading.Load<Settings>
 }
 
-export interface DetailsShare {
+export interface ProfileShare {
 	user: User
 	profile: Profile
-	settings: Settings
 	authLoad: loading.Load<AuthPayload>
 	profileLoad: loading.Load<Profile>
-	settingsLoad: loading.Load<Settings>
 	saveProfile: (profile: Profile) => Promise<void>
+}
+
+export interface SettingsShare {
+	user: User
+	settings: Settings
+	authLoad: loading.Load<AuthPayload>
+	settingsLoad: loading.Load<Settings>
 }
 
 export interface PaywallShare {

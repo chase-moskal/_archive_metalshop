@@ -1,6 +1,6 @@
 
 import {select} from "../toolbox/selects.js"
-import {DetailsShare} from "../interfaces.js"
+import {ProfileShare} from "../interfaces.js"
 import {styles} from "./styles/details-styles.js"
 import {makeDebouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
@@ -9,10 +9,10 @@ import {Profile, Claims} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, property, html} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
-export class MetalProfile extends MetalshopComponent<DetailsShare> {
+export class MetalProfile extends MetalshopComponent<ProfileShare> {
 
-	 @property({type: Object})
-	private changedProfile: Profile = null
+	@property({type: Object})
+		private changedProfile: Profile = null
 
 	private inputDebouncer = makeDebouncer({
 		delay: 1000,

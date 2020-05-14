@@ -12,11 +12,11 @@ import {MetalshopComponent, property, html, css} from "../framework/metalshop-co
  `)
 export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
 
-	 @property({type: Boolean})
-	private adminMode: boolean = false
+	@property({type: Boolean})
+		private adminMode: boolean = false
 
-	 @property({type: Boolean})
-	private adminClaim: boolean = false
+	@property({type: Boolean})
+		private adminClaim: boolean = false
 
 	async autorun() {
 		const {authLoad, settingsLoad} = this.share

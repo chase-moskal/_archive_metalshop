@@ -3,19 +3,22 @@ import {observable, action, computed} from "mobx"
 import {PaywallLiaisonTopic} from "authoritarian/dist/interfaces.js"
 
 import {AuthModel} from "./auth-model.js"
-import {DetailsModel} from "./details-model.js"
+import {ProfileModel} from "./profile-model.js"
+import {SettingsModel} from "./settings-model.js"
 import {TriggerCheckoutPopup} from "../interfaces.js"
 
 export class PaywallModel {
 	@observable private readonly auth: AuthModel
-	@observable private readonly details: DetailsModel
+	@observable private readonly profile: ProfileModel
+	@observable private readonly settings: SettingsModel
 	private readonly checkoutPopupUrl: string
 	private readonly paywallLiaison: PaywallLiaisonTopic
 	private readonly triggerCheckoutPopup: TriggerCheckoutPopup
 
 	constructor(options: {
 			auth: AuthModel
-			details: DetailsModel
+			profile: ProfileModel
+			settings: SettingsModel
 			checkoutPopupUrl: string
 			paywallLiaison: PaywallLiaisonTopic
 			triggerCheckoutPopup: TriggerCheckoutPopup
@@ -30,12 +33,12 @@ export class PaywallModel {
 
 	 @computed
 	get premiumExpires(): number {
-		return this.details?.settings?.premium?.expires
+		return this.settings?.settings?.premium?.expires
 	}
 
 	 @computed
 	get premiumSubscription() {
-		return this.details?.settings?.billing?.premiumSubscription
+		return this.settings?.settings?.billing?.premiumSubscription
 	}
 
 	 @action.bound
