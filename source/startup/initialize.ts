@@ -25,7 +25,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 	//
 
 	if (config.mock !== null) {
-		const {makeMetalMocks} = await import("./make-metal-mocks.js")
+		const {makeMocks: makeMetalMocks} = await import("./make-mocks.js")
 		options = await makeMetalMocks({
 			logger: options.logger,
 			startAdmin: config.mock?.includes("admin"),

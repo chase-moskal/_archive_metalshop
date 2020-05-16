@@ -28,7 +28,7 @@ import {nap} from "../toolbox/nap.js"
 import {decodeAccessToken as defaultDecodeAccessToken} from "../system/decode-access-token.js"
 import {TriggerAccountPopup, TriggerCheckoutPopup, MetalOptions, DecodeAccessToken} from "../interfaces.js"
 
-export const makeMetalMocks = async({
+export const makeMocks = async({
 		startAdmin,
 		startPremium,
 		startLoggedIn,

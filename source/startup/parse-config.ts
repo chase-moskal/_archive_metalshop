@@ -4,8 +4,8 @@ import {AuthoritarianStartupError} from "../system/errors.js"
 
 const err = (message: string) => new AuthoritarianStartupError(message)
 
-export function parse(element: HTMLElement): MetalConfig {
-	if (!element) throw err(`<metal-config> required, missing`)
+export function parseConfig(element: HTMLElement): MetalConfig {
+	if (!element) throw err(`metal config required`)
 	const config = {}
 	for (const {name, value} of Array.from(element.attributes)) {
 		config[name] = value

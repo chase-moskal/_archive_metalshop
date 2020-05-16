@@ -1,20 +1,23 @@
 
+const metalConfigTagName = "metal-config"
+
+import {theme} from "./system/theme.js"
 import {MetalOptions} from "./interfaces.js"
 import {optionsFromDom} from "./startup/options-from-dom.js"
-import {prepareSupermodel} from "./startup/prepare-supermodel.js"
+import {themeComponents} from "./framework/theme-components.js"
+import {assembleSupermodel} from "./startup/assemble-supermodel.js"
 import {wireComponentShares} from "./startup/wire-component-shares.js"
-
-const metalConfigTagName = "metal-config"
 
 export async function installMetalshop(options?: MetalOptions) {
 	options = options || await optionsFromDom(metalConfigTagName)
-
-	const supermodel = prepareSupermodel(options)
-	const components = wireComponentShares(supermodel)
-
-	async function start() {
-		await supermodel.auth.useExistingLogin()
+	const supermodel = assembleSupermodel(options)
+	const wiredComponents = wireComponentShares(supermodel)
+	const components = themeComponents(theme, wiredComponents)
+	return {
+		components,
+		supermodel,
+		async start() {
+			await supermodel.auth.useExistingLogin()
+		},
 	}
-
-	return {start, components, supermodel}
 }

@@ -10,7 +10,7 @@ import {ScheduleModel} from "../models/schedule-model.js"
 import {SettingsModel} from "../models/settings-model.js"
 import {QuestionsModel} from "../models/questions-model.js"
 
-export function prepareSupermodel({
+export function assembleSupermodel({
 	logger,
 	tokenStore,
 	paywallLiaison,

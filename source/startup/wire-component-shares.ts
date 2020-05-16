@@ -58,8 +58,8 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 		})),
 		MetalPaywall: share(MetalPaywall, (): PaywallShare => ({
 			authLoad: supermodel.auth.authLoad,
-			settingsLoad: supermodel.settings.settingsLoad,
 			premiumClaim: supermodel.paywall.premiumClaim,
+			settingsLoad: supermodel.settings.settingsLoad,
 			premiumExpires: supermodel.paywall.premiumExpires,
 			premiumSubscription: supermodel.paywall.premiumSubscription,
 			updatePremium: supermodel.paywall.updatePremium,
