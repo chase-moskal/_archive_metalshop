@@ -9,8 +9,8 @@ import {MetalshopComponent, html, property, TemplateResult} from "../framework/m
  @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {
 
-	 @property({type: Object})
-	paywallLoad: loading.Load<void> = loading.ready<void>()
+	@property({type: Object})
+		paywallLoad: loading.Load<void> = loading.ready<void>()
 
 	render() {
 		const {paywallLoad} = this

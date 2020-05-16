@@ -11,8 +11,8 @@ import {MetalshopComponent, property, html} from "../framework/metalshop-compone
  @mixinStyles(styles)
 export class MetalLiveshow extends MetalshopComponent<LiveshowShare> {
 
-	 @property({type: String, reflect: true})
-	["video-name"]: string
+	@property({type: String, reflect: true})
+		["video-name"]: string
 
 	private _viewModel: LiveshowViewModel
 	private _viewModelDispose: () => void
