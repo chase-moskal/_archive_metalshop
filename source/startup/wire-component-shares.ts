@@ -12,6 +12,7 @@ import {MetalAccount} from "../components/metal-account.js"
 import {MetalPaywall} from "../components/metal-paywall.js"
 import {MetalProfile} from "../components/metal-profile.js"
 import {MetalIsAdmin} from "../components/metal-is-admin.js"
+import {CobaltPersona} from "../components/cobalt-persona.js"
 import {MetalLiveshow} from "../components/metal-liveshow.js"
 import {MetalSettings} from "../components/metal-settings.js"
 import {MetalMyAvatar} from "../components/metal-my-avatar.js"
@@ -32,6 +33,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 	return {
 		IronLoading,
 		MetalAvatar,
+		CobaltPersona,
 		MetalAccount: share(MetalAccount, accountShare),
 		MetalIsPremium: share(MetalIsPremium, accountShare),
 		MetalButtonAuth: share(MetalButtonAuth, accountShare),

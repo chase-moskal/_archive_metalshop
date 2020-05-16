@@ -1,7 +1,7 @@
 
 import {ConstructorFor} from "../interfaces.js"
 
-export type Share = {}
+export type Share = any
 
 export const share = <S extends Share, C extends ConstructorFor<{}>>(
 	Constructor: C,
