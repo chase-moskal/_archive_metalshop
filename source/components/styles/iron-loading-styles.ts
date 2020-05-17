@@ -5,7 +5,13 @@ export const styles = css`
 * {
 	margin: 0;
 	padding: 0;
+	box-sizing: border-box;
 }
+
+[data-load="none"] { display: block; }
+[data-load="loading"] { display: block; }
+[data-load="error"] { color: red; }
+[data-load="ready"] { display: block; }
 
 .icon {
 	display: flex;

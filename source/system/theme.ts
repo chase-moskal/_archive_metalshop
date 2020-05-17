@@ -1,6 +1,5 @@
 
 import {css} from "lit-element"
-import {litLoadingStyles} from "../toolbox/lit-loading.js"
 
 export const theme = css`
 
@@ -9,8 +8,6 @@ export const theme = css`
 	padding: 0;
 	box-sizing: border-box;
 }
-
-${litLoadingStyles}
 
 /*
 FORMAREA
@@ -23,7 +20,7 @@ FORMAREA
 :-ms-input-placeholder { color: inherit; }
 
 .formarea input {
-	opacity: 0.85;
+	opacity: 0.7;
 	padding: 0.2em;
 	font-size: inherit;
 	font-family: inherit;
