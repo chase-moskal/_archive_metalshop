@@ -4,7 +4,7 @@ import * as loading from "../toolbox/loading.js"
 import {star as starIcon} from "../system/icons.js"
 import {styles} from "./styles/metal-paywall-styles.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {MetalshopComponent, html, property, TemplateResult} from "../framework/metalshop-component.js"
+import {MetalshopComponent, html, property} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
 export class MetalPaywall extends MetalshopComponent<PaywallShare> {

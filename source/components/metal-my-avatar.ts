@@ -7,13 +7,18 @@ import {MetalshopComponent, html, css} from "../framework/metalshop-component.js
 	:host {
 		display: block;
 	}
+	:host([hidden]) {
+		display: none;
+	}
+	cobalt-avatar {
+		--cobalt-avatar-size: 3em;
+	}
 `)
 export class MetalMyAvatar extends MetalshopComponent<MyAvatarShare> {
 	render() {
-		const {profile, premium} = this.share
-		const avatar = profile?.avatar || ""
+		const {persona} = this.share
 		return html`
-			<metal-avatar src=${avatar} ?premium=${premium}></metal-avatar>
+			<cobalt-avatar .persona=${persona}></cobalt-avatar>
 		`
 	}
 }

@@ -1,22 +1,15 @@
 
+import {Persona} from "../interfaces.js"
 import {silhouette} from "../system/icons.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {User, Profile} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, property, css, TemplateResult} from "../framework/metalshop-component.js"
-
-export type PersonaSaveProfile = (profile: Profile) => Promise<void>
-
-export interface Persona {
-	user: User
-	profile: Profile
-}
 
 const styles = css`
 
 :host {
 	display: block;
-	width: var(--cobalt-persona-avatar-size, 6em);
-	height: var(--cobalt-persona-avatar-size, 6em);
+	width: var(--cobalt-avatar-size, 6em);
+	height: var(--cobalt-avatar-size, 6em);
 }
 
 :host > * {

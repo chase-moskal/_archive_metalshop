@@ -1,14 +1,8 @@
 
+import {Persona} from "../interfaces.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {User, Profile, Claims} from "authoritarian/dist/interfaces.js"
+import {Profile, Claims} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, property, css} from "../framework/metalshop-component.js"
-
-export type PersonaSaveProfile = (profile: Profile) => Promise<void>
-
-export interface Persona {
-	user: User
-	profile: Profile
-}
 
 const styles = css`
 
@@ -29,6 +23,11 @@ const styles = css`
 	color: red;
 }
 
+[data-label=method-man] {
+	color: lime;
+}
+
+
 .textfield {
 	display: block;
 	width: 100%;
@@ -47,7 +46,6 @@ const styles = css`
 .detail {
 	font-size: 0.7em;
 	list-style: none;
-	padding-left: 0.5rem;
 	margin-top: 0.25rem;
 }
 
@@ -60,7 +58,7 @@ export class CobaltCard extends MetalshopComponent<void> {
 		persona?: Persona
 
 	@property({type: Object})
-		saveProfile?: PersonaSaveProfile
+		saveProfile?: (profile: Profile) => Promise<void>
 
 	@property({type: Boolean})
 		private busy: boolean = false

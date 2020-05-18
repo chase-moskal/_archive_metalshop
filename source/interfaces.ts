@@ -77,6 +77,11 @@ export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
 }
 
+export interface Persona {
+	user: User
+	profile: Profile
+}
+
 export interface AuthPayload {
 	user: User
 	getAuthContext: GetAuthContext
@@ -166,8 +171,7 @@ export interface AccountShare {
 }
 
 export interface MyAvatarShare {
-	profile: Profile
-	premium: boolean
+	persona: Persona
 }
 
 export interface ButtonPremiumShare {

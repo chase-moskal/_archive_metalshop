@@ -87,8 +87,9 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			makeViewModel: supermodel.liveshow.makeViewModel,
 		})),
 		MetalMyAvatar: share(MetalMyAvatar, (): MyAvatarShare => ({
-			profile: supermodel.profile.profile,
-			premium: supermodel.paywall.premiumClaim,
+			persona: (supermodel.auth.user && supermodel.profile.profile)
+				? {user: supermodel.auth.user, profile: supermodel.profile.profile}
+				: null,
 		})),
 		MetalAdminMode: share(MetalAdminMode, (): AdminModeShare => ({
 			authLoad: supermodel.auth.authLoad,
