@@ -13,15 +13,17 @@ import {makeQuestionsBureau} from "authoritarian/dist/business/questions/bureau.
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile/magistrate.js"
 import {makeSettingsSheriff} from "authoritarian/dist/business/settings/settings-sheriff.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth/mocks/mock-user-datalayer.js"
+import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
+import {curryInitializePersona} from "authoritarian/dist/business/auth/curry-initialize-persona.js"
 import {mockProfileDatalayer} from "authoritarian/dist/business/profile/mocks/mock-profile-datalayer.js"
 import {mockVerifyGoogleToken} from "authoritarian/dist/business/auth/mocks/mock-verify-google-token.js"
 import {mockScheduleDatalayer} from "authoritarian/dist/business/schedule/mocks/mock-schedule-datalayer.js"
 import {mockSettingsDatalayer} from "authoritarian/dist/business/settings/mocks/mock-settings-datalayer.js"
+import {generateUserId as defaultGenerateUserId} from "authoritarian/dist/business/auth/generate-user-id.js"
 import {mockQuestionsDatalayer} from "authoritarian/dist/business/questions/mocks/mock-questions-datalayer.js"
 
 import {random8} from "authoritarian/dist/toolbox/random8.js"
 import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
-import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
 import {AccessToken, LiveshowGovernorTopic, AccessPayload} from "authoritarian/dist/interfaces.js"
 
 import {nap} from "../toolbox/nap.js"
@@ -34,9 +36,10 @@ export const makeMocks = async({
 		startLoggedIn,
 		logger = console,
 		googleUserName = "Steve Stephenson",
+		generateUserId = defaultGenerateUserId,
 		decodeAccessToken = defaultDecodeAccessToken,
 		googleUserAvatar = "https://i.imgur.com/CEqYyCy.jpg",
-		generateRandomNickname = () => `User-${random8().toUpperCase()}`
+		generateRandomNickname = () => `${random8().toUpperCase()}`,
 	}: {
 		logger: Logger
 		startAdmin: boolean
@@ -44,6 +47,7 @@ export const makeMocks = async({
 		startLoggedIn: boolean
 		googleUserName?: string
 		googleUserAvatar?: string
+		generateUserId?: () => string
 		decodeAccessToken?: DecodeAccessToken
 		generateRandomNickname?: () => string
 	}): Promise<MetalOptions> => {
@@ -64,7 +68,11 @@ export const makeMocks = async({
 		}
 	})
 
-	const {authVanguard, authDealer} = makeAuthVanguard({userDatalayer})
+	const {authVanguard, authDealer} = makeAuthVanguard({
+		userDatalayer,
+		generateUserId,
+	})
+
 	const profileMagistrate = makeProfileMagistrate({
 		verifyToken,
 		profileDatalayer,
@@ -75,13 +83,25 @@ export const makeMocks = async({
 	const accessTokenExpiresMilliseconds = 20 * minute
 	const refreshTokenExpiresMilliseconds = day * 365
 
+	const settingsDatalayer = mockSettingsDatalayer()
+	const settingsSheriff = makeSettingsSheriff({
+		verifyToken,
+		settingsDatalayer,
+		profileMagistrate,
+	})
+
+	const initializePersona = curryInitializePersona({
+		settingsSheriff,
+		profileMagistrate,
+		generateRandomNickname,
+	})
+
 	const authExchanger = makeAuthExchanger({
 		signToken,
 		verifyToken,
 		authVanguard,
-		profileMagistrate,
 		verifyGoogleToken,
-		generateRandomNickname,
+		initializePersona,
 		accessTokenExpiresMilliseconds,
 		refreshTokenExpiresMilliseconds,
 	})
@@ -115,9 +135,6 @@ export const makeMocks = async({
 			this._vimeoId = vimeoId
 		}
 	}
-
-	const settingsDatalayer = mockSettingsDatalayer()
-	const settingsSheriff = makeSettingsSheriff({verifyToken, settingsDatalayer})
 
 	const {stripeDatalayer, billingDatalayer} = mockStripeCircuit({
 		authVanguard,
@@ -182,7 +199,7 @@ export const makeMocks = async({
 	{
 		const lag = <T extends (...args: any[]) => Promise<any>>(func: T) => {
 			return async function(...args: any[]) {
-				const ms = (Math.random() * 600) + 100
+				const ms = (Math.random() * 300) + 100
 				console.log(`mock lag added: ${func.name} by ${ms.toFixed(0)} milliseconds`)
 				await nap(ms)
 				return func.apply(this, args)

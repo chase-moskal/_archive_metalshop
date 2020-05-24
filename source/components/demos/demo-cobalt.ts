@@ -3,6 +3,8 @@ import {LitElement, html, css} from "lit-element"
 import {mixinStyles} from "../../framework/mixin-styles.js"
 import {User, Profile} from "authoritarian/dist/interfaces.js"
 
+const day = 1000 * 60 * 60 * 24
+
 const styles = css`
 
 .complex {
@@ -24,7 +26,7 @@ export class DemoCobalt extends LitElement {
 		const user: User = {
 			userId: "7E6A12B9",
 			claims: {
-				banned: true,
+				ban: true,
 				admin: true,
 				premium: true,
 				labels: [
@@ -35,7 +37,8 @@ export class DemoCobalt extends LitElement {
 		const profile: Profile = {
 			userId: user.userId,
 			nickname: "Method Man",
-			// avatar: null,
+			joined: Date.now() - (day * 24),
+			tagline: "wu-tang style",
 			avatar: "https://i.imgur.com/CEqYyCy.jpg",
 		}
 		const persona = {user, profile}

@@ -14,6 +14,7 @@ export function renderQuestionEditor({
 	author = {
 		profile: {
 			avatar: null,
+			joined: Date.now() - (10 * (1000 * 60 * 60 * 24)),
 			userId: "FAKE_USER_ID",
 			nickname: "FAKE_NICKNAME",
 		},
