@@ -82,6 +82,12 @@ export interface Persona {
 	profile: Profile
 }
 
+export interface Personal {
+	user: User
+	profile: Profile
+	settings: Settings
+}
+
 export interface AuthPayload {
 	user: User
 	getAuthContext: GetAuthContext
@@ -192,6 +198,15 @@ export interface AdminModeShare {
 export interface AdminOnlyShare {
 	authLoad: loading.Load<AuthPayload>
 	settingsLoad: loading.Load<Settings>
+}
+
+export interface PersonalShare {
+	personal: Personal
+	personalLoad: loading.Load<Personal>
+	saveProfile(profile: Profile): Promise<void>
+	setAdminMode(adminMode: boolean): Promise<void>
+	// setAvatar(avatar: string): Promise<void>
+	// setAvatarPublicity(avatarPublicity: boolean): Promise<void>
 }
 
 export interface ProfileShare {
