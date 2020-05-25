@@ -1,5 +1,6 @@
 
 import {MyAvatarShare} from "../interfaces.js"
+import * as loading from "../toolbox/loading.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
 
@@ -16,9 +17,10 @@ import {MetalshopComponent, html, css} from "../framework/metalshop-component.js
 `)
 export class MetalMyAvatar extends MetalshopComponent<MyAvatarShare> {
 	render() {
-		const {persona} = this.share
+		const {personalLoad} = this.share
+		const personal = loading.payload(personalLoad)
 		return html`
-			<cobalt-avatar .persona=${persona}></cobalt-avatar>
+			<cobalt-avatar .persona=${personal}></cobalt-avatar>
 		`
 	}
 }

@@ -8,6 +8,7 @@ import {ProfileModel} from "../models/profile-model.js"
 import {LiveshowModel} from "../models/liveshow-model.js"
 import {ScheduleModel} from "../models/schedule-model.js"
 import {SettingsModel} from "../models/settings-model.js"
+import {PersonalModel} from "../models/personal-model.js"
 import {QuestionsModel} from "../models/questions-model.js"
 
 export function assembleSupermodel({
@@ -32,21 +33,18 @@ export function assembleSupermodel({
 		triggerAccountPopup,
 		expiryGraceSeconds: 60
 	})
-	const profile = new ProfileModel({logger, profileMagistrate})
-	const settings = new SettingsModel({logger, settingsSheriff})
+	const personal = new PersonalModel({logger, profileMagistrate, settingsSheriff})
 	const supermodel = {
 		auth,
-		profile,
-		settings,
+		personal,
 		schedule: new ScheduleModel({scheduleSentry}),
 		liveshow: new LiveshowModel({liveshowGovernor}),
 		questions: new QuestionsModel({questionsBureau}),
-
+	
 		// TODO consider uncoupling inter-model dependencies
 		paywall: new PaywallModel({
 			auth,
-			profile,
-			settings,
+			personal,
 			paywallLiaison,
 			checkoutPopupUrl,
 			triggerCheckoutPopup,
@@ -55,15 +53,14 @@ export function assembleSupermodel({
 
 	autorun(() => {
 		const {authLoad} = supermodel.auth
-		supermodel.profile.handleAuthLoad(authLoad)
-		supermodel.settings.handleAuthLoad(authLoad)
+		supermodel.personal.handleAuthLoad(authLoad)
 		supermodel.liveshow.handleAuthLoad(authLoad)
 		supermodel.schedule.handleAuthLoad(authLoad)
 		supermodel.questions.handleAuthLoad(authLoad)
 	})
 
 	autorun(() => {
-		const {profile} = supermodel.profile
+		const {profile} = supermodel.personal
 		supermodel.questions.handleProfileUpdate(profile)
 	})
 

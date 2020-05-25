@@ -19,13 +19,12 @@ export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
 		private adminClaim: boolean = false
 
 	async autorun() {
-		const {authLoad, settingsLoad} = this.share
-		const settings = loading.payload(settingsLoad)
-		const getAuthContext = loading.payload(authLoad)?.getAuthContext
-		if (getAuthContext && settings) {
-			const {user} = await getAuthContext()
-			this.adminClaim = user.claims.admin
-			this.adminMode = settings.admin.actAsAdmin
+		const {personalLoad} = this.share
+		const personal = loading.payload(personalLoad)
+
+		if (personal) {
+			this.adminClaim = !!personal.user.claims.admin
+			this.adminMode = !!personal.settings.admin.actAsAdmin
 		}
 		else {
 			this.adminMode = false
@@ -48,11 +47,12 @@ export class MetalAdminMode extends MetalshopComponent<AdminModeShare> {
 
 	private _handleAdminModeChange = (event: InputEvent) => {
 		const adminMode = !!(<HTMLInputElement>event.currentTarget).checked
-		const {setAdminMode, settingsLoad} = this.share
-		const settings = loading.payload(settingsLoad)
-		const newSettings = deepClone(settings)
+		const {personalLoad, setAdminMode} = this.share
+		const personal = loading.payload(personalLoad)
+		if (!personal) throw new Error("personal not loaded")
+		const newSettings = deepClone(personal.settings)
 		newSettings.admin.actAsAdmin = adminMode
-		const changes = !deepEqual(settings, newSettings)
+		const changes = !deepEqual(personal.settings, newSettings)
 		if (changes) return setAdminMode(adminMode)
 	}
 }

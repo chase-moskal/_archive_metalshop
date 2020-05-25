@@ -1,41 +1,20 @@
 
-import {ProfileShare} from "../interfaces.js"
+import {PersonalShare} from "../interfaces.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {MetalshopComponent, html, css} from "../framework/metalshop-component.js"
-
-export const styles = css`
-
-:host {
-	display: block;
-}
-
-:host([hidden]) {
-	display: none;
-}
-
-iron-loading {
-	display: flex;
-	flex-direction: row;
-}
-
-cobalt-card {
-	padding-left: 1em;
-}
-
-`
+import {styles} from "./styles/metal-personal-styles.js"
+import {MetalshopComponent, html} from "../framework/metalshop-component.js"
 
  @mixinStyles(styles)
-export class MetalProfile extends MetalshopComponent<ProfileShare> {
+export class MetalPersonal extends MetalshopComponent<PersonalShare> {
 
 	render() {
-		const {profileLoad, user, profile} = this.share
-		const persona = (user && profile )? {user, profile} : null
+		const {personal, personalLoad} = this.share
 		return html`
 			<iron-loading
-				.load=${profileLoad}
+				.load=${personalLoad}
 				class="container formarea coolbuttonarea">
-					<cobalt-avatar .persona=${persona}></cobalt-avatar>
-					<cobalt-card .persona=${persona}></cobalt-card>
+					<cobalt-avatar .persona=${personal}></cobalt-avatar>
+					<cobalt-card .persona=${personal}></cobalt-card>
 			</iron-loading>
 		`
 	}

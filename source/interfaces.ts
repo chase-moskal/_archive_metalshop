@@ -20,10 +20,9 @@ import {
 } from "authoritarian/dist/interfaces.js"
 
 import {AuthModel} from "./models/auth-model.js"
-import {ProfileModel} from "./models/profile-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
-import {SettingsModel} from "./models/settings-model.js"
+import {PersonalModel} from "./models/personal-model.js"
 import {QuestionsModel} from "./models/questions-model.js"
 import {LiveshowViewModel, LiveshowModel} from "./models/liveshow-model.js"
 
@@ -132,8 +131,7 @@ export type PrepareHandleLikeClick = (o: {
 export interface Supermodel {
 	auth: AuthModel
 	paywall: PaywallModel
-	profile: ProfileModel
-	settings: SettingsModel
+	personal: PersonalModel
 	schedule: ScheduleModel
 	liveshow: LiveshowModel
 	questions: QuestionsModel
@@ -177,27 +175,24 @@ export interface AccountShare {
 }
 
 export interface MyAvatarShare {
-	persona: Persona
+	personalLoad: loading.Load<Personal>
 }
 
 export interface ButtonPremiumShare {
+	personalLoad: loading.Load<Personal>
 	premiumClaim: boolean
-	authLoad: loading.Load<AuthPayload>
-	settingsLoad: loading.Load<Settings>
 	premiumSubscription: SettingsPremiumSubscription
 	login(): Promise<void>
 	checkoutPremium(): Promise<void>
 }
 
 export interface AdminModeShare {
-	authLoad: loading.Load<AuthPayload>
-	settingsLoad: loading.Load<Settings>
+	personalLoad: loading.Load<Personal>
 	setAdminMode(adminMode: boolean): Promise<void>
 }
 
 export interface AdminOnlyShare {
-	authLoad: loading.Load<AuthPayload>
-	settingsLoad: loading.Load<Settings>
+	personalLoad: loading.Load<Personal>
 }
 
 export interface PersonalShare {
@@ -205,28 +200,11 @@ export interface PersonalShare {
 	personalLoad: loading.Load<Personal>
 	saveProfile(profile: Profile): Promise<void>
 	setAdminMode(adminMode: boolean): Promise<void>
-	// setAvatar(avatar: string): Promise<void>
-	// setAvatarPublicity(avatarPublicity: boolean): Promise<void>
-}
-
-export interface ProfileShare {
-	user: User
-	profile: Profile
-	authLoad: loading.Load<AuthPayload>
-	profileLoad: loading.Load<Profile>
-	saveProfile: (profile: Profile) => Promise<void>
-}
-
-export interface SettingsShare {
-	user: User
-	settings: Settings
-	authLoad: loading.Load<AuthPayload>
-	settingsLoad: loading.Load<Settings>
+	setAvatarPublicity(avatarPublicity: boolean): Promise<void>
 }
 
 export interface PaywallShare {
-	authLoad: loading.Load<AuthPayload>
-	settingsLoad: loading.Load<Settings>
+	personalLoad: loading.Load<Personal>
 	premiumClaim: boolean
 	premiumExpires: number
 	premiumSubscription: SettingsPremiumSubscription
@@ -244,7 +222,6 @@ export interface QuestionsShare {
 
 export interface CountdownShare {
 	authLoad: loading.Load<AuthPayload>
-	profileLoad: loading.Load<Profile>
 	events: {[key: string]: ScheduleEvent}
 	loadEvent: (name: string) => Promise<ScheduleEvent>
 	saveEvent: (name: string, event: ScheduleEvent) => Promise<void>

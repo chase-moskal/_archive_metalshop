@@ -7,7 +7,7 @@ import {MetalshopComponent, html} from "../framework/metalshop-component.js"
 export class MetalButtonPremium extends MetalshopComponent<ButtonPremiumShare> {
 
 	onSubscribeClick = async() => {
-		const loggedIn = !!loading.payload(this.share.authLoad)?.user
+		const loggedIn = !!(loading.payload(this.share.personalLoad)?.user)
 		if (!loggedIn) await this.share.login()
 
 		// TODO replace with.. login awaiting its side effects?
@@ -21,10 +21,9 @@ export class MetalButtonPremium extends MetalshopComponent<ButtonPremiumShare> {
 	}
 
 	render() {
-		const {authLoad, settingsLoad, premiumSubscription} = this.share
-		const totalLoad = loading.meta(authLoad, settingsLoad)
+		const {personalLoad, premiumSubscription} = this.share
 		return html`
-			<iron-loading .load=${authLoad} class="coolbuttonarea">
+			<iron-loading .load=${personalLoad} class="coolbuttonarea">
 				${premiumSubscription ? null : html`
 					<button @click=${this.onSubscribeClick}>
 						Subscribe Premium

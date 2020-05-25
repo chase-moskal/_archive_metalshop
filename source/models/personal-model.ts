@@ -12,6 +12,12 @@ export class PersonalModel {
 	@computed get personal() {
 		return loading.payload(this.personalLoad)
 	}
+	@computed get profile() {
+		return this.personal?.profile
+	}
+	@computed get settings() {
+		return this.personal?.settings
+	}
 
 	private logger: Logger
 	private settingsSheriff: SettingsSheriffTopic
@@ -54,25 +60,37 @@ export class PersonalModel {
 				console.error(error)
 			}
 		}
+		else {
+			this.setPersonalLoad(loading.none())
+		}
 	}
 
 	 @action.bound
 	async saveProfile(profile: Profile): Promise<void> {
+		if (!this.personal) throw new Error("personal not loaded")
 		const {accessToken} = await this.getAuthContext()
-		const {personal} = this
-		if (!personal) throw new Error("can't save profile before loading")
 		await this.profileMagistrate.setProfile({accessToken, profile})
-		const {user, settings} = personal
+		const {user, settings} = this.personal
 		this.setPersonalLoad(loading.ready({user, profile, settings}))
 	}
 
 	 @action.bound
 	async setAdminMode(adminMode: boolean): Promise<void> {
+		if (!this.personal) throw new Error("personal not loaded")
 		const {accessToken} = await this.getAuthContext()
-		const {personal} = this
-		if (!personal) throw new Error("can't save profile before loading")
 		const settings = await this.settingsSheriff.setAdminMode({accessToken, adminMode})
-		const {user, profile} = personal
+		const {user, profile} = this.personal
+		this.setPersonalLoad(loading.ready({user, profile, settings}))
+	}
+
+	 @action.bound
+	async setAvatarPublicity(avatarPublicity: boolean): Promise<void> {
+		if (!this.personal) throw new Error("personal not loaded")
+		const {user, accessToken} = await this.getAuthContext()
+		const {settings, profile} = await this.settingsSheriff.setAvatarPublicity({
+			accessToken,
+			avatarPublicity,
+		})
 		this.setPersonalLoad(loading.ready({user, profile, settings}))
 	}
 
