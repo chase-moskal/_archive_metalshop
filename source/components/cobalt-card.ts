@@ -38,8 +38,8 @@ const styles = css`
 	font-style: italic;
 }
 
-.tagline::before,
-.tagline::after {
+.tagline.value-present::before,
+.tagline.value-present::after {
 	content: '"';
 }
 
@@ -81,7 +81,7 @@ export class CobaltCard extends MetalshopComponent<void> {
 	private renderTextfield(name: string, value: string) {
 		return this.saveProfile ? html`
 			<input
-				class="textfield ${name}"
+				class="textfield ${name} ${!!value ? "value-present" : ""}"
 				type="text"
 				name=${name}
 				maxlength="32"
@@ -103,10 +103,10 @@ export class CobaltCard extends MetalshopComponent<void> {
 			<div class="cardplate formarea coolbuttonarea">
 				${this.renderClaimsList(user.claims)}
 				${this.renderTextfield("nickname", profile.nickname)}
-				${this.renderTextfield("tagline", "wu tang style")}
+				${this.renderTextfield("tagline", profile.tagline)}
 				<ul class="detail">
 					<li>user id: <span>${profile.userId}</span></li>
-					<li>joined: <span>unknown</span></li>
+					<li>joined: <span>${profile.joined}</span></li>
 				</ul>
 			</div>
 		`
