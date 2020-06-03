@@ -6,20 +6,10 @@ import {MetalshopComponent, html, property, css, TemplateResult} from "../framew
 
 const styles = css`
 
-:host {
+img, svg {
 	display: block;
 	width: var(--cobalt-avatar-size, 6em);
 	height: var(--cobalt-avatar-size, 6em);
-}
-
-:host > * {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-
-img, svg {
-	display: block;
 }
 
 `

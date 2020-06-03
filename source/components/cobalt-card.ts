@@ -4,6 +4,8 @@ import {mixinStyles} from "../framework/mixin-styles.js"
 import {Profile, Claims} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, property, css} from "../framework/metalshop-component.js"
 
+import {TextChangeEvent} from "../components/iron-text-input.js"
+
 const styles = css`
 
 .claims {
@@ -43,10 +45,17 @@ const styles = css`
 	content: '"';
 }
 
+.cardplate > * {
+	display: block;
+}
+
+.cardplate > * + * {
+	margin-top: 0.2rem;
+}
+
 .detail {
 	font-size: 0.7em;
 	list-style: none;
-	margin-top: 0.25rem;
 }
 
 `
@@ -79,19 +88,14 @@ export class CobaltCard extends MetalshopComponent<void> {
 	}
 
 	private renderTextfield(name: string, value: string) {
-		return this.saveProfile ? html`
-			<input
-				class="textfield ${name} ${!!value ? "value-present" : ""}"
-				type="text"
-				name=${name}
-				maxlength="32"
-				spellcheck="false"
-				autocomplete="off"
-				placeholder=${name}
+		const readonly = !this.saveProfile
+		return html`
+			<iron-text-input
 				.value=${value}
-				/>
-		` : html`
-			<p class="textfield ${name}">${value}</p>
+				?readonly=${readonly}
+				@textchange=${(event: TextChangeEvent) => console.log(event)}>
+					${name}
+			</iron-text-input>
 		`
 	}
 

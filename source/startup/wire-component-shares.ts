@@ -7,6 +7,7 @@ import {
 } from "../interfaces.js"
 
 import {IronLoading} from "../components/iron-loading.js"
+import {IronTextInput} from "../components/iron-text-input.js"
 
 import {CobaltCard} from "../components/cobalt-card.js"
 import {CobaltAvatar} from "../components/cobalt-avatar.js"
@@ -34,6 +35,7 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 	})
 	return {
 		IronLoading,
+		IronTextInput,
 
 		CobaltCard,
 		CobaltAvatar,
