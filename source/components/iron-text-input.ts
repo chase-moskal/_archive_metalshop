@@ -19,6 +19,10 @@ slot {
 	font-size: 0.8em;
 }
 
+:host([nolabel]) slot {
+	display: none;
+}
+
 input {
 	font: inherit;
 	color: inherit;
@@ -79,6 +83,9 @@ export class IronTextInput extends MetalshopComponent<void> {
 	@property({type: Boolean, reflect: true})
 		readonly: boolean = false
 
+	@property({type: Boolean, reflect: true})
+		nolabel: boolean = false
+
 	@property({type: Number, reflect: true})
 		maxlength: number = 32
 
@@ -101,6 +108,7 @@ export class IronTextInput extends MetalshopComponent<void> {
 					?readonly=${this.readonly}
 					maxlength=${this.maxlength}
 					@change=${this.handleInputChange}
+					@keyup=${this.handleInputChange}
 					/>
 			</label>
 		`
