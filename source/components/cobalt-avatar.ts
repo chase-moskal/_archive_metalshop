@@ -1,7 +1,7 @@
 
-import {Persona} from "../interfaces.js"
 import {silhouette} from "../system/icons.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
+import {Persona} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, property, css, TemplateResult} from "../framework/metalshop-component.js"
 
 const styles = css`

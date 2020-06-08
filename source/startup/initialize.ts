@@ -120,6 +120,7 @@ export async function initialize(config: MetalConfig): Promise<MetalOptions> {
 		logger: options.logger,
 		authDealer: options.authDealer,
 		tokenStore: options.tokenStore,
+		adminSearch: options.adminSearch,
 		paywallLiaison: options.paywallLiaison,
 		scheduleSentry: options.scheduleSentry,
 		settingsSheriff: options.settingsSheriff,

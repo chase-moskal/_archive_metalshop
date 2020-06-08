@@ -1,7 +1,7 @@
 
 import {share} from "../framework/share.js"
 import {
-	ButtonPremiumShare, PersonalShare,
+	ButtonPremiumShare, PersonalShare, SeekerShare,
 	MyAvatarShare, AdminModeShare, AdminOnlyShare, QuestionsShare,
 	Supermodel, AccountShare, CountdownShare, PaywallShare, LiveshowShare,
 } from "../interfaces.js"
@@ -13,6 +13,7 @@ import {CobaltCard} from "../components/cobalt-card.js"
 import {CobaltAvatar} from "../components/cobalt-avatar.js"
 
 import {MetalAvatar} from "../components/metal-avatar.js"
+import {MetalSeeker} from "../components/metal-seeker.js"
 import {MetalAccount} from "../components/metal-account.js"
 import {MetalPaywall} from "../components/metal-paywall.js"
 import {MetalIsAdmin} from "../components/metal-is-admin.js"
@@ -51,6 +52,10 @@ export const wireComponentShares = (supermodel: Supermodel) => {
 			saveProfile: supermodel.personal.saveProfile,
 			setAdminMode: supermodel.personal.setAdminMode,
 			setAvatarPublicity: supermodel.personal.setAvatarPublicity,
+		})),
+		MetalSeeker: share(MetalSeeker, (): SeekerShare => ({
+			query: supermodel.seeker.query,
+			resultsLoad: supermodel.seeker.resultsLoad,
 		})),
 		MetalCountdown: share(MetalCountdown, (): CountdownShare => ({
 			events: supermodel.schedule.events,

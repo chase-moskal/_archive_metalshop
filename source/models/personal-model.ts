@@ -1,11 +1,12 @@
 
 import {observable, action, computed} from "mobx"
+import {Personal} from "authoritarian/dist/interfaces.js"
 import {Logger} from "authoritarian/dist/toolbox/logger/interfaces.js"
 import {ProfileMagistrateTopic, SettingsSheriffTopic, Profile} from "authoritarian/dist/interfaces.js"
 
 import * as loading from "../toolbox/loading.js"
 import {makeTicketbooth} from "../toolbox/ticketbooth.js"
-import {Personal, GetAuthContext, AuthPayload} from "../interfaces.js"
+import {GetAuthContext, AuthPayload} from "../interfaces.js"
 
 export class PersonalModel {
 	@observable personalLoad = loading.load<Personal>()

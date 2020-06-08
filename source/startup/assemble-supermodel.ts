@@ -3,17 +3,19 @@ import {autorun} from "mobx"
 import {MetalOptions, Supermodel} from "../interfaces.js"
 
 import {AuthModel} from "../models/auth-model.js"
+import {SeekerModel} from "../models/seeker-model.js"
 import {PaywallModel} from "../models/paywall-model.js"
-import {ProfileModel} from "../models/profile-model.js"
 import {LiveshowModel} from "../models/liveshow-model.js"
 import {ScheduleModel} from "../models/schedule-model.js"
-import {SettingsModel} from "../models/settings-model.js"
 import {PersonalModel} from "../models/personal-model.js"
 import {QuestionsModel} from "../models/questions-model.js"
+// import {ProfileModel} from "../models/profile-model.js"
+// import {SettingsModel} from "../models/settings-model.js"
 
 export function assembleSupermodel({
 	logger,
 	tokenStore,
+	adminSearch,
 	paywallLiaison,
 	scheduleSentry,
 	settingsSheriff,
@@ -37,6 +39,7 @@ export function assembleSupermodel({
 	const supermodel = {
 		auth,
 		personal,
+		seeker: new SeekerModel({adminSearch}),
 		schedule: new ScheduleModel({scheduleSentry}),
 		liveshow: new LiveshowModel({liveshowGovernor}),
 		questions: new QuestionsModel({questionsBureau}),
@@ -57,6 +60,7 @@ export function assembleSupermodel({
 		supermodel.liveshow.handleAuthLoad(authLoad)
 		supermodel.schedule.handleAuthLoad(authLoad)
 		supermodel.questions.handleAuthLoad(authLoad)
+		supermodel.seeker.handleAuthLoad(authLoad)
 	})
 
 	autorun(() => {

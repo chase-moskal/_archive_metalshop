@@ -2,8 +2,9 @@
 import {
 	User,
 	Profile,
+	Persona,
+	Personal,
 	Question,
-	Settings,
 	CardClues,
 	AuthTokens,
 	AccessToken,
@@ -11,6 +12,7 @@ import {
 	QuestionDraft,
 	AuthDealerTopic,
 	TokenStoreTopic,
+	AdminSearchTopic,
 	PaywallLiaisonTopic,
 	ScheduleSentryTopic,
 	SettingsSheriffTopic,
@@ -20,6 +22,7 @@ import {
 } from "authoritarian/dist/interfaces.js"
 
 import {AuthModel} from "./models/auth-model.js"
+import {SeekerModel} from "./models/seeker-model.js"
 import {PaywallModel} from "./models/paywall-model.js"
 import {ScheduleModel} from "./models/schedule-model.js"
 import {PersonalModel} from "./models/personal-model.js"
@@ -48,6 +51,7 @@ export interface MetalOptions {
 	logger: Logger
 	authDealer: AuthDealerTopic
 	tokenStore: TokenStoreTopic
+	adminSearch: AdminSearchTopic
 	paywallLiaison: PaywallLiaisonTopic
 	scheduleSentry: ScheduleSentryTopic
 	settingsSheriff: SettingsSheriffTopic
@@ -74,17 +78,6 @@ export type TriggerCheckoutPopup = (o: {stripeSessionId: string}) => Promise<voi
 
 export interface LoginWithAccessToken {
 	(accessToken: AccessToken): Promise<void>
-}
-
-export interface Persona {
-	user: User
-	profile: Profile
-}
-
-export interface Personal {
-	user: User
-	profile: Profile
-	settings: Settings
 }
 
 export interface AuthPayload {
@@ -130,6 +123,7 @@ export type PrepareHandleLikeClick = (o: {
 
 export interface Supermodel {
 	auth: AuthModel
+	seeker: SeekerModel
 	paywall: PaywallModel
 	personal: PersonalModel
 	schedule: ScheduleModel
@@ -233,4 +227,9 @@ export interface LiveshowShare {
 		dispose: () => void
 		viewModel: LiveshowViewModel
 	}
+}
+
+export interface SeekerShare {
+	resultsLoad: loading.Load<Persona[]>
+	query: (needle: string) => Promise<void>
 }

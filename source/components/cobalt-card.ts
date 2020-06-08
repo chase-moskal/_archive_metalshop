@@ -1,12 +1,11 @@
 
-import {Persona} from "../interfaces.js"
 import {select} from "../toolbox/selects.js"
 import {formatDate} from "../toolbox/dates.js"
 import * as loading from "../toolbox/loading.js"
 import {makeDebouncer} from "../toolbox/debouncer.js"
 import {deepClone, deepEqual} from "../toolbox/deep.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
-import {Profile, Claims} from "authoritarian/dist/interfaces.js"
+import {Profile, Claims, Persona} from "authoritarian/dist/interfaces.js"
 import {MetalshopComponent, html, property, css} from "../framework/metalshop-component.js"
 
 const styles = css`

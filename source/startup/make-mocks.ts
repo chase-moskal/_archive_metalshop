@@ -11,6 +11,7 @@ import {makePaywallLiaison} from "authoritarian/dist/business/paywall/liaison.js
 import {makeScheduleSentry} from "authoritarian/dist/business/schedule/sentry.js"
 import {makeQuestionsBureau} from "authoritarian/dist/business/questions/bureau.js"
 import {makeProfileMagistrate} from "authoritarian/dist/business/profile/magistrate.js"
+import {mockAdminSearch} from "authoritarian/dist/business/admin/mocks/mock-admin-search.js"
 import {makeSettingsSheriff} from "authoritarian/dist/business/settings/settings-sheriff.js"
 import {mockUserDatalayer} from "authoritarian/dist/business/auth/mocks/mock-user-datalayer.js"
 import {mockStripeCircuit} from "authoritarian/dist/business/paywall/mocks/mock-stripe-circuit.js"
@@ -159,6 +160,8 @@ export const makeMocks = async({
 	const triggerCheckoutPopup: TriggerCheckoutPopup =
 		async({stripeSessionId}) => null
 
+	const adminSearch = mockAdminSearch()
+
 	//
 	// starting conditions
 	//
@@ -208,6 +211,7 @@ export const makeMocks = async({
 
 		for (const object of Object.values(<{[key: string]: Topic}>{
 			authDealer,
+			adminSearch,
 			paywallLiaison,
 			scheduleSentry,
 			settingsSheriff,
@@ -225,6 +229,7 @@ export const makeMocks = async({
 		logger,
 		authDealer,
 		tokenStore,
+		adminSearch,
 		paywallLiaison,
 		scheduleSentry,
 		settingsSheriff,

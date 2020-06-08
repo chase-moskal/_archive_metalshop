@@ -1,4 +1,5 @@
 
+import {makeDebouncer} from "../toolbox/debouncer.js"
 import {mixinStyles} from "../framework/mixin-styles.js"
 import {MetalshopComponent, html, property, css} from "../framework/metalshop-component.js"
 
@@ -89,12 +90,22 @@ export class IronTextInput extends MetalshopComponent<void> {
 	@property({type: Number, reflect: true})
 		maxlength: number = 32
 
+	private lastValue = ""
+
 	private handleInputChange = (event: InputEvent) => {
 		const input = <HTMLInputElement>event.currentTarget
-		const text = input.value
-		this.value = text
-		this.dispatchEvent(new TextChangeEvent(text))
+		this.value = input.value
+		this.debouncer.queue()
 	}
+
+	private debouncer = makeDebouncer({
+		delay: 500,
+		action: () => {
+			const {lastValue, value} = this
+			if (value !== lastValue) this.dispatchEvent(new TextChangeEvent(value))
+			this.lastValue = value
+		},
+	})
 
 	render() {
 		return html`
