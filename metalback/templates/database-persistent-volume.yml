@@ -1,0 +1,16 @@
+# The path saved is in dbdata, and this volume is used on the pod for the files
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: database-persistent-volume
+    labels:
+        type: local
+spec:
+    storageClassName: manual
+    capacity:
+        storage: 2Gi
+    accessModes:
+        - ReadWriteMany
+    hostPath:
+        path: /dbdata

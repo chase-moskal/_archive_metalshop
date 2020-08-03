@@ -1,0 +1,15 @@
+# A volume claim is requested by the volume to give the volume a 
+# certain size of volume. Here the claims are 2 gig increments and
+# are requested by the volume which needs 2 gigs.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: database-persistent-volume-claim
+spec:
+    storageClassName: manual
+    accessModes:
+        - ReadWriteMany
+    resources:
+        requests:
+            storage: 2Gi

@@ -1,0 +1,34 @@
+# This is a container that is for a mysql container, published on port 3306 and accessible
+# through the labels app: database tier: mysql. The volume is mounted into the database
+# storage.
+# note in the spec the volume is given, a perstitentvolumeclaim is requested, and the same
+# identifier is used in the volumeMounts.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metalwork-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+      tier: mysql
+  template:
+    metadata:
+      labels:
+        app: database
+        tier: mysql
+    spec:
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+            - containerPort: 3306
+              name: mysql
+        volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
